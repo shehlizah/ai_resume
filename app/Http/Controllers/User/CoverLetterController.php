@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CoverLetterController extends Controller
 {
-    
-        use AuthorizesRequests; // <- this enables $this->authorize()
-
     /**
      * Display a listing of cover letters.
      */
