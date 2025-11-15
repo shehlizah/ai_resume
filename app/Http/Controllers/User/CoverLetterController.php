@@ -59,7 +59,10 @@ class CoverLetterController extends Controller
      */
     public function view(CoverLetter $coverLetter)
     {
-        $this->authorize('view', $coverLetter);
+        // Check if cover letter belongs to authenticated user
+        if ($coverLetter->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         return view('user.cover-letters.view', compact('coverLetter'));
     }
@@ -69,7 +72,10 @@ class CoverLetterController extends Controller
      */
     public function edit(CoverLetter $coverLetter)
     {
-        $this->authorize('update', $coverLetter);
+        // Check if cover letter belongs to authenticated user
+        if ($coverLetter->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         return view('user.cover-letters.edit', compact('coverLetter'));
     }
@@ -79,7 +85,10 @@ class CoverLetterController extends Controller
      */
     public function update(Request $request, CoverLetter $coverLetter)
     {
-        $this->authorize('update', $coverLetter);
+        // Check if cover letter belongs to authenticated user
+        if ($coverLetter->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -101,7 +110,10 @@ class CoverLetterController extends Controller
      */
     public function destroy(CoverLetter $coverLetter)
     {
-        $this->authorize('delete', $coverLetter);
+        // Check if cover letter belongs to authenticated user
+        if ($coverLetter->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $coverLetter->update(['is_deleted' => true]);
 
