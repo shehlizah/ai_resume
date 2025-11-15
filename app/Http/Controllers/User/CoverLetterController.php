@@ -59,8 +59,20 @@ class CoverLetterController extends Controller
      */
     public function view(CoverLetter $coverLetter)
     {
+        // Debug: Log user and cover letter info
+        \Log::info('Cover Letter Access Attempt', [
+            'authenticated_user_id' => auth()->id(),
+            'cover_letter_id' => $coverLetter->id,
+            'cover_letter_user_id' => $coverLetter->user_id,
+            'user_email' => auth()->user()?->email,
+        ]);
+
         // Check if cover letter belongs to authenticated user
         if ($coverLetter->user_id !== auth()->id()) {
+            \Log::error('Unauthorized access attempt', [
+                'authenticated_user_id' => auth()->id(),
+                'cover_letter_user_id' => $coverLetter->user_id,
+            ]);
             abort(403, 'Unauthorized action.');
         }
 
