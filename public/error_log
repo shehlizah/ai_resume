@@ -82,3 +82,6 @@ Stack trace:
 [14-Nov-2025 11:30:01 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\User\DashboardController as DashboardController because the name is already in use in /home/iosahrww/sneat.hitechmain.com/routes/web.php on line 15
 [15-Nov-2025 06:27:53 UTC] PHP Fatal error:  A void function must not return a value in /home/iosahrww/sneat.hitechmain.com/resources/views/livewire/auth/login.blade.php on line 61
 [15-Nov-2025 08:34:05 UTC] PHP Fatal error:  Trait "App\Http\Controllers\User\AuthorizesRequests" not found in /home/iosahrww/sneat.hitechmain.com/app/Http/Controllers/User/CoverLetterController.php on line 10
+[15-Nov-2025 08:36:40 UTC] PHP Fatal error:  Trait "App\Http\Controllers\User\AuthorizesRequests" not found in /home/iosahrww/sneat.hitechmain.com/app/Http/Controllers/User/CoverLetterController.php on line 10
+[15-Nov-2025 08:36:49 UTC] PHP Fatal error:  Trait "App\Http\Controllers\User\AuthorizesRequests" not found in /home/iosahrww/sneat.hitechmain.com/app/Http/Controllers/User/CoverLetterController.php on line 10
+[15-Nov-2025 08:37:20 UTC] PHP Fatal error:  Trait "App\Http\Controllers\User\AuthorizesRequests" not found in /home/iosahrww/sneat.hitechmain.com/app/Http/Controllers/User/CoverLetterController.php on line 10

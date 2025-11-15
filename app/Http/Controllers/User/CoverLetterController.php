@@ -130,7 +130,7 @@ class CoverLetterController extends Controller
         $coverLetter->update(['is_deleted' => true]);
 
         return redirect()
-            ->route('user.cover-letters')
+            ->route('user.cover-letters.index')
             ->with('success', 'Cover letter deleted successfully!');
     }
 }

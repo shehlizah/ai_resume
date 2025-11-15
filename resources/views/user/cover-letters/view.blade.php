@@ -4,7 +4,7 @@
         <div class="col-lg-12">
             <div class="d-flex justify-content-between align-items-start mb-4">
                 <div>
-                    <a href="{{ route('user.cover-letters') }}" class="btn btn-link ps-0 mb-3">
+                    <a href="{{ route('user.cover-letters.index') }}" class="btn btn-link ps-0 mb-3">
                         <i class="bx bx-chevron-left me-1"></i> Back to Cover Letters
                     </a>
                     <h4 class="mb-1">{{ $coverLetter->title }}</h4>
