@@ -31,6 +31,7 @@ class CoverLetter extends Model
      * @var array
      */
     protected $casts = [
+        'user_id' => 'integer',
         'is_deleted' => 'boolean',
     ];
 
