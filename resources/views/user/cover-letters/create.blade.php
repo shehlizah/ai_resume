@@ -2,7 +2,7 @@
 <x-layouts.app :title="__('Create Cover Letter')">
     <div class="row g-4">
         <div class="col-lg-12">
-            <a href="{{ route('user.cover-letters') }}" class="btn btn-link ps-0 mb-3">
+            <a href="{{ route('user.cover-letters.index') }}" class="btn btn-link ps-0 mb-3">
                 <i class="bx bx-chevron-left me-1"></i> Back to Cover Letters
             </a>
         </div>
@@ -78,7 +78,7 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="bx bx-save me-1"></i> Save Cover Letter
                         </button>
-                        <a href="{{ route('user.cover-letters') }}" class="btn btn-secondary">
+                        <a href="{{ route('user.cover-letters.index') }}" class="btn btn-secondary">
                             <i class="bx bx-x me-1"></i> Cancel
                         </a>
                     </div>

@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 
 class CoverLetterController extends Controller
 {
+    
+        use AuthorizesRequests; // <- this enables $this->authorize()
+
     /**
      * Display a listing of cover letters.
      */
@@ -50,7 +53,7 @@ class CoverLetterController extends Controller
         CoverLetter::create($validated);
 
         return redirect()
-            ->route('user.cover-letters')
+            ->route('user.cover-letters.index')
             ->with('success', 'Cover letter created successfully!');
     }
 
