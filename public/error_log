@@ -1,0 +1,83 @@
+[29-Oct-2025 18:49:02 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:49:02 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:49:03 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:49:03 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:49:03 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:49:03 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:49:14 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:49:14 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:50:21 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:50:21 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:54:49 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:54:49 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:54:50 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:54:50 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:54:58 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:54:58 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:54:58 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:54:58 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:07 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:07 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:08 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:08 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:18 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:18 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:18 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:18 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:30 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:30 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:30 UTC] PHP Warning:  require(/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[29-Oct-2025 18:55:30 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iosahrww/sneat.hitechmain.com/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iosahrww/sneat.hitechmain.com/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/iosahrww/sneat.hitechmain.com/public/index.php on line 14
+[06-Nov-2025 15:14:45 UTC] PHP Fatal error:  Cannot use Barryvdh\DomPDF\Facade\Pdf as Pdf because the name is already in use in /home/iosahrww/sneat.hitechmain.com/app/Http/Controllers/UserResumeController.php on line 8
+[11-Nov-2025 11:33:40 UTC] PHP Fatal error:  Cannot redeclare Livewire\Volt\Component@anonymous::login() in /home/iosahrww/sneat.hitechmain.com/resources/views/livewire/auth/login.blade.php on line 75
+[11-Nov-2025 15:16:59 UTC] PHP Fatal error:  Cannot use Illuminate\Support\Facades\Route as Route because the name is already in use in /home/iosahrww/sneat.hitechmain.com/routes/web.php on line 15
+[13-Nov-2025 06:43:08 UTC] PHP Fatal error:  Cannot redeclare App\Models\User::subscriptions() in /home/iosahrww/sneat.hitechmain.com/app/Models/User.php on line 188
+[13-Nov-2025 06:43:13 UTC] PHP Fatal error:  Cannot redeclare App\Models\User::subscriptions() in /home/iosahrww/sneat.hitechmain.com/app/Models/User.php on line 188
+[14-Nov-2025 11:29:58 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\User\DashboardController as DashboardController because the name is already in use in /home/iosahrww/sneat.hitechmain.com/routes/web.php on line 15
+[14-Nov-2025 11:30:01 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\User\DashboardController as DashboardController because the name is already in use in /home/iosahrww/sneat.hitechmain.com/routes/web.php on line 15
+[15-Nov-2025 06:27:53 UTC] PHP Fatal error:  A void function must not return a value in /home/iosahrww/sneat.hitechmain.com/resources/views/livewire/auth/login.blade.php on line 61

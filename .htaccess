@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Prevent access to Laravel sensitive folders
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|vendor)/ - [F,L,NC]
+
+    # Redirect everything to the public folder
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
