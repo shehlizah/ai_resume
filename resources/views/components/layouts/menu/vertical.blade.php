@@ -164,14 +164,14 @@
         </ul>
       </li>
 
-      <li class="menu-item {{ request()->is('cover-letters*') ? 'active open' : '' }}">
+      <li class="menu-item {{ request()->is('user.cover-letters.index*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons bx bx-envelope"></i>
           <div>{{ __('Cover Letters') }}</div>
         </a>
         <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('cover-letters') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('cover-letters') }}">{{ __('My Cover Letters') }}</a>
+          <li class="menu-item {{ request()->is('user.cover-letters.index') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('user.cover-letters.index') }}">{{ __('My Cover Letters') }}</a>
           </li>
         </ul>
       </li>
