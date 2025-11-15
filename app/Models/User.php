@@ -57,6 +57,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relationship: User has many cover letters
+     */
+    public function coverLetters()
+    {
+        return $this->hasMany(CoverLetter::class);
+    }
+
+    /**
      * Check if user is admin
      */
     public function isAdmin()
@@ -95,7 +103,7 @@ class User extends Authenticatable
     {
         return $query->where('role', 'user');
     }
-    
+
 
 /**
  * Get user's subscriptions
@@ -147,21 +155,21 @@ public function currentPlan()
 public function canAccessTemplate($template)
 {
     $plan = $this->currentPlan();
-    
+
     // If template is free, everyone can access
     if ($template->plan_type === 'free') {
         return true;
     }
-    
+
     // Check plan permissions
     if ($template->plan_type === 'premium' && !$plan->access_premium_templates) {
         return false;
     }
-    
+
     if ($template->plan_type === 'basic' && $plan->slug === 'free') {
         return false;
     }
-    
+
     return true;
 }
 
@@ -171,16 +179,16 @@ public function canAccessTemplate($template)
 public function hasReachedTemplateLimit()
 {
     $plan = $this->currentPlan();
-    
+
     // If unlimited (null), return false
     if ($plan->template_limit === null) {
         return false;
     }
-    
+
     // Count user's created resumes (assuming you have a resumes table)
     // Adjust this based on your actual resume tracking
     $resumeCount = $this->resumes()->count();
-    
+
     return $resumeCount >= $plan->template_limit;
 }
 
