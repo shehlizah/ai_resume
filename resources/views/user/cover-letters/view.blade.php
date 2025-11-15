@@ -71,9 +71,9 @@
                 </a>
                 @endif
 
-                <button type="button" class="btn btn-outline-secondary w-100 mb-2" onclick="window.print()">
+                <a href="{{ route('user.cover-letters.print', $coverLetter->id) }}" class="btn btn-outline-secondary w-100 mb-2" target="_blank">
                     <i class="bx bx-printer me-1"></i> Print
-                </button>
+                </a>
 
                 <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">
                     <i class="bx bx-trash me-1"></i> Delete

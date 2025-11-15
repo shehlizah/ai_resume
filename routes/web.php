@@ -146,6 +146,10 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
         Route::get('/{coverLetter}', [CoverLetterController::class, 'view'])
             ->name('view');
 
+        // Print cover letter
+        Route::get('/{coverLetter}/print', [CoverLetterController::class, 'print'])
+            ->name('print');
+
         // Edit cover letter form
         Route::get('/{coverLetter}/edit', [CoverLetterController::class, 'edit'])
             ->name('edit');
