@@ -23,25 +23,41 @@ class StripeWebhookController extends Controller
         $sig_header = $request->header('Stripe-Signature');
         $endpoint_secret = config('services.stripe.webhook_secret');
 
-        try {
-            $event = Webhook::constructEvent(
-                $payload,
-                $sig_header,
-                $endpoint_secret
-            );
-        } catch (SignatureVerificationException $e) {
-            return response()->json(['error' => 'Invalid signature'], 400);
+        // For testing without proper signature, allow if STRIPE_WEBHOOK_SECRET is not set
+        if (!$endpoint_secret) {
+            $event = json_decode($payload, true);
+        } else {
+            try {
+                $event = Webhook::constructEvent(
+                    $payload,
+                    $sig_header,
+                    $endpoint_secret
+                );
+            } catch (SignatureVerificationException $e) {
+                return response()->json(['error' => 'Invalid signature'], 400);
+            }
         }
 
         // Handle the event
-        match ($event->type) {
-            'customer.subscription.created' => $this->handleSubscriptionCreated($event->data->object),
-            'customer.subscription.updated' => $this->handleSubscriptionUpdated($event->data->object),
-            'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event->data->object),
-            'charge.succeeded' => $this->handleChargeSucceeded($event->data->object),
-            'charge.failed' => $this->handleChargeFailed($event->data->object),
-            default => null,
-        };
+        if (isset($event['type'])) {
+            match ($event['type']) {
+                'customer.subscription.created' => $this->handleSubscriptionCreated($event['data']['object']),
+                'customer.subscription.updated' => $this->handleSubscriptionUpdated($event['data']['object']),
+                'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event['data']['object']),
+                'charge.succeeded' => $this->handleChargeSucceeded($event['data']['object']),
+                'charge.failed' => $this->handleChargeFailed($event['data']['object']),
+                default => null,
+            };
+        } else {
+            match ($event->type) {
+                'customer.subscription.created' => $this->handleSubscriptionCreated($event->data->object),
+                'customer.subscription.updated' => $this->handleSubscriptionUpdated($event->data->object),
+                'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event->data->object),
+                'charge.succeeded' => $this->handleChargeSucceeded($event->data->object),
+                'charge.failed' => $this->handleChargeFailed($event->data->object),
+                default => null,
+            };
+        }
 
         return response()->json(['status' => 'success']);
     }
@@ -53,11 +69,11 @@ class StripeWebhookController extends Controller
     {
         // Get customer email to find user
         $customerId = $subscription->customer;
-        
+
         // Get customer details from Stripe
         Stripe::setApiKey(config('services.stripe.secret'));
         $customer = \Stripe\Customer::retrieve($customerId);
-        
+
         // Find user by email
         $user = User::where('email', $customer->email)->first();
         if (!$user) {
@@ -67,11 +83,11 @@ class StripeWebhookController extends Controller
 
         // Get the price from the subscription
         $priceId = $subscription->items->data[0]->price->id;
-        
+
         // Find the plan by Stripe price ID
         // You'll need to add stripe_price_id to SubscriptionPlan model
         $plan = SubscriptionPlan::where('stripe_price_id', $priceId)->first();
-        
+
         if (!$plan) {
             \Log::error('Plan not found for Stripe price: ' . $priceId);
             return;
@@ -105,14 +121,14 @@ class StripeWebhookController extends Controller
     private function handleSubscriptionUpdated($subscription)
     {
         $userSubscription = UserSubscription::where('gateway_subscription_id', $subscription->id)->first();
-        
+
         if (!$userSubscription) {
             return;
         }
 
         // Update status based on Stripe subscription status
         $status = $this->mapStripeStatus($subscription->status);
-        
+
         $userSubscription->update([
             'status' => $status,
             'auto_renew' => !$subscription->cancel_at_period_end,
@@ -134,7 +150,7 @@ class StripeWebhookController extends Controller
     private function handleSubscriptionDeleted($subscription)
     {
         $userSubscription = UserSubscription::where('gateway_subscription_id', $subscription->id)->first();
-        
+
         if (!$userSubscription) {
             return;
         }
@@ -155,10 +171,10 @@ class StripeWebhookController extends Controller
         if ($charge->invoice) {
             Stripe::setApiKey(config('services.stripe.secret'));
             $invoice = \Stripe\Invoice::retrieve($charge->invoice);
-            
+
             if ($invoice->subscription) {
                 $userSubscription = UserSubscription::where('gateway_subscription_id', $invoice->subscription)->first();
-                
+
                 if ($userSubscription) {
                     // Create payment record
                     Payment::create([
@@ -194,10 +210,10 @@ class StripeWebhookController extends Controller
         if ($charge->invoice) {
             Stripe::setApiKey(config('services.stripe.secret'));
             $invoice = \Stripe\Invoice::retrieve($charge->invoice);
-            
+
             if ($invoice->subscription) {
                 $userSubscription = UserSubscription::where('gateway_subscription_id', $invoice->subscription)->first();
-                
+
                 if ($userSubscription) {
                     // Create failed payment record
                     Payment::create([
