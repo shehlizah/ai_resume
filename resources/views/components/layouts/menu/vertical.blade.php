@@ -210,34 +210,6 @@
           <div>{{ __('Subscriptions') }}</div>
         </a>
         <ul class="menu-sub">
-          <!-- Current Plan Badge -->
-          @php
-            $activeSubscription = $user->activeSubscription;
-            $currentPlan = $activeSubscription?->plan ?? null;
-          @endphp
-
-          @if($currentPlan)
-          <li class="menu-item">
-            <div class="px-3 py-2 border-bottom">
-              <small class="text-muted fw-semibold d-block mb-2">{{ __('Your Current Plan') }}</small>
-              <span class="badge bg-primary">{{ $currentPlan->name }}</span>
-              @if($activeSubscription)
-                <small class="d-block mt-1 text-muted">
-                  <i class="bx bx-calendar-check"></i>
-                  {{ $activeSubscription->end_date?->format('M d, Y') ?? 'Active' }}
-                </small>
-              @endif
-            </div>
-          </li>
-          @else
-          <li class="menu-item">
-            <div class="px-3 py-2 border-bottom">
-              <small class="text-muted fw-semibold d-block mb-2">{{ __('No Active Plan') }}</small>
-              <small class="text-muted d-block">Upgrade to unlock more features</small>
-            </div>
-          </li>
-          @endif
-
           <li class="menu-item {{ request()->is('subscription/dashboard') ? 'active' : '' }}">
             <a class="menu-link" href="{{ url('subscription/dashboard') }}">{{ __('My Subscriptions') }}</a>
           </li>

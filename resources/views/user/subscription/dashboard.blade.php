@@ -1,8 +1,41 @@
 <x-layouts.app :title="$title ?? 'My Subscription'">
   <div class="container-xxl flex-grow-1 container-p-y">
-    
+
     <!-- Header -->
     <h4 class="fw-bold mb-4">📊 My Subscription</h4>
+
+    <!-- Current Plan Badge Card -->
+    @php
+      $activeSubscription = $user->activeSubscription;
+      $currentPlan = $activeSubscription?->plan ?? null;
+    @endphp
+
+    @if($currentPlan && $activeSubscription)
+      <div class="card bg-primary text-white mb-4">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="card-title mb-1">{{ $currentPlan->name }} Plan</h5>
+            <p class="card-text mb-0">Active since {{ $activeSubscription->start_date->format('M d, Y') }}</p>
+          </div>
+          <div class="text-end">
+            <div class="display-6 mb-1">${{ number_format($currentPlan->price ?? 0, 2) }}</div>
+            <small>/{{ $activeSubscription->billing_period === 'yearly' ? 'year' : 'month' }}</small>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent border-top border-white border-opacity-25">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="text-white-50">Expires: <strong>{{ $activeSubscription->end_date->format('F j, Y') }}</strong></span>
+            <a href="{{ route('user.pricing') }}" class="btn btn-sm btn-light text-primary">Upgrade Plan</a>
+          </div>
+        </div>
+      </div>
+    @elseif(!$currentPlan)
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bx bx-info-circle me-2"></i>
+        <strong>No Active Plan</strong> - You're on the free plan. <a href="{{ route('user.pricing') }}" class="alert-link">Upgrade now</a> to unlock premium features!
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    @endif
 
     <!-- Success/Error Messages -->
     @if(session('success'))
@@ -36,7 +69,7 @@
                 <div>
                   <h3 class="mb-1">{{ $currentSubscription->plan->name }} Plan</h3>
                   <p class="text-muted mb-2">{{ $currentSubscription->plan->description }}</p>
-                  
+
                   <div class="mb-2">
                     <span class="badge bg-{{ $currentSubscription->getStatusColor() }} me-2">
                       {{ ucfirst($currentSubscription->status) }}
@@ -64,7 +97,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <small class="text-muted d-block">Days Remaining</small>
-       
+
 @php
     $daysRemaining = \Carbon\Carbon::now()->diffInDays($currentSubscription->end_date);
     if (\Carbon\Carbon::now()->greaterThan($currentSubscription->end_date)) {
@@ -79,8 +112,8 @@
 
 
                 </div>
-                
-                
+
+
                 <!--<div class="col-md-6 mb-3">-->
                 <!--  <small class="text-muted d-block">Next Billing</small>-->
                 <!--  <strong>{{ $currentSubscription->next_billing_date ? $currentSubscription->next_billing_date->format('F j, Y') : 'N/A' }}</strong>-->
@@ -255,7 +288,7 @@
                     </span>
                   </td>
                   <td>
-                    {{ $subscription->start_date->format('M d, Y') }} - 
+                    {{ $subscription->start_date->format('M d, Y') }} -
                     {{ $subscription->end_date->format('M d, Y') }}
                   </td>
                 </tr>
@@ -286,7 +319,7 @@
             </div>
             <div class="modal-body">
               <p>Are you sure you want to cancel your subscription? You'll continue to have access until <strong>{{ $currentSubscription->end_date->format('F j, Y') }}</strong>.</p>
-              
+
               <div class="mb-3">
                 <label class="form-label">Reason for canceling (optional)</label>
                 <textarea class="form-control" name="reason" rows="3" placeholder="Help us improve..."></textarea>
