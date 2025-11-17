@@ -28,7 +28,7 @@ class UpdateSubscriptionPlansWithStripe extends Seeder
                 'description' => 'Perfect for getting started - $20 per month',
                 'monthly_price' => 20.00,
                 'yearly_price' => 0.00,
-                'stripe_price_id' => 'price_1STdjrDfpo67wO4dMpPYTj9U',
+                'stripe_price_id' => 'price_1STdOFDfpo67wO4d4t6j5eQ5',
                 'template_limit' => 10,
                 'access_premium_templates' => true,
                 'priority_support' => false,
@@ -50,7 +50,7 @@ class UpdateSubscriptionPlansWithStripe extends Seeder
                 'description' => 'Great savings - $108 for 6 months ($18/month)',
                 'monthly_price' => 18.00, // For display purposes
                 'yearly_price' => 108.00,
-                'stripe_price_id' => 'price_1STdknDfpo67wO4dM0Gz6azq',
+                'stripe_price_id' => 'price_1STdOFDfpo67wO4dP0iYmI7v',
                 'template_limit' => null, // Unlimited
                 'access_premium_templates' => true,
                 'priority_support' => true,
@@ -75,7 +75,7 @@ class UpdateSubscriptionPlansWithStripe extends Seeder
                 'description' => 'Best value - $200 per year ($16.67/month)',
                 'monthly_price' => 16.67,
                 'yearly_price' => 200.00,
-                'stripe_price_id' => 'price_1STdknDfpo67wO4doA7beiRC',
+                'stripe_price_id' => 'price_1STdOFDfpo67wO4dGxcc2AX3',
                 'template_limit' => null, // Unlimited
                 'access_premium_templates' => true,
                 'priority_support' => true,
