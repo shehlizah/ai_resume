@@ -125,9 +125,7 @@ class StripeWebhookController extends Controller
             $interval = $priceData['recurring']['interval'] ?? $priceData->recurring->interval ?? 'month';
 
             // Find the plan by Stripe price ID
-            $plan = SubscriptionPlan::where('stripe_monthly_price_id', $priceId)
-                ->orWhere('stripe_yearly_price_id', $priceId)
-                ->first();
+            $plan = SubscriptionPlan::where('stripe_price_id', $priceId)->first();
 
             if (!$plan) {
                 \Log::warning('Plan not found for Stripe price: ' . $priceId);
@@ -135,8 +133,17 @@ class StripeWebhookController extends Controller
                 return;
             }
 
-            // Get billing period
-            $billingPeriod = $interval === 'year' ? 'yearly' : 'monthly';
+            // Get billing period - determine based on the plan
+            $billingPeriod = 'monthly'; // Default
+            if (str_contains($plan->slug, '6-month')) {
+                $billingPeriod = 'semi-annual';
+                $endDate = now()->addMonths(6);
+            } elseif (str_contains($plan->slug, 'yearly')) {
+                $billingPeriod = 'yearly';
+                $endDate = now()->addYears(1);
+            } else {
+                $endDate = now()->addMonths(1);
+            }
 
             // Create user subscription
             $userSubscription = UserSubscription::create([
@@ -146,8 +153,8 @@ class StripeWebhookController extends Controller
                 'status' => 'active',
                 'amount' => $unitAmount / 100,
                 'start_date' => now(),
-                'end_date' => now()->addMonths($billingPeriod === 'yearly' ? 12 : 1),
-                'next_billing_date' => now()->addMonths($billingPeriod === 'yearly' ? 12 : 1),
+                'end_date' => $endDate,
+                'next_billing_date' => $endDate,
                 'auto_renew' => true,
                 'payment_gateway' => 'stripe',
                 'gateway_subscription_id' => $subscription['id'] ?? $subscription->id,
