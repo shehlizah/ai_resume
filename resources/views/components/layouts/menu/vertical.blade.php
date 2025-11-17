@@ -7,9 +7,9 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
   <div class="app-brand demo">
     <a href="{{ url('/') }}" class="app-brand-link"><x-app-logo /></a>
-    
-    
-    
+
+
+
     {{-- Mobile close button --}}
     <!--<button id="menu-close"-->
     <!--        type="button"-->
@@ -19,7 +19,7 @@
     <!--    <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4Z"/>-->
     <!--  </svg>-->
     <!--</button>-->
-    
+
    </div>
 
   <div class="menu-inner-shadow"></div>
@@ -28,7 +28,7 @@
 
     {{-- 🔹 ADMIN MENU --}}
     @if($user && $user->role === 'admin')
-      
+
       <li class="menu-item {{ request()->is('admin/dashboard') ? 'active' : '' }}">
         <a class="menu-link" href="{{ route('admin.dashboard') }}">
           <i class="menu-icon tf-icons bx bx-home-circle"></i>
@@ -106,7 +106,7 @@
           </li>
         </ul>
       </li>
-      
+
        <li class="menu-item {{ request()->is('admin/subscription-plans*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons bx bx-credit-card"></i>
@@ -121,7 +121,7 @@
           </li>
         </ul>
       </li>
-      
+
 
       {{-- Settings --}}
       <li class="menu-item {{ request()->is('settings*') ? 'active open' : '' }}">
@@ -141,13 +141,43 @@
 
     {{-- 🔹 USER MENU --}}
     @elseif($user && $user->role === 'user')
-      
+
       <li class="menu-item {{ request()->is('user.dashboard') ? 'active' : '' }}">
         <a class="menu-link" href="{{ route('user.dashboard') }}">
           <i class="menu-icon tf-icons bx bx-home"></i>
           <div>{{ __('Dashboard') }}</div>
         </a>
       </li>
+
+      <!-- Current Subscription Package -->
+      @php
+        $activeSubscription = $user->activeSubscription;
+        $currentPlan = $activeSubscription?->plan ?? null;
+      @endphp
+
+      @if($currentPlan)
+      <li class="menu-item">
+        <div class="menu-item-label px-3 py-2 border-bottom">
+          <small class="text-muted fw-semibold d-block mb-2">{{ __('Current Plan') }}</small>
+          <span class="badge bg-primary">{{ $currentPlan->name }}</span>
+          @if($activeSubscription)
+            <small class="d-block mt-1 text-muted">
+              <i class="bx bx-calendar-check"></i>
+              {{ $activeSubscription->end_date?->format('M d, Y') ?? 'Active' }}
+            </small>
+          @endif
+        </div>
+      </li>
+      @else
+      <li class="menu-item">
+        <div class="menu-item-label px-3 py-2 border-bottom">
+          <small class="text-muted fw-semibold d-block mb-2">{{ __('No Active Plan') }}</small>
+          <a href="{{ route('packages') }}" class="badge bg-warning text-dark" style="text-decoration: none;">
+            Upgrade Now
+          </a>
+        </div>
+      </li>
+      @endif
 
       <li class="menu-item {{ request()->is('resumes*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -203,7 +233,7 @@
         </ul>
       </li>
 
-    
+
      <li class="menu-item {{ request()->is('interview*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons bx bx-credit-card"></i>
@@ -213,7 +243,7 @@
           <li class="menu-item {{ request()->is('subscription/dashboard') ? 'active' : '' }}">
             <a class="menu-link" href="{{ url('subscription/dashboard') }}">{{ __('My Subscriptions') }}</a>
           </li>
-          
+
            <li class="menu-item {{ request()->is('pricing') ? 'active' : '' }}">
             <a class="menu-link" href="{{ url('pricing') }}">{{ __('View Plans') }}</a>
           </li>
