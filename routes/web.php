@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\UserSubscriptionController as AdminUserSubscripti
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\User\SubscriptionController;
 use App\Http\Controllers\User\PaymentController;
+use App\Http\Controllers\User\StripeWebhookController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\CoverLetterController;
 
@@ -77,6 +78,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('paypal.cancel');
     });
 });
+
+/*
+|--------------------------------------------------------------------------
+| Stripe Webhook (No Auth Required)
+|--------------------------------------------------------------------------
+*/
+Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleWebhook'])->name('stripe.webhook');
 
 /*
 |--------------------------------------------------------------------------

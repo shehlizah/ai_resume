@@ -65,6 +65,14 @@ class UserSubscription extends Model
     }
 
     /**
+     * Alias for subscriptionPlan relationship.
+     */
+    public function plan()
+    {
+        return $this->subscriptionPlan();
+    }
+
+    /**
      * Check if subscription is active.
      *
      * @return bool
