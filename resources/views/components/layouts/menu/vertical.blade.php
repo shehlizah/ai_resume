@@ -149,6 +149,36 @@
         </a>
       </li>
 
+      <!-- Current Subscription Package -->
+      @php
+        $activeSubscription = $user->activeSubscription;
+        $currentPlan = $activeSubscription?->plan ?? null;
+      @endphp
+      
+      @if($currentPlan)
+      <li class="menu-item">
+        <div class="menu-item-label px-3 py-2 border-bottom">
+          <small class="text-muted fw-semibold d-block mb-2">{{ __('Current Plan') }}</small>
+          <span class="badge bg-primary">{{ $currentPlan->name }}</span>
+          @if($activeSubscription)
+            <small class="d-block mt-1 text-muted">
+              <i class="bx bx-calendar-check"></i> 
+              {{ $activeSubscription->end_date?->format('M d, Y') ?? 'Active' }}
+            </small>
+          @endif
+        </div>
+      </li>
+      @else
+      <li class="menu-item">
+        <div class="menu-item-label px-3 py-2 border-bottom">
+          <small class="text-muted fw-semibold d-block mb-2">{{ __('No Active Plan') }}</small>
+          <a href="{{ route('packages') }}" class="badge bg-warning text-dark" style="text-decoration: none;">
+            Upgrade Now
+          </a>
+        </div>
+      </li>
+      @endif
+
       <li class="menu-item {{ request()->is('resumes*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons bx bx-file"></i>
