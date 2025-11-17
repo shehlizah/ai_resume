@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('subscription_plans', function (Blueprint $table) {
-            $table->string('stripe_monthly_price_id')->nullable()->after('monthly_price');
-            $table->string('stripe_yearly_price_id')->nullable()->after('yearly_price');
+            // Add the single stripe_price_id column if it doesn't exist
+            if (!Schema::hasColumn('subscription_plans', 'stripe_price_id')) {
+                $table->string('stripe_price_id')->nullable()->after('yearly_price')->comment('Stripe Price ID for this plan');
+            }
         });
     }
 
@@ -23,7 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('subscription_plans', function (Blueprint $table) {
-            $table->dropColumn(['stripe_monthly_price_id', 'stripe_yearly_price_id']);
+            if (Schema::hasColumn('subscription_plans', 'stripe_price_id')) {
+                $table->dropColumn('stripe_price_id');
+            }
         });
     }
 };
