@@ -210,8 +210,8 @@
           <div>{{ __('Subscriptions') }}</div>
         </a>
         <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('subscription/dashboard') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('subscription/dashboard') }}">{{ __('My Subscriptions') }}</a>
+          <li class="menu-item {{ request()->routeIs('user.subscription.dashboard') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('user.subscription.dashboard') }}">{{ __('My Subscriptions') }}</a>
           </li>
 
            <li class="menu-item {{ request()->is('pricing') ? 'active' : '' }}">
