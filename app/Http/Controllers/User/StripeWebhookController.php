@@ -80,52 +80,86 @@ class StripeWebhookController extends Controller
      */
     private function handleSubscriptionCreated($subscription)
     {
-        // Get customer email to find user
-        $customerId = $subscription->customer;
+        try {
+            // Get customer email to find user
+            $customerId = $subscription['customer'] ?? $subscription->customer ?? null;
 
-        // Get customer details from Stripe
-        Stripe::setApiKey(config('services.stripe.secret'));
-        $customer = \Stripe\Customer::retrieve($customerId);
+            if (!$customerId) {
+                \Log::warning('No customer ID in subscription webhook');
+                return;
+            }
 
-        // Find user by email
-        $user = User::where('email', $customer->email)->first();
-        if (!$user) {
-            \Log::error('User not found for Stripe customer: ' . $customer->email);
-            return;
+            // Try to get customer details from Stripe
+            try {
+                Stripe::setApiKey(config('services.stripe.secret'));
+                $customer = \Stripe\Customer::retrieve($customerId);
+                $email = $customer->email;
+            } catch (\Exception $e) {
+                // If Stripe API fails (test mode), skip customer lookup
+                \Log::warning('Could not retrieve Stripe customer: ' . $e->getMessage());
+                return;
+            }
+
+            // Find user by email
+            $user = User::where('email', $email)->first();
+            if (!$user) {
+                \Log::warning('User not found for email: ' . $email);
+                return;
+            }
+
+            // Get the price from the subscription
+            $items = $subscription['items']['data'] ?? $subscription->items->data ?? [];
+            if (empty($items)) {
+                \Log::warning('No items in subscription');
+                return;
+            }
+
+            $priceData = $items[0]['price'] ?? $items[0]->price ?? null;
+            if (!$priceData) {
+                \Log::warning('No price data found');
+                return;
+            }
+
+            $priceId = $priceData['id'] ?? $priceData->id ?? null;
+            $unitAmount = $priceData['unit_amount'] ?? $priceData->unit_amount ?? 0;
+            $interval = $priceData['recurring']['interval'] ?? $priceData->recurring->interval ?? 'month';
+
+            // Find the plan by Stripe price ID
+            $plan = SubscriptionPlan::where('stripe_monthly_price_id', $priceId)
+                ->orWhere('stripe_yearly_price_id', $priceId)
+                ->first();
+
+            if (!$plan) {
+                \Log::warning('Plan not found for Stripe price: ' . $priceId);
+                // For testing, create a basic plan or just log
+                return;
+            }
+
+            // Get billing period
+            $billingPeriod = $interval === 'year' ? 'yearly' : 'monthly';
+
+            // Create user subscription
+            $userSubscription = UserSubscription::create([
+                'user_id' => $user->id,
+                'subscription_plan_id' => $plan->id,
+                'billing_period' => $billingPeriod,
+                'status' => 'active',
+                'amount' => $unitAmount / 100,
+                'start_date' => now(),
+                'end_date' => now()->addMonths($billingPeriod === 'yearly' ? 12 : 1),
+                'next_billing_date' => now()->addMonths($billingPeriod === 'yearly' ? 12 : 1),
+                'auto_renew' => true,
+                'payment_gateway' => 'stripe',
+                'gateway_subscription_id' => $subscription['id'] ?? $subscription->id,
+            ]);
+
+            \Log::info('Subscription created for user ' . $user->id . ': ' . ($subscription['id'] ?? $subscription->id));
+        } catch (\Exception $e) {
+            \Log::error('Error in handleSubscriptionCreated: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
         }
-
-        // Get the price from the subscription
-        $priceId = $subscription->items->data[0]->price->id;
-
-        // Find the plan by Stripe price ID
-        // You'll need to add stripe_price_id to SubscriptionPlan model
-        $plan = SubscriptionPlan::where('stripe_price_id', $priceId)->first();
-
-        if (!$plan) {
-            \Log::error('Plan not found for Stripe price: ' . $priceId);
-            return;
-        }
-
-        // Get billing period from price
-        $price = $subscription->items->data[0]->price;
-        $billingPeriod = $price->recurring->interval === 'year' ? 'yearly' : 'monthly';
-
-        // Create user subscription
-        $userSubscription = UserSubscription::create([
-            'user_id' => $user->id,
-            'subscription_plan_id' => $plan->id,
-            'billing_period' => $billingPeriod,
-            'status' => 'active',
-            'amount' => $price->unit_amount / 100,
-            'start_date' => now(),
-            'end_date' => now()->addMonths($billingPeriod === 'yearly' ? 12 : 1),
-            'next_billing_date' => now()->addMonths($billingPeriod === 'yearly' ? 12 : 1),
-            'auto_renew' => true,
-            'payment_gateway' => 'stripe',
-            'gateway_subscription_id' => $subscription->id,
-        ]);
-
-        \Log::info('Subscription created for user ' . $user->id . ': ' . $subscription->id);
     }
 
     /**
@@ -133,28 +167,37 @@ class StripeWebhookController extends Controller
      */
     private function handleSubscriptionUpdated($subscription)
     {
-        $userSubscription = UserSubscription::where('gateway_subscription_id', $subscription->id)->first();
+        try {
+            $subId = $subscription['id'] ?? $subscription->id ?? null;
+            $userSubscription = UserSubscription::where('gateway_subscription_id', $subId)->first();
 
-        if (!$userSubscription) {
-            return;
-        }
+            if (!$userSubscription) {
+                \Log::warning('Subscription not found in DB: ' . $subId);
+                return;
+            }
 
-        // Update status based on Stripe subscription status
-        $status = $this->mapStripeStatus($subscription->status);
+            // Update status based on Stripe subscription status
+            $stripeStatus = $subscription['status'] ?? $subscription->status ?? 'active';
+            $status = $this->mapStripeStatus($stripeStatus);
 
-        $userSubscription->update([
-            'status' => $status,
-            'auto_renew' => !$subscription->cancel_at_period_end,
-        ]);
+            $cancelAtPeriodEnd = $subscription['cancel_at_period_end'] ?? $subscription->cancel_at_period_end ?? false;
 
-        if ($subscription->canceled_at) {
             $userSubscription->update([
-                'status' => 'canceled',
-                'end_date' => now(),
+                'status' => $status,
+                'auto_renew' => !$cancelAtPeriodEnd,
             ]);
-        }
 
-        \Log::info('Subscription updated: ' . $subscription->id);
+            if ($subscription['canceled_at'] ?? $subscription->canceled_at ?? null) {
+                $userSubscription->update([
+                    'status' => 'canceled',
+                    'end_date' => now(),
+                ]);
+            }
+
+            \Log::info('Subscription updated: ' . $subId);
+        } catch (\Exception $e) {
+            \Log::error('Error in handleSubscriptionUpdated: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -162,18 +205,23 @@ class StripeWebhookController extends Controller
      */
     private function handleSubscriptionDeleted($subscription)
     {
-        $userSubscription = UserSubscription::where('gateway_subscription_id', $subscription->id)->first();
+        try {
+            $subId = $subscription['id'] ?? $subscription->id ?? null;
+            $userSubscription = UserSubscription::where('gateway_subscription_id', $subId)->first();
 
-        if (!$userSubscription) {
-            return;
+            if (!$userSubscription) {
+                return;
+            }
+
+            $userSubscription->update([
+                'status' => 'canceled',
+                'end_date' => now(),
+            ]);
+
+            \Log::info('Subscription deleted: ' . $subId);
+        } catch (\Exception $e) {
+            \Log::error('Error in handleSubscriptionDeleted: ' . $e->getMessage());
         }
-
-        $userSubscription->update([
-            'status' => 'canceled',
-            'end_date' => now(),
-        ]);
-
-        \Log::info('Subscription deleted: ' . $subscription->id);
     }
 
     /**
@@ -181,37 +229,57 @@ class StripeWebhookController extends Controller
      */
     private function handleChargeSucceeded($charge)
     {
-        if ($charge->invoice) {
-            Stripe::setApiKey(config('services.stripe.secret'));
-            $invoice = \Stripe\Invoice::retrieve($charge->invoice);
+        try {
+            $invoiceId = $charge['invoice'] ?? $charge->invoice ?? null;
 
-            if ($invoice->subscription) {
-                $userSubscription = UserSubscription::where('gateway_subscription_id', $invoice->subscription)->first();
-
-                if ($userSubscription) {
-                    // Create payment record
-                    Payment::create([
-                        'user_id' => $userSubscription->user_id,
-                        'user_subscription_id' => $userSubscription->id,
-                        'transaction_id' => $charge->id,
-                        'payment_gateway' => 'stripe',
-                        'amount' => $charge->amount / 100,
-                        'currency' => strtoupper($charge->currency),
-                        'status' => 'completed',
-                        'payment_type' => 'subscription',
-                        'description' => 'Subscription payment for ' . $userSubscription->plan->name,
-                        'metadata' => [
-                            'charge_id' => $charge->id,
-                            'invoice_id' => $charge->invoice,
-                            'subscription_id' => $invoice->subscription,
-                            'customer_id' => $charge->customer,
-                        ],
-                        'paid_at' => now(),
-                    ]);
-
-                    \Log::info('Payment recorded for user ' . $userSubscription->user_id . ': ' . $charge->id);
-                }
+            if (!$invoiceId) {
+                \Log::warning('No invoice in charge');
+                return;
             }
+
+            try {
+                Stripe::setApiKey(config('services.stripe.secret'));
+                $invoice = \Stripe\Invoice::retrieve($invoiceId);
+                $subscriptionId = $invoice->subscription;
+            } catch (\Exception $e) {
+                \Log::warning('Could not retrieve invoice: ' . $e->getMessage());
+                return;
+            }
+
+            if (!$subscriptionId) {
+                return;
+            }
+
+            $userSubscription = UserSubscription::where('gateway_subscription_id', $subscriptionId)->first();
+
+            if ($userSubscription) {
+                // Create payment record
+                Payment::create([
+                    'user_id' => $userSubscription->user_id,
+                    'user_subscription_id' => $userSubscription->id,
+                    'transaction_id' => $charge['id'] ?? $charge->id,
+                    'payment_gateway' => 'stripe',
+                    'amount' => ($charge['amount'] ?? $charge->amount ?? 0) / 100,
+                    'currency' => strtoupper($charge['currency'] ?? $charge->currency ?? 'USD'),
+                    'status' => 'completed',
+                    'payment_type' => 'subscription',
+                    'description' => 'Subscription payment for ' . ($userSubscription->plan->name ?? 'Plan'),
+                    'metadata' => [
+                        'charge_id' => $charge['id'] ?? $charge->id,
+                        'invoice_id' => $invoiceId,
+                        'subscription_id' => $subscriptionId,
+                        'customer_id' => $charge['customer'] ?? $charge->customer ?? null,
+                    ],
+                    'paid_at' => now(),
+                ]);
+
+                \Log::info('Payment recorded for user ' . $userSubscription->user_id . ': ' . ($charge['id'] ?? $charge->id));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error in handleChargeSucceeded: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
         }
     }
 
@@ -220,39 +288,55 @@ class StripeWebhookController extends Controller
      */
     private function handleChargeFailed($charge)
     {
-        if ($charge->invoice) {
-            Stripe::setApiKey(config('services.stripe.secret'));
-            $invoice = \Stripe\Invoice::retrieve($charge->invoice);
+        try {
+            $invoiceId = $charge['invoice'] ?? $charge->invoice ?? null;
 
-            if ($invoice->subscription) {
-                $userSubscription = UserSubscription::where('gateway_subscription_id', $invoice->subscription)->first();
-
-                if ($userSubscription) {
-                    // Create failed payment record
-                    Payment::create([
-                        'user_id' => $userSubscription->user_id,
-                        'user_subscription_id' => $userSubscription->id,
-                        'transaction_id' => $charge->id,
-                        'payment_gateway' => 'stripe',
-                        'amount' => $charge->amount / 100,
-                        'currency' => strtoupper($charge->currency),
-                        'status' => 'failed',
-                        'payment_type' => 'subscription',
-                        'description' => 'Failed payment for ' . $userSubscription->plan->name,
-                        'metadata' => [
-                            'charge_id' => $charge->id,
-                            'invoice_id' => $charge->invoice,
-                            'subscription_id' => $invoice->subscription,
-                            'failure_reason' => $charge->failure_message ?? 'Unknown',
-                        ],
-                    ]);
-
-                    // Update subscription status
-                    $userSubscription->update(['status' => 'past_due']);
-
-                    \Log::error('Payment failed for user ' . $userSubscription->user_id . ': ' . $charge->failure_message);
-                }
+            if (!$invoiceId) {
+                return;
             }
+
+            try {
+                Stripe::setApiKey(config('services.stripe.secret'));
+                $invoice = \Stripe\Invoice::retrieve($invoiceId);
+                $subscriptionId = $invoice->subscription;
+            } catch (\Exception $e) {
+                \Log::warning('Could not retrieve invoice: ' . $e->getMessage());
+                return;
+            }
+
+            if (!$subscriptionId) {
+                return;
+            }
+
+            $userSubscription = UserSubscription::where('gateway_subscription_id', $subscriptionId)->first();
+
+            if ($userSubscription) {
+                // Create failed payment record
+                Payment::create([
+                    'user_id' => $userSubscription->user_id,
+                    'user_subscription_id' => $userSubscription->id,
+                    'transaction_id' => $charge['id'] ?? $charge->id,
+                    'payment_gateway' => 'stripe',
+                    'amount' => ($charge['amount'] ?? $charge->amount ?? 0) / 100,
+                    'currency' => strtoupper($charge['currency'] ?? $charge->currency ?? 'USD'),
+                    'status' => 'failed',
+                    'payment_type' => 'subscription',
+                    'description' => 'Failed payment for ' . ($userSubscription->plan->name ?? 'Plan'),
+                    'metadata' => [
+                        'charge_id' => $charge['id'] ?? $charge->id,
+                        'invoice_id' => $invoiceId,
+                        'subscription_id' => $subscriptionId,
+                        'failure_reason' => $charge['failure_message'] ?? $charge->failure_message ?? 'Unknown',
+                    ],
+                ]);
+
+                // Update subscription status
+                $userSubscription->update(['status' => 'past_due']);
+
+                \Log::error('Payment failed for user ' . $userSubscription->user_id);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error in handleChargeFailed: ' . $e->getMessage());
         }
     }
 
