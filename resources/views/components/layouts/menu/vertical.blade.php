@@ -172,7 +172,7 @@
       <li class="menu-item">
         <div class="menu-item-label px-3 py-2 border-bottom">
           <small class="text-muted fw-semibold d-block mb-2">{{ __('No Active Plan') }}</small>
-          <a href="{{ route('packages') }}" class="badge bg-warning text-dark" style="text-decoration: none;">
+          <a href="{{ route('user.pricing') }}" class="badge bg-warning text-dark" style="text-decoration: none;">
             Upgrade Now
           </a>
         </div>
