@@ -48,7 +48,7 @@
                                     <div class="fw-semibold">{{ $letter->title }}</div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-light-primary text-primary">{{ $letter->company_name }}</span>
+                                    <span class="badge bg-light-primary">{{ $letter->company_name }}</span>
                                 </td>
                                 <td>{{ $letter->recipient_name }}</td>
                                 <td>
