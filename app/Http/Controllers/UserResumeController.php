@@ -226,20 +226,20 @@ class UserResumeController extends Controller
             // Build responsibilities list
             $respHtml = $this->buildResponsibilitiesList($resp);
 
-            // Build experience block
-            $block = '<div class="experience-item">';
+            // Build experience block with flexible class names for both templates
+            $block = '<div class="experience-item timeline-item">';
 
             // Job header with title and date
-            $block .= '<div class="job-header">';
-            $block .= '<h3 class="job-title">' . $titleEsc . '</h3>';
+            $block .= '<div class="job-header timeline-header">';
+            $block .= '<h3 class="job-title position-title">' . $titleEsc . '</h3>';
             if ($dateRange) {
-                $block .= '<span class="job-date">' . $dateRange . '</span>';
+                $block .= '<span class="job-date date-range">' . $dateRange . '</span>';
             }
             $block .= '</div>';
 
             // Company name
             if ($companyEsc) {
-                $block .= '<div class="company-name">' . $companyEsc . '</div>';
+                $block .= '<div class="company-name organization">' . $companyEsc . '</div>';
             }
 
             // Responsibilities
@@ -350,20 +350,20 @@ class UserResumeController extends Controller
                     . '</div>';
             }
 
-            // Build education block
-            $block = '<div class="education-item">';
+            // Build education block with flexible class names for both templates
+            $block = '<div class="education-item education-card">';
 
             // Degree header
             $block .= '<div class="degree-header">';
-            $block .= '<h3 class="degree-name">' . $degreeEsc . '</h3>';
+            $block .= '<h3 class="degree-name degree-title">' . $degreeEsc . '</h3>';
             if ($gradEsc) {
-                $block .= '<span class="education-date">' . $gradEsc . '</span>';
+                $block .= '<span class="education-date edu-date">' . $gradEsc . '</span>';
             }
             $block .= '</div>';
 
             // Institution
             if ($univEsc) {
-                $block .= '<div class="institution-name">' . $univEsc . '</div>';
+                $block .= '<div class="institution-name school-name">' . $univEsc . '</div>';
             }
 
             // Field of study
@@ -401,7 +401,7 @@ class UserResumeController extends Controller
     }
 
     /**
-     * Build Skills HTML
+     * Build Skills HTML - supports both Modern Geometric and Editorial Minimal templates
      */
     private function buildSkillsHtml($data)
     {
@@ -442,15 +442,18 @@ class UserResumeController extends Controller
             return '';
         }
 
-        // Generate skill category structure (works with Editorial Minimal template)
-        // Create a single skill category with all skills
+        // Generate skill items wrapped for both template types:
+        // - Modern Geometric expects: <span class="skill-item">Skill</span>
+        // - Editorial Minimal expects: <li>Skill</li> inside <div class="skill-category">
+        // We'll generate list items and category structure for Editorial Minimal compatibility
+        
         $html = '<div class="skill-category">
     <h3 class="skill-category-title">Technical Skills</h3>
     <ul class="skill-list">' . "\n";
 
         foreach ($cleanedSkills as $skill) {
             $escaped = htmlspecialchars($skill, ENT_QUOTES, 'UTF-8');
-            $html .= '        <li>' . $escaped . '</li>' . "\n";
+            $html .= '        <li><span class="skill-item">' . $escaped . '</span></li>' . "\n";
         }
 
         $html .= '    </ul>
