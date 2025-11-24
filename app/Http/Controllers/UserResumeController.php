@@ -90,20 +90,39 @@ class UserResumeController extends Controller
 
             // Build experience HTML from structured fields
             $data['experience'] = $this->buildExperienceHtml($data);
-            
+
             // Build education HTML from structured fields
             $data['education'] = $this->buildEducationHtml($data);
-            
+
             // Build skills HTML if needed
             $data['skills'] = $this->buildSkillsHtml($data);
 
             // Get the ORIGINAL template HTML and CSS (not PDF-optimized version)
             // This preserves the template designer's intent
-            $html = $template->html_content;
+            $htmlContent = $template->html_content;
             $css = $template->css_content ?? '';
-            
-            // Fill template with user data
-            $filledHtml = $this->fillTemplate($html, $css, $data);
+
+            // Fill placeholders in the HTML content
+            $filledContent = $this->fillTemplate($htmlContent, '', $data);
+
+            // Build a complete HTML document for PDF generation
+            $filledHtml = "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">
+    <title>Resume</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        @page { margin: 15mm; size: A4 portrait; }
+        {$css}
+    </style>
+</head>
+<body>
+    {$filledContent}
+</body>
+</html>";
 
             // Generate PDF using DomPDF
             $pdf = Pdf::loadHTML($filledHtml)
@@ -112,7 +131,7 @@ class UserResumeController extends Controller
                     'isHtml5ParserEnabled' => true,
                     'isRemoteEnabled' => true, // Disable remote for security
                     'chroot' => storage_path('app/public'),
-                    
+
                 ]);
 
             // Create directory if needed
@@ -124,7 +143,7 @@ class UserResumeController extends Controller
             // Generate filename and save
             $fileName = 'resume_' . Auth::id() . '_' . time() . '.pdf';
             $fullPath = $directory . '/' . $fileName;
-            
+
             File::put($fullPath, $pdf->output());
 
             // Save to database
@@ -154,12 +173,12 @@ class UserResumeController extends Controller
         if (isset($data['job_title']) && is_array($data['job_title'])) {
             return $this->buildStructuredExperience($data);
         }
-        
+
         // Fallback to legacy experience array
         if (isset($data['experience']) && is_array($data['experience'])) {
             return $this->buildLegacyExperience($data['experience']);
         }
-        
+
         return '';
     }
 
@@ -170,7 +189,7 @@ class UserResumeController extends Controller
     {
         $count = count($data['job_title'] ?? []);
         $htmlExperiences = [];
-        
+
         for ($i = 0; $i < $count; $i++) {
             $title = $data['job_title'][$i] ?? '';
             $company = $data['company'][$i] ?? '';
@@ -199,7 +218,7 @@ class UserResumeController extends Controller
 
             // Build experience block
             $block = '<div class="experience-item">';
-            
+
             // Job header with title and date
             $block .= '<div class="job-header">';
             $block .= '<h3 class="job-title">' . $titleEsc . '</h3>';
@@ -207,12 +226,12 @@ class UserResumeController extends Controller
                 $block .= '<span class="job-date">' . $dateRange . '</span>';
             }
             $block .= '</div>';
-            
+
             // Company name
             if ($companyEsc) {
                 $block .= '<div class="company-name">' . $companyEsc . '</div>';
             }
-            
+
             // Responsibilities
             $block .= $respHtml;
             $block .= '</div>';
@@ -238,7 +257,7 @@ class UserResumeController extends Controller
             $escaped = htmlspecialchars($exp, ENT_QUOTES, 'UTF-8');
             $htmlExperiences[] = '<div class="experience-item">' . nl2br($escaped) . '</div>';
         }
-        
+
         return implode("\n", $htmlExperiences);
     }
 
@@ -253,21 +272,21 @@ class UserResumeController extends Controller
 
         $lines = preg_split('/\r?\n/', $resp);
         $items = [];
-        
+
         foreach ($lines as $line) {
             $line = trim($line);
             // Remove bullet points or dashes if present
             $line = preg_replace('/^[-•*]\s*/', '', $line);
-            
+
             if ($line !== '') {
                 $items[] = '<li>' . htmlspecialchars($line, ENT_QUOTES, 'UTF-8') . '</li>';
             }
         }
-        
+
         if (!empty($items)) {
             return '<ul class="job-responsibilities">' . implode('', $items) . '</ul>';
         }
-        
+
         return '';
     }
 
@@ -280,12 +299,12 @@ class UserResumeController extends Controller
         if (isset($data['degree']) && is_array($data['degree'])) {
             return $this->buildStructuredEducation($data);
         }
-        
+
         // Fallback to legacy education array
         if (isset($data['education']) && is_array($data['education'])) {
             return $this->buildLegacyEducation($data['education']);
         }
-        
+
         return '';
     }
 
@@ -296,7 +315,7 @@ class UserResumeController extends Controller
     {
         $count = count($data['degree'] ?? []);
         $htmlEducations = [];
-        
+
         for ($i = 0; $i < $count; $i++) {
             $degree = $data['degree'][$i] ?? '';
             $field = $data['field_of_study'][$i] ?? '';
@@ -316,14 +335,14 @@ class UserResumeController extends Controller
             // Build details section
             $detailsHtml = '';
             if (!empty(trim($details))) {
-                $detailsHtml = '<div class="education-details">' 
-                    . nl2br(htmlspecialchars($details, ENT_QUOTES, 'UTF-8')) 
+                $detailsHtml = '<div class="education-details">'
+                    . nl2br(htmlspecialchars($details, ENT_QUOTES, 'UTF-8'))
                     . '</div>';
             }
 
             // Build education block
             $block = '<div class="education-item">';
-            
+
             // Degree header
             $block .= '<div class="degree-header">';
             $block .= '<h3 class="degree-name">' . $degreeEsc . '</h3>';
@@ -331,17 +350,17 @@ class UserResumeController extends Controller
                 $block .= '<span class="education-date">' . $gradEsc . '</span>';
             }
             $block .= '</div>';
-            
+
             // Institution
             if ($univEsc) {
                 $block .= '<div class="institution-name">' . $univEsc . '</div>';
             }
-            
+
             // Field of study
             if ($fieldEsc) {
                 $block .= '<div class="field-of-study">' . $fieldEsc . '</div>';
             }
-            
+
             // Additional details
             $block .= $detailsHtml;
             $block .= '</div>';
@@ -367,7 +386,7 @@ class UserResumeController extends Controller
             $escaped = htmlspecialchars($edu, ENT_QUOTES, 'UTF-8');
             $htmlEducations[] = '<div class="education-item">' . nl2br($escaped) . '</div>';
         }
-        
+
         return implode("\n", $htmlEducations);
     }
 
@@ -381,7 +400,7 @@ class UserResumeController extends Controller
         }
 
         $skills = $data['skills'];
-        
+
         // If it's already HTML, return as-is
         if (strpos($skills, '<') !== false) {
             return $skills;
@@ -421,26 +440,10 @@ class UserResumeController extends Controller
      */
     private function fillTemplate($html, $css, $data)
     {
-        // If CSS exists and not already in HTML, inject it into the head
-        if (!empty($css) && strpos($html, '<style>') === false && strpos($html, '<link') === false) {
-            if (strpos($html, '</head>') !== false) {
-                // Add CSS before closing head tag
-                $cssTag = "\n    <style>\n{$css}\n    </style>";
-                $html = str_replace('</head>', $cssTag . "\n</head>", $html);
-            } elseif (strpos($html, '<body') !== false) {
-                // If no head tag, add before body
-                $cssTag = "<style>{$css}</style>\n    ";
-                $html = str_replace('<body', $cssTag . '<body', $html);
-            } else {
-                // Add at the very beginning
-                $html = "<style>{$css}</style>\n" . $html;
-            }
-        }
-
         // Define all possible placeholders
         $keys = [
             'name', 'title', 'email', 'phone', 'address', 'summary',
-            'experience', 'skills', 'education', 
+            'experience', 'skills', 'education',
             'certifications', 'projects', 'languages', 'interests'
         ];
 
@@ -449,12 +452,12 @@ class UserResumeController extends Controller
 
         foreach ($keys as $key) {
             $placeholder = '{{' . $key . '}}';
-            
+
             // Skip if placeholder doesn't exist in HTML
             if (strpos($html, $placeholder) === false) {
                 continue;
             }
-            
+
             $value = $data[$key] ?? '';
 
             if (in_array($key, $rawHtmlKeys)) {
@@ -469,26 +472,45 @@ class UserResumeController extends Controller
         }
 
         return $html;
-    }
-
-    /**
+    }    /**
      * Preview template with sample data
      */
     public function preview($template_id)
     {
         $template = Template::findOrFail($template_id);
-        
+
         // Use the original HTML and CSS, not the PDF-optimized version
-        $html = $template->html_content;
+        $htmlContent = $template->html_content;
         $css = $template->css_content ?? '';
 
         // Sample data for preview
         $sampleData = $this->getSampleData();
 
-        // Fill with sample data
-        $filledHtml = $this->fillTemplate($html, $css, $sampleData);
+        // Fill placeholders in the HTML content
+        $filledContent = $this->fillTemplate($htmlContent, '', $sampleData);
 
-        return response($filledHtml)->header('Content-Type', 'text/html');
+        // Build a complete HTML document
+        $output = "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>Resume Preview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; background: #f5f5f5; }
+        .resume-wrapper { max-width: 8.5in; height: 11in; margin: 20px auto; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 20px; overflow: hidden; }
+        {$css}
+    </style>
+</head>
+<body>
+    <div class=\"resume-wrapper\">
+        {$filledContent}
+    </div>
+</body>
+</html>";
+
+        return response($output)->header('Content-Type', 'text/html; charset=UTF-8');
     }
 
 /**
@@ -605,7 +627,7 @@ private function getSampleData()
 
     //     return view('user.resumes.success', compact('resume'));
     // }
-    
+
     public function success($id)
 {
     $resume = UserResume::where('id', $id)
@@ -633,8 +655,8 @@ private function getSampleData()
 
     // AI generation methods remain the same...
     // (I'll skip them to keep this focused, but they should stay as-is)
-    
-    
+
+
     // ADD THESE METHODS TO YOUR UserResumeController.php
 // Place them at the end of the class, before the closing }
 
@@ -895,7 +917,7 @@ private function callOpenAI($prompt)
         if ($statusCode !== 200) {
             $errorMessage = $data['error']['message'] ?? 'Unknown error';
             $errorType = $data['error']['type'] ?? 'unknown';
-            
+
             \Log::error('OpenAI API error', [
                 'status_code' => $statusCode,
                 'error_type' => $errorType,
@@ -916,11 +938,11 @@ private function callOpenAI($prompt)
         // Extract content from response
         if (isset($data['choices'][0]['message']['content'])) {
             $content = trim($data['choices'][0]['message']['content']);
-            
+
             // Remove common AI prefixes
             $content = preg_replace('/^(Here are|Here is|Sure,?|Certainly,?|Of course,?).*/i', '', $content);
             $content = trim($content);
-            
+
             return $content;
         }
 
@@ -938,7 +960,7 @@ private function callOpenAI($prompt)
         if (strpos($e->getMessage(), 'OpenAI') !== false) {
             throw $e;
         }
-        
+
         \Log::error('Unexpected error in callOpenAI', [
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString()
