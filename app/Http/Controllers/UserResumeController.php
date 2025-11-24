@@ -255,13 +255,9 @@ class UserResumeController extends Controller
 {
     $template = Template::findOrFail($template_id);
 
-    // Read HTML and CSS from database (not from files)
-    $html = $template->html_content;
-    $css = $template->css_content ?? '';
-
-    if (empty($html)) {
-        return back()->with('error', 'Template HTML content is empty!');
-    }
+    // Use the template's full HTML wrapper (includes CSS and body) so preview matches admin
+    $html = $template->getFullTemplate();
+    $css = '';
 
             // Sample data for preview (match admin preview sample data)
                 $sampleData = [
@@ -442,7 +438,7 @@ EOT,
 EOT,
                 ];
 
-        // Fill with sample data
+        // Fill with sample data into the full template
         $filledHtml = $this->fillTemplate($html, $css, $sampleData);
 
         // Return as HTML for preview
@@ -721,15 +717,11 @@ public function generate(Request $request)
             }
         }
 
-        // Read HTML and CSS from database (not from files)
-        $html = $template->html_content;
-        $css = $template->css_content ?? '';
+        // Use the template's full HTML wrapper (includes CSS and body) so generated PDF matches admin preview
+        $html = $template->getFullTemplate();
+        $css = '';
 
-        if (empty($html)) {
-            return back()->with('error', 'Template HTML content is empty');
-        }
-
-        // Fill template
+        // Fill the full template with user data
         $filledHtml = $this->fillTemplate($html, $css, $data);
 
         // Generate PDF
