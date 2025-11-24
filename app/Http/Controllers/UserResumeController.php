@@ -717,51 +717,26 @@ public function generate(Request $request)
             }
         }
 
-        // Use the template's full HTML wrapper (includes CSS and body) so generated PDF matches admin preview
+        // Use the template's full HTML wrapper (includes CSS and body) so generated resume matches preview
         $html = $template->getFullTemplate();
         $css = '';
 
         // Fill the full template with user data
         $filledHtml = $this->fillTemplate($html, $css, $data);
 
-        // Generate PDF with enhanced options for better layout rendering
-        $pdf = Pdf::loadHTML($filledHtml)
-            ->setPaper('A4', 'portrait')
-            ->setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true,
-                'dpi' => 150,
-                'defaultFont' => 'Arial',
-                'fontDir' => storage_path('fonts'),
-                'logOutputFile' => storage_path('logs/dompdf.log'),
-                'debugPng' => false,
-                'debugKeepTemp' => false,
-                'debugCss' => false,
-            ]);
-
-        // ✅ FIXED: Direct save to correct path
-        $fileName = 'resume_' . Auth::id() . '_' . time() . '.pdf';
-        $directory = storage_path('app/public/resumes');
-
-        // Create directory if needed
-        if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
-
-        // Save PDF directly
-        $fullPath = $directory . '/' . $fileName;
-        File::put($fullPath, $pdf->output());
-
-        // Save to database
+        // Save to database with HTML content (instead of PDF file)
         $resume = UserResume::create([
             'user_id' => Auth::id(),
             'template_id' => $template->id,
             'data' => json_encode($data),
-            'generated_pdf_path' => 'resumes/' . $fileName,
+            'generated_pdf_path' => 'html', // Mark as HTML-based resume
             'status' => 'completed',
         ]);
 
-        return redirect()->route('user.resumes.success', $resume->id);
+        // Return the filled HTML as response (user can print/save as PDF from browser)
+        return response($filledHtml)
+            ->header('Content-Type', 'text/html; charset=UTF-8')
+            ->header('Content-Disposition', 'inline; filename="resume.html"');
 
     } catch (\Exception $e) {
         return back()->withInput()->with('error', $e->getMessage());
@@ -769,35 +744,46 @@ public function generate(Request $request)
 }
 
 /**
- * View PDF - FIXED VERSION
+ * View Resume (HTML) - Browser Display
  */
 public function view($id)
 {
     $resume = UserResume::where('user_id', Auth::id())->findOrFail($id);
 
-    $fullPath = storage_path('app/public/' . $resume->generated_pdf_path);
+    // Reconstruct the HTML from stored template and data
+    // Note: $resume->data is automatically cast to array by the model
+    $template = $resume->template;
+    $data = $resume->data ?? [];
 
-    if (!file_exists($fullPath)) {
-        return redirect()->back()->with('error', 'PDF not found at: ' . $fullPath);
-    }
+    // Regenerate the HTML
+    $html = $template->getFullTemplate();
+    $filledHtml = $this->fillTemplate($html, '', $data);
 
-    return response()->file($fullPath);
+    // Return as HTML response for browser display
+    return response($filledHtml)
+        ->header('Content-Type', 'text/html; charset=UTF-8');
 }
 
 /**
- * Download PDF - FIXED VERSION
+ * Download Resume as HTML File
  */
 public function download($id)
 {
     $resume = UserResume::where('user_id', Auth::id())->findOrFail($id);
 
-    $fullPath = storage_path('app/public/' . $resume->generated_pdf_path);
+    // Reconstruct the HTML from stored template and data
+    // Note: $resume->data is automatically cast to array by the model
+    $template = $resume->template;
+    $data = $resume->data ?? [];
 
-    if (!file_exists($fullPath)) {
-        return redirect()->back()->with('error', 'PDF not found');
-    }
+    // Regenerate the HTML
+    $html = $template->getFullTemplate();
+    $filledHtml = $this->fillTemplate($html, '', $data);
 
-    return response()->download($fullPath, 'my-resume.pdf');
+    // Return as downloadable HTML file
+    return response($filledHtml)
+        ->header('Content-Type', 'text/html; charset=UTF-8')
+        ->header('Content-Disposition', 'attachment; filename="resume.html"');
 }
 
 /**
