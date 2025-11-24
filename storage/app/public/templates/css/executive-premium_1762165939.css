@@ -1,0 +1,19 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Garamond", "Georgia", serif; line-height: 1.7; color: #1a202c; }
+.resume-container { max-width: 850px; margin: 0 auto; padding: 60px 50px; background: white; }
+.executive-header { text-align: center; margin-bottom: 40px; padding-bottom: 25px; border-bottom: 2px solid #2d3748; }
+.executive-name { font-size: 38px; font-weight: normal; letter-spacing: 3px; margin-bottom: 8px; }
+.executive-title { font-size: 20px; color: #4a5568; font-style: italic; margin-bottom: 15px; }
+.executive-contact { font-size: 13px; color: #718096; letter-spacing: 0.5px; }
+.executive-section { margin-bottom: 35px; }
+.executive-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; color: #2d3748; margin-bottom: 20px; border-bottom: 1px solid #cbd5e0; padding-bottom: 8px; }
+.executive-summary { text-align: justify; font-size: 15px; line-height: 1.8; }
+.competencies-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.competency { background: #f7fafc; padding: 10px 15px; text-align: center; border-radius: 5px; font-size: 14px; }
+.executive-job { margin-bottom: 30px; }
+.executive-job-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+.executive-job-header h3 { font-size: 17px; font-weight: 600; color: #1a202c; }
+.executive-company { color: #4a5568; font-style: italic; }
+.executive-dates { color: #718096; font-size: 14px; }
+.executive-achievements { padding-left: 25px; }
+.executive-achievements li { margin-bottom: 10px; }

@@ -1,0 +1,160 @@
+/* ATS-Optimized Styling - Simple, clean, parseable */
+    * {
+    margin: 5px;
+    padding: 0px;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    line-height: 1.5;
+    color: #000000;
+    background: #ffffff;
+    margin: 0.5in;
+  }
+  
+  .resume-container {
+    max-width: 8.5in;
+    margin: 0 auto;
+    background: #ffffff;
+  }
+  
+  /* Header Section */
+  .resume-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #000000;
+  }
+  
+  .resume-header h1 {
+    font-size: 20pt;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #000000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .resume-header p {
+    font-size: 10pt;
+    color: #333333;
+    margin: 0;
+  }
+  
+  /* Section Styling */
+  .resume-section {
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+  }
+  
+  .resume-section h2 {
+    font-size: 13pt;
+    font-weight: bold;
+    color: #000000;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 5px;
+    border-bottom: 1.5px solid #000000;
+    letter-spacing: 0.5px;
+  }
+  
+  .resume-section p {
+    margin-bottom: 10px;
+    text-align: justify;
+  }
+  
+  /* Experience Items */
+  .experience-item {
+    margin-bottom: 18px;
+    page-break-inside: avoid;
+  }
+  
+  .experience-item h3 {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 4px;
+  }
+  
+  .experience-item .company {
+    font-size: 10pt;
+    color: #000000;
+    font-weight: normal;
+    margin-bottom: 3px;
+  }
+  
+  .experience-item .date {
+    font-size: 10pt;
+    color: #333333;
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+  
+  .experience-item ul {
+    margin: 8px 0 0 20px;
+    padding: 0;
+  }
+  
+  .experience-item li {
+    margin-bottom: 5px;
+    font-size: 10pt;
+    line-height: 1.4;
+  }
+  
+  /* Education Items */
+  .education-item {
+    margin-bottom: 15px;
+    page-break-inside: avoid;
+  }
+  
+  .education-item h3 {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 4px;
+  }
+  
+  .education-item .school {
+    font-size: 10pt;
+    color: #000000;
+    margin-bottom: 3px;
+  }
+  
+  .education-item .date {
+    font-size: 10pt;
+    color: #333333;
+    font-style: italic;
+  }
+  
+  /* Skills Section */
+  .skills-list {
+    font-size: 10pt;
+    line-height: 1.6;
+  }
+  
+  /* Print Optimization */
+  @media print {
+    body {
+      margin: 0.5in;
+    }
+    
+    .resume-section {
+      page-break-inside: avoid;
+    }
+    
+    .experience-item,
+    .education-item {
+      page-break-inside: avoid;
+    }
+  }
+  
+  /* Ensure clean, parseable structure for ATS */
+  strong, b {
+    font-weight: bold;
+  }
+  
+  em, i {
+    font-style: italic;
+  }

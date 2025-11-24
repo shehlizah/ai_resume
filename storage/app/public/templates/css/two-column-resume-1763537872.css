@@ -1,0 +1,141 @@
+<style>
+body {
+    font-family: "DejaVu Sans", Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+}
+.resume {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+}
+table.layout {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.main-column {
+    width: 66%;
+    padding: 30px;
+    vertical-align: top;
+    background: #fff;
+}
+.sidebar-column {
+    width: 34%;
+    padding: 30px;
+    vertical-align: top;
+    background: #1f2937;
+    color: #fff;
+}
+header h1 {
+    margin: 0 0 5px 0;
+    font-size: 28px;
+    color: #111827;
+}
+header p {
+    margin: 0 0 20px 0;
+    font-size: 16px;
+    color: #555;
+}
+.section {
+    margin-bottom: 25px;
+}
+h2 {
+    font-size: 18px;
+    margin: 0 0 10px 0;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #e5e7eb;
+    color: #111827;
+}
+.sidebar-column h2 {
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+.contact p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+.skills {
+    margin-top: 10px;
+}
+.skill-item {
+    display: inline-block;
+    background: #374151;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    margin: 3px 3px 3px 0;
+}
+.experience-item, .education-item {
+    margin-bottom: 15px;
+    page-break-inside: avoid;
+}
+.job-header {
+    margin-bottom: 5px;
+}
+.job-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    display: inline;
+}
+.job-date {
+    font-size: 13px;
+    color: #6b7280;
+    float: right;
+}
+.company-name {
+    font-weight: 500;
+    color: #374151;
+    margin: 3px 0 8px 0;
+    clear: both;
+}
+.job-responsibilities {
+    margin: 5px 0 0 20px;
+    padding: 0;
+    list-style-type: disc;
+}
+.job-responsibilities li {
+    margin-bottom: 4px;
+    line-height: 1.5;
+    font-size: 14px;
+}
+.degree-header {
+    margin-bottom: 5px;
+}
+.degree-name {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    display: inline;
+}
+.education-date {
+    font-size: 13px;
+    color: #6b7280;
+    float: right;
+}
+.institution-name {
+    font-weight: 500;
+    color: #374151;
+    margin: 3px 0 5px 0;
+    clear: both;
+}
+.field-of-study {
+    font-style: italic;
+    color: #6b7280;
+    margin: 0 0 5px 0;
+    font-size: 14px;
+}
+.education-details {
+    margin-top: 5px;
+    color: #4b5563;
+    line-height: 1.5;
+    font-size: 14px;
+}
+p {
+    margin: 8px 0;
+    line-height: 1.6;
+    font-size: 14px;
+}
+</style>

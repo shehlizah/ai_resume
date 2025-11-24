@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two Column Resume</title>
+
+</head>
+<body>
+<div class="resume">
+  <table class="layout">
+    <tr>
+      <td class="main-column">
+        <header>
+          <h1>{{name}}</h1>
+          <p>{{title}}</p>
+        </header>
+        
+        <div class="section">
+          <h2>Professional Summary</h2>
+          <p>{{summary}}</p>
+        </div>
+        
+        <div class="section">
+          <h2>Experience</h2>
+          {{experience}}
+        </div>
+        
+        <div class="section">
+          <h2>Education</h2>
+          {{education}}
+        </div>
+      </td>
+      
+      <td class="sidebar-column">
+        <div class="section">
+          <h2>Contact</h2>
+          <div class="contact">
+            <p>{{email}}</p>
+            <p>{{phone}}</p>
+            <p>{{address}}</p>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h2>Skills</h2>
+          <div class="skills">
+            {{skills}}
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>

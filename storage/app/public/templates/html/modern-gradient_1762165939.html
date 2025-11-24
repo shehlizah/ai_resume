@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{name}} - Resume</title>
+</head>
+<body>
+    <div class="resume-container">
+        <div class="gradient-header">
+            <img src="{{photo_url}}" alt="{{name}}" class="profile-photo">
+            <div class="header-content">
+                <h1 class="name">{{name}}</h1>
+                <h2 class="title">{{job_title}}</h2>
+                <div class="contact-modern">
+                    <span>{{email}}</span>
+                    <span>{{phone}}</span>
+                    <span>{{location}}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="two-column">
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h2>Skills</h2>
+                    {{#each skills}}
+                    <div class="skill-item">
+                        <span>{{name}}</span>
+                        <div class="skill-bar">
+                            <div class="skill-level" style="width: {{level}}%"></div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </aside>
+            
+            <main class="main-content">
+                <section>
+                    <h2>About Me</h2>
+                    <p>{{summary}}</p>
+                </section>
+                
+                <section>
+                    <h2>Experience</h2>
+                    {{#each work_experience}}
+                    <div class="job-modern">
+                        <h3>{{job_title}}</h3>
+                        <p class="company-modern">{{company}} | {{start_date}} - {{end_date}}</p>
+                        <ul>
+                            {{#each responsibilities}}
+                            <li>{{this}}</li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                    {{/each}}
+                </section>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{name}} - Tech Resume</title>
+</head>
+<body>
+    <div class="resume-container">
+        <header class="tech-header">
+            <h1>{{name}}</h1>
+            <p class="tech-role">{{job_title}}</p>
+            <div class="tech-links">
+                {{email}} | {{phone}} | <a href="{{github}}">GitHub</a> | <a href="{{linkedin}}">LinkedIn</a>
+            </div>
+        </header>
+        
+        <section class="tech-section">
+            <h2>Technical Skills</h2>
+            <div class="tech-skills-matrix">
+                {{#each technical_skills}}
+                <div class="tech-skill-category">
+                    <strong>{{category}}:</strong> {{skills}}
+                </div>
+                {{/each}}
+            </div>
+        </section>
+        
+        <section class="tech-section">
+            <h2>Work Experience</h2>
+            {{#each work_experience}}
+            <div class="tech-job">
+                <div class="tech-job-header">
+                    <h3>{{job_title}} @ {{company}}</h3>
+                    <span class="tech-date">{{start_date}} - {{end_date}}</span>
+                </div>
+                <p class="tech-stack">Tech Stack: {{tech_stack}}</p>
+                <ul>
+                    {{#each responsibilities}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+            {{/each}}
+        </section>
+        
+        <section class="tech-section">
+            <h2>Projects</h2>
+            {{#each projects}}
+            <div class="tech-project">
+                <h3>{{name}}</h3>
+                <p>{{description}}</p>
+                <p><strong>Technologies:</strong> {{technologies}}</p>
+                <a href="{{url}}">View Project</a>
+            </div>
+            {{/each}}
+        </section>
+    </div>
+</body>
+</html>

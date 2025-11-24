@@ -1,0 +1,23 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Roboto Mono", "Consolas", monospace; line-height: 1.6; color: #0f172a; background: #f8fafc; }
+.resume-container { max-width: 900px; margin: 0 auto; padding: 40px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.tech-header { border-left: 4px solid #0ea5e9; padding-left: 20px; margin-bottom: 30px; }
+.tech-header h1 { font-size: 30px; font-weight: bold; color: #0f172a; margin-bottom: 5px; }
+.tech-role { font-size: 18px; color: #64748b; margin-bottom: 10px; }
+.tech-links { font-size: 13px; color: #475569; }
+.tech-links a { color: #0ea5e9; text-decoration: none; }
+.tech-section { margin-bottom: 30px; }
+.tech-section h2 { font-size: 16px; text-transform: uppercase; letter-spacing: 1px; color: #0ea5e9; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; }
+.tech-skills-matrix { display: flex; flex-direction: column; gap: 10px; background: #f1f5f9; padding: 20px; border-radius: 8px; }
+.tech-skill-category { font-size: 14px; }
+.tech-skill-category strong { color: #0ea5e9; }
+.tech-job { margin-bottom: 25px; border-left: 2px solid #e2e8f0; padding-left: 15px; }
+.tech-job-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+.tech-job-header h3 { font-size: 16px; color: #0f172a; }
+.tech-date { font-size: 13px; color: #64748b; }
+.tech-stack { font-size: 13px; color: #0ea5e9; margin-bottom: 10px; font-style: italic; }
+.tech-job ul { padding-left: 20px; }
+.tech-job li { margin-bottom: 8px; font-size: 14px; }
+.tech-project { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid #0ea5e9; }
+.tech-project h3 { font-size: 16px; margin-bottom: 8px; color: #0f172a; }
+.tech-project a { color: #0ea5e9; text-decoration: none; font-weight: 600; }

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume - Modern Geometric</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+       
+    </style>
+</head>
+<body>
+    <div class="resume-container">
+        <div class="header">
+            <h1 class="name">{{name}}</h1>
+            <p class="title">{{title}}</p>
+            <div class="contact-info">
+                <div class="contact-item">{{email}}</div>
+                <div class="contact-item">{{phone}}</div>
+                <div class="contact-item">{{address}}</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <section class="section">
+                <h2 class="section-title">Professional Summary</h2>
+                <p class="summary">{{summary}}</p>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Work Experience</h2>
+                {{experience}}
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Education</h2>
+                {{education}}
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Skills</h2>
+                <div class="skills-grid">
+                    {{skills}}
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

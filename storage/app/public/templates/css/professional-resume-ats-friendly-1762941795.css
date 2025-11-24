@@ -1,0 +1,11 @@
+body {font-family: Arial, sans-serif; line-height: 1.5; margin: 40px; color: #333;}
+  .resume-container {max-width: 800px; margin: auto;}
+  .resume-header {text-align: center; border-bottom: 2px solid #ddd; padding-bottom: 10px;}
+  .resume-header h1 {margin: 0; font-size: 26px;}
+  .resume-header p {margin: 5px 0; color: #666;}
+  .resume-section {margin-top: 25px;}
+  .resume-section h2 {color: #0b7285; font-size: 18px; border-bottom: 1px solid #ddd; padding-bottom: 5px;}
+  .experience-item, .education-item {margin-top: 10px;}
+  .experience-item h3, .education-item h3 {margin: 0; font-size: 16px;}
+  .company, .school {font-size: 13px; color: #666;}
+  ul {margin: 6px 0 0 20px;}

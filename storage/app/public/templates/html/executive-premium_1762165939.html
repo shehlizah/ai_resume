@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{name}} - Executive Resume</title>
+</head>
+<body>
+    <div class="resume-container">
+        <header class="executive-header">
+            <h1 class="executive-name">{{name}}</h1>
+            <h2 class="executive-title">{{job_title}}</h2>
+            <div class="executive-contact">{{email}} • {{phone}} • {{location}}</div>
+        </header>
+        
+        <section class="executive-section">
+            <h3 class="executive-heading">Executive Summary</h3>
+            <p class="executive-summary">{{summary}}</p>
+        </section>
+        
+        <section class="executive-section">
+            <h3 class="executive-heading">Core Competencies</h3>
+            <div class="competencies-grid">
+                {{#each skills}}
+                <div class="competency">{{this}}</div>
+                {{/each}}
+            </div>
+        </section>
+        
+        <section class="executive-section">
+            <h3 class="executive-heading">Professional Experience</h3>
+            {{#each work_experience}}
+            <div class="executive-job">
+                <div class="executive-job-header">
+                    <h3>{{job_title}}</h3>
+                    <span class="executive-dates">{{start_date}} - {{end_date}}</span>
+                </div>
+                <p class="executive-company">{{company}} | {{location}}</p>
+                <ul class="executive-achievements">
+                    {{#each responsibilities}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+            {{/each}}
+        </section>
+        
+        <section class="executive-section">
+            <h3 class="executive-heading">Education</h3>
+            {{#each education}}
+            <p><strong>{{degree}}</strong> - {{institution}}, {{graduation_year}}</p>
+            {{/each}}
+        </section>
+    </div>
+</body>
+</html>

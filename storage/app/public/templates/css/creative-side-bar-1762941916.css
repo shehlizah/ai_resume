@@ -1,0 +1,9 @@
+body {margin: 0; font-family: 'Poppins', sans-serif; color: #333;}
+  .resume-wrapper {display: flex; min-height: 100vh;}
+  .sidebar {width: 260px; background: #0b7285; color: white; padding: 30px;}
+  .main {flex: 1; background: #f8fafc; padding: 40px;}
+  .sidebar h2 {border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px;}
+  .main h2 {color: #0b7285;}
+  .pill {display: inline-block; background: rgba(255,255,255,0.15); padding: 6px 10px; margin: 3px 2px; border-radius: 20px; font-size: 13px;}
+  ul {margin-left: 20px;}
+  @media (max-width: 768px){.resume-wrapper{flex-direction: column;}}

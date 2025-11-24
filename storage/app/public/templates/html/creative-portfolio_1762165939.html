@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{name}} - Portfolio</title>
+</head>
+<body>
+    <div class="resume-container">
+        <aside class="creative-sidebar">
+            <img src="{{photo_url}}" alt="{{name}}" class="creative-photo">
+            <h1 class="creative-name">{{name}}</h1>
+            <h2 class="creative-title">{{job_title}}</h2>
+            
+            <div class="creative-contact">
+                <h3>Contact</h3>
+                <p>{{email}}</p>
+                <p>{{phone}}</p>
+                <p>{{location}}</p>
+            </div>
+            
+            <div class="creative-skills">
+                <h3>Skills</h3>
+                {{#each skills}}
+                <div class="creative-skill">{{this}}</div>
+                {{/each}}
+            </div>
+        </aside>
+        
+        <main class="creative-main">
+            <section class="creative-section">
+                <h2>About</h2>
+                <p>{{summary}}</p>
+            </section>
+            
+            <section class="creative-section">
+                <h2>Experience</h2>
+                {{#each work_experience}}
+                <div class="creative-job">
+                    <h3>{{job_title}}</h3>
+                    <p class="creative-company">{{company}} | {{start_date}} - {{end_date}}</p>
+                    <ul>
+                        {{#each responsibilities}}
+                        <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+                {{/each}}
+            </section>
+            
+            <section class="creative-section">
+                <h2>Projects</h2>
+                {{#each projects}}
+                <div class="creative-project">
+                    <h3>{{title}}</h3>
+                    <p>{{description}}</p>
+                    <a href="{{url}}">View Project</a>
+                </div>
+                {{/each}}
+            </section>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minimal Resume</title>
+<style>
+  body {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background: #f9f9f9;
+    margin: 0;
+    padding: 40px;
+    color: #333;
+  }
+
+  .resume-container {
+    background: #fff;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  }
+
+  .resume-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .resume-header h1 {
+    margin: 0;
+    font-size: 32px;
+  }
+
+  .resume-header p {
+    margin: 8px 0 0;
+    color: #666;
+    font-size: 15px;
+  }
+
+  .resume-section {
+    margin-bottom: 25px;
+  }
+
+  .resume-section h2 {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+    color: #222;
+    font-size: 20px;
+  }
+
+  .experience-item, .education-item {
+    margin-bottom: 15px;
+  }
+
+  .experience-item h3, .education-item h3 {
+    margin: 0;
+    font-size: 17px;
+  }
+
+  .company, .school {
+    font-style: italic;
+    color: #555;
+    font-size: 14px;
+  }
+
+  ul {
+    margin: 5px 0 0 18px;
+    padding: 0;
+  }
+
+  .skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .skills .pill {
+    background: #f1f1f1;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 0.9em;
+  }
+</style>
+</head>
+<body>
+<div class="resume-container">
+  <!-- Header -->
+  <header class="resume-header">
+    <h1>{{name}}</h1>
+    <p>{{email}} | {{phone}} | {{address}}</p>
+  </header>
+
+  <!-- Summary -->
+  <section class="resume-section">
+    <h2>Professional Summary</h2>
+    <p>{{summary}}</p>
+  </section>
+
+  <!-- Experience -->
+  <section class="resume-section">
+    <h2>Work Experience</h2>
+    {{experience}}
+  </section>
+
+  <!-- Education -->
+  <section class="resume-section">
+    <h2>Education</h2>
+    {{education}}
+  </section>
+
+  <!-- Skills -->
+  <section class="resume-section">
+    <h2>Skills</h2>
+    <div class="skills">
+      {{skills}}
+    </div>
+  </section>
+</div>
+</body>
+</html>
