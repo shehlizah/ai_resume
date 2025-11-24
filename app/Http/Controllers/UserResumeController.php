@@ -407,14 +407,24 @@ public function generate(Request $request)
         $template = Template::findOrFail($request->template_id);
         $data = $request->except(['_token', 'template_id']);
 
-        // Merge experience array into single string
+        // Merge experience array into single string with better formatting
         if (isset($data['experience']) && is_array($data['experience'])) {
-            $data['experience'] = implode("\n\n", array_filter($data['experience']));
+            $experiences = array_filter($data['experience']);
+            if (!empty($experiences)) {
+                $data['experience'] = implode("\n\n" . str_repeat("-", 60) . "\n\n", $experiences);
+            } else {
+                $data['experience'] = '';
+            }
         }
 
-        // Merge education array into single string
+        // Merge education array into single string with better formatting
         if (isset($data['education']) && is_array($data['education'])) {
-            $data['education'] = implode("\n\n", array_filter($data['education']));
+            $educations = array_filter($data['education']);
+            if (!empty($educations)) {
+                $data['education'] = implode("\n\n" . str_repeat("-", 60) . "\n\n", $educations);
+            } else {
+                $data['education'] = '';
+            }
         }
 
         // Read HTML template
