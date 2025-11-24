@@ -161,11 +161,14 @@
               </div>
             </div>
             <div id="experienceContainer">
-              <textarea name="experience[]"
-                        rows="4"
-                        class="form-control mb-3 @error('experience.0') is-invalid @enderror"
-                        id="experienceField0"
-                        placeholder="Add your work history...">{{ old('experience.0', old('experience')) }}</textarea>
+              <div class="mb-4 p-3 border-bottom">
+                <label class="form-label fw-500 mt-2 mb-2">Experience 1 <span class="badge bg-secondary ms-2">Entry</span></label>
+                <textarea name="experience[]"
+                          rows="4"
+                          class="form-control @error('experience.0') is-invalid @enderror"
+                          id="experienceField0"
+                          placeholder="Add your work history...">{{ old('experience.0', old('experience')) }}</textarea>
+              </div>
             </div>
             <small class="text-muted">Example: Senior Developer at ABC Corp (2020-Present) - Led development team and managed projects</small>
             @error('experience.0')
@@ -210,11 +213,14 @@
               </div>
             </div>
             <div id="educationContainer">
-              <textarea name="education[]"
-                        rows="3"
-                        class="form-control mb-3 @error('education.0') is-invalid @enderror"
-                        id="educationField0"
-                        placeholder="Add your education...">{{ old('education.0', old('education')) }}</textarea>
+              <div class="mb-4 p-3 border-bottom">
+                <label class="form-label fw-500 mt-2 mb-2">Education 1 <span class="badge bg-secondary ms-2">Entry</span></label>
+                <textarea name="education[]"
+                          rows="3"
+                          class="form-control @error('education.0') is-invalid @enderror"
+                          id="educationField0"
+                          placeholder="Add your education...">{{ old('education.0', old('education')) }}</textarea>
+              </div>
             </div>
             <small class="text-muted">Example: BS Computer Science, XYZ University (2018) - GPA: 3.8/4.0</small>
             @error('education.0')
@@ -464,22 +470,22 @@
 
       // Create wrapper div for field and buttons
       const fieldWrapper = document.createElement('div');
-      fieldWrapper.className = 'mb-3';
+      fieldWrapper.className = 'mb-4 p-3 border-top';
       fieldWrapper.id = 'experienceWrapper' + experienceCount;
 
       // Add label
       const label = document.createElement('label');
-      label.className = 'form-label small text-muted';
-      label.innerHTML = 'Experience ' + (experienceCount + 1) + ' <span class="badge bg-secondary">Entry</span>';
+      label.className = 'form-label fw-500 mt-2 mb-2';
+      label.innerHTML = 'Experience ' + (experienceCount + 1) + ' <span class="badge bg-secondary ms-2">Entry</span>';
 
       // Add button group for AI and Remove
       const btnGroup = document.createElement('div');
-      btnGroup.className = 'd-flex gap-2 mb-2';
+      btnGroup.className = 'd-flex gap-2 mb-3';
 
       const aiBtn = document.createElement('button');
       aiBtn.type = 'button';
-      aiBtn.className = 'btn btn-xs btn-outline-primary';
-      aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate';
+      aiBtn.className = 'btn btn-sm btn-outline-primary';
+      aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI';
       const fieldId = 'experienceField' + experienceCount;
       aiBtn.onclick = function() {
         generateExperienceAIForField(fieldId);
@@ -487,7 +493,7 @@
 
       // Create textarea
       const newField = document.createElement('textarea');
-      newField.className = 'form-control mb-2';
+      newField.className = 'form-control';
       newField.name = 'experience[]';
       newField.rows = 4;
       newField.placeholder = 'Add your work history...';
@@ -496,7 +502,7 @@
       // Create remove button
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      removeBtn.className = 'btn btn-xs btn-danger';
+      removeBtn.className = 'btn btn-sm btn-danger';
       removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
       removeBtn.onclick = function() {
         fieldWrapper.remove();
@@ -613,22 +619,22 @@
 
       // Create wrapper div for field and buttons
       const fieldWrapper = document.createElement('div');
-      fieldWrapper.className = 'mb-3';
+      fieldWrapper.className = 'mb-4 p-3 border-top';
       fieldWrapper.id = 'educationWrapper' + educationCount;
 
       // Add label
       const label = document.createElement('label');
-      label.className = 'form-label small text-muted';
-      label.innerHTML = 'Education ' + (educationCount + 1) + ' <span class="badge bg-secondary">Entry</span>';
+      label.className = 'form-label fw-500 mt-2 mb-2';
+      label.innerHTML = 'Education ' + (educationCount + 1) + ' <span class="badge bg-secondary ms-2">Entry</span>';
 
       // Add button group for AI and Remove
       const btnGroup = document.createElement('div');
-      btnGroup.className = 'd-flex gap-2 mb-2';
+      btnGroup.className = 'd-flex gap-2 mb-3';
 
       const aiBtn = document.createElement('button');
       aiBtn.type = 'button';
-      aiBtn.className = 'btn btn-xs btn-outline-primary';
-      aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate';
+      aiBtn.className = 'btn btn-sm btn-outline-primary';
+      aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI';
       const fieldId = 'educationField' + educationCount;
       aiBtn.onclick = function() {
         generateEducationAIForField(fieldId);
@@ -636,7 +642,7 @@
 
       // Create textarea
       const newField = document.createElement('textarea');
-      newField.className = 'form-control mb-2';
+      newField.className = 'form-control';
       newField.name = 'education[]';
       newField.rows = 3;
       newField.placeholder = 'Add your education...';
@@ -645,7 +651,7 @@
       // Create remove button
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      removeBtn.className = 'btn btn-xs btn-danger';
+      removeBtn.className = 'btn btn-sm btn-danger';
       removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
       removeBtn.onclick = function() {
         fieldWrapper.remove();
