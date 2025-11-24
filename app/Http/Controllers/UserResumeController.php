@@ -298,26 +298,158 @@ class UserResumeController extends Controller
                         'summary' => 'Experienced software engineer with 10+ years of expertise in full-stack development, cloud architecture, and agile methodologies. Proven track record of delivering high-quality solutions and leading cross-functional teams to success. Passionate about building scalable applications and mentoring junior developers.',
                         'objective' => 'Seeking a challenging senior developer role where I can leverage my expertise in modern web technologies to build innovative solutions and contribute to team growth.',
 
-                        // Experience Section (HTML formatted)
-                        'experience' => '\n                <div class="experience-item">\n                    <div class="job-header">\n                        <h3 class="job-title">Senior Software Engineer</h3>\n                        <span class="job-date">Jan 2020 - Present</span>\n                    </div>\n                    <div class="company-name">TechCorp Inc. - San Francisco, CA</div>\n                    <ul class="job-responsibilities">\n                        <li>Led development of microservices architecture serving 1M+ users with 99.9% uptime</li>\n                        <li>Mentored team of 5 junior developers, conducting code reviews and technical training</li>\n                        <li>Improved system performance by 40% through database optimization and caching strategies</li>\n                        <li>Implemented CI/CD pipelines reducing deployment time by 60%</li>\n                    </ul>\n                </div>\n                <div class="experience-item">\n                    <div class="job-header">\n                        <h3 class="job-title">Software Developer</h3>\n                        <span class="job-date">Jun 2018 - Dec 2019</span>\n                    </div>\n                    <div class="company-name">StartUp LLC - Remote</div>\n                    <ul class="job-responsibilities">\n                        <li>Developed RESTful APIs using Laravel and Node.js serving 100K+ daily requests</li>\n                        <li>Collaborated with product team on feature planning and technical specifications</li>\n                        <li>Implemented automated testing suite reducing production bugs by 60%</li>\n                        <li>Migrated legacy monolith to modern microservices architecture</li>\n                    </ul>\n                </div>\n                <div class="experience-item">\n                    <div class="job-header">\n                        <h3 class="job-title">Junior Developer</h3>\n                        <span class="job-date">Jul 2016 - May 2018</span>\n                    </div>\n                    <div class="company-name">Digital Agency - New York, NY</div>\n                    <ul class="job-responsibilities">\n                        <li>Built responsive websites for clients using React and Vue.js</li>\n                        <li>Maintained and updated client WordPress sites</li>\n                        <li>Participated in agile development process with daily standups</li>\n                    </ul>\n                </div>',
+                        // Experience Section (HTML formatted - using heredoc to preserve actual newlines)
+                        'experience' => <<<'EOT'
+<div class="experience-item">
+    <div class="job-header">
+        <h3 class="job-title">Senior Software Engineer</h3>
+        <span class="job-date">Jan 2020 - Present</span>
+    </div>
+    <div class="company-name">TechCorp Inc. - San Francisco, CA</div>
+    <ul class="job-responsibilities">
+        <li>Led development of microservices architecture serving 1M+ users with 99.9% uptime</li>
+        <li>Mentored team of 5 junior developers, conducting code reviews and technical training</li>
+        <li>Improved system performance by 40% through database optimization and caching strategies</li>
+        <li>Implemented CI/CD pipelines reducing deployment time by 60%</li>
+    </ul>
+</div>
+<div class="experience-item">
+    <div class="job-header">
+        <h3 class="job-title">Software Developer</h3>
+        <span class="job-date">Jun 2018 - Dec 2019</span>
+    </div>
+    <div class="company-name">StartUp LLC - Remote</div>
+    <ul class="job-responsibilities">
+        <li>Developed RESTful APIs using Laravel and Node.js serving 100K+ daily requests</li>
+        <li>Collaborated with product team on feature planning and technical specifications</li>
+        <li>Implemented automated testing suite reducing production bugs by 60%</li>
+        <li>Migrated legacy monolith to modern microservices architecture</li>
+    </ul>
+</div>
+<div class="experience-item">
+    <div class="job-header">
+        <h3 class="job-title">Junior Developer</h3>
+        <span class="job-date">Jul 2016 - May 2018</span>
+    </div>
+    <div class="company-name">Digital Agency - New York, NY</div>
+    <ul class="job-responsibilities">
+        <li>Built responsive websites for clients using React and Vue.js</li>
+        <li>Maintained and updated client WordPress sites</li>
+        <li>Participated in agile development process with daily standups</li>
+    </ul>
+</div>
+EOT,
 
-                        // Education Section (HTML formatted)
-                        'education' => '\n                <div class="education-item">\n                    <div class="degree-header">\n                        <h3 class="degree-name">Bachelor of Science in Computer Science</h3>\n                        <span class="education-date">2014 - 2018</span>\n                    </div>\n                    <div class="institution-name">University of California, Berkeley</div>\n                    <div class="education-details">\n                        <p>GPA: 3.8/4.0 • Dean\'s List all semesters</p>\n                        <p>Relevant Coursework: Data Structures, Algorithms, Database Systems, Software Engineering</p>\n                    </div>\n                </div>\n                <div class="education-item">\n                    <div class="degree-header">\n                        <h3 class="degree-name">High School Diploma</h3>\n                        <span class="education-date">2010 - 2014</span>\n                    </div>\n                    <div class="institution-name">Lincoln High School</div>\n                </div>',
+                        // Education Section (HTML formatted - using heredoc to preserve actual newlines)
+                        'education' => <<<'EOT'
+<div class="education-item">
+    <div class="degree-header">
+        <h3 class="degree-name">Bachelor of Science in Computer Science</h3>
+        <span class="education-date">2014 - 2018</span>
+    </div>
+    <div class="institution-name">University of California, Berkeley</div>
+    <div class="education-details">
+        <p>GPA: 3.8/4.0 • Dean's List all semesters</p>
+        <p>Relevant Coursework: Data Structures, Algorithms, Database Systems, Software Engineering</p>
+    </div>
+</div>
+<div class="education-item">
+    <div class="degree-header">
+        <h3 class="degree-name">High School Diploma</h3>
+        <span class="education-date">2010 - 2014</span>
+    </div>
+    <div class="institution-name">Lincoln High School</div>
+</div>
+EOT,
 
-                        // Skills Section (HTML formatted)
-                        'skills' => '\n                <div class="skills-grid">\n                    <div class="skill-category">\n                        <h4>Languages</h4>\n                        <ul class="skills-list">\n                            <li>JavaScript / TypeScript</li>\n                            <li>Python</li>\n                            <li>PHP</li>\n                            <li>Java</li>\n                            <li>SQL</li>\n                        </ul>\n                    </div>\n                    <div class="skill-category">\n                        <h4>Frameworks</h4>\n                        <ul class="skills-list">\n                            <li>React / Vue.js</li>\n                            <li>Node.js / Express</li>\n                            <li>Laravel</li>\n                            <li>Django</li>\n                            <li>Spring Boot</li>\n                        </ul>\n                    </div>\n                    <div class="skill-category">\n                        <h4>Tools & Technologies</h4>\n                        <ul class="skills-list">\n                            <li>Docker / Kubernetes</li>\n                            <li>AWS / Azure / GCP</li>\n                            <li>Git / GitHub</li>\n                            <li>MySQL / PostgreSQL</li>\n                            <li>Redis / MongoDB</li>\n                        </ul>\n                    </div>\n                </div>',
+                        // Skills Section (HTML formatted - using heredoc to preserve actual newlines)
+                        'skills' => <<<'EOT'
+<div class="skills-grid">
+    <div class="skill-category">
+        <h4>Languages</h4>
+        <ul class="skills-list">
+            <li>JavaScript / TypeScript</li>
+            <li>Python</li>
+            <li>PHP</li>
+            <li>Java</li>
+            <li>SQL</li>
+        </ul>
+    </div>
+    <div class="skill-category">
+        <h4>Frameworks</h4>
+        <ul class="skills-list">
+            <li>React / Vue.js</li>
+            <li>Node.js / Express</li>
+            <li>Laravel</li>
+            <li>Django</li>
+            <li>Spring Boot</li>
+        </ul>
+    </div>
+    <div class="skill-category">
+        <h4>Tools & Technologies</h4>
+        <ul class="skills-list">
+            <li>Docker / Kubernetes</li>
+            <li>AWS / Azure / GCP</li>
+            <li>Git / GitHub</li>
+            <li>MySQL / PostgreSQL</li>
+            <li>Redis / MongoDB</li>
+        </ul>
+    </div>
+</div>
+EOT,
 
                         // Certifications
-                        'certifications' => '\n                <ul class="certifications-list">\n                    <li>\n                        <strong>AWS Certified Solutions Architect - Professional</strong>\n                        <span class="cert-date">Amazon Web Services • 2023</span>\n                    </li>\n                    <li>\n                        <strong>Google Cloud Professional Developer</strong>\n                        <span class="cert-date">Google Cloud • 2022</span>\n                    </li>\n                    <li>\n                        <strong>Certified Scrum Master (CSM)</strong>\n                        <span class="cert-date">Scrum Alliance • 2021</span>\n                    </li>\n                </ul>',
+                        'certifications' => <<<'EOT'
+<ul class="certifications-list">
+    <li>
+        <strong>AWS Certified Solutions Architect - Professional</strong>
+        <span class="cert-date">Amazon Web Services • 2023</span>
+    </li>
+    <li>
+        <strong>Google Cloud Professional Developer</strong>
+        <span class="cert-date">Google Cloud • 2022</span>
+    </li>
+    <li>
+        <strong>Certified Scrum Master (CSM)</strong>
+        <span class="cert-date">Scrum Alliance • 2021</span>
+    </li>
+</ul>
+EOT,
 
                         // Projects
-                        'projects' => '\n                <div class="project-item">\n                    <h4>E-commerce Platform</h4>\n                    <p>Built a full-stack e-commerce solution using React, Node.js, and PostgreSQL. Implemented payment processing, inventory management, and real-time order tracking.</p>\n                </div>\n                <div class="project-item">\n                    <h4>Task Management App</h4>\n                    <p>Developed a collaborative task management application with real-time updates using WebSockets. Features include team collaboration, file sharing, and deadline notifications.</p>\n                </div>\n                <div class="project-item">\n                    <h4>Open Source Contributions</h4>\n                    <p>Active contributor to Laravel framework and Vue.js ecosystem. Contributed bug fixes and new features to various popular open-source projects.</p>\n                </div>',
+                        'projects' => <<<'EOT'
+<div class="project-item">
+    <h4>E-commerce Platform</h4>
+    <p>Built a full-stack e-commerce solution using React, Node.js, and PostgreSQL. Implemented payment processing, inventory management, and real-time order tracking.</p>
+</div>
+<div class="project-item">
+    <h4>Task Management App</h4>
+    <p>Developed a collaborative task management application with real-time updates using WebSockets. Features include team collaboration, file sharing, and deadline notifications.</p>
+</div>
+<div class="project-item">
+    <h4>Open Source Contributions</h4>
+    <p>Active contributor to Laravel framework and Vue.js ecosystem. Contributed bug fixes and new features to various popular open-source projects.</p>
+</div>
+EOT,
 
                         // Languages
-                        'languages' => '\n                <ul class="languages-list">\n                    <li><strong>English</strong> - Native</li>\n                    <li><strong>Spanish</strong> - Fluent</li>\n                    <li><strong>French</strong> - Intermediate</li>\n                </ul>',
+                        'languages' => <<<'EOT'
+<ul class="languages-list">
+    <li><strong>English</strong> - Native</li>
+    <li><strong>Spanish</strong> - Fluent</li>
+    <li><strong>French</strong> - Intermediate</li>
+</ul>
+EOT,
 
                         // Interests/Hobbies
-                        'interests' => '\n                <ul class="interests-list">\n                    <li>Open Source Development</li>\n                    <li>Tech Blogging</li>\n                    <li>Photography</li>\n                    <li>Hiking & Travel</li>\n                </ul>',
+                        'interests' => <<<'EOT'
+<ul class="interests-list">
+    <li>Open Source Development</li>
+    <li>Tech Blogging</li>
+    <li>Photography</li>
+    <li>Hiking & Travel</li>
+</ul>
+EOT,
                 ];
 
         // Fill with sample data
