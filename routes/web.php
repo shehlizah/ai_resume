@@ -42,7 +42,7 @@ Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleWebhook'
 */
 
 Route::middleware(['auth'])->group(function () {
-    
+
     // User Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
     Route::get('/dashboard/stats', [UserDashboardController::class, 'getStats'])->name('user.dashboard.stats');
@@ -89,6 +89,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/preview/{template_id}', [UserResumeController::class, 'preview'])->name('preview');
         Route::get('/fill/{template_id}', [UserResumeController::class, 'fillForm'])->name('fill');
         Route::post('/generate', [UserResumeController::class, 'generate'])->name('generate');
+        Route::post('/generate-experience-ai', [UserResumeController::class, 'generateExperienceAI'])->name('generate-experience-ai');
+        Route::post('/generate-skills-ai', [UserResumeController::class, 'generateSkillsAI'])->name('generate-skills-ai');
+        Route::post('/generate-education-ai', [UserResumeController::class, 'generateEducationAI'])->name('generate-education-ai');
         Route::get('/success/{id}', [UserResumeController::class, 'success'])->name('success');
         Route::get('/view/{id}', [UserResumeController::class, 'view'])->name('view');
         Route::get('/download/{id}', [UserResumeController::class, 'download'])->name('download');
@@ -109,11 +112,11 @@ Route::middleware(['auth'])->group(function () {
         // Route::post('/store', [\App\Http\Controllers\User\CoverLetterController::class, 'store'])->name('user.cover-letters.store');
         // AI Generation Route - IMPORTANT: Must be before {coverLetter} routes
         Route::post('/generate-ai', [CoverLetterController::class, 'generateWithAI'])->name('generate-ai');
-        
+
         // Template selection routes
         Route::get('/templates', [CoverLetterController::class, 'selectTemplate'])->name('select-template');
         Route::get('/templates/{template}/use', [CoverLetterController::class, 'createFromTemplate'])->name('create-from-template');
-        
+
         // Individual cover letter routes
         Route::get('/{coverLetter}/view', [CoverLetterController::class, 'view'])->name('view');
         Route::get('/{coverLetter}/print', [CoverLetterController::class, 'print'])->name('print');
@@ -131,28 +134,28 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('add-ons')->name('user.add-ons.')->group(function () {
         // Browse add-ons
         Route::get('/', [\App\Http\Controllers\User\AddOnController::class, 'index'])->name('index');
-        
+
         // My purchased add-ons
         Route::get('/my-add-ons', [\App\Http\Controllers\User\AddOnController::class, 'myAddOns'])->name('my-add-ons');
-        
+
         // View specific add-on
         Route::get('/{addOn}', [\App\Http\Controllers\User\AddOnController::class, 'show'])->name('show');
-        
+
         // Checkout
         Route::get('/{addOn}/checkout', [\App\Http\Controllers\User\AddOnController::class, 'checkout'])->name('checkout');
         Route::post('/{addOn}/purchase', [\App\Http\Controllers\User\AddOnController::class, 'purchase'])->name('purchase');
-        
+
         // Payment processing
         Route::get('/payment/{userAddOn}/stripe', [\App\Http\Controllers\User\AddOnController::class, 'stripeCheckout'])->name('stripe-checkout');
         Route::get('/payment/{userAddOn}/success', [\App\Http\Controllers\User\AddOnController::class, 'paymentSuccess'])->name('payment-success');
-        
+
         // Access purchased content
         Route::get('/{addOn}/access', [\App\Http\Controllers\User\AddOnController::class, 'access'])->name('access');
-        
+
         // AI-Powered Features
         Route::get('/{addOn}/job-search', [\App\Http\Controllers\User\AddOnController::class, 'jobSearch'])->name('job-search');
         Route::post('/{addOn}/generate-jobs', [\App\Http\Controllers\User\AddOnController::class, 'generateJobRecommendations'])->name('generate-jobs');
-        
+
         Route::get('/{addOn}/interview-prep', [\App\Http\Controllers\User\AddOnController::class, 'interviewPrep'])->name('interview-prep');
         Route::post('/{addOn}/generate-interview', [\App\Http\Controllers\User\AddOnController::class, 'generateInterviewPrep'])->name('generate-interview');
     });
@@ -230,7 +233,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         // Dashboard & Statistics
         Route::get('/', [\App\Http\Controllers\Admin\CoverLetterController::class, 'index'])->name('index');
         Route::get('/statistics', [\App\Http\Controllers\Admin\CoverLetterController::class, 'statistics'])->name('statistics');
-        
+
         // Templates Management
         Route::get('/templates', [\App\Http\Controllers\Admin\CoverLetterController::class, 'templates'])->name('templates');
         Route::get('/templates/create', [\App\Http\Controllers\Admin\CoverLetterController::class, 'createTemplate'])->name('templates.create');
@@ -242,14 +245,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('/templates/{template}/toggle', [\App\Http\Controllers\Admin\CoverLetterController::class, 'toggleTemplateStatus'])->name('templates.toggle');
         Route::post('/templates/{template}/duplicate', [\App\Http\Controllers\Admin\CoverLetterController::class, 'duplicateTemplate'])->name('templates.duplicate');
         Route::post('/templates/bulk-action', [\App\Http\Controllers\Admin\CoverLetterController::class, 'bulkTemplateAction'])->name('templates.bulk-action');
-        
+
         // User Cover Letters Management
         Route::get('/user-cover-letters', [\App\Http\Controllers\Admin\CoverLetterController::class, 'userCoverLetters'])->name('user-cover-letters');
         Route::get('/user-cover-letters/{coverLetter}', [\App\Http\Controllers\Admin\CoverLetterController::class, 'viewCoverLetter'])->name('view-cover-letter');
         Route::delete('/user-cover-letters/{coverLetter}', [\App\Http\Controllers\Admin\CoverLetterController::class, 'deleteCoverLetter'])->name('delete-cover-letter');
         Route::post('/user-cover-letters/{coverLetter}/restore', [\App\Http\Controllers\Admin\CoverLetterController::class, 'restore'])->name('restore');
         Route::delete('/user-cover-letters/{coverLetter}/permanent', [\App\Http\Controllers\Admin\CoverLetterController::class, 'permanentDelete'])->name('permanent-delete');
-        
+
         // Export
         Route::get('/export/cover-letters', [\App\Http\Controllers\Admin\CoverLetterController::class, 'exportCoverLetters'])->name('export.cover-letters');
         Route::get('/export/templates', [\App\Http\Controllers\Admin\CoverLetterController::class, 'exportTemplates'])->name('export.templates');
@@ -289,23 +292,23 @@ if (app()->environment('local')) {
 // Add this inside your admin routes group
 Route::get('/templates/{id}/debug', function($id) {
     $template = \App\Models\Template::findOrFail($id);
-    
+
     // Check for common issues
     $issues = [];
     $warnings = [];
-    
+
     // Check HTML content
     if (empty($template->html_content)) {
         $issues[] = '❌ Template has NO HTML content';
     } elseif (strlen($template->html_content) < 100) {
         $warnings[] = '⚠️ Template has very little HTML content (' . strlen($template->html_content) . ' characters)';
     }
-    
+
     // Check CSS content
     if (empty($template->css_content)) {
         $warnings[] = '⚠️ Template has no CSS styling';
     }
-    
+
     // Check for problematic CSS
     if (!empty($template->css_content)) {
         if (strpos($template->css_content, 'display: none') !== false) {
@@ -317,19 +320,19 @@ Route::get('/templates/{id}/debug', function($id) {
         if (strpos($template->css_content, 'visibility: hidden') !== false) {
             $warnings[] = '⚠️ CSS contains "visibility: hidden" - might hide content';
         }
-        if (strpos($template->css_content, 'color: white') !== false || 
+        if (strpos($template->css_content, 'color: white') !== false ||
             strpos($template->css_content, 'color:#fff') !== false) {
             $warnings[] = '⚠️ CSS uses white text - might be invisible on white background';
         }
     }
-    
+
     // Find placeholders
     $placeholders = [];
     if (!empty($template->html_content)) {
         preg_match_all('/\{\{([^}]+)\}\}/', $template->html_content, $matches);
         $placeholders = array_unique($matches[1]);
     }
-    
+
     // Build diagnostic output
     $output = '<!DOCTYPE html>
 <html>
@@ -445,59 +448,59 @@ Route::get('/templates/{id}/debug', function($id) {
 <body>
     <div class="container">
         <h1>🔍 Template Diagnostics</h1>
-        
+
         <div class="info-grid">
             <div class="info-label">Template Name:</div>
             <div>' . htmlspecialchars($template->name) . '</div>
-            
+
             <div class="info-label">Template ID:</div>
             <div>' . $template->id . '</div>
-            
+
             <div class="info-label">Category:</div>
             <div>' . htmlspecialchars($template->category) . '</div>
-            
+
             <div class="info-label">Status:</div>
             <div>' . ($template->is_active ? '✅ Active' : '❌ Inactive') . '</div>
-            
+
             <div class="info-label">Premium:</div>
             <div>' . ($template->is_premium ? '⭐ Yes' : 'No') . '</div>
-            
+
             <div class="info-label">Created:</div>
             <div>' . $template->created_at->format('Y-m-d H:i:s') . '</div>
         </div>';
-    
+
     // Show issues
     if (!empty($issues)) {
         foreach ($issues as $issue) {
             $output .= '<div class="issue">🚨 ' . $issue . '</div>';
         }
     }
-    
+
     // Show warnings
     if (!empty($warnings)) {
         foreach ($warnings as $warning) {
             $output .= '<div class="warning">' . $warning . '</div>';
         }
     }
-    
+
     // Show success if no issues
     if (empty($issues) && empty($warnings)) {
         $output .= '<div class="success">✅ No obvious issues detected!</div>';
     }
-    
+
     // Content lengths
     $output .= '<h2>📊 Content Statistics</h2>
         <div class="info-grid">
             <div class="info-label">HTML Length:</div>
             <div>' . strlen($template->html_content ?? '') . ' characters</div>
-            
+
             <div class="info-label">CSS Length:</div>
             <div>' . strlen($template->css_content ?? '') . ' characters</div>
-            
+
             <div class="info-label">Description Length:</div>
             <div>' . strlen($template->description ?? '') . ' characters</div>
         </div>';
-    
+
     // Show placeholders
     if (!empty($placeholders)) {
         $output .= '<h2>🏷️ Placeholders Found (' . count($placeholders) . ')</h2>
@@ -510,29 +513,29 @@ Route::get('/templates/{id}/debug', function($id) {
         $output .= '<h2>🏷️ Placeholders</h2>
             <div class="warning">⚠️ No placeholders found! Preview will show static content only.</div>';
     }
-    
+
     // Show HTML preview
     $output .= '<h2>📝 HTML Content Preview</h2>';
     if (!empty($template->html_content)) {
-        $htmlPreview = strlen($template->html_content) > 1000 
-            ? substr($template->html_content, 0, 1000) . '...' 
+        $htmlPreview = strlen($template->html_content) > 1000
+            ? substr($template->html_content, 0, 1000) . '...'
             : $template->html_content;
         $output .= '<div class="code-block">' . htmlspecialchars($htmlPreview) . '</div>';
     } else {
         $output .= '<div class="issue">❌ No HTML content!</div>';
     }
-    
+
     // Show CSS preview
     $output .= '<h2>🎨 CSS Content Preview</h2>';
     if (!empty($template->css_content)) {
-        $cssPreview = strlen($template->css_content) > 1000 
-            ? substr($template->css_content, 0, 1000) . '...' 
+        $cssPreview = strlen($template->css_content) > 1000
+            ? substr($template->css_content, 0, 1000) . '...'
             : $template->css_content;
         $output .= '<div class="code-block">' . htmlspecialchars($cssPreview) . '</div>';
     } else {
         $output .= '<div class="warning">⚠️ No CSS content!</div>';
     }
-    
+
     // Action buttons
     $output .= '<h2>🔧 Actions</h2>
         <div>
@@ -546,11 +549,11 @@ Route::get('/templates/{id}/debug', function($id) {
                 📋 Back to Templates
             </a>
         </div>';
-    
+
     $output .= '</div>
 </body>
 </html>';
-    
+
     return response($output)->header('Content-Type', 'text/html');
 })->name('admin.templates.debug');
 

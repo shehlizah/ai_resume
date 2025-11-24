@@ -21,7 +21,7 @@
         <h6 class="mt-3">{{ $template->name }}</h6>
         <p class="text-muted small">{{ $template->description }}</p>
       </div>
-      
+
       <!-- Show any errors -->
       @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -30,7 +30,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
       @endif
-      
+
       @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
           <strong>Please fix the following errors:</strong>
@@ -42,14 +42,21 @@
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
       @endif
-      
+
+      <!-- AI Info Alert -->
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="bx bx-sparkles me-2"></i>
+        <strong>AI-Powered Resume Builder!</strong> Click the <strong>✨ Generate with AI</strong> buttons to automatically generate professional content for each section.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+
       <!-- Form (normal submission) -->
-      <form method="POST" 
-            action="{{ route('user.resumes.generate') }}" 
+      <form method="POST"
+            action="{{ route('user.resumes.generate') }}"
             id="resumeForm">
         @csrf
         <input type="hidden" name="template_id" value="{{ $template->id }}">
-        
+
         <!-- Personal Info -->
         <div class="card mb-4">
           <div class="card-body">
@@ -57,9 +64,9 @@
             <div class="row mb-3">
               <div class="col-md-6">
                 <label class="form-label">Full Name *</label>
-                <input type="text" 
-                       name="name" 
-                       class="form-control @error('name') is-invalid @enderror" 
+                <input type="text"
+                       name="name"
+                       class="form-control @error('name') is-invalid @enderror"
                        value="{{ old('name') }}"
                        required>
                 @error('name')
@@ -68,9 +75,9 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label">Job Title *</label>
-                <input type="text" 
-                       name="title" 
-                       class="form-control @error('title') is-invalid @enderror" 
+                <input type="text"
+                       name="title"
+                       class="form-control @error('title') is-invalid @enderror"
                        value="{{ old('title') }}"
                        required>
                 @error('title')
@@ -81,9 +88,9 @@
             <div class="row mb-3">
               <div class="col-md-6">
                 <label class="form-label">Email *</label>
-                <input type="email" 
-                       name="email" 
-                       class="form-control @error('email') is-invalid @enderror" 
+                <input type="email"
+                       name="email"
+                       class="form-control @error('email') is-invalid @enderror"
                        value="{{ old('email') }}"
                        required>
                 @error('email')
@@ -92,9 +99,9 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label">Phone *</label>
-                <input type="text" 
-                       name="phone" 
-                       class="form-control @error('phone') is-invalid @enderror" 
+                <input type="text"
+                       name="phone"
+                       class="form-control @error('phone') is-invalid @enderror"
                        value="{{ old('phone') }}"
                        required>
                 @error('phone')
@@ -104,14 +111,20 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Experience -->
         <div class="card mb-4">
           <div class="card-body">
-            <h6 class="mb-3"><i class="bx bx-briefcase"></i> Experience</h6>
-            <textarea name="experience" 
-                      rows="5" 
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0"><i class="bx bx-briefcase"></i> Experience</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#experienceAIModal">
+                <i class="bx bx-sparkles"></i> Generate with AI
+              </button>
+            </div>
+            <textarea name="experience"
+                      rows="5"
                       class="form-control @error('experience') is-invalid @enderror"
+                      id="experienceField"
                       placeholder="Add your work history...">{{ old('experience') }}</textarea>
             <small class="text-muted">Example: Senior Developer at ABC Corp (2020-Present)</small>
             @error('experience')
@@ -119,14 +132,20 @@
             @enderror
           </div>
         </div>
-        
+
         <!-- Skills -->
         <div class="card mb-4">
           <div class="card-body">
-            <h6 class="mb-3"><i class="bx bx-star"></i> Skills</h6>
-            <textarea name="skills" 
-                      rows="4" 
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0"><i class="bx bx-star"></i> Skills</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#skillsAIModal">
+                <i class="bx bx-sparkles"></i> Generate with AI
+              </button>
+            </div>
+            <textarea name="skills"
+                      rows="4"
                       class="form-control @error('skills') is-invalid @enderror"
+                      id="skillsField"
                       placeholder="List your skills...">{{ old('skills') }}</textarea>
             <small class="text-muted">Example: PHP, Laravel, Vue.js, MySQL</small>
             @error('skills')
@@ -134,14 +153,20 @@
             @enderror
           </div>
         </div>
-        
+
         <!-- Education -->
         <div class="card mb-4">
           <div class="card-body">
-            <h6 class="mb-3"><i class="bx bx-book"></i> Education</h6>
-            <textarea name="education" 
-                      rows="4" 
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0"><i class="bx bx-book"></i> Education</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#educationAIModal">
+                <i class="bx bx-sparkles"></i> Generate with AI
+              </button>
+            </div>
+            <textarea name="education"
+                      rows="4"
                       class="form-control @error('education') is-invalid @enderror"
+                      id="educationField"
                       placeholder="Add your education...">{{ old('education') }}</textarea>
             <small class="text-muted">Example: BS Computer Science, XYZ University (2018)</small>
             @error('education')
@@ -149,13 +174,13 @@
             @enderror
           </div>
         </div>
-        
+
         <!-- Submit -->
         <div class="alert alert-info">
           <i class="bx bx-info-circle me-2"></i>
           Your resume will be generated and opened in a new tab!
         </div>
-        
+
         <button type="submit" class="btn btn-primary btn-lg w-100" id="generateBtn">
           <i class="bx bx-file me-1"></i> Generate Resume PDF
         </button>
@@ -163,12 +188,268 @@
     </div>
   </div>
 
+  <!-- AI Modal for Experience -->
+  <div class="modal fade" id="experienceAIModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bx bx-sparkles text-warning"></i> Generate Experience with AI
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="experienceAIForm">
+            <div class="mb-3">
+              <label class="form-label">Job Title</label>
+              <input type="text" class="form-control" id="aiJobTitle" placeholder="e.g., Senior Developer">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Company</label>
+              <input type="text" class="form-control" id="aiCompany" placeholder="e.g., Tech Corp">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Years of Experience</label>
+              <input type="number" class="form-control" id="aiYears" placeholder="e.g., 5" min="0">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Key Responsibilities</label>
+              <textarea class="form-control" id="aiResponsibilities" rows="3" placeholder="e.g., Led team, managed projects..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="generateExperienceAI()" id="experienceAIBtn">
+            <i class="bx bx-sparkles me-1"></i> Generate
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Modal for Skills -->
+  <div class="modal fade" id="skillsAIModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bx bx-sparkles text-warning"></i> Generate Skills with AI
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="skillsAIForm">
+            <div class="mb-3">
+              <label class="form-label">Job Title / Role</label>
+              <input type="text" class="form-control" id="aiSkillsRole" placeholder="e.g., Full Stack Developer">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Experience Level</label>
+              <select class="form-select" id="aiSkillsLevel">
+                <option value="">-- Select Level --</option>
+                <option value="junior">Junior (0-2 years)</option>
+                <option value="mid">Mid-Level (2-5 years)</option>
+                <option value="senior">Senior (5+ years)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Technologies / Fields</label>
+              <textarea class="form-control" id="aiSkillsFields" rows="2" placeholder="e.g., PHP, Laravel, React, AWS..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="generateSkillsAI()" id="skillsAIBtn">
+            <i class="bx bx-sparkles me-1"></i> Generate
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Modal for Education -->
+  <div class="modal fade" id="educationAIModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bx bx-sparkles text-warning"></i> Generate Education with AI
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="educationAIForm">
+            <div class="mb-3">
+              <label class="form-label">Degree Type</label>
+              <input type="text" class="form-control" id="aiDegree" placeholder="e.g., Bachelor of Science">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Field of Study</label>
+              <input type="text" class="form-control" id="aiFieldOfStudy" placeholder="e.g., Computer Science">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">University Name</label>
+              <input type="text" class="form-control" id="aiUniversity" placeholder="e.g., XYZ University">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Graduation Year</label>
+              <input type="number" class="form-control" id="aiGraduationYear" placeholder="e.g., 2020" min="1950">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="generateEducationAI()" id="educationAIBtn">
+            <i class="bx bx-sparkles me-1"></i> Generate
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Loading overlay -->
   <script>
+    // Form submission
     document.getElementById('resumeForm').addEventListener('submit', function() {
       const btn = document.getElementById('generateBtn');
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating PDF...';
       btn.disabled = true;
     });
+
+    // AI Generation Functions
+    async function generateExperienceAI() {
+      const jobTitle = document.getElementById('aiJobTitle').value;
+      const company = document.getElementById('aiCompany').value;
+      const years = document.getElementById('aiYears').value;
+      const responsibilities = document.getElementById('aiResponsibilities').value;
+
+      if (!jobTitle || !company || !years) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      const btn = document.getElementById('experienceAIBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+
+      try {
+        const response = await fetch('{{ route("user.resumes.generate-experience-ai") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+          },
+          body: JSON.stringify({
+            job_title: jobTitle,
+            company: company,
+            years: years,
+            responsibilities: responsibilities
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          document.getElementById('experienceField').value = data.content;
+          bootstrap.Modal.getInstance(document.getElementById('experienceAIModal')).hide();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      } catch (error) {
+        alert('Error generating content: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bx bx-sparkles me-1"></i> Generate';
+      }
+    }
+
+    async function generateSkillsAI() {
+      const role = document.getElementById('aiSkillsRole').value;
+      const level = document.getElementById('aiSkillsLevel').value;
+      const fields = document.getElementById('aiSkillsFields').value;
+
+      if (!role || !level) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      const btn = document.getElementById('skillsAIBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+
+      try {
+        const response = await fetch('{{ route("user.resumes.generate-skills-ai") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+          },
+          body: JSON.stringify({
+            role: role,
+            level: level,
+            fields: fields
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          document.getElementById('skillsField').value = data.content;
+          bootstrap.Modal.getInstance(document.getElementById('skillsAIModal')).hide();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      } catch (error) {
+        alert('Error generating content: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bx bx-sparkles me-1"></i> Generate';
+      }
+    }
+
+    async function generateEducationAI() {
+      const degree = document.getElementById('aiDegree').value;
+      const fieldOfStudy = document.getElementById('aiFieldOfStudy').value;
+      const university = document.getElementById('aiUniversity').value;
+      const graduationYear = document.getElementById('aiGraduationYear').value;
+
+      if (!degree || !fieldOfStudy || !university || !graduationYear) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      const btn = document.getElementById('educationAIBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+
+      try {
+        const response = await fetch('{{ route("user.resumes.generate-education-ai") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+          },
+          body: JSON.stringify({
+            degree: degree,
+            field_of_study: fieldOfStudy,
+            university: university,
+            graduation_year: graduationYear
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          document.getElementById('educationField').value = data.content;
+          bootstrap.Modal.getInstance(document.getElementById('educationAIModal')).hide();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      } catch (error) {
+        alert('Error generating content: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bx bx-sparkles me-1"></i> Generate';
+      }
+    }
   </script>
 </x-layouts.app>
