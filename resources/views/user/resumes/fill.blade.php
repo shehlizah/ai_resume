@@ -405,12 +405,41 @@
 
   <!-- Loading overlay -->
   <script>
+    let currentExperienceFieldId = null;
+    let currentEducationFieldId = null;
+
     // Form submission
     document.getElementById('resumeForm').addEventListener('submit', function() {
       const btn = document.getElementById('generateBtn');
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating PDF...';
       btn.disabled = true;
     });
+
+    // Show experience modal for a specific field
+    function showExperienceModalForField(fieldId) {
+      currentExperienceFieldId = fieldId;
+      // Clear the modal fields
+      document.getElementById('aiJobTitle').value = '';
+      document.getElementById('aiCompany').value = '';
+      document.getElementById('aiYears').value = '';
+      document.getElementById('aiResponsibilities').value = '';
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('experienceAIModal'));
+      modal.show();
+    }
+
+    // Show education modal for a specific field
+    function showEducationModalForField(fieldId) {
+      currentEducationFieldId = fieldId;
+      // Clear the modal fields
+      document.getElementById('aiDegree').value = '';
+      document.getElementById('aiFieldOfStudy').value = '';
+      document.getElementById('aiUniversity').value = '';
+      document.getElementById('aiGraduationYear').value = '';
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('educationAIModal'));
+      modal.show();
+    }
 
     // AI Generation Functions
     async function generateExperienceAI() {
@@ -445,12 +474,28 @@
 
         const data = await response.json();
         if (data.success) {
-          // Add new experience field with generated content
-          addExperienceField();
-          const experienceContainer = document.getElementById('experienceContainer');
-          const fields = experienceContainer.querySelectorAll('textarea');
-          const lastField = fields[fields.length - 2]; // Get the newly added textarea (before remove button)
-          lastField.value = data.content;
+          // Check if we're filling a specific field
+          if (currentExperienceFieldId) {
+            const targetField = document.getElementById(currentExperienceFieldId);
+            if (targetField) {
+              targetField.value = data.content;
+            }
+            currentExperienceFieldId = null;
+          } else {
+            // Check if first field is empty, if so fill it; otherwise add new field
+            const firstField = document.getElementById('experienceField0');
+            if (firstField && firstField.value.trim() === '') {
+              firstField.value = data.content;
+            } else {
+              // Add new field and fill it
+              addExperienceField();
+              const newFieldId = 'experienceField' + experienceCount;
+              const newField = document.getElementById(newFieldId);
+              if (newField) {
+                newField.value = data.content;
+              }
+            }
+          }
           bootstrap.Modal.getInstance(document.getElementById('experienceAIModal')).hide();
         } else {
           alert('Error: ' + data.message);
@@ -488,7 +533,7 @@
       aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI';
       const fieldId = 'experienceField' + experienceCount;
       aiBtn.onclick = function() {
-        generateExperienceAIForField(fieldId);
+        showExperienceModalForField(fieldId);
       };
 
       // Create textarea
@@ -594,12 +639,28 @@
 
         const data = await response.json();
         if (data.success) {
-          // Add new education field with generated content
-          addEducationField();
-          const educationContainer = document.getElementById('educationContainer');
-          const fields = educationContainer.querySelectorAll('textarea');
-          const lastField = fields[fields.length - 2]; // Get the newly added textarea (before remove button)
-          lastField.value = data.content;
+          // Check if we're filling a specific field
+          if (currentEducationFieldId) {
+            const targetField = document.getElementById(currentEducationFieldId);
+            if (targetField) {
+              targetField.value = data.content;
+            }
+            currentEducationFieldId = null;
+          } else {
+            // Check if first field is empty, if so fill it; otherwise add new field
+            const firstField = document.getElementById('educationField0');
+            if (firstField && firstField.value.trim() === '') {
+              firstField.value = data.content;
+            } else {
+              // Add new field and fill it
+              addEducationField();
+              const newFieldId = 'educationField' + educationCount;
+              const newField = document.getElementById(newFieldId);
+              if (newField) {
+                newField.value = data.content;
+              }
+            }
+          }
           bootstrap.Modal.getInstance(document.getElementById('educationAIModal')).hide();
         } else {
           alert('Error: ' + data.message);
@@ -637,7 +698,7 @@
       aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI';
       const fieldId = 'educationField' + educationCount;
       aiBtn.onclick = function() {
-        generateEducationAIForField(fieldId);
+        showEducationModalForField(fieldId);
       };
 
       // Create textarea
@@ -710,117 +771,6 @@
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="bx bx-sparkles me-1"></i> Generate';
-      }
-    }
-
-    // Generate experience for a specific field
-    async function generateExperienceAIForField(fieldId) {
-      const jobTitle = document.getElementById('aiJobTitle').value;
-      const company = document.getElementById('aiCompany').value;
-      const years = document.getElementById('aiYears').value;
-      const responsibilities = document.getElementById('aiResponsibilities').value;
-
-      if (!jobTitle || !company || !years) {
-        alert('Please fill in all required fields in the modal');
-        return;
-      }
-
-      // Show modal for input
-      const modal = new bootstrap.Modal(document.getElementById('experienceAIModal'));
-      modal.show();
-
-      const btn = document.getElementById('experienceAIBtn');
-      const originalText = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
-
-      try {
-        const response = await fetch('{{ route("user.resumes.generate-experience-ai") }}', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-          },
-          body: JSON.stringify({
-            job_title: jobTitle,
-            company: company,
-            years: years,
-            responsibilities: responsibilities
-          })
-        });
-
-        const data = await response.json();
-        if (data.success) {
-          const targetField = document.getElementById(fieldId);
-          if (targetField) {
-            targetField.value = data.content;
-            modal.hide();
-          } else {
-            alert('Field not found');
-          }
-        } else {
-          alert('Error: ' + data.message);
-        }
-      } catch (error) {
-        alert('Error generating content: ' + error.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-      }
-    }
-
-    // Generate education for a specific field
-    async function generateEducationAIForField(fieldId) {
-      const degree = document.getElementById('aiDegree').value;
-      const fieldOfStudy = document.getElementById('aiFieldOfStudy').value;
-      const university = document.getElementById('aiUniversity').value;
-      const graduationYear = document.getElementById('aiGraduationYear').value;
-
-      if (!degree || !fieldOfStudy || !university || !graduationYear) {
-        // Show modal for input
-        const modal = new bootstrap.Modal(document.getElementById('educationAIModal'));
-        modal.show();
-        return;
-      }
-
-      const btn = document.getElementById('educationAIBtn');
-      const originalText = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
-
-      try {
-        const response = await fetch('{{ route("user.resumes.generate-education-ai") }}', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-          },
-          body: JSON.stringify({
-            degree: degree,
-            field_of_study: fieldOfStudy,
-            university: university,
-            graduation_year: graduationYear
-          })
-        });
-
-        const data = await response.json();
-        if (data.success) {
-          const targetField = document.getElementById(fieldId);
-          if (targetField) {
-            targetField.value = data.content;
-            const modal = bootstrap.Modal.getInstance(document.getElementById('educationAIModal'));
-            if (modal) modal.hide();
-          } else {
-            alert('Field not found');
-          }
-        } else {
-          alert('Error: ' + data.message);
-        }
-      } catch (error) {
-        alert('Error generating content: ' + error.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
       }
     }
   </script>
