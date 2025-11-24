@@ -461,24 +461,55 @@
     let experienceCount = 1;
     function addExperienceField() {
       const container = document.getElementById('experienceContainer');
+
+      // Create wrapper div for field and buttons
+      const fieldWrapper = document.createElement('div');
+      fieldWrapper.className = 'mb-3';
+      fieldWrapper.id = 'experienceWrapper' + experienceCount;
+
+      // Add label
+      const label = document.createElement('label');
+      label.className = 'form-label small text-muted';
+      label.innerHTML = 'Experience ' + (experienceCount + 1) + ' <span class="badge bg-secondary">Entry</span>';
+
+      // Add button group for AI and Remove
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'd-flex gap-2 mb-2';
+
+      const aiBtn = document.createElement('button');
+      aiBtn.type = 'button';
+      aiBtn.className = 'btn btn-xs btn-outline-primary';
+      aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate';
+      const fieldId = 'experienceField' + experienceCount;
+      aiBtn.onclick = function() {
+        generateExperienceAIForField(fieldId);
+      };
+
+      // Create textarea
       const newField = document.createElement('textarea');
-      newField.className = 'form-control mb-3';
+      newField.className = 'form-control mb-2';
       newField.name = 'experience[]';
       newField.rows = 4;
       newField.placeholder = 'Add your work history...';
-      newField.id = 'experienceField' + experienceCount;
+      newField.id = fieldId;
 
+      // Create remove button
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      removeBtn.className = 'btn btn-sm btn-danger mb-3';
+      removeBtn.className = 'btn btn-xs btn-danger';
       removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
       removeBtn.onclick = function() {
-        newField.remove();
-        removeBtn.remove();
+        fieldWrapper.remove();
       };
 
-      container.appendChild(newField);
-      container.appendChild(removeBtn);
+      btnGroup.appendChild(aiBtn);
+      btnGroup.appendChild(removeBtn);
+
+      fieldWrapper.appendChild(label);
+      fieldWrapper.appendChild(btnGroup);
+      fieldWrapper.appendChild(newField);
+
+      container.appendChild(fieldWrapper);
       experienceCount++;
     }
 
@@ -579,24 +610,55 @@
     let educationCount = 1;
     function addEducationField() {
       const container = document.getElementById('educationContainer');
+
+      // Create wrapper div for field and buttons
+      const fieldWrapper = document.createElement('div');
+      fieldWrapper.className = 'mb-3';
+      fieldWrapper.id = 'educationWrapper' + educationCount;
+
+      // Add label
+      const label = document.createElement('label');
+      label.className = 'form-label small text-muted';
+      label.innerHTML = 'Education ' + (educationCount + 1) + ' <span class="badge bg-secondary">Entry</span>';
+
+      // Add button group for AI and Remove
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'd-flex gap-2 mb-2';
+
+      const aiBtn = document.createElement('button');
+      aiBtn.type = 'button';
+      aiBtn.className = 'btn btn-xs btn-outline-primary';
+      aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate';
+      const fieldId = 'educationField' + educationCount;
+      aiBtn.onclick = function() {
+        generateEducationAIForField(fieldId);
+      };
+
+      // Create textarea
       const newField = document.createElement('textarea');
-      newField.className = 'form-control mb-3';
+      newField.className = 'form-control mb-2';
       newField.name = 'education[]';
       newField.rows = 3;
       newField.placeholder = 'Add your education...';
-      newField.id = 'educationField' + educationCount;
+      newField.id = fieldId;
 
+      // Create remove button
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      removeBtn.className = 'btn btn-sm btn-danger mb-3';
+      removeBtn.className = 'btn btn-xs btn-danger';
       removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
       removeBtn.onclick = function() {
-        newField.remove();
-        removeBtn.remove();
+        fieldWrapper.remove();
       };
 
-      container.appendChild(newField);
-      container.appendChild(removeBtn);
+      btnGroup.appendChild(aiBtn);
+      btnGroup.appendChild(removeBtn);
+
+      fieldWrapper.appendChild(label);
+      fieldWrapper.appendChild(btnGroup);
+      fieldWrapper.appendChild(newField);
+
+      container.appendChild(fieldWrapper);
       educationCount++;
     }
 
@@ -642,6 +704,117 @@
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="bx bx-sparkles me-1"></i> Generate';
+      }
+    }
+
+    // Generate experience for a specific field
+    async function generateExperienceAIForField(fieldId) {
+      const jobTitle = document.getElementById('aiJobTitle').value;
+      const company = document.getElementById('aiCompany').value;
+      const years = document.getElementById('aiYears').value;
+      const responsibilities = document.getElementById('aiResponsibilities').value;
+
+      if (!jobTitle || !company || !years) {
+        alert('Please fill in all required fields in the modal');
+        return;
+      }
+
+      // Show modal for input
+      const modal = new bootstrap.Modal(document.getElementById('experienceAIModal'));
+      modal.show();
+
+      const btn = document.getElementById('experienceAIBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+
+      try {
+        const response = await fetch('{{ route("user.resumes.generate-experience-ai") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+          },
+          body: JSON.stringify({
+            job_title: jobTitle,
+            company: company,
+            years: years,
+            responsibilities: responsibilities
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          const targetField = document.getElementById(fieldId);
+          if (targetField) {
+            targetField.value = data.content;
+            modal.hide();
+          } else {
+            alert('Field not found');
+          }
+        } else {
+          alert('Error: ' + data.message);
+        }
+      } catch (error) {
+        alert('Error generating content: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    // Generate education for a specific field
+    async function generateEducationAIForField(fieldId) {
+      const degree = document.getElementById('aiDegree').value;
+      const fieldOfStudy = document.getElementById('aiFieldOfStudy').value;
+      const university = document.getElementById('aiUniversity').value;
+      const graduationYear = document.getElementById('aiGraduationYear').value;
+
+      if (!degree || !fieldOfStudy || !university || !graduationYear) {
+        // Show modal for input
+        const modal = new bootstrap.Modal(document.getElementById('educationAIModal'));
+        modal.show();
+        return;
+      }
+
+      const btn = document.getElementById('educationAIBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+
+      try {
+        const response = await fetch('{{ route("user.resumes.generate-education-ai") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+          },
+          body: JSON.stringify({
+            degree: degree,
+            field_of_study: fieldOfStudy,
+            university: university,
+            graduation_year: graduationYear
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          const targetField = document.getElementById(fieldId);
+          if (targetField) {
+            targetField.value = data.content;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('educationAIModal'));
+            if (modal) modal.hide();
+          } else {
+            alert('Field not found');
+          }
+        } else {
+          alert('Error: ' + data.message);
+        }
+      } catch (error) {
+        alert('Error generating content: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
       }
     }
   </script>
