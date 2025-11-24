@@ -161,13 +161,29 @@
               </div>
             </div>
             <div id="experienceContainer">
-              <div class="mb-4 p-3 border-bottom">
+              <div class="mb-4 p-3 border-bottom" id="experienceWrapper0">
                 <label class="form-label fw-500 mt-2 mb-2">Experience 1 <span class="badge bg-secondary ms-2">Entry</span></label>
-                <textarea name="experience[]"
-                          rows="4"
-                          class="form-control @error('experience.0') is-invalid @enderror"
-                          id="experienceField0"
-                          placeholder="Add your work history...">{{ old('experience.0', old('experience')) }}</textarea>
+                <div class="row g-2 mb-2">
+                  <div class="col-md-4">
+                    <input type="text" name="job_title[]" id="job_title0" class="form-control" placeholder="Job Title (e.g., Senior Developer)" value="{{ old('job_title.0') }}">
+                  </div>
+                  <div class="col-md-4">
+                    <input type="text" name="company[]" id="company0" class="form-control" placeholder="Company (e.g., Tech Corp)" value="{{ old('company.0') }}">
+                  </div>
+                  <div class="col-md-2">
+                    <input type="text" name="start_date[]" id="start_date0" class="form-control" placeholder="Start (e.g., Jan 2020)" value="{{ old('start_date.0') }}">
+                  </div>
+                  <div class="col-md-2">
+                    <input type="text" name="end_date[]" id="end_date0" class="form-control" placeholder="End (e.g., Present)" value="{{ old('end_date.0') }}">
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <textarea name="responsibilities[]" id="responsibilities0" rows="4" class="form-control" placeholder="Responsibilities / achievements (one per line)">{{ old('responsibilities.0') }}</textarea>
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-primary" onclick="showExperienceModalForIndex(0)"><i class="bx bx-sparkles"></i> Generate with AI</button>
+                  <button type="button" class="btn btn-sm btn-danger" onclick="document.getElementById('experienceWrapper0').remove()"><i class="bx bx-trash"></i> Remove</button>
+                </div>
               </div>
             </div>
             <small class="text-muted">Example: Senior Developer at ABC Corp (2020-Present) - Led development team and managed projects</small>
@@ -213,13 +229,31 @@
               </div>
             </div>
             <div id="educationContainer">
-              <div class="mb-4 p-3 border-bottom">
+              <div class="mb-4 p-3 border-bottom" id="educationWrapper0">
                 <label class="form-label fw-500 mt-2 mb-2">Education 1 <span class="badge bg-secondary ms-2">Entry</span></label>
-                <textarea name="education[]"
-                          rows="3"
-                          class="form-control @error('education.0') is-invalid @enderror"
-                          id="educationField0"
-                          placeholder="Add your education...">{{ old('education.0', old('education')) }}</textarea>
+                <div class="row g-2 mb-2">
+                  <div class="col-md-6">
+                    <input type="text" name="degree[]" id="degree0" class="form-control" placeholder="Degree (e.g., BSc Computer Science)" value="{{ old('degree.0') }}">
+                  </div>
+                  <div class="col-md-6">
+                    <input type="text" name="field_of_study[]" id="field_of_study0" class="form-control" placeholder="Field of Study" value="{{ old('field_of_study.0') }}">
+                  </div>
+                </div>
+                <div class="row g-2 mb-2">
+                  <div class="col-md-8">
+                    <input type="text" name="university[]" id="university0" class="form-control" placeholder="University / Institution" value="{{ old('university.0') }}">
+                  </div>
+                  <div class="col-md-4">
+                    <input type="text" name="graduation_year[]" id="graduation_year0" class="form-control" placeholder="Year (e.g., 2018)" value="{{ old('graduation_year.0') }}">
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <textarea name="education_details[]" id="education_details0" rows="3" class="form-control" placeholder="Details / honors (one per line)">{{ old('education_details.0') }}</textarea>
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-primary" onclick="showEducationModalForIndex(0)"><i class="bx bx-sparkles"></i> Generate with AI</button>
+                  <button type="button" class="btn btn-sm btn-danger" onclick="document.getElementById('educationWrapper0').remove()"><i class="bx bx-trash"></i> Remove</button>
+                </div>
               </div>
             </div>
             <small class="text-muted">Example: BS Computer Science, XYZ University (2018) - GPA: 3.8/4.0</small>
@@ -405,8 +439,8 @@
 
   <!-- Loading overlay -->
   <script>
-    let currentExperienceFieldId = null;
-    let currentEducationFieldId = null;
+    let currentExperienceIndex = null;
+    let currentEducationIndex = null;
 
     // Form submission
     document.getElementById('resumeForm').addEventListener('submit', function() {
@@ -415,9 +449,9 @@
       btn.disabled = true;
     });
 
-    // Show experience modal for a specific field
-    function showExperienceModalForField(fieldId) {
-      currentExperienceFieldId = fieldId;
+    // Show experience modal for a specific index
+    function showExperienceModalForIndex(index) {
+      currentExperienceIndex = index;
       // Clear the modal fields
       document.getElementById('aiJobTitle').value = '';
       document.getElementById('aiCompany').value = '';
@@ -428,9 +462,9 @@
       modal.show();
     }
 
-    // Show education modal for a specific field
-    function showEducationModalForField(fieldId) {
-      currentEducationFieldId = fieldId;
+    // Show education modal for a specific index
+    function showEducationModalForIndex(index) {
+      currentEducationIndex = index;
       // Clear the modal fields
       document.getElementById('aiDegree').value = '';
       document.getElementById('aiFieldOfStudy').value = '';
@@ -474,26 +508,34 @@
 
         const data = await response.json();
         if (data.success) {
-          // Check if we're filling a specific field
-          if (currentExperienceFieldId) {
-            const targetField = document.getElementById(currentExperienceFieldId);
-            if (targetField) {
-              targetField.value = data.content;
-            }
-            currentExperienceFieldId = null;
+          // If current index specified, fill structured fields at that index
+          if (currentExperienceIndex !== null) {
+            const idx = currentExperienceIndex;
+            const titleEl = document.getElementById('job_title' + idx);
+            const companyEl = document.getElementById('company' + idx);
+            const respEl = document.getElementById('responsibilities' + idx);
+            if (titleEl) titleEl.value = jobTitle;
+            if (companyEl) companyEl.value = company;
+            if (respEl) respEl.value = data.content;
+            currentExperienceIndex = null;
           } else {
-            // Check if first field is empty, if so fill it; otherwise add new field
-            const firstField = document.getElementById('experienceField0');
-            if (firstField && firstField.value.trim() === '') {
-              firstField.value = data.content;
+            // Find first empty structured block
+            const firstTitle = document.getElementById('job_title0');
+            const firstResp = document.getElementById('responsibilities0');
+            if (firstTitle && firstTitle.value.trim() === '' && firstResp && firstResp.value.trim() === '') {
+              firstTitle.value = jobTitle;
+              document.getElementById('company0').value = company;
+              firstResp.value = data.content;
             } else {
-              // Add new field and fill it
+              // Add new structured block and fill it
               addExperienceField();
-              const newFieldId = 'experienceField' + experienceCount;
-              const newField = document.getElementById(newFieldId);
-              if (newField) {
-                newField.value = data.content;
-              }
+              const newIdx = experienceCount - 1;
+              const titleEl = document.getElementById('job_title' + newIdx);
+              const companyEl = document.getElementById('company' + newIdx);
+              const respEl = document.getElementById('responsibilities' + newIdx);
+              if (titleEl) titleEl.value = jobTitle;
+              if (companyEl) companyEl.value = company;
+              if (respEl) respEl.value = data.content;
             }
           }
           bootstrap.Modal.getInstance(document.getElementById('experienceAIModal')).hide();
@@ -508,57 +550,55 @@
       }
     }
 
-    // Add multiple experience entries
+    // Add multiple structured experience entries
     let experienceCount = 1;
     function addExperienceField() {
       const container = document.getElementById('experienceContainer');
 
-      // Create wrapper div for field and buttons
+      const idx = experienceCount;
       const fieldWrapper = document.createElement('div');
       fieldWrapper.className = 'mb-4 p-3 border-top';
-      fieldWrapper.id = 'experienceWrapper' + experienceCount;
+      fieldWrapper.id = 'experienceWrapper' + idx;
 
-      // Add label
       const label = document.createElement('label');
       label.className = 'form-label fw-500 mt-2 mb-2';
-      label.innerHTML = 'Experience ' + (experienceCount + 1) + ' <span class="badge bg-secondary ms-2">Entry</span>';
+      label.innerHTML = 'Experience ' + (idx + 1) + ' <span class="badge bg-secondary ms-2">Entry</span>';
 
-      // Add button group for AI and Remove
-      const btnGroup = document.createElement('div');
-      btnGroup.className = 'd-flex gap-2 mb-3';
+      const row = document.createElement('div');
+      row.className = 'row g-2 mb-2';
 
-      const aiBtn = document.createElement('button');
-      aiBtn.type = 'button';
-      aiBtn.className = 'btn btn-sm btn-outline-primary';
-      aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI';
-      const fieldId = 'experienceField' + experienceCount;
-      aiBtn.onclick = function() {
-        showExperienceModalForField(fieldId);
-      };
+      const col1 = document.createElement('div'); col1.className = 'col-md-4';
+      const jobInput = document.createElement('input'); jobInput.type = 'text'; jobInput.name = 'job_title[]'; jobInput.id = 'job_title' + idx; jobInput.className = 'form-control'; jobInput.placeholder = 'Job Title (e.g., Senior Developer)';
+      col1.appendChild(jobInput);
 
-      // Create textarea
-      const newField = document.createElement('textarea');
-      newField.className = 'form-control';
-      newField.name = 'experience[]';
-      newField.rows = 4;
-      newField.placeholder = 'Add your work history...';
-      newField.id = fieldId;
+      const col2 = document.createElement('div'); col2.className = 'col-md-4';
+      const compInput = document.createElement('input'); compInput.type = 'text'; compInput.name = 'company[]'; compInput.id = 'company' + idx; compInput.className = 'form-control'; compInput.placeholder = 'Company (e.g., Tech Corp)';
+      col2.appendChild(compInput);
 
-      // Create remove button
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.className = 'btn btn-sm btn-danger';
-      removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
-      removeBtn.onclick = function() {
-        fieldWrapper.remove();
-      };
+      const col3 = document.createElement('div'); col3.className = 'col-md-2';
+      const startInput = document.createElement('input'); startInput.type = 'text'; startInput.name = 'start_date[]'; startInput.id = 'start_date' + idx; startInput.className = 'form-control'; startInput.placeholder = 'Start (e.g., Jan 2020)';
+      col3.appendChild(startInput);
 
-      btnGroup.appendChild(aiBtn);
-      btnGroup.appendChild(removeBtn);
+      const col4 = document.createElement('div'); col4.className = 'col-md-2';
+      const endInput = document.createElement('input'); endInput.type = 'text'; endInput.name = 'end_date[]'; endInput.id = 'end_date' + idx; endInput.className = 'form-control'; endInput.placeholder = 'End (e.g., Present)';
+      col4.appendChild(endInput);
+
+      row.appendChild(col1); row.appendChild(col2); row.appendChild(col3); row.appendChild(col4);
+
+      const respDiv = document.createElement('div'); respDiv.className = 'mb-2';
+      const respArea = document.createElement('textarea'); respArea.name = 'responsibilities[]'; respArea.id = 'responsibilities' + idx; respArea.rows = 4; respArea.className = 'form-control'; respArea.placeholder = 'Responsibilities / achievements (one per line)';
+      respDiv.appendChild(respArea);
+
+      const btnDiv = document.createElement('div'); btnDiv.className = 'd-flex gap-2';
+      const aiBtn = document.createElement('button'); aiBtn.type = 'button'; aiBtn.className = 'btn btn-sm btn-outline-primary'; aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI';
+      aiBtn.onclick = function() { showExperienceModalForIndex(idx); };
+      const removeBtn = document.createElement('button'); removeBtn.type = 'button'; removeBtn.className = 'btn btn-sm btn-danger'; removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove'; removeBtn.onclick = function() { fieldWrapper.remove(); };
+      btnDiv.appendChild(aiBtn); btnDiv.appendChild(removeBtn);
 
       fieldWrapper.appendChild(label);
-      fieldWrapper.appendChild(btnGroup);
-      fieldWrapper.appendChild(newField);
+      fieldWrapper.appendChild(row);
+      fieldWrapper.appendChild(respDiv);
+      fieldWrapper.appendChild(btnDiv);
 
       container.appendChild(fieldWrapper);
       experienceCount++;
@@ -639,26 +679,41 @@
 
         const data = await response.json();
         if (data.success) {
-          // Check if we're filling a specific field
-          if (currentEducationFieldId) {
-            const targetField = document.getElementById(currentEducationFieldId);
-            if (targetField) {
-              targetField.value = data.content;
-            }
-            currentEducationFieldId = null;
+          if (currentEducationIndex !== null) {
+            const idx = currentEducationIndex;
+            const degreeEl = document.getElementById('degree' + idx);
+            const fieldEl = document.getElementById('field_of_study' + idx);
+            const univEl = document.getElementById('university' + idx);
+            const gradEl = document.getElementById('graduation_year' + idx);
+            const detailsEl = document.getElementById('education_details' + idx);
+            if (degreeEl) degreeEl.value = degree;
+            if (fieldEl) fieldEl.value = fieldOfStudy;
+            if (univEl) univEl.value = university;
+            if (gradEl) gradEl.value = graduationYear;
+            if (detailsEl) detailsEl.value = data.content;
+            currentEducationIndex = null;
           } else {
-            // Check if first field is empty, if so fill it; otherwise add new field
-            const firstField = document.getElementById('educationField0');
-            if (firstField && firstField.value.trim() === '') {
-              firstField.value = data.content;
+            const firstDegree = document.getElementById('degree0');
+            const firstDetails = document.getElementById('education_details0');
+            if (firstDegree && firstDegree.value.trim() === '' && firstDetails && firstDetails.value.trim() === '') {
+              firstDegree.value = degree;
+              document.getElementById('field_of_study0').value = fieldOfStudy;
+              document.getElementById('university0').value = university;
+              document.getElementById('graduation_year0').value = graduationYear;
+              firstDetails.value = data.content;
             } else {
-              // Add new field and fill it
               addEducationField();
-              const newFieldId = 'educationField' + educationCount;
-              const newField = document.getElementById(newFieldId);
-              if (newField) {
-                newField.value = data.content;
-              }
+              const newIdx = educationCount - 1;
+              const degreeEl = document.getElementById('degree' + newIdx);
+              const fieldEl = document.getElementById('field_of_study' + newIdx);
+              const univEl = document.getElementById('university' + newIdx);
+              const gradEl = document.getElementById('graduation_year' + newIdx);
+              const detailsEl = document.getElementById('education_details' + newIdx);
+              if (degreeEl) degreeEl.value = degree;
+              if (fieldEl) fieldEl.value = fieldOfStudy;
+              if (univEl) univEl.value = university;
+              if (gradEl) gradEl.value = graduationYear;
+              if (detailsEl) detailsEl.value = data.content;
             }
           }
           bootstrap.Modal.getInstance(document.getElementById('educationAIModal')).hide();
@@ -673,57 +728,51 @@
       }
     }
 
-    // Add multiple education entries
+    // Add multiple structured education entries
     let educationCount = 1;
     function addEducationField() {
       const container = document.getElementById('educationContainer');
-
-      // Create wrapper div for field and buttons
+      const idx = educationCount;
       const fieldWrapper = document.createElement('div');
       fieldWrapper.className = 'mb-4 p-3 border-top';
-      fieldWrapper.id = 'educationWrapper' + educationCount;
+      fieldWrapper.id = 'educationWrapper' + idx;
 
-      // Add label
       const label = document.createElement('label');
       label.className = 'form-label fw-500 mt-2 mb-2';
-      label.innerHTML = 'Education ' + (educationCount + 1) + ' <span class="badge bg-secondary ms-2">Entry</span>';
+      label.innerHTML = 'Education ' + (idx + 1) + ' <span class="badge bg-secondary ms-2">Entry</span>';
 
-      // Add button group for AI and Remove
-      const btnGroup = document.createElement('div');
-      btnGroup.className = 'd-flex gap-2 mb-3';
+      const row1 = document.createElement('div'); row1.className = 'row g-2 mb-2';
+      const col1 = document.createElement('div'); col1.className = 'col-md-6';
+      const degInput = document.createElement('input'); degInput.type = 'text'; degInput.name = 'degree[]'; degInput.id = 'degree' + idx; degInput.className = 'form-control'; degInput.placeholder = 'Degree (e.g., BSc Computer Science)';
+      col1.appendChild(degInput);
+      const col2 = document.createElement('div'); col2.className = 'col-md-6';
+      const fieldInput = document.createElement('input'); fieldInput.type = 'text'; fieldInput.name = 'field_of_study[]'; fieldInput.id = 'field_of_study' + idx; fieldInput.className = 'form-control'; fieldInput.placeholder = 'Field of Study';
+      col2.appendChild(fieldInput);
+      row1.appendChild(col1); row1.appendChild(col2);
 
-      const aiBtn = document.createElement('button');
-      aiBtn.type = 'button';
-      aiBtn.className = 'btn btn-sm btn-outline-primary';
-      aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI';
-      const fieldId = 'educationField' + educationCount;
-      aiBtn.onclick = function() {
-        showEducationModalForField(fieldId);
-      };
+      const row2 = document.createElement('div'); row2.className = 'row g-2 mb-2';
+      const col3 = document.createElement('div'); col3.className = 'col-md-8';
+      const univInput = document.createElement('input'); univInput.type = 'text'; univInput.name = 'university[]'; univInput.id = 'university' + idx; univInput.className = 'form-control'; univInput.placeholder = 'University / Institution';
+      col3.appendChild(univInput);
+      const col4 = document.createElement('div'); col4.className = 'col-md-4';
+      const gradInput = document.createElement('input'); gradInput.type = 'text'; gradInput.name = 'graduation_year[]'; gradInput.id = 'graduation_year' + idx; gradInput.className = 'form-control'; gradInput.placeholder = 'Year (e.g., 2018)';
+      col4.appendChild(gradInput);
+      row2.appendChild(col3); row2.appendChild(col4);
 
-      // Create textarea
-      const newField = document.createElement('textarea');
-      newField.className = 'form-control';
-      newField.name = 'education[]';
-      newField.rows = 3;
-      newField.placeholder = 'Add your education...';
-      newField.id = fieldId;
+      const detailsDiv = document.createElement('div'); detailsDiv.className = 'mb-2';
+      const detailsArea = document.createElement('textarea'); detailsArea.name = 'education_details[]'; detailsArea.id = 'education_details' + idx; detailsArea.rows = 3; detailsArea.className = 'form-control'; detailsArea.placeholder = 'Details / honors (one per line)';
+      detailsDiv.appendChild(detailsArea);
 
-      // Create remove button
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.className = 'btn btn-sm btn-danger';
-      removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
-      removeBtn.onclick = function() {
-        fieldWrapper.remove();
-      };
-
-      btnGroup.appendChild(aiBtn);
-      btnGroup.appendChild(removeBtn);
+      const btnDiv = document.createElement('div'); btnDiv.className = 'd-flex gap-2';
+      const aiBtn = document.createElement('button'); aiBtn.type = 'button'; aiBtn.className = 'btn btn-sm btn-outline-primary'; aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI'; aiBtn.onclick = function() { showEducationModalForIndex(idx); };
+      const removeBtn = document.createElement('button'); removeBtn.type = 'button'; removeBtn.className = 'btn btn-sm btn-danger'; removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove'; removeBtn.onclick = function() { fieldWrapper.remove(); };
+      btnDiv.appendChild(aiBtn); btnDiv.appendChild(removeBtn);
 
       fieldWrapper.appendChild(label);
-      fieldWrapper.appendChild(btnGroup);
-      fieldWrapper.appendChild(newField);
+      fieldWrapper.appendChild(row1);
+      fieldWrapper.appendChild(row2);
+      fieldWrapper.appendChild(detailsDiv);
+      fieldWrapper.appendChild(btnDiv);
 
       container.appendChild(fieldWrapper);
       educationCount++;

@@ -220,24 +220,28 @@ class UserResumeController extends Controller
             }
         }
 
-        // Replace all placeholders with user data
-        $placeholders = [
-            '{{name}}' => $data['name'] ?? '',
-            '{{title}}' => $data['title'] ?? '',
-            '{{email}}' => $data['email'] ?? '',
-            '{{phone}}' => $data['phone'] ?? '',
-            '{{address}}' => $data['address'] ?? '',
-            '{{summary}}' => $data['summary'] ?? 'No summary provided',
-            '{{experience}}' => $data['experience'] ?? 'No experience provided',
-            '{{skills}}' => $data['skills'] ?? 'No skills provided',
-            '{{education}}' => $data['education'] ?? 'No education provided',
+        // Replace placeholders with user data. For certain sections we allow raw HTML
+        $keys = [
+            'name', 'title', 'email', 'phone', 'address', 'summary',
+            'experience', 'skills', 'education', 'certifications', 'projects', 'languages', 'interests'
         ];
 
-        // Replace each placeholder
-        foreach ($placeholders as $placeholder => $value) {
-            // Escape HTML special characters for security
-            $escapedValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-            $html = str_replace($placeholder, $escapedValue, $html);
+        // Keys that contain HTML fragments and should NOT be escaped
+        $rawHtmlKeys = ['experience', 'skills', 'education', 'certifications', 'projects', 'languages', 'interests'];
+
+        foreach ($keys as $key) {
+            $placeholder = '{{' . $key . '}}';
+            $value = $data[$key] ?? '';
+
+            if (in_array($key, $rawHtmlKeys)) {
+                // Value is expected to be safe HTML fragments created server-side
+                $replaceValue = $value;
+            } else {
+                // Escape simple text fields for safety
+                $replaceValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+            }
+
+            $html = str_replace($placeholder, $replaceValue, $html);
         }
 
         return $html;
@@ -269,16 +273,52 @@ class UserResumeController extends Controller
     }
 
 
-      // Sample data for preview
-        $sampleData = [
-            'name' => 'John Doe',
-            'title' => 'Software Engineer',
-            'email' => 'john.doe@example.com',
-            'phone' => '+1 (555) 123-4567',
-            'experience' => "Senior Software Engineer at Tech Corp (2020-Present)\n- Led development of microservices architecture\n- Managed team of 5 developers\n\nSoftware Developer at StartupXYZ (2018-2020)\n- Built RESTful APIs using Laravel\n- Improved application performance by 40%",
-            'skills' => "• PHP, Laravel, Vue.js\n• MySQL, PostgreSQL, Redis\n• Docker, AWS, CI/CD\n• RESTful API Design\n• Team Leadership",
-            'education' => "Bachelor of Science in Computer Science\nUniversity of Technology (2014-2018)\nGPA: 3.8/4.0\n\nRelevant Coursework:\n- Data Structures & Algorithms\n- Database Systems\n- Web Development",
-        ];
+            // Sample data for preview (match admin preview sample data)
+                $sampleData = [
+                        // Personal Information
+                        'name' => 'John Doe',
+                        'full_name' => 'John Michael Doe',
+                        'first_name' => 'John',
+                        'last_name' => 'Doe',
+                        'email' => 'john.doe@example.com',
+                        'title' => 'Senior Software Engineer',
+                        'job_title' => 'Senior Software Engineer',
+                        'phone' => '+1 (555) 123-4567',
+                        'address' => '123 Main Street, San Francisco, CA 94105',
+                        'city' => 'San Francisco',
+                        'state' => 'California',
+                        'zip' => '94105',
+                        'country' => 'United States',
+                        'linkedin' => 'linkedin.com/in/johndoe',
+                        'github' => 'github.com/johndoe',
+                        'website' => 'www.johndoe.com',
+                        'portfolio' => 'johndoe.dev',
+
+                        // Summary/Objective
+                        'summary' => 'Experienced software engineer with 10+ years of expertise in full-stack development, cloud architecture, and agile methodologies. Proven track record of delivering high-quality solutions and leading cross-functional teams to success. Passionate about building scalable applications and mentoring junior developers.',
+                        'objective' => 'Seeking a challenging senior developer role where I can leverage my expertise in modern web technologies to build innovative solutions and contribute to team growth.',
+
+                        // Experience Section (HTML formatted)
+                        'experience' => '\n                <div class="experience-item">\n                    <div class="job-header">\n                        <h3 class="job-title">Senior Software Engineer</h3>\n                        <span class="job-date">Jan 2020 - Present</span>\n                    </div>\n                    <div class="company-name">TechCorp Inc. - San Francisco, CA</div>\n                    <ul class="job-responsibilities">\n                        <li>Led development of microservices architecture serving 1M+ users with 99.9% uptime</li>\n                        <li>Mentored team of 5 junior developers, conducting code reviews and technical training</li>\n                        <li>Improved system performance by 40% through database optimization and caching strategies</li>\n                        <li>Implemented CI/CD pipelines reducing deployment time by 60%</li>\n                    </ul>\n                </div>\n                <div class="experience-item">\n                    <div class="job-header">\n                        <h3 class="job-title">Software Developer</h3>\n                        <span class="job-date">Jun 2018 - Dec 2019</span>\n                    </div>\n                    <div class="company-name">StartUp LLC - Remote</div>\n                    <ul class="job-responsibilities">\n                        <li>Developed RESTful APIs using Laravel and Node.js serving 100K+ daily requests</li>\n                        <li>Collaborated with product team on feature planning and technical specifications</li>\n                        <li>Implemented automated testing suite reducing production bugs by 60%</li>\n                        <li>Migrated legacy monolith to modern microservices architecture</li>\n                    </ul>\n                </div>\n                <div class="experience-item">\n                    <div class="job-header">\n                        <h3 class="job-title">Junior Developer</h3>\n                        <span class="job-date">Jul 2016 - May 2018</span>\n                    </div>\n                    <div class="company-name">Digital Agency - New York, NY</div>\n                    <ul class="job-responsibilities">\n                        <li>Built responsive websites for clients using React and Vue.js</li>\n                        <li>Maintained and updated client WordPress sites</li>\n                        <li>Participated in agile development process with daily standups</li>\n                    </ul>\n                </div>',
+
+                        // Education Section (HTML formatted)
+                        'education' => '\n                <div class="education-item">\n                    <div class="degree-header">\n                        <h3 class="degree-name">Bachelor of Science in Computer Science</h3>\n                        <span class="education-date">2014 - 2018</span>\n                    </div>\n                    <div class="institution-name">University of California, Berkeley</div>\n                    <div class="education-details">\n                        <p>GPA: 3.8/4.0 • Dean\'s List all semesters</p>\n                        <p>Relevant Coursework: Data Structures, Algorithms, Database Systems, Software Engineering</p>\n                    </div>\n                </div>\n                <div class="education-item">\n                    <div class="degree-header">\n                        <h3 class="degree-name">High School Diploma</h3>\n                        <span class="education-date">2010 - 2014</span>\n                    </div>\n                    <div class="institution-name">Lincoln High School</div>\n                </div>',
+
+                        // Skills Section (HTML formatted)
+                        'skills' => '\n                <div class="skills-grid">\n                    <div class="skill-category">\n                        <h4>Languages</h4>\n                        <ul class="skills-list">\n                            <li>JavaScript / TypeScript</li>\n                            <li>Python</li>\n                            <li>PHP</li>\n                            <li>Java</li>\n                            <li>SQL</li>\n                        </ul>\n                    </div>\n                    <div class="skill-category">\n                        <h4>Frameworks</h4>\n                        <ul class="skills-list">\n                            <li>React / Vue.js</li>\n                            <li>Node.js / Express</li>\n                            <li>Laravel</li>\n                            <li>Django</li>\n                            <li>Spring Boot</li>\n                        </ul>\n                    </div>\n                    <div class="skill-category">\n                        <h4>Tools & Technologies</h4>\n                        <ul class="skills-list">\n                            <li>Docker / Kubernetes</li>\n                            <li>AWS / Azure / GCP</li>\n                            <li>Git / GitHub</li>\n                            <li>MySQL / PostgreSQL</li>\n                            <li>Redis / MongoDB</li>\n                        </ul>\n                    </div>\n                </div>',
+
+                        // Certifications
+                        'certifications' => '\n                <ul class="certifications-list">\n                    <li>\n                        <strong>AWS Certified Solutions Architect - Professional</strong>\n                        <span class="cert-date">Amazon Web Services • 2023</span>\n                    </li>\n                    <li>\n                        <strong>Google Cloud Professional Developer</strong>\n                        <span class="cert-date">Google Cloud • 2022</span>\n                    </li>\n                    <li>\n                        <strong>Certified Scrum Master (CSM)</strong>\n                        <span class="cert-date">Scrum Alliance • 2021</span>\n                    </li>\n                </ul>',
+
+                        // Projects
+                        'projects' => '\n                <div class="project-item">\n                    <h4>E-commerce Platform</h4>\n                    <p>Built a full-stack e-commerce solution using React, Node.js, and PostgreSQL. Implemented payment processing, inventory management, and real-time order tracking.</p>\n                </div>\n                <div class="project-item">\n                    <h4>Task Management App</h4>\n                    <p>Developed a collaborative task management application with real-time updates using WebSockets. Features include team collaboration, file sharing, and deadline notifications.</p>\n                </div>\n                <div class="project-item">\n                    <h4>Open Source Contributions</h4>\n                    <p>Active contributor to Laravel framework and Vue.js ecosystem. Contributed bug fixes and new features to various popular open-source projects.</p>\n                </div>',
+
+                        // Languages
+                        'languages' => '\n                <ul class="languages-list">\n                    <li><strong>English</strong> - Native</li>\n                    <li><strong>Spanish</strong> - Fluent</li>\n                    <li><strong>French</strong> - Intermediate</li>\n                </ul>',
+
+                        // Interests/Hobbies
+                        'interests' => '\n                <ul class="interests-list">\n                    <li>Open Source Development</li>\n                    <li>Tech Blogging</li>\n                    <li>Photography</li>\n                    <li>Hiking & Travel</li>\n                </ul>',
+                ];
 
         // Fill with sample data
         $filledHtml = $this->fillTemplate($html, $css, $sampleData);
@@ -397,33 +437,165 @@ public function generate(Request $request)
             'phone' => 'required|string',
             'address' => 'nullable|string|max:255',
             'summary' => 'nullable|string',
+            // Legacy free-text arrays
             'experience' => 'nullable|array',
             'experience.*' => 'nullable|string',
-            'skills' => 'nullable|string',
             'education' => 'nullable|array',
             'education.*' => 'nullable|string',
+            // Structured fields (preferred)
+            'job_title' => 'nullable|array',
+            'job_title.*' => 'nullable|string',
+            'company' => 'nullable|array',
+            'company.*' => 'nullable|string',
+            'start_date' => 'nullable|array',
+            'start_date.*' => 'nullable|string',
+            'end_date' => 'nullable|array',
+            'end_date.*' => 'nullable|string',
+            'responsibilities' => 'nullable|array',
+            'responsibilities.*' => 'nullable|string',
+            'degree' => 'nullable|array',
+            'degree.*' => 'nullable|string',
+            'field_of_study' => 'nullable|array',
+            'field_of_study.*' => 'nullable|string',
+            'university' => 'nullable|array',
+            'university.*' => 'nullable|string',
+            'graduation_year' => 'nullable|array',
+            'graduation_year.*' => 'nullable|string',
+            'education_details' => 'nullable|array',
+            'education_details.*' => 'nullable|string',
+            'skills' => 'nullable|string',
         ]);
 
         $template = Template::findOrFail($request->template_id);
         $data = $request->except(['_token', 'template_id']);
 
-        // Merge experience array into single string with better formatting
-        if (isset($data['experience']) && is_array($data['experience'])) {
-            $experiences = array_filter($data['experience']);
-            if (!empty($experiences)) {
-                $data['experience'] = implode("\n\n" . str_repeat("-", 60) . "\n\n", $experiences);
-            } else {
-                $data['experience'] = '';
+        // Build experience HTML from structured fields if provided
+        if (isset($data['job_title']) && is_array($data['job_title'])) {
+            $count = count($data['job_title']);
+            $htmlExperiences = [];
+            for ($i = 0; $i < $count; $i++) {
+                $title = $data['job_title'][$i] ?? '';
+                $company = $data['company'][$i] ?? '';
+                $start = $data['start_date'][$i] ?? '';
+                $end = $data['end_date'][$i] ?? '';
+                $resp = $data['responsibilities'][$i] ?? '';
+
+                // Skip empty entries
+                if (trim($title) === '' && trim($company) === '' && trim($resp) === '') {
+                    continue;
+                }
+
+                $titleEsc = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+                $companyEsc = htmlspecialchars($company, ENT_QUOTES, 'UTF-8');
+                $startEsc = htmlspecialchars($start, ENT_QUOTES, 'UTF-8');
+                $endEsc = htmlspecialchars($end, ENT_QUOTES, 'UTF-8');
+
+                // Build responsibilities list
+                $respHtml = '';
+                if (trim($resp) !== '') {
+                    $lines = preg_split('/\r?\n/', $resp);
+                    $items = [];
+                    foreach ($lines as $line) {
+                        $line = trim($line);
+                        if ($line === '') continue;
+                        $items[] = '<li>' . htmlspecialchars($line, ENT_QUOTES, 'UTF-8') . '</li>';
+                    }
+                    if (!empty($items)) {
+                        $respHtml = '<ul class="job-responsibilities">' . implode('', $items) . '</ul>';
+                    }
+                }
+
+                $jobDate = trim($startEsc . ' - ' . $endEsc);
+
+                $block = '<div class="experience-item">';
+                $block .= '<div class="job-header"><h3 class="job-title">' . $titleEsc . '</h3>';
+                if ($jobDate) {
+                    $block .= '<span class="job-date">' . $jobDate . '</span>';
+                }
+                $block .= '</div>';
+                if ($companyEsc) {
+                    $block .= '<div class="company-name">' . $companyEsc . '</div>';
+                }
+                $block .= $respHtml;
+                $block .= '</div>';
+
+                $htmlExperiences[] = $block;
+            }
+
+            $data['experience'] = implode("\n", $htmlExperiences);
+        } else {
+            // Fallback: merge legacy experience[] into HTML blocks
+            if (isset($data['experience']) && is_array($data['experience'])) {
+                $experiences = array_filter($data['experience']);
+                if (!empty($experiences)) {
+                    $htmlExperiences = [];
+                    foreach ($experiences as $exp) {
+                        $escaped = htmlspecialchars($exp, ENT_QUOTES, 'UTF-8');
+                        $htmlExperiences[] = "<div class=\"experience-item\">" . nl2br($escaped) . "</div>";
+                    }
+                    $data['experience'] = implode("\n", $htmlExperiences);
+                } else {
+                    $data['experience'] = '';
+                }
             }
         }
 
-        // Merge education array into single string with better formatting
-        if (isset($data['education']) && is_array($data['education'])) {
-            $educations = array_filter($data['education']);
-            if (!empty($educations)) {
-                $data['education'] = implode("\n\n" . str_repeat("-", 60) . "\n\n", $educations);
-            } else {
-                $data['education'] = '';
+        // Build education HTML from structured fields if provided
+        if (isset($data['degree']) && is_array($data['degree'])) {
+            $count = count($data['degree']);
+            $htmlEducations = [];
+            for ($i = 0; $i < $count; $i++) {
+                $degree = $data['degree'][$i] ?? '';
+                $field = $data['field_of_study'][$i] ?? '';
+                $univ = $data['university'][$i] ?? '';
+                $grad = $data['graduation_year'][$i] ?? '';
+                $details = $data['education_details'][$i] ?? '';
+
+                if (trim($degree) === '' && trim($univ) === '' && trim($details) === '') continue;
+
+                $degreeEsc = htmlspecialchars($degree, ENT_QUOTES, 'UTF-8');
+                $fieldEsc = htmlspecialchars($field, ENT_QUOTES, 'UTF-8');
+                $univEsc = htmlspecialchars($univ, ENT_QUOTES, 'UTF-8');
+                $gradEsc = htmlspecialchars($grad, ENT_QUOTES, 'UTF-8');
+
+                $detailsHtml = '';
+                if (trim($details) !== '') {
+                    $detailsHtml = '<div class="education-details">' . nl2br(htmlspecialchars($details, ENT_QUOTES, 'UTF-8')) . '</div>';
+                }
+
+                $block = '<div class="education-item">';
+                $block .= '<div class="degree-header"><h3 class="degree-name">' . $degreeEsc . '</h3>';
+                if ($gradEsc) {
+                    $block .= '<span class="education-date">' . $gradEsc . '</span>';
+                }
+                $block .= '</div>';
+                if ($univEsc) {
+                    $block .= '<div class="institution-name">' . $univEsc . '</div>';
+                }
+                if ($fieldEsc) {
+                    $block .= '<div class="field-of-study">' . $fieldEsc . '</div>';
+                }
+                $block .= $detailsHtml;
+                $block .= '</div>';
+
+                $htmlEducations[] = $block;
+            }
+
+            $data['education'] = implode("\n", $htmlEducations);
+        } else {
+            // Fallback: merge legacy education[] into HTML blocks
+            if (isset($data['education']) && is_array($data['education'])) {
+                $educations = array_filter($data['education']);
+                if (!empty($educations)) {
+                    $htmlEducations = [];
+                    foreach ($educations as $edu) {
+                        $escaped = htmlspecialchars($edu, ENT_QUOTES, 'UTF-8');
+                        $htmlEducations[] = "<div class=\"education-item\">" . nl2br($escaped) . "</div>";
+                    }
+                    $data['education'] = implode("\n", $htmlEducations);
+                } else {
+                    $data['education'] = '';
+                }
             }
         }
 
