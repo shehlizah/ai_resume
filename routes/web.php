@@ -558,6 +558,41 @@ Route::get('/templates/{id}/debug', function($id) {
     return response($output)->header('Content-Type', 'text/html');
 })->name('admin.templates.debug');
 
+// ADD THIS TEMPORARY ROUTE to routes/web.php for debugging
+
+Route::get('/debug-template/{id}', function($id) {
+    $template = \App\Models\Template::findOrFail($id);
+    $html = $template->getFullTemplate();
+    
+    // Check what CSS features are in the template
+    $hasCSSGrid = (stripos($html, 'display: grid') !== false || stripos($html, 'display:grid') !== false);
+    $hasFlexbox = (stripos($html, 'display: flex') !== false || stripos($html, 'display:flex') !== false);
+    $hasGoogleFonts = (stripos($html, 'fonts.googleapis.com') !== false);
+    $hasTransform = (stripos($html, 'transform:') !== false);
+    $hasClipPath = (stripos($html, 'clip-path') !== false);
+    
+    return response()->json([
+        'template_id' => $template->id,
+        'template_name' => $template->name,
+        'template_slug' => $template->slug,
+        'file_path' => storage_path("app/public/templates/html/{$template->slug}.html"),
+        'file_exists' => file_exists(storage_path("app/public/templates/html/{$template->slug}.html")),
+        'html_length' => strlen($html),
+        'css_issues' => [
+            'has_css_grid' => $hasCSSGrid ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
+            'has_flexbox' => $hasFlexbox ? '⚠️ YES - LIMITED SUPPORT' : '✅ NO',
+            'has_google_fonts' => $hasGoogleFonts ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
+            'has_transform' => $hasTransform ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
+            'has_clip_path' => $hasClipPath ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
+        ],
+        'dompdf_compatible' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath),
+        'recommendation' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath) 
+            ? '✅ This template should work with DomPDF' 
+            : '❌ Use the DomPDF-compatible version instead'
+    ]);
+})->middleware('auth');
+
+// Visit: /debug-template/1 (replace 1 with your template ID)
 
 /*
 |--------------------------------------------------------------------------
