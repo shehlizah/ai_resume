@@ -151,14 +151,9 @@
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="mb-0"><i class="bx bx-briefcase"></i> Experience</h6>
-              <div class="btn-group" role="group">
-                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#experienceAIModal">
-                  <i class="bx bx-sparkles"></i> Generate
-                </button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
-                  <i class="bx bx-plus"></i> Add More
-                </button>
-              </div>
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
+                <i class="bx bx-plus"></i> Add More
+              </button>
             </div>
             <div id="experienceContainer">
               <div class="mb-4 p-3 border-bottom" id="experienceWrapper0">
@@ -219,14 +214,9 @@
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="mb-0"><i class="bx bx-book"></i> Education</h6>
-              <div class="btn-group" role="group">
-                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#educationAIModal">
-                  <i class="bx bx-sparkles"></i> Generate
-                </button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
-                  <i class="bx bx-plus"></i> Add More
-                </button>
-              </div>
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
+                <i class="bx bx-plus"></i> Add More
+              </button>
             </div>
             <div id="educationContainer">
               <div class="mb-4 p-3 border-bottom" id="educationWrapper0">

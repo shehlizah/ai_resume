@@ -255,23 +255,13 @@ class UserResumeController extends Controller
 {
     $template = Template::findOrFail($template_id);
 
-    // UPDATED: Read from storage
-    $htmlPath = storage_path("app/public/templates/html/{$template->slug}.html");
+    // Read HTML and CSS from database (not from files)
+    $html = $template->html_content;
+    $css = $template->css_content ?? '';
 
-    if (!File::exists($htmlPath)) {
-        return back()->with('error', 'Template HTML file not found!');
+    if (empty($html)) {
+        return back()->with('error', 'Template HTML content is empty!');
     }
-
-    $html = File::get($htmlPath);
-
-    // UPDATED: Read CSS from storage
-    $cssPath = storage_path("app/public/templates/css/{$template->slug}.css");
-    $css = '';
-
-    if (File::exists($cssPath)) {
-        $css = File::get($cssPath);
-    }
-
 
             // Sample data for preview (match admin preview sample data)
                 $sampleData = [
@@ -731,17 +721,13 @@ public function generate(Request $request)
             }
         }
 
-        // Read HTML template
-        $htmlPath = storage_path("app/public/templates/html/{$template->slug}.html");
-        if (!File::exists($htmlPath)) {
-            return back()->with('error', 'Template not found');
+        // Read HTML and CSS from database (not from files)
+        $html = $template->html_content;
+        $css = $template->css_content ?? '';
+
+        if (empty($html)) {
+            return back()->with('error', 'Template HTML content is empty');
         }
-
-        $html = File::get($htmlPath);
-
-        // Read CSS
-        $cssPath = storage_path("app/public/templates/css/{$template->slug}.css");
-        $css = File::exists($cssPath) ? File::get($cssPath) : '';
 
         // Fill template
         $filledHtml = $this->fillTemplate($html, $css, $data);
