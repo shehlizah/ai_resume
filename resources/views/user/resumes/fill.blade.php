@@ -109,6 +109,40 @@
                 @enderror
               </div>
             </div>
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label class="form-label">Address</label>
+                <input type="text"
+                       name="address"
+                       class="form-control @error('address') is-invalid @enderror"
+                       value="{{ old('address') }}"
+                       placeholder="e.g., 123 Main St, New York, NY 10001">
+                @error('address')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional Summary -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0"><i class="bx bx-file-blank"></i> Professional Summary</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#summaryAIModal">
+                <i class="bx bx-sparkles"></i> Generate with AI
+              </button>
+            </div>
+            <textarea name="summary"
+                      rows="3"
+                      class="form-control @error('summary') is-invalid @enderror"
+                      id="summaryField"
+                      placeholder="Write a brief professional summary about yourself...">{{ old('summary') }}</textarea>
+            <small class="text-muted">A 2-3 sentence overview of your professional background and goals</small>
+            @error('summary')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
         </div>
 
@@ -117,17 +151,24 @@
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="mb-0"><i class="bx bx-briefcase"></i> Experience</h6>
-              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#experienceAIModal">
-                <i class="bx bx-sparkles"></i> Generate with AI
-              </button>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#experienceAIModal">
+                  <i class="bx bx-sparkles"></i> Generate
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
+                  <i class="bx bx-plus"></i> Add More
+                </button>
+              </div>
             </div>
-            <textarea name="experience"
-                      rows="5"
-                      class="form-control @error('experience') is-invalid @enderror"
-                      id="experienceField"
-                      placeholder="Add your work history...">{{ old('experience') }}</textarea>
-            <small class="text-muted">Example: Senior Developer at ABC Corp (2020-Present)</small>
-            @error('experience')
+            <div id="experienceContainer">
+              <textarea name="experience[]"
+                        rows="4"
+                        class="form-control mb-3 @error('experience.0') is-invalid @enderror"
+                        id="experienceField0"
+                        placeholder="Add your work history...">{{ old('experience.0', old('experience')) }}</textarea>
+            </div>
+            <small class="text-muted">Example: Senior Developer at ABC Corp (2020-Present) - Led development team and managed projects</small>
+            @error('experience.0')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
@@ -147,7 +188,7 @@
                       class="form-control @error('skills') is-invalid @enderror"
                       id="skillsField"
                       placeholder="List your skills...">{{ old('skills') }}</textarea>
-            <small class="text-muted">Example: PHP, Laravel, Vue.js, MySQL</small>
+            <small class="text-muted">Example: PHP, Laravel, Vue.js, MySQL, AWS, Docker</small>
             @error('skills')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -159,17 +200,24 @@
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="mb-0"><i class="bx bx-book"></i> Education</h6>
-              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#educationAIModal">
-                <i class="bx bx-sparkles"></i> Generate with AI
-              </button>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#educationAIModal">
+                  <i class="bx bx-sparkles"></i> Generate
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
+                  <i class="bx bx-plus"></i> Add More
+                </button>
+              </div>
             </div>
-            <textarea name="education"
-                      rows="4"
-                      class="form-control @error('education') is-invalid @enderror"
-                      id="educationField"
-                      placeholder="Add your education...">{{ old('education') }}</textarea>
-            <small class="text-muted">Example: BS Computer Science, XYZ University (2018)</small>
-            @error('education')
+            <div id="educationContainer">
+              <textarea name="education[]"
+                        rows="3"
+                        class="form-control mb-3 @error('education.0') is-invalid @enderror"
+                        id="educationField0"
+                        placeholder="Add your education...">{{ old('education.0', old('education')) }}</textarea>
+            </div>
+            <small class="text-muted">Example: BS Computer Science, XYZ University (2018) - GPA: 3.8/4.0</small>
+            @error('education.0')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
@@ -309,6 +357,46 @@
     </div>
   </div>
 
+  <!-- AI Modal for Summary -->
+  <div class="modal fade" id="summaryAIModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bx bx-sparkles text-warning"></i> Generate Professional Summary with AI
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="summaryAIForm">
+            <div class="mb-3">
+              <label class="form-label">Job Title / Role</label>
+              <input type="text" class="form-control" id="aiSummaryRole" placeholder="e.g., Full Stack Developer">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Years of Experience</label>
+              <input type="number" class="form-control" id="aiSummaryYears" placeholder="e.g., 5" min="0">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Key Skills / Specializations</label>
+              <textarea class="form-control" id="aiSummarySkills" rows="2" placeholder="e.g., Web Development, Cloud Architecture, Team Leadership..."></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Career Goal / Focus</label>
+              <input type="text" class="form-control" id="aiSummaryGoal" placeholder="e.g., Seeking senior developer roles in fintech">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="generateSummaryAI()" id="summaryAIBtn">
+            <i class="bx bx-sparkles me-1"></i> Generate
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Loading overlay -->
   <script>
     // Form submission
@@ -351,7 +439,9 @@
 
         const data = await response.json();
         if (data.success) {
-          document.getElementById('experienceField').value = data.content;
+          const experienceContainer = document.getElementById('experienceContainer');
+          const firstField = experienceContainer.querySelector('textarea');
+          firstField.value = data.content;
           bootstrap.Modal.getInstance(document.getElementById('experienceAIModal')).hide();
         } else {
           alert('Error: ' + data.message);
@@ -362,6 +452,31 @@
         btn.disabled = false;
         btn.innerHTML = '<i class="bx bx-sparkles me-1"></i> Generate';
       }
+    }
+
+    // Add multiple experience entries
+    let experienceCount = 1;
+    function addExperienceField() {
+      const container = document.getElementById('experienceContainer');
+      const newField = document.createElement('textarea');
+      newField.className = 'form-control mb-3';
+      newField.name = 'experience[]';
+      newField.rows = 4;
+      newField.placeholder = 'Add your work history...';
+      newField.id = 'experienceField' + experienceCount;
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn btn-sm btn-danger mb-3';
+      removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
+      removeBtn.onclick = function() {
+        newField.remove();
+        removeBtn.remove();
+      };
+      
+      container.appendChild(newField);
+      container.appendChild(removeBtn);
+      experienceCount++;
     }
 
     async function generateSkillsAI() {
@@ -439,8 +554,80 @@
 
         const data = await response.json();
         if (data.success) {
-          document.getElementById('educationField').value = data.content;
+          const educationContainer = document.getElementById('educationContainer');
+          const firstField = educationContainer.querySelector('textarea');
+          firstField.value = data.content;
           bootstrap.Modal.getInstance(document.getElementById('educationAIModal')).hide();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      } catch (error) {
+        alert('Error generating content: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bx bx-sparkles me-1"></i> Generate';
+      }
+    }
+
+    // Add multiple education entries
+    let educationCount = 1;
+    function addEducationField() {
+      const container = document.getElementById('educationContainer');
+      const newField = document.createElement('textarea');
+      newField.className = 'form-control mb-3';
+      newField.name = 'education[]';
+      newField.rows = 3;
+      newField.placeholder = 'Add your education...';
+      newField.id = 'educationField' + educationCount;
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn btn-sm btn-danger mb-3';
+      removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
+      removeBtn.onclick = function() {
+        newField.remove();
+        removeBtn.remove();
+      };
+      
+      container.appendChild(newField);
+      container.appendChild(removeBtn);
+      educationCount++;
+    }
+
+    async function generateSummaryAI() {
+      const role = document.getElementById('aiSummaryRole').value;
+      const years = document.getElementById('aiSummaryYears').value;
+      const skills = document.getElementById('aiSummarySkills').value;
+      const goal = document.getElementById('aiSummaryGoal').value;
+
+      if (!role || !years) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      const btn = document.getElementById('summaryAIBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+
+      try {
+        const response = await fetch('{{ route("user.resumes.generate-summary-ai") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+          },
+          body: JSON.stringify({
+            role: role,
+            years: years,
+            skills: skills,
+            goal: goal
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          document.getElementById('summaryField').value = data.content;
+          bootstrap.Modal.getInstance(document.getElementById('summaryAIModal')).hide();
         } else {
           alert('Error: ' + data.message);
         }

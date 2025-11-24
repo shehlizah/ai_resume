@@ -226,6 +226,8 @@ class UserResumeController extends Controller
             '{{title}}' => $data['title'] ?? '',
             '{{email}}' => $data['email'] ?? '',
             '{{phone}}' => $data['phone'] ?? '',
+            '{{address}}' => $data['address'] ?? '',
+            '{{summary}}' => $data['summary'] ?? 'No summary provided',
             '{{experience}}' => $data['experience'] ?? 'No experience provided',
             '{{skills}}' => $data['skills'] ?? 'No skills provided',
             '{{education}}' => $data['education'] ?? 'No education provided',
@@ -393,13 +395,27 @@ public function generate(Request $request)
             'title' => 'required|string|max:255',
             'email' => 'required|email',
             'phone' => 'required|string',
-            'experience' => 'nullable|string',
+            'address' => 'nullable|string|max:255',
+            'summary' => 'nullable|string',
+            'experience' => 'nullable|array',
+            'experience.*' => 'nullable|string',
             'skills' => 'nullable|string',
-            'education' => 'nullable|string',
+            'education' => 'nullable|array',
+            'education.*' => 'nullable|string',
         ]);
 
         $template = Template::findOrFail($request->template_id);
         $data = $request->except(['_token', 'template_id']);
+
+        // Merge experience array into single string
+        if (isset($data['experience']) && is_array($data['experience'])) {
+            $data['experience'] = implode("\n\n", array_filter($data['experience']));
+        }
+
+        // Merge education array into single string
+        if (isset($data['education']) && is_array($data['education'])) {
+            $data['education'] = implode("\n\n", array_filter($data['education']));
+        }
 
         // Read HTML template
         $htmlPath = storage_path("app/public/templates/html/{$template->slug}.html");
@@ -687,6 +703,53 @@ private function callOpenAI($prompt)
     } catch (\Exception $e) {
         \Log::error('OpenAI API error: ' . $e->getMessage());
         return null;
+    }
+}
+
+/**
+ * Generate Professional Summary with AI
+ */
+public function generateSummaryAI(Request $request)
+{
+    try {
+        $validated = $request->validate([
+            'role' => 'required|string',
+            'years' => 'required|numeric|min:0',
+            'skills' => 'nullable|string',
+            'goal' => 'nullable|string',
+        ]);
+
+        $prompt = "Generate a compelling 2-3 sentence professional summary for a {$validated['role']} with {$validated['years']} years of experience";
+        
+        if ($validated['skills']) {
+            $prompt .= ". Key skills: {$validated['skills']}";
+        }
+        
+        if ($validated['goal']) {
+            $prompt .= ". Career goal: {$validated['goal']}";
+        }
+
+        $prompt .= ". Make it professional, engaging, and suitable for a resume. It should highlight achievements and value proposition.";
+
+        $content = $this->callOpenAI($prompt);
+
+        if (!$content) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate content. Please try again.'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'content' => $content
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 400);
     }
 }
 

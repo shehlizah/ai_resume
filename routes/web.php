@@ -92,6 +92,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/generate-experience-ai', [UserResumeController::class, 'generateExperienceAI'])->name('generate-experience-ai');
         Route::post('/generate-skills-ai', [UserResumeController::class, 'generateSkillsAI'])->name('generate-skills-ai');
         Route::post('/generate-education-ai', [UserResumeController::class, 'generateEducationAI'])->name('generate-education-ai');
+        Route::post('/generate-summary-ai', [UserResumeController::class, 'generateSummaryAI'])->name('generate-summary-ai');
         Route::get('/success/{id}', [UserResumeController::class, 'success'])->name('success');
         Route::get('/view/{id}', [UserResumeController::class, 'view'])->name('view');
         Route::get('/download/{id}', [UserResumeController::class, 'download'])->name('download');
