@@ -208,19 +208,19 @@ class UserResumeController extends Controller
      */
     private function fillTemplate($html, $css, $data)
     {
-        // If CSS exists, inject it into HTML
-        if (!empty($css)) {
-            // Check if HTML already has a <style> tag
+        // If CSS exists and HTML doesn't already have styles, inject it
+        // (Usually CSS is already embedded via getFullTemplate(), so this is just a fallback)
+        if (!empty($css) && strpos($html, '<style>') === false) {
             if (strpos($html, '</head>') !== false) {
                 $cssTag = "<style>{$css}</style>";
                 $html = str_replace('</head>', $cssTag . '</head>', $html);
             } else {
-                // Add style tag at the beginning
+                // Add style tag at the beginning if no head tag
                 $html = "<style>{$css}</style>" . $html;
             }
         }
 
-        // Replace placeholders with user data. For certain sections we allow raw HTML
+        // Define all possible placeholder keys
         $keys = [
             'name', 'title', 'email', 'phone', 'address', 'summary',
             'experience', 'skills', 'education', 'certifications', 'projects', 'languages', 'interests'
@@ -231,14 +231,19 @@ class UserResumeController extends Controller
 
         foreach ($keys as $key) {
             $placeholder = '{{' . $key . '}}';
-            $value = $data[$key] ?? '';
+            $value = isset($data[$key]) ? $data[$key] : '';
+
+            // Skip if placeholder doesn't exist in HTML
+            if (strpos($html, $placeholder) === false) {
+                continue;
+            }
 
             if (in_array($key, $rawHtmlKeys)) {
-                // Value is expected to be safe HTML fragments created server-side
-                $replaceValue = $value;
+                // Already HTML or properly formatted - use as-is
+                $replaceValue = (string)$value;
             } else {
-                // Escape simple text fields for safety
-                $replaceValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                // Escape simple text fields for security
+                $replaceValue = htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
             }
 
             $html = str_replace($placeholder, $replaceValue, $html);

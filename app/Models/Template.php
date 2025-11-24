@@ -35,7 +35,7 @@ class Template extends Model
     public function getFullTemplate()
     {
         // CSS optimizations for DOMPDF (doesn't support modern CSS well)
-        $pdfOptimizedCss = $this->css_content;
+        $pdfOptimizedCss = $this->css_content ?? '';
 
         // Replace problematic CSS properties that DOMPDF doesn't handle well
         // Convert display:flex to display:block for better PDF compatibility
@@ -50,18 +50,28 @@ class Template extends Model
         // Ensure width:100% for sidebar and main content areas
         $pdfOptimizedCss = preg_replace('/flex\s*:\s*[^;]*;/i', 'width: 100%; display: block;', $pdfOptimizedCss);
 
-        return "<!DOCTYPE html>
-<html lang=\"en\">
-<head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>{$this->name}</title>
-    <style>
+        // Remove webkit prefixes that DOMPDF doesn't support well
+        $pdfOptimizedCss = preg_replace('/-webkit-[^:]*:[^;]*;/i', '', $pdfOptimizedCss);
+
+        // Remove moz prefixes
+        $pdfOptimizedCss = preg_replace('/-moz-[^:]*:[^;]*;/i', '', $pdfOptimizedCss);
+
+        $baseStyles = <<<'CSS'
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; padding: 10mm; line-height: 1.5; }
+        html { background: white; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 15mm;
+            line-height: 1.6;
+            color: #333;
+            background: white;
+        }
 
         /* PDF-specific adjustments */
-        @page { margin: 10mm; }
+        @page {
+            margin: 15mm;
+            size: A4 portrait;
+        }
 
         /* Ensure sidebars and content areas stack vertically in PDF */
         .sidebar, .sidebar-left, .sidebar-right, [class*='sidebar'] {
@@ -81,6 +91,65 @@ class Template extends Model
             page-break-inside: avoid;
             margin-bottom: 10px;
         }
+
+        /* Container support */
+        .container, .wrapper {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        /* Ensure all text is visible */
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 10px;
+            margin-bottom: 8px;
+            color: inherit;
+        }
+
+        p, ul, ol {
+            margin-bottom: 8px;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        /* Links */
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+CSS;
+
+        return "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">
+    <title>{$this->name}</title>
+    <style>
+        {$baseStyles}
 
         {$pdfOptimizedCss}
     </style>
