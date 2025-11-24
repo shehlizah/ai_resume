@@ -439,9 +439,12 @@
 
         const data = await response.json();
         if (data.success) {
+          // Add new experience field with generated content
+          addExperienceField();
           const experienceContainer = document.getElementById('experienceContainer');
-          const firstField = experienceContainer.querySelector('textarea');
-          firstField.value = data.content;
+          const fields = experienceContainer.querySelectorAll('textarea');
+          const lastField = fields[fields.length - 2]; // Get the newly added textarea (before remove button)
+          lastField.value = data.content;
           bootstrap.Modal.getInstance(document.getElementById('experienceAIModal')).hide();
         } else {
           alert('Error: ' + data.message);
@@ -464,7 +467,7 @@
       newField.rows = 4;
       newField.placeholder = 'Add your work history...';
       newField.id = 'experienceField' + experienceCount;
-      
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'btn btn-sm btn-danger mb-3';
@@ -473,7 +476,7 @@
         newField.remove();
         removeBtn.remove();
       };
-      
+
       container.appendChild(newField);
       container.appendChild(removeBtn);
       experienceCount++;
@@ -554,9 +557,12 @@
 
         const data = await response.json();
         if (data.success) {
+          // Add new education field with generated content
+          addEducationField();
           const educationContainer = document.getElementById('educationContainer');
-          const firstField = educationContainer.querySelector('textarea');
-          firstField.value = data.content;
+          const fields = educationContainer.querySelectorAll('textarea');
+          const lastField = fields[fields.length - 2]; // Get the newly added textarea (before remove button)
+          lastField.value = data.content;
           bootstrap.Modal.getInstance(document.getElementById('educationAIModal')).hide();
         } else {
           alert('Error: ' + data.message);
@@ -579,7 +585,7 @@
       newField.rows = 3;
       newField.placeholder = 'Add your education...';
       newField.id = 'educationField' + educationCount;
-      
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'btn btn-sm btn-danger mb-3';
@@ -588,7 +594,7 @@
         newField.remove();
         removeBtn.remove();
       };
-      
+
       container.appendChild(newField);
       container.appendChild(removeBtn);
       educationCount++;

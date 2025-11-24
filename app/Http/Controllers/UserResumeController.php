@@ -720,11 +720,11 @@ public function generateSummaryAI(Request $request)
         ]);
 
         $prompt = "Generate a compelling 2-3 sentence professional summary for a {$validated['role']} with {$validated['years']} years of experience";
-        
+
         if ($validated['skills']) {
             $prompt .= ". Key skills: {$validated['skills']}";
         }
-        
+
         if ($validated['goal']) {
             $prompt .= ". Career goal: {$validated['goal']}";
         }
