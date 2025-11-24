@@ -1,119 +1,162 @@
 @section('title', $coverLetter->title)
 <x-layouts.app :title="$coverLetter->title">
-    <div class="row g-4">
-        <div class="col-lg-12">
-            <div class="d-flex justify-content-between align-items-start mb-4">
-                <div>
-                    <a href="{{ route('user.cover-letters.index') }}" class="btn btn-link ps-0 mb-3">
-                        <i class="bx bx-chevron-left me-1"></i> Back to Cover Letters
-                    </a>
-                    <h4 class="mb-1">{{ $coverLetter->title }}</h4>
-                    <p class="text-muted">{{ $coverLetter->company_name }} • {{ $coverLetter->created_at->format('M d, Y') }}</p>
-                </div>
-                <div class="btn-group">
-                    <a href="{{ route('user.cover-letters.edit', $coverLetter->id) }}" class="btn btn-primary">
-                        <i class="bx bx-pencil me-1"></i> Edit
-                    </a>
-                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                        <i class="bx bx-trash me-1"></i> Delete
-                    </button>
-                </div>
-            </div>
+    <div class="container-xxl flex-grow-1 container-p-y">
+        
+        <div class="mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ route('user.cover-letters.index') }}">Cover Letters</a></li>
+                    <li class="breadcrumb-item active">{{ Str::limit($coverLetter->title, 50) }}</li>
+                </ol>
+            </nav>
         </div>
 
-        <!-- Cover Letter Preview -->
-        <div class="col-lg-8">
-            <div class="border rounded p-5" style="background: linear-gradient(135deg, rgba(250, 250, 250, 0.8) 0%, rgba(255, 255, 255, 1) 100%); line-height: 1.6; font-family: 'Georgia', serif;">
-                <div style="white-space: pre-wrap; font-size: 0.95rem; color: #333;">{{ $coverLetter->content }}</div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold mb-1">{{ $coverLetter->title }}</h4>
+                <p class="text-muted mb-0">
+                    <i class="bx bx-calendar me-1"></i>
+                    Created {{ $coverLetter->created_at->format('M d, Y') }}
+                </p>
             </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- Cover Letter Details -->
-            <div class="border rounded p-4 mb-3">
-                <h6 class="mb-3">📋 Details</h6>
-
-                <div class="mb-3">
-                    <small class="text-muted d-block mb-1">Recipient</small>
-                    <div class="fw-semibold">{{ $coverLetter->recipient_name }}</div>
-                </div>
-
-                <div class="mb-3">
-                    <small class="text-muted d-block mb-1">Company</small>
-                    <div class="fw-semibold">{{ $coverLetter->company_name }}</div>
-                </div>
-
-                <div class="mb-3">
-                    <small class="text-muted d-block mb-1">Address</small>
-                    <div class="fw-semibold" style="font-size: 0.9rem;">{{ $coverLetter->company_address }}</div>
-                </div>
-
-                <hr>
-
-                <div class="mb-0">
-                    <small class="text-muted d-block mb-1">Created</small>
-                    <div style="font-size: 0.9rem;">{{ $coverLetter->created_at->format('M d, Y \a\t h:i A') }}</div>
-                </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="border rounded p-4" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.02) 100%);">
-                <h6 class="mb-3">📄 Actions</h6>
-
-                <a href="{{ route('user.cover-letters.edit', $coverLetter->id) }}" class="btn btn-primary w-100 mb-2">
-                    <i class="bx bx-pencil me-1"></i> Edit Letter
+            <div class="btn-group">
+                <a href="{{ route('user.cover-letters.edit', $coverLetter) }}" class="btn btn-primary">
+                    <i class="bx bx-edit me-1"></i> Edit
                 </a>
-
-                @if($coverLetter->pdf_url)
-                <a href="{{ $coverLetter->pdf_url }}" class="btn btn-outline-primary w-100 mb-2" download>
-                    <i class="bx bx-download me-1"></i> Download PDF
-                </a>
-                @endif
-
-                <a href="{{ route('user.cover-letters.print', $coverLetter->id) }}" class="btn btn-outline-secondary w-100 mb-2" target="_blank">
+                <a href="{{ route('user.cover-letters.print', $coverLetter) }}" class="btn btn-info" target="_blank">
                     <i class="bx bx-printer me-1"></i> Print
                 </a>
-
-                <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                    <i class="bx bx-trash me-1"></i> Delete
+                <a href="{{ route('user.cover-letters.download', $coverLetter) }}" class="btn btn-success">
+                    <i class="bx bx-download me-1"></i> Download
+                </a>
+                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                    <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <form action="{{ route('user.cover-letters.destroy', $coverLetter) }}" 
+                              method="POST" 
+                              onsubmit="return confirm('Delete this cover letter?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="bx bx-trash me-2"></i> Delete
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
-    </div>
 
-    <!-- Delete Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Delete Cover Letter</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete <strong>{{ $coverLetter->title }}</strong>? This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form action="{{ route('user.cover-letters.destroy', $coverLetter->id) }}" method="POST" style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <!-- Cover Letter Preview -->
+                        <div class="cover-letter-content">
+                            
+                            <!-- Your Information -->
+                            <div class="mb-4">
+                                <strong>{{ auth()->user()->name }}</strong><br>
+                                {{ auth()->user()->email }}<br>
+                                <small class="text-muted">{{ now()->format('F d, Y') }}</small>
+                            </div>
+
+                            <!-- Recipient Information -->
+                            <div class="mb-4">
+                                <strong>{{ $coverLetter->recipient_name }}</strong><br>
+                                {{ $coverLetter->company_name }}<br>
+                                {{ $coverLetter->company_address }}
+                            </div>
+
+                            <!-- Salutation -->
+                            <div class="mb-4">
+                                <strong>Dear {{ $coverLetter->recipient_name }},</strong>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="mb-4" style="text-align: justify; line-height: 1.8;">
+                                {!! nl2br(e($coverLetter->content)) !!}
+                            </div>
+
+                            <!-- Closing -->
+                            <div class="mt-5">
+                                <p class="mb-0">
+                                    Sincerely,<br><br>
+                                    <strong>{{ auth()->user()->name }}</strong>
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <style>
-        @media print {
-            .btn-group, .border, .sidebar, button {
-                display: none;
-            }
-            .col-lg-8 > .border {
-                border: none;
-                box-shadow: none;
-            }
-        }
-    </style>
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                
+                <!-- Details Card -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">📄 Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Title</small>
+                            <strong>{{ $coverLetter->title }}</strong>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Company</small>
+                            <strong>{{ $coverLetter->company_name }}</strong>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Recipient</small>
+                            <strong>{{ $coverLetter->recipient_name }}</strong>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Created</small>
+                            <strong>{{ $coverLetter->created_at->format('M d, Y h:i A') }}</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Last Updated</small>
+                            <strong>{{ $coverLetter->updated_at->format('M d, Y h:i A') }}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">⚡ Quick Actions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ route('user.cover-letters.edit', $coverLetter) }}" class="btn btn-primary">
+                                <i class="bx bx-edit me-1"></i> Edit
+                            </a>
+                            <a href="{{ route('user.cover-letters.print', $coverLetter) }}" class="btn btn-info" target="_blank">
+                                <i class="bx bx-printer me-1"></i> Print
+                            </a>
+                            <a href="{{ route('user.cover-letters.download', $coverLetter) }}" class="btn btn-success">
+                                <i class="bx bx-download me-1"></i> Download PDF
+                            </a>
+                            <a href="{{ route('user.cover-letters.index') }}" class="btn btn-secondary">
+                                <i class="bx bx-arrow-back me-1"></i> Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
 </x-layouts.app>

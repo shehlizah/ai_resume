@@ -194,7 +194,7 @@ class UserResumeController extends Controller
      * Success page after resume generation
      * Auto-opens PDF in new tab
      */
-    public function success($id)
+    public function old_success($id)
     {
         $resume = UserResume::where('user_id', Auth::id())
             ->with('template')
@@ -478,6 +478,33 @@ public function download($id)
     }
     
     return response()->download($fullPath, 'my-resume.pdf');
+}
+
+/**
+ * Show success page after generating resume
+ */
+public function success($id)
+{
+    $resume = UserResume::where('id', $id)
+        ->where('user_id', auth()->id())
+        ->with('template')
+        ->firstOrFail();
+
+    // Get available add-ons for upsell
+    $addOns = \App\Models\AddOn::active()
+        ->orderBy('sort_order')
+        ->get();
+
+    // Check which add-ons user has already purchased
+    $purchasedAddOnIds = auth()->user()->userAddOns()
+        ->where('status', 'active')
+        ->pluck('add_on_id')
+        ->toArray();
+
+    // Filter out purchased add-ons
+    $availableAddOns = $addOns->whereNotIn('id', $purchasedAddOnIds);
+
+    return view('user.resumes.success', compact('resume', 'availableAddOns'));
 }
 
 }

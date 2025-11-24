@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $coverLetter->title }}</title>
+    <title>{{ $coverLetter->title }} - Print</title>
     <style>
         * {
             margin: 0;
@@ -12,57 +12,139 @@
         }
 
         body {
-            font-family: 'Georgia', serif;
+            font-family: 'Arial', sans-serif;
+            font-size: 11pt;
             line-height: 1.6;
             color: #333;
+            max-width: 800px;
+            margin: 40px auto;
             padding: 40px;
-            background: white;
         }
 
-        .cover-letter-content {
-            max-width: 8.5in;
-            min-height: 11in;
-            margin: 0 auto;
-            padding: 40px;
-            background: white;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-size: 14px;
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .contact-info {
+            margin-bottom: 20px;
+        }
+
+        .date {
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .recipient {
+            margin-bottom: 25px;
+        }
+
+        .salutation {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .content {
+            text-align: justify;
+            margin-bottom: 30px;
+        }
+
+        .content p {
+            margin-bottom: 15px;
+        }
+
+        .signature {
+            margin-top: 40px;
+        }
+
+        .signature p {
+            margin-bottom: 5px;
         }
 
         @media print {
             body {
-                padding: 0;
-                background: white;
-            }
-
-            .cover-letter-content {
-                max-width: 100%;
-                min-height: auto;
                 margin: 0;
-                padding: 0.5in;
-                page-break-after: avoid;
+                padding: 40px;
             }
-
-            * {
-                -webkit-print-color-adjust: exact;
-                color-adjust: exact;
-                print-color-adjust: exact;
+            
+            .no-print {
+                display: none !important;
             }
         }
 
-        @page {
-            size: letter;
-            margin: 0.5in;
+        @media screen {
+            .print-actions {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: white;
+                padding: 10px;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="cover-letter-content">{{ $coverLetter->content }}</div>
+    
+    <!-- Print Actions (visible on screen only) -->
+    <div class="print-actions no-print">
+        <button onclick="window.print()" style="background: #6366f1; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+            🖨️ Print
+        </button>
+        <button onclick="window.close()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            ✖️ Close
+        </button>
+    </div>
+
+    <!-- Cover Letter Content -->
+    <div class="cover-letter">
+        
+        <!-- Your Information -->
+        <div class="header">
+            <div class="contact-info">
+                <strong>{{ auth()->user()->name }}</strong><br>
+                {{ auth()->user()->email }}<br>
+                @if(auth()->user()->phone)
+                    {{ auth()->user()->phone }}<br>
+                @endif
+            </div>
+        </div>
+
+        <!-- Date -->
+        <div class="date">
+            {{ now()->format('F d, Y') }}
+        </div>
+
+        <!-- Recipient Information -->
+        <div class="recipient">
+            <strong>{{ $coverLetter->recipient_name }}</strong><br>
+            {{ $coverLetter->company_name }}<br>
+            {{ $coverLetter->company_address }}
+        </div>
+
+        <!-- Salutation -->
+        <div class="salutation">
+            Dear {{ $coverLetter->recipient_name }},
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            {!! nl2br(e($coverLetter->content)) !!}
+        </div>
+
+        <!-- Signature -->
+        <div class="signature">
+            <p>Sincerely,</p>
+            <br>
+            <p><strong>{{ auth()->user()->name }}</strong></p>
+        </div>
+
+    </div>
+
     <script>
-        window.addEventListener('load', function() {
-            window.print();
-        });
+        // Auto-print dialog on page load (optional)
+        // window.onload = function() { window.print(); }
     </script>
+
 </body>
 </html>

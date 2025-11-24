@@ -1,198 +1,181 @@
-<x-layouts.app :title="$title ?? 'Payments'">
-  <div class="container-xxl flex-grow-1 container-p-y">
-    
-    <!-- Header with Statistics -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="fw-bold mb-0">💰 Payments</h4>
-          <a href="{{ route('admin.payments.export', request()->all()) }}" class="btn btn-sm btn-success">
-            <i class="bx bx-download me-1"></i> Export CSV
-          </a>
+<x-layouts.app :title="'Manage Payments'">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold mb-0">
+                <i class="bx bx-dollar-circle me-2"></i> Manage Payments
+            </h4>
         </div>
-      </div>
 
-      <!-- Stats Cards -->
-      <div class="col-lg-2 col-sm-6 mb-3">
-        <div class="card">
-          <div class="card-body p-3">
-            <small class="text-muted d-block mb-1">Total Revenue</small>
-            <h4 class="mb-0">${{ number_format($stats['total_revenue'], 2) }}</h4>
-          </div>
+        <!-- Statistics -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total Revenue</h6>
+                        <h3 class="mb-0 text-primary">${{ number_format($stats['total'], 2) }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Completed</h6>
+                        <h3 class="mb-0 text-success">${{ number_format($stats['completed'], 2) }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Pending</h6>
+                        <h3 class="mb-0 text-warning">${{ number_format($stats['pending'], 2) }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Failed</h6>
+                        <h3 class="mb-0 text-danger">${{ number_format($stats['failed'], 2) }}</h3>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <div class="col-lg-2 col-sm-6 mb-3">
-        <div class="card">
-          <div class="card-body p-3">
-            <small class="text-muted d-block mb-1">Today</small>
-            <h4 class="mb-0 text-success">${{ number_format($stats['revenue_today'], 2) }}</h4>
-          </div>
+        <!-- Filters -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="GET" action="{{ route('admin.payments.index') }}">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Search</label>
+                            <input type="text" name="search" class="form-control" 
+                                   placeholder="User name or email" 
+                                   value="{{ request('search') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="all">All Statuses</option>
+                                <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Failed</option>
+                            </select>
+                        </div>
+                     
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bx bx-search me-1"></i> Filter
+                                </button>
+                                <a href="{{ route('admin.payments.index') }}" class="btn btn-secondary">
+                                    Reset
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-      </div>
 
-      <div class="col-lg-2 col-sm-6 mb-3">
+        <!-- Payments Table -->
         <div class="card">
-          <div class="card-body p-3">
-            <small class="text-muted d-block mb-1">This Month</small>
-            <h4 class="mb-0 text-info">${{ number_format($stats['revenue_month'], 2) }}</h4>
-          </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Gateway</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($payments as $payment)
+                            <tr>
+                                <td><strong>#{{ $payment->id }}</strong></td>
+                                <td>
+                                    <div>
+                                        <strong>{{ $payment->user->name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ $payment->user->email }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>${{ number_format($payment->amount, 2) }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">
+                                        <i class="bx bxl-{{ $payment->payment_gateway }}"></i>
+                                        {{ ucfirst($payment->payment_gateway) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ $payment->status === 'completed' ? 'success' : ($payment->status === 'pending' ? 'warning' : 'danger') }}">
+                                        {{ ucfirst($payment->status) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small>{{ $payment->created_at->format('M d, Y h:i A') }}</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" 
+                                                data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('admin.payments.show', $payment) }}">
+                                                    <i class="bx bx-show me-1"></i> View Details
+                                                </a>
+                                            </li>
+                                            @if($payment->status === 'pending')
+                                                <li>
+                                                    <form action="{{ route('admin.payments.approve', $payment) }}" 
+                                                          method="POST">
+                                                        @csrf
+                                                        <button type="submit" class="dropdown-item text-success">
+                                                            <i class="bx bx-check-circle me-1"></i> Approve
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form action="{{ route('admin.payments.reject', $payment) }}" 
+                                                          method="POST" 
+                                                          onsubmit="return confirm('Reject this payment?')">
+                                                        @csrf
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            <i class="bx bx-x-circle me-1"></i> Reject
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <p class="text-muted mb-0">No payments found</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @if($payments->hasPages())
+                <div class="card-footer">
+                    {{ $payments->links() }}
+                </div>
+            @endif
         </div>
-      </div>
 
-      <div class="col-lg-2 col-sm-6 mb-3">
-        <div class="card">
-          <div class="card-body p-3">
-            <small class="text-muted d-block mb-1">Stripe</small>
-            <h4 class="mb-0 text-primary">${{ number_format($stats['stripe_revenue'], 2) }}</h4>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-2 col-sm-6 mb-3">
-        <div class="card">
-          <div class="card-body p-3">
-            <small class="text-muted d-block mb-1">PayPal</small>
-            <h4 class="mb-0 text-info">${{ number_format($stats['paypal_revenue'], 2) }}</h4>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-2 col-sm-6 mb-3">
-        <div class="card">
-          <div class="card-body p-3">
-            <small class="text-muted d-block mb-1">Total Payments</small>
-            <h4 class="mb-0">{{ $stats['total_payments'] }}</h4>
-          </div>
-        </div>
-      </div>
     </div>
-
-    <!-- Filters -->
-    <div class="card mb-4">
-      <div class="card-body">
-        <form method="GET" action="{{ route('admin.payments.index') }}">
-          <div class="row">
-            <div class="col-md-3 mb-3 mb-md-0">
-              <input type="text" 
-                     class="form-control" 
-                     name="search" 
-                     placeholder="Transaction ID or user..." 
-                     value="{{ request('search') }}">
-            </div>
-            
-            <div class="col-md-2 mb-3 mb-md-0">
-              <select class="form-select" name="status">
-                <option value="">All Statuses</option>
-                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="failed" {{ request('failed') == 'failed' ? 'selected' : '' }}>Failed</option>
-                <option value="refunded" {{ request('status') == 'refunded' ? 'selected' : '' }}>Refunded</option>
-              </select>
-            </div>
-
-            <div class="col-md-2 mb-3 mb-md-0">
-              <select class="form-select" name="gateway">
-                <option value="">All Gateways</option>
-                <option value="stripe" {{ request('gateway') == 'stripe' ? 'selected' : '' }}>Stripe</option>
-                <option value="paypal" {{ request('gateway') == 'paypal' ? 'selected' : '' }}>PayPal</option>
-              </select>
-            </div>
-
-            <div class="col-md-2 mb-3 mb-md-0">
-              <input type="date" 
-                     class="form-control" 
-                     name="date_from" 
-                     value="{{ request('date_from') }}"
-                     placeholder="From">
-            </div>
-
-            <div class="col-md-2 mb-3 mb-md-0">
-              <input type="date" 
-                     class="form-control" 
-                     name="date_to" 
-                     value="{{ request('date_to') }}"
-                     placeholder="To">
-            </div>
-
-            <div class="col-md-1">
-              <button type="submit" class="btn btn-primary w-100">
-                <i class="bx bx-search"></i>
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Payments Table -->
-    <div class="card">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Transaction ID</th>
-              <th>User</th>
-              <th>Amount</th>
-              <th>Gateway</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($payments as $payment)
-              <tr>
-                <td>
-                  <code>{{ substr($payment->transaction_id, 0, 20) }}...</code>
-                </td>
-                <td>
-                  <strong>{{ $payment->user->name }}</strong><br>
-                  <small class="text-muted">{{ $payment->user->email }}</small>
-                </td>
-                <td>
-                  <strong class="text-success">${{ number_format($payment->amount, 2) }}</strong>
-                  <small class="text-muted d-block">{{ $payment->currency }}</small>
-                </td>
-                <td>
-                  <span class="badge bg-{{ $payment->getGatewayColor() }}">
-                    {{ strtoupper($payment->payment_gateway) }}
-                  </span>
-                </td>
-                <td>
-                  <span class="badge bg-{{ $payment->getStatusColor() }}">
-                    {{ ucfirst($payment->status) }}
-                  </span>
-                </td>
-                <td>
-                  {{ $payment->created_at->format('M d, Y') }}<br>
-                  <small class="text-muted">{{ $payment->created_at->format('h:i A') }}</small>
-                </td>
-                <td>
-                  <a href="{{ route('admin.payments.show', $payment) }}" 
-                     class="btn btn-sm btn-icon btn-outline-primary">
-                    <i class="bx bx-show"></i>
-                  </a>
-                </td>
-              </tr>
-            @empty
-              <tr>
-                <td colspan="7" class="text-center py-4">
-                  <i class="bx bx-info-circle me-2"></i> No payments found
-                </td>
-              </tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      @if($payments->hasPages())
-        <div class="card-footer">
-          {{ $payments->links() }}
-        </div>
-      @endif
-    </div>
-
-  </div>
 </x-layouts.app>

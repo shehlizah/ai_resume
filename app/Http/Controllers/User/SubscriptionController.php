@@ -37,9 +37,10 @@ class SubscriptionController extends Controller
         $currentSubscription = $user->activeSubscription()->with('plan')->first();
         $subscriptionHistory = $user->subscriptions()->with('plan')->latest()->paginate(10);
         $recentPayments = $user->payments()->with('subscription')->latest()->take(5)->get();
-
+        
         return view('user.subscription.dashboard', [
             'title' => 'My Subscription',
+            'user' => $user,
             'currentSubscription' => $currentSubscription,
             'subscriptionHistory' => $subscriptionHistory,
             'recentPayments' => $recentPayments,
@@ -78,12 +79,87 @@ class SubscriptionController extends Controller
     /**
      * Cancel subscription
      */
-    public function cancel(Request $request)
+     /**
+ * Cancel subscription
+ */
+public function cancel(Request $request)
+{
+    $user = auth()->user();
+    $subscription = $user->activeSubscription;
+
+    if (!$subscription) {
+        return redirect()->route('user.subscription.dashboard')
+            ->with('error', 'No active subscription found.');
+    }
+
+    // Check if already canceled
+    if ($subscription->status === 'canceled') {
+        return redirect()->route('user.subscription.dashboard')
+            ->with('info', 'This subscription is already canceled.');
+    }
+
+    // Validate cancellation reason (optional)
+    $request->validate([
+        'reason' => 'nullable|string|max:500',
+    ]);
+
+    // Get the cancellation type
+    $immediately = $request->input('immediately', false);
+    
+    // Check if in trial before canceling
+    $isInTrial = $subscription->isInTrial();
+
+    // Call the MODEL's cancel method
+    if ($subscription->cancel($immediately)) {
+        // Refresh to get updated values
+        $subscription->refresh();
+        
+        // Optionally store cancellation reason
+        if ($request->filled('reason')) {
+            // Store in metadata or separate table
+        }
+
+        // Different messages for trial vs paid subscriptions
+        if ($isInTrial) {
+            if ($immediately) {
+                return redirect()->route('user.subscription.dashboard')
+                    ->with('success', 'Your trial has been canceled immediately.');
+            } else {
+                $endDate = $subscription->trial_end_date ?? $subscription->end_date;
+                return redirect()->route('user.subscription.dashboard')
+                    ->with('success', 'Your trial has been canceled. You can continue using it until ' . 
+                           $endDate->format('F j, Y') . '. You will not be charged.');
+            }
+        } else {
+            if ($immediately) {
+                return redirect()->route('user.subscription.dashboard')
+                    ->with('success', 'Your subscription has been canceled immediately.');
+            } else {
+                return redirect()->route('user.subscription.dashboard')
+                    ->with('success', 'Your subscription has been canceled. You can continue using it until ' . 
+                           $subscription->end_date->format('F j, Y'));
+            }
+        }
+    }
+
+    return redirect()->route('user.subscription.dashboard')
+        ->with('error', 'Failed to cancel subscription. Please try again or contact support.');
+}
+
+    public function xcancel(Request $request)
     {
-        $subscription = auth()->user()->activeSubscription()->first();
+        $user = auth()->user();
+        $subscription = $user->activeSubscription;
 
         if (!$subscription) {
-            return back()->with('error', 'No active subscription found.');
+            return redirect()->route('user.subscription.dashboard')
+                ->with('error', 'No active subscription found.');
+        }
+
+        // Check if already canceled
+        if ($subscription->status === 'canceled') {
+            return redirect()->route('user.subscription.dashboard')
+                ->with('info', 'This subscription is already canceled.');
         }
 
         // Validate cancellation reason (optional)
@@ -91,16 +167,31 @@ class SubscriptionController extends Controller
             'reason' => 'nullable|string|max:500',
         ]);
 
-        $subscription->cancel();
+        // Get the cancellation type (immediately or at period end)
+        $immediately = $request->input('immediately', false);
 
-        // Optionally store cancellation reason
-        if ($request->filled('reason')) {
-            // You could store this in a separate table or in metadata
+        // Call the MODEL's cancel method
+        if ($subscription->cancel($immediately)) {
+            // Refresh to get updated values
+            $subscription->refresh();
+            
+            // Optionally store cancellation reason
+            if ($request->filled('reason')) {
+                // You could store this in a separate table or in metadata
+            }
+
+            if ($immediately) {
+                return redirect()->route('user.subscription.dashboard')
+                    ->with('success', 'Your subscription has been canceled immediately.');
+            } else {
+                return redirect()->route('user.subscription.dashboard')
+                    ->with('success', 'Your subscription has been canceled. You can continue using it until ' . 
+                           $subscription->end_date->format('F j, Y'));
+            }
         }
 
         return redirect()->route('user.subscription.dashboard')
-            ->with('success', 'Your subscription has been canceled. You can continue using it until ' . 
-                   $subscription->end_date->format('F j, Y'));
+            ->with('error', 'Failed to cancel subscription. Please try again or contact support.');
     }
 
     /**

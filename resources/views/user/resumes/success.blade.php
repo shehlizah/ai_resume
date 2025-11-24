@@ -1,85 +1,168 @@
-<x-layouts.app :title="'Resume Generated Successfully'">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-body text-center py-5">
-          <!-- Success Icon -->
-          <div class="mb-4">
-            <i class="bx bx-check-circle text-success" style="font-size: 80px;"></i>
-          </div>
-          
-          <!-- Success Message -->
-          <h3 class="mb-3">Resume Generated Successfully! 🎉</h3>
-          <p class="text-muted mb-4">
-            Your resume has been created and saved. The PDF should open automatically in a new tab.
-          </p>
-          
-          <!-- Resume Info -->
-          <div class="card bg-light mb-4">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-6 text-start">
-                  <small class="text-muted">Name:</small>
-                  <div class="fw-semibold">{{ json_decode($resume->data)->name ?? 'N/A' }}</div>
-                </div>
-                <div class="col-md-6 text-start">
-                  <small class="text-muted">Template:</small>
-                  <div class="fw-semibold">{{ $resume->template->name }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Action Buttons -->
-          <div class="d-grid gap-3 d-md-flex justify-content-md-center mb-4">
-            <a href="{{ route('user.resumes.view', $resume->id) }}" 
-               target="_blank"
-               class="btn btn-primary btn-lg">
-              <i class="bx bx-show me-2"></i> View PDF
-            </a>
-            <a href="{{ route('user.resumes.download', $resume->id) }}" 
-               class="btn btn-outline-primary btn-lg">
-              <i class="bx bx-download me-2"></i> Download PDF
-            </a>
-          </div>
-          
-          <!-- Quick Links -->
-          <div class="border-top pt-4 mt-4">
-            <p class="text-muted mb-3">What would you like to do next?</p>
-            <div class="d-flex flex-wrap gap-3 justify-content-center">
-              <a href="{{ route('user.resumes.fill', $resume->template_id) }}" 
-                 class="btn btn-outline-secondary">
-                <i class="bx bx-copy me-1"></i> Create Similar Resume
-              </a>
-              <a href="{{ route('user.resumes.choose') }}" 
-                 class="btn btn-outline-secondary">
-                <i class="bx bx-plus me-1"></i> Choose Another Template
-              </a>
-              <a href="{{ route('user.resumes.index') }}" 
-                 class="btn btn-outline-secondary">
-                <i class="bx bx-folder me-1"></i> View All Resumes
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Helpful Tip -->
-      <div class="alert alert-info mt-3">
-        <i class="bx bx-info-circle me-2"></i>
-        <strong>Tip:</strong> If the PDF didn't open automatically, click the "View PDF" button above or check if your browser blocked the popup.
-      </div>
-    </div>
-  </div>
+<x-layouts.app :title="'Resume Created Successfully'">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        
+        <!-- Success Message -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                
+                <!-- Main Success Card -->
+                <div class="card border-success mb-4">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-4">
+                            <i class="bx bx-check-circle text-success" style="font-size: 5rem;"></i>
+                        </div>
+                        <h2 class="text-success mb-3">🎉 Resume Created Successfully!</h2>
+                        <p class="text-muted mb-4">
+                            Your professional resume "<strong>{{ $resume->title }}</strong>" has been generated and is ready to download.
+                        </p>
 
-  <!-- Auto-open PDF in new tab -->
-  <script>
-    // Wait for page to load, then open PDF
-    window.addEventListener('load', function() {
-      // Small delay to ensure everything is ready
-      setTimeout(function() {
-        window.open("{{ route('user.resumes.view', $resume->id) }}", '_blank');
-      }, 500);
-    });
-  </script>
+                        <div class="d-flex justify-content-center gap-3 mb-4">
+                            <a href="{{ route('user.resumes.view', $resume->id) }}" 
+                               class="btn btn-primary btn-lg" target="_blank">
+                                <i class="bx bx-show me-1"></i> View Resume
+                            </a>
+                            <a href="{{ route('user.resumes.download', $resume->id) }}" 
+                               class="btn btn-success btn-lg">
+                                <i class="bx bx-download me-1"></i> Download PDF
+                            </a>
+                        </div>
+
+                        <a href="{{ route('user.resumes.index') }}" class="btn btn-outline-secondary">
+                            <i class="bx bx-folder me-1"></i> View All My Resumes
+                        </a>
+                    </div>
+                </div>
+
+                @if($availableAddOns->count() > 0)
+                    <!-- Add-Ons Upsell Section -->
+                    <div class="card border-primary mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">🚀 Take Your Job Search to the Next Level!</h4>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-4">
+                                Now that you have a professional resume, boost your chances of landing your dream job with these premium add-ons:
+                            </p>
+
+                            <div class="row g-4">
+                                @foreach($availableAddOns->take(2) as $addOn)
+                                    <div class="col-md-6">
+                                        <div class="card h-100 border-primary">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-start mb-3">
+                                                    <i class="bx {{ $addOn->icon ?? 'bx-gift' }}" 
+                                                       style="font-size: 3rem; color: #6366f1;"></i>
+                                                    <div class="ms-3">
+                                                        <h5 class="mb-1">{{ $addOn->name }}</h5>
+                                                        <span class="badge bg-primary">${{ number_format($addOn->price, 2) }}</span>
+                                                    </div>
+                                                </div>
+
+                                                <p class="text-muted small mb-3">{{ Str::limit($addOn->description, 100) }}</p>
+
+                                                @if($addOn->features)
+                                                    <ul class="list-unstyled small mb-3">
+                                                        @foreach(array_slice($addOn->features, 0, 3) as $feature)
+                                                            <li class="mb-1">
+                                                                <i class="bx bx-check text-success me-1"></i>
+                                                                {{ $feature }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+
+                                                <div class="d-grid gap-2">
+                                                    <a href="{{ route('user.add-ons.checkout', $addOn) }}" 
+                                                       class="btn btn-primary">
+                                                        <i class="bx bx-cart me-1"></i> Get This Add-On
+                                                    </a>
+                                                    <a href="{{ route('user.add-ons.show', $addOn) }}" 
+                                                       class="btn btn-outline-secondary btn-sm">
+                                                        Learn More
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <a href="{{ route('user.add-ons.index') }}" class="btn btn-outline-primary">
+                                    <i class="bx bx-package me-1"></i> View All Add-Ons
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- What's Next Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">📋 What's Next?</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <i class="bx bx-edit text-primary me-3" style="font-size: 2rem;"></i>
+                                    <div>
+                                        <h6>Customize Your Resume</h6>
+                                        <small class="text-muted">
+                                            Edit and tailor your resume for specific job applications
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <i class="bx bx-envelope text-success me-3" style="font-size: 2rem;"></i>
+                                    <div>
+                                        <h6>Create a Cover Letter</h6>
+                                        <small class="text-muted">
+                                            Complement your resume with a professional cover letter
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <i class="bx bx-briefcase text-info me-3" style="font-size: 2rem;"></i>
+                                    <div>
+                                        <h6>Find Job Opportunities</h6>
+                                        <small class="text-muted">
+                                            Use our Job Links add-on to discover verified job boards
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <i class="bx bx-user-voice text-warning me-3" style="font-size: 2rem;"></i>
+                                    <div>
+                                        <h6>Prepare for Interviews</h6>
+                                        <small class="text-muted">
+                                            Get our Interview Prep kit to ace your next interview
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Auto-open PDF in new tab -->
+    <script>
+        // Auto-open the resume PDF in a new tab
+        window.addEventListener('load', function() {
+            const viewUrl = "{{ route('user.resumes.view', $resume->id) }}";
+            // Uncomment the line below if you want to auto-open the PDF
+            // window.open(viewUrl, '_blank');
+        });
+    </script>
 </x-layouts.app>

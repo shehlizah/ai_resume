@@ -51,46 +51,56 @@
           </li>
         </ul>
       </li>
+      
+      <!-- Cover Letters Menu -->
+    <!-- Cover Letters Menu with Templates -->
+        <li class="menu-item {{ request()->routeIs('admin.cover-letters.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-envelope"></i>
+                <div>{{ __('Cover Letters') }}</div>
+            </a>
+            <ul class="menu-sub">
+                
+                <li class="menu-item {{ request()->routeIs('admin.cover-letters.templates*') ? 'active' : '' }}">
+                    <a class="menu-link" href="{{ route('admin.cover-letters.templates') }}">
+                        {{ __('Templates') }}
+                    </a>
+                </li>
+                <li class="menu-item {{ request()->routeIs('admin.cover-letters.user-cover-letters') ? 'active' : '' }}">
+                    <a class="menu-link" href="{{ route('admin.cover-letters.user-cover-letters') }}">
+                        {{ __('User Cover Letters') }}
+                    </a>
+                </li>
+            </ul>
+        </li>
 
-      {{-- AI Prompts --}}
-      <li class="menu-item {{ request()->is('admin/prompts*') ? 'active open' : '' }}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-brain"></i>
-          <div>{{ __('AI Prompts') }}</div>
-        </a>
-        <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('admin/prompts') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('admin/prompts') }}">{{ __('Prompt Library') }}</a>
-          </li>
-        </ul>
-      </li>
+      <!--{{-- AI Prompts --}}-->
+      <!--<li class="menu-item {{ request()->is('admin/prompts*') ? 'active open' : '' }}">-->
+      <!--  <a href="javascript:void(0);" class="menu-link menu-toggle">-->
+      <!--    <i class="menu-icon tf-icons bx bx-brain"></i>-->
+      <!--    <div>{{ __('AI Prompts') }}</div>-->
+      <!--  </a>-->
+      <!--  <ul class="menu-sub">-->
+      <!--    <li class="menu-item {{ request()->is('admin/prompts') ? 'active' : '' }}">-->
+      <!--      <a class="menu-link" href="{{ url('admin/prompts') }}">{{ __('Prompt Library') }}</a>-->
+      <!--    </li>-->
+      <!--  </ul>-->
+      <!--</li>-->
 
-      {{-- Jobs Sources --}}
-      <li class="menu-item {{ request()->is('admin/jobs*') ? 'active open' : '' }}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-briefcase"></i>
-          <div>{{ __('Job Sources') }}</div>
-        </a>
-        <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('admin/jobs') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('admin/jobs') }}">{{ __('All Job Sources') }}</a>
-          </li>
-        </ul>
-      </li>
+      <!--{{-- Jobs Sources --}}-->
+      <!--<li class="menu-item {{ request()->is('admin/jobs*') ? 'active open' : '' }}">-->
+      <!--  <a href="javascript:void(0);" class="menu-link menu-toggle">-->
+      <!--    <i class="menu-icon tf-icons bx bx-briefcase"></i>-->
+      <!--    <div>{{ __('Job Sources') }}</div>-->
+      <!--  </a>-->
+      <!--  <ul class="menu-sub">-->
+      <!--    <li class="menu-item {{ request()->is('admin/jobs') ? 'active' : '' }}">-->
+      <!--      <a class="menu-link" href="{{ url('admin/jobs') }}">{{ __('All Job Sources') }}</a>-->
+      <!--    </li>-->
+      <!--  </ul>-->
+      <!--</li>-->
 
-      {{-- Ads Management --}}
-      <li class="menu-item {{ request()->is('admin/ads*') ? 'active open' : '' }}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-rectangle"></i>
-          <div>{{ __('Ad Settings') }}</div>
-        </a>
-        <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('admin/ads') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('admin/ads') }}">{{ __('Manage Ad Slots') }}</a>
-          </li>
-        </ul>
-      </li>
-
+     
       {{-- User Management --}}
       <li class="menu-item {{ request()->is('admin/users*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -107,21 +117,28 @@
         </ul>
       </li>
 
-       <li class="menu-item {{ request()->is('admin/subscription-plans*') ? 'active open' : '' }}">
+       <li class="menu-item {{ request()->is('admin/subscriptions*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons bx bx-credit-card"></i>
           <div>{{ __('Manage Plans') }}</div>
         </a>
         <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('admin/subscription-plans') && !request()->is('admin/subscription-plans/create') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('admin/subscription-plans') }}">{{ __('All Plans') }}</a>
+          <li class="menu-item {{ request()->is('admin/subscriptions') && !request()->is('admin/payments') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/subscriptions') }}">{{ __('All Subscriptions') }}</a>
           </li>
-          <li class="menu-item {{ request()->is('admin/subscription-plans/create') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('admin/subscription-plans/create') }}">{{ __('Add New Plans') }}</a>
+          <li class="menu-item {{ request()->is('admin/payments') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/payments') }}">{{ __('Manage Payments') }}</a>
           </li>
         </ul>
       </li>
 
+    <!-- For Admin Navigation -->
+    <li class="menu-item {{ request()->routeIs('admin.add-ons.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.add-ons.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-package"></i>
+            <div data-i18n="Manage Add-Ons">Manage Add-Ons</div>
+        </a>
+    </li>
 
       {{-- Settings --}}
       <li class="menu-item {{ request()->is('settings*') ? 'active open' : '' }}">
@@ -179,29 +196,59 @@
     </ul>
 </li>
 
-      <li class="menu-item {{ request()->is('jobs*') ? 'active open' : '' }}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-briefcase"></i>
-          <div>{{ __('Job Discovery') }}</div>
-        </a>
-        <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('jobs') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('jobs') }}">{{ __('Find Jobs') }}</a>
-          </li>
-        </ul>
-      </li>
 
-      <li class="menu-item {{ request()->is('interview*') ? 'active open' : '' }}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-chat"></i>
-          <div>{{ __('Interview Prep') }}</div>
-        </a>
-        <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('interview') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('interview') }}">{{ __('Mock Interview') }}</a>
-          </li>
-        </ul>
-      </li>
+<!-- Add-Ons Menu with Dropdown -->
+<li class="menu-item {{ request()->routeIs('user.add-ons.*') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-package"></i>
+        <div>{{ __('Add-Ons') }}</div>
+        @if(auth()->user()->userAddOns()->where('status', 'active')->count() > 0)
+            <span class="badge badge-center rounded-pill bg-success ms-2">
+                {{ auth()->user()->userAddOns()->where('status', 'active')->count() }}
+            </span>
+        @endif
+    </a>
+    <ul class="menu-sub">
+        <!-- Browse All Add-Ons -->
+        <li class="menu-item {{ request()->routeIs('user.add-ons.index') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('user.add-ons.index') }}">
+                <!--<i class="bx bx-shopping-bag me-2"></i>-->
+                {{ __('Browse Add-Ons') }}
+            </a>
+        </li>
+        
+        <!-- My Purchased Add-Ons -->
+        <li class="menu-item {{ request()->routeIs('user.add-ons.my-add-ons') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('user.add-ons.my-add-ons') }}">
+                <!--<i class="bx bx-folder me-2"></i>-->
+                {{ __('My Add-Ons') }}
+                @if(auth()->user()->userAddOns()->where('status', 'active')->count() > 0)
+                    <span class="badge bg-success ms-2">
+                        {{ auth()->user()->userAddOns()->where('status', 'active')->count() }}
+                    </span>
+                @endif
+            </a>
+        </li>
+
+        <!-- Divider if user has purchased add-ons -->
+        <!--@if(auth()->user()->userAddOns()->where('status', 'active')->count() > 0)-->
+            <!--<li class="menu-divider"></li>-->
+            
+            <!-- Quick Access to Purchased Add-Ons -->
+            <!--@foreach(auth()->user()->userAddOns()->with('addOn')->where('status', 'active')->get() as $userAddOn)-->
+            <!--    <li class="menu-item {{ request()->url() == route('user.add-ons.access', $userAddOn->addOn) ? 'active' : '' }}">-->
+            <!--        <a class="menu-link" href="{{ route('user.add-ons.access', $userAddOn->addOn) }}">-->
+            <!--            <i class="bx {{ $userAddOn->addOn->icon ?? 'bx-gift' }} me-2"></i>-->
+            <!--            {{ Str::limit($userAddOn->addOn->name, 25) }}-->
+            <!--            <span class="badge bg-success ms-2">-->
+            <!--                <i class="bx bx-check"></i>-->
+            <!--            </span>-->
+            <!--        </a>-->
+            <!--    </li>-->
+            <!--@endforeach-->
+        <!--@endif-->
+    </ul>
+</li>
 
 
      <li class="menu-item {{ request()->is('interview*') ? 'active open' : '' }}">

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
+use Stripe\Subscription as StripeSubscription;
 
 class PaymentController extends Controller
 {
@@ -31,17 +32,11 @@ class PaymentController extends Controller
         if ($amount == 0) {
             return $this->activateFreePlan($plan);
         }
-        
-             // Fake subscription creation for testing the view
-        // $this->createSubscription($plan, $billingPeriod, 'stripe', 'TEST_SESSION_ID');
-    
-        // return redirect()->route('user.subscription.dashboard')
-        //     ->with('success', 'Fake Stripe subscription created for testing!');
-        
+
         try {
             Stripe::setApiKey(config('services.stripe.secret'));
 
-            $session = StripeSession::create([
+            $sessionData = [
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                     'price_data' => [
@@ -66,7 +61,16 @@ class PaymentController extends Controller
                     'plan_id' => $plan->id,
                     'billing_period' => $billingPeriod,
                 ],
-            ]);
+            ];
+
+            // Add trial period if plan has trial days
+            if (isset($plan->trial_days) && $plan->trial_days > 0) {
+                $sessionData['subscription_data'] = [
+                    'trial_period_days' => $plan->trial_days,
+                ];
+            }
+
+            $session = StripeSession::create($sessionData);
 
             return redirect($session->url);
 
@@ -88,42 +92,62 @@ class PaymentController extends Controller
             Stripe::setApiKey(config('services.stripe.secret'));
             $session = StripeSession::retrieve($request->session_id);
 
-            if ($session->payment_status === 'paid') {
+            if ($session->payment_status === 'paid' || $session->payment_status === 'unpaid') {
                 $metadata = $session->metadata;
                 $plan = SubscriptionPlan::findOrFail($metadata['plan_id']);
                 
-                // Create subscription
+                // Fetch the full subscription details from Stripe
+                $stripeSubscription = null;
+                $trialEnd = null;
+                
+                if ($session->subscription) {
+                    $stripeSubscription = StripeSubscription::retrieve($session->subscription);
+                    
+                    // Extract trial end date if exists
+                    if ($stripeSubscription->trial_end) {
+                        $trialEnd = Carbon::createFromTimestamp($stripeSubscription->trial_end);
+                    }
+                }
+                
+                // Create subscription with trial info
                 $subscription = $this->createSubscription(
                     $plan,
                     $metadata['billing_period'],
                     'stripe',
-                    $session->subscription
+                    $session->subscription,
+                    $trialEnd
                 );
 
-                // Get transaction ID - for subscriptions, use subscription ID or session ID
+                // Get transaction ID
                 $transactionId = $session->payment_intent ?? $session->subscription ?? $session->id;
 
-                // Create payment record
-                Payment::create([
-                    'user_id' => auth()->id(),
-                    'user_subscription_id' => $subscription->id,
-                    'transaction_id' => $transactionId,
-                    'payment_gateway' => 'stripe',
-                    'amount' => $session->amount_total / 100,
-                    'currency' => strtoupper($session->currency),
-                    'status' => 'completed',
-                    'payment_type' => 'subscription',
-                    'description' => "Subscription to {$plan->name} plan",
-                    'metadata' => [
-                        'session_id' => $session->id,
-                        'customer_id' => $session->customer,
-                        'subscription_id' => $session->subscription,
-                    ],
-                    'paid_at' => now(),
-                ]);
+                // Create payment record only if actually paid
+                if ($session->payment_status === 'paid') {
+                    Payment::create([
+                        'user_id' => auth()->id(),
+                        'user_subscription_id' => $subscription->id,
+                        'transaction_id' => $transactionId,
+                        'payment_gateway' => 'stripe',
+                        'amount' => $session->amount_total / 100,
+                        'currency' => strtoupper($session->currency),
+                        'status' => 'completed',
+                        'payment_type' => 'subscription',
+                        'description' => "Subscription to {$plan->name} plan",
+                        'metadata' => [
+                            'session_id' => $session->id,
+                            'customer_id' => $session->customer,
+                            'subscription_id' => $session->subscription,
+                        ],
+                        'paid_at' => now(),
+                    ]);
+                }
+
+                $message = $trialEnd 
+                    ? "Trial started! Your subscription will begin on " . $trialEnd->format('M d, Y')
+                    : "Payment successful! Your subscription is now active.";
 
                 return redirect()->route('user.subscription.dashboard')
-                    ->with('success', 'Payment successful! Your subscription is now active.');
+                    ->with('success', $message);
             }
 
             return redirect()->route('user.pricing')
@@ -190,7 +214,7 @@ class PaymentController extends Controller
 
         $plan = SubscriptionPlan::findOrFail($pendingSubscription['plan_id']);
 
-        // Create subscription
+        // Create subscription (PayPal doesn't have built-in trial handling here)
         $subscription = $this->createSubscription(
             $plan,
             $pendingSubscription['billing_period'],
@@ -236,7 +260,7 @@ class PaymentController extends Controller
     /**
      * Create subscription record
      */
-    private function createSubscription($plan, $billingPeriod, $gateway, $gatewaySubscriptionId = null)
+    private function createSubscription($plan, $billingPeriod, $gateway, $gatewaySubscriptionId = null, $trialEnd = null)
     {
         $user = auth()->user();
 
@@ -247,9 +271,17 @@ class PaymentController extends Controller
         }
 
         $startDate = now();
-        $endDate = $billingPeriod === 'yearly' 
-            ? $startDate->copy()->addYear() 
-            : $startDate->copy()->addMonth();
+        
+        // If there's a trial, the actual billing starts after trial ends
+        if ($trialEnd) {
+            $endDate = $trialEnd->copy()->add(
+                $billingPeriod === 'yearly' ? '1 year' : '1 month'
+            );
+        } else {
+            $endDate = $billingPeriod === 'yearly' 
+                ? $startDate->copy()->addYear() 
+                : $startDate->copy()->addMonth();
+        }
         
         $autoRenew = $plan->getPrice($billingPeriod) > 0 ? true : false;
 
@@ -261,7 +293,8 @@ class PaymentController extends Controller
             'amount' => $plan->getPrice($billingPeriod),
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'next_billing_date' => $endDate,
+            'trial_ends_at' => $trialEnd, // ✅ NOW SAVING TRIAL DATE
+            'next_billing_date' => $trialEnd ?? $endDate,
             'auto_renew' => $autoRenew,
             'payment_gateway' => $gateway,
             'gateway_subscription_id' => $gatewaySubscriptionId,
@@ -271,34 +304,24 @@ class PaymentController extends Controller
     /**
      * Activate free plan without payment
      */
-     
-     private function activateFreePlan($plan)
-{
-    // Check if user already availed free plan
-    $user = auth()->user();
+    private function activateFreePlan($plan)
+    {
+        // Check if user already availed free plan
+        $user = auth()->user();
 
-    $alreadyAvailed = \App\Models\UserSubscription::where('user_id', $user->id)
-        ->where('subscription_plan_id', '1') // adjust if your column name is different
-        ->exists();
+        $alreadyAvailed = UserSubscription::where('user_id', $user->id)
+            ->where('subscription_plan_id', $plan->id)
+            ->exists();
 
-    if ($alreadyAvailed) {
+        if ($alreadyAvailed) {
+            return redirect()->route('user.subscription.dashboard')
+                ->with('error', 'Free Plan already availed!');
+        }
+
+        // Create free plan subscription
+        $subscription = $this->createSubscription($plan, 'monthly', null, null);
+
         return redirect()->route('user.subscription.dashboard')
-            ->with('error', 'Free Plan already availed!');
+            ->with('success', 'Free plan activated successfully!');
     }
-
-    // Otherwise, create the free plan subscription
-    $subscription = $this->createSubscription($plan, 'monthly', null, null);
-
-    return redirect()->route('user.subscription.dashboard')
-        ->with('success', 'Free plan activated successfully!');
-}
-
-
-    // private function activateFreePlan($plan)
-    // {
-    //     $subscription = $this->createSubscription($plan, 'monthly', null, null);
-
-    //     return redirect()->route('user.subscription.dashboard')
-    //         ->with('success', 'Free plan activated successfully!');
-    // }
 }

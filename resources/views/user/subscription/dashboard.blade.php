@@ -52,6 +52,29 @@
       </div>
     @endif
 
+    @if(session('info'))
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ session('info') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    @endif
+
+    <!-- ✅ TRIAL ALERT - NEW -->
+    @if($currentSubscription && $currentSubscription->isInTrial())
+      <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+        <i class="bx bx-info-circle me-2"></i> 
+        You're currently on a <strong>free trial</strong>. 
+        <strong>{{ $currentSubscription->trialDaysRemaining() }} days</strong> remaining.
+        @if($currentSubscription->status === 'canceled')
+          Your trial will end on <strong>{{ $currentSubscription->trial_end_date->format('F j, Y') }}</strong> and you won't be charged.
+        @else
+          You'll be charged <strong>${{ number_format($currentSubscription->amount, 2) }}</strong> on <strong>{{ $currentSubscription->trial_end_date->format('F j, Y') }}</strong>.
+        @endif
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    @endif
+    <!-- END TRIAL ALERT -->
+
     <div class="row">
       <!-- Current Subscription Card -->
       <div class="col-lg-8 mb-4">
@@ -77,6 +100,12 @@
                     <span class="badge bg-label-secondary">
                       {{ ucfirst($currentSubscription->billing_period) }} Billing
                     </span>
+                    <!-- ✅ TRIAL BADGE - NEW -->
+                    @if($currentSubscription->isInTrial())
+                      <span class="badge bg-info">
+                        <i class="bx bx-time-five"></i> Trial
+                      </span>
+                    @endif
                   </div>
                 </div>
                 <div class="text-end">
@@ -95,36 +124,41 @@
                   <small class="text-muted d-block">End Date</small>
                   <strong>{{ $currentSubscription->end_date->format('F j, Y') }}</strong>
                 </div>
-                <div class="col-md-6 mb-3">
-                  <small class="text-muted d-block">Days Remaining</small>
 
-@php
-    $daysRemaining = \Carbon\Carbon::now()->diffInDays($currentSubscription->end_date);
-    if (\Carbon\Carbon::now()->greaterThan($currentSubscription->end_date)) {
-        $daysRemaining = 0;
-    }
+                <!-- ✅ TRIAL INFORMATION - NEW -->
+                @if($currentSubscription->isInTrial())
+                  <div class="col-md-6 mb-3">
+                    <small class="text-muted d-block">Trial Period</small>
+                    <span class="badge bg-info">
+                      <i class="bx bx-time-five me-1"></i>
+                      {{ $currentSubscription->trialDaysRemaining() }} days left
+                    </span>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <small class="text-muted d-block">Trial Ends</small>
+                    <strong>{{ $currentSubscription->trial_end_date->format('F j, Y') }}</strong>
+                  </div>
+                @else
+                  <div class="col-md-6 mb-3">
+                    <small class="text-muted d-block">Days Remaining</small>
+                    @php
+                      $daysRemaining = \Carbon\Carbon::now()->diffInDays($currentSubscription->end_date);
+                      if (\Carbon\Carbon::now()->greaterThan($currentSubscription->end_date)) {
+                          $daysRemaining = 0;
+                      }
+                      $daysRemainingDisplay = substr((string)$daysRemaining, 0, 2);
+                    @endphp
+                    <strong>{{ $daysRemaining > 0 ? $daysRemainingDisplay . ' days' : 'Expired' }}</strong>
+                  </div>
+                @endif
 
-    // Convert to string and take first two characters
-    $daysRemainingDisplay = substr((string)$daysRemaining, 0, 2);
-@endphp
-
-<strong>{{ $daysRemaining > 0 ? $daysRemainingDisplay . ' days' : 'Expired' }}</strong>
-
-
-                </div>
-
-
-                <!--<div class="col-md-6 mb-3">-->
-                <!--  <small class="text-muted d-block">Next Billing</small>-->
-                <!--  <strong>{{ $currentSubscription->next_billing_date ? $currentSubscription->next_billing_date->format('F j, Y') : 'N/A' }}</strong>-->
-                <!--</div>-->
-
-                @if($currentSubscription->amount > 0 && $currentSubscription->next_billing_date)
-<div class="col-md-6 mb-3">
-    <small class="text-muted d-block">Next Billing</small>
-    <strong>{{ $currentSubscription->next_billing_date->format('F j, Y') }}</strong>
-</div>
-@endif
+                <!-- Next Billing (only show if not in trial or if trial and has next billing) -->
+                @if($currentSubscription->amount > 0 && $currentSubscription->next_billing_date && !$currentSubscription->isInTrial())
+                  <div class="col-md-6 mb-3">
+                    <small class="text-muted d-block">Next Billing</small>
+                    <strong>{{ $currentSubscription->next_billing_date->format('F j, Y') }}</strong>
+                  </div>
+                @endif
 
                 @if($currentSubscription->payment_gateway)
                   <div class="col-md-6 mb-3">
@@ -140,7 +174,7 @@
                 </div>
               </div>
 
-              @if($currentSubscription->isExpiringSoon())
+              @if($currentSubscription->isExpiringSoon() && !$currentSubscription->isInTrial())
                 <div class="alert alert-warning mb-4">
                   <i class="bx bx-info-circle me-2"></i>
                   Your subscription is expiring soon on {{ $currentSubscription->end_date->format('F j, Y') }}!
@@ -195,11 +229,12 @@
                 </ul>
               </div>
 
-              <!-- Actions -->
+              <!-- ✅ UPDATED ACTIONS WITH TRIAL SUPPORT -->
               <div class="border-top pt-3">
                 @if($currentSubscription->status === 'active')
                   <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#cancelModal">
-                    <i class="bx bx-x-circle me-1"></i> Cancel Subscription
+                    <i class="bx bx-x-circle me-1"></i> 
+                    {{ $currentSubscription->isInTrial() ? 'Cancel Trial' : 'Cancel Subscription' }}
                   </button>
                 @elseif($currentSubscription->status === 'canceled')
                   <form action="{{ route('user.subscription.resume') }}" method="POST" class="d-inline">
@@ -306,7 +341,7 @@
 
   </div>
 
-  <!-- Cancel Subscription Modal -->
+  <!-- ✅ UPDATED CANCEL SUBSCRIPTION MODAL WITH TRIAL SUPPORT -->
   @if($currentSubscription && $currentSubscription->status === 'active')
     <div class="modal fade" id="cancelModal" tabindex="-1">
       <div class="modal-dialog">
@@ -314,20 +349,53 @@
           <form action="{{ route('user.subscription.cancel') }}" method="POST">
             @csrf
             <div class="modal-header">
-              <h5 class="modal-title">Cancel Subscription</h5>
+              <h5 class="modal-title">
+                {{ $currentSubscription->isInTrial() ? 'Cancel Trial' : 'Cancel Subscription' }}
+              </h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <p>Are you sure you want to cancel your subscription? You'll continue to have access until <strong>{{ $currentSubscription->end_date->format('F j, Y') }}</strong>.</p>
+              @if($currentSubscription->isInTrial())
+                <!-- Trial Cancellation Message -->
+                <div class="alert alert-info">
+                  <i class="bx bx-info-circle me-2"></i>
+                  <strong>Trial Period:</strong> You have {{ $currentSubscription->trialDaysRemaining() }} days remaining
+                </div>
+                <p>
+                  Are you sure you want to cancel your trial? 
+                  You'll continue to have access until 
+                  <strong>{{ $currentSubscription->trial_end_date->format('F j, Y') }}</strong> 
+                  and <strong>you won't be charged</strong>.
+                </p>
+              @else
+                <!-- Paid Subscription Cancellation Message -->
+                <p>
+                  Are you sure you want to cancel your subscription? 
+                  You'll continue to have access until 
+                  <strong>{{ $currentSubscription->end_date->format('F j, Y') }}</strong>.
+                </p>
+              @endif
 
               <div class="mb-3">
                 <label class="form-label">Reason for canceling (optional)</label>
                 <textarea class="form-control" name="reason" rows="3" placeholder="Help us improve..."></textarea>
               </div>
+
+              <!-- Optional: Add immediate cancellation option -->
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="immediately" value="1" id="cancelImmediately">
+                <label class="form-check-label text-danger" for="cancelImmediately">
+                  Cancel immediately (lose access right away)
+                </label>
+              </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Subscription</button>
-              <button type="submit" class="btn btn-warning">Cancel Subscription</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                {{ $currentSubscription->isInTrial() ? 'Keep Trial' : 'Keep Subscription' }}
+              </button>
+              <button type="submit" class="btn btn-warning">
+                {{ $currentSubscription->isInTrial() ? 'Cancel Trial' : 'Cancel Subscription' }}
+              </button>
             </div>
           </form>
         </div>

@@ -64,29 +64,22 @@ class Payment extends Model
         $this->update(['status' => 'failed']);
     }
 
-    /**
-     * Get status badge color
-     */
-    public function getStatusColor()
-    {
-        return match($this->status) {
-            'completed' => 'success',
-            'pending' => 'warning',
-            'failed' => 'danger',
-            'refunded' => 'info',
-            default => 'secondary',
-        };
-    }
+   public function getStatusColor()
+{
+    return match($this->status) {
+        'completed' => 'success',
+        'pending' => 'warning',
+        'failed' => 'danger',
+        default => 'secondary'
+    };
+}
 
-    /**
-     * Get gateway badge color
-     */
-    public function getGatewayColor()
-    {
-        return match($this->payment_gateway) {
-            'stripe' => 'primary',
-            'paypal' => 'info',
-            default => 'secondary',
-        };
-    }
+public function getGatewayColor()
+{
+    return match($this->payment_gateway) {
+        'stripe' => 'primary',
+        'paypal' => 'info',
+        default => 'secondary'
+    };
+}
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Providers;
+use Illuminate\Support\Facades\Schema; // ✅ ADD THIS LINE
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -23,5 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // manually alias the role middleware
         Route::aliasMiddleware('role', RoleMiddleware::class);
+                Schema::defaultStringLength(191);
+
     }
 }

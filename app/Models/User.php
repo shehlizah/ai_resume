@@ -192,4 +192,61 @@ public function hasReachedTemplateLimit()
     return $resumeCount >= $plan->template_limit;
 }
 
+/**
+ * Get user's add-on purchases
+ */
+public function addOns()
+{
+    return $this->belongsToMany(AddOn::class, 'user_add_ons')
+        ->withPivot(['amount_paid', 'payment_gateway', 'payment_id', 'status', 'purchased_at', 'expires_at'])
+        ->withTimestamps();
+}
+
+/**
+ * Get user's active add-ons
+ */
+public function activeAddOns()
+{
+    return $this->addOns()->wherePivot('status', 'active');
+}
+
+/**
+ * Get user add-on purchases
+ */
+public function userAddOns()
+{
+    return $this->hasMany(UserAddOn::class);
+}
+
+/**
+ * Check if user has purchased a specific add-on
+ */
+public function hasPurchasedAddOn($addOnId)
+{
+    return $this->userAddOns()
+        ->where('add_on_id', $addOnId)
+        ->where('status', 'active')
+        ->exists();
+}
+
+/**
+ * Check if user has job links add-on
+ */
+public function hasJobLinksAccess()
+{
+    return $this->activeAddOns()
+        ->where('type', 'job_links')
+        ->exists();
+}
+
+/**
+ * Check if user has interview prep add-on
+ */
+public function hasInterviewPrepAccess()
+{
+    return $this->activeAddOns()
+        ->where('type', 'interview_prep')
+        ->exists();
+}
+
 }

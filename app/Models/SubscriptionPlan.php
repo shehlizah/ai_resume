@@ -40,10 +40,10 @@ class SubscriptionPlan extends Model
     /**
      * Get all subscriptions for this plan
      */
-    public function subscriptions()
-    {
-        return $this->hasMany(UserSubscription::class);
-    }
+  public function subscriptions()
+{
+    return $this->hasMany(UserSubscription::class, 'subscription_plan_id');
+}
 
     /**
      * Get active subscriptions count
