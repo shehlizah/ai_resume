@@ -97,11 +97,13 @@ class UserResumeController extends Controller
             // Build skills HTML if needed
             $data['skills'] = $this->buildSkillsHtml($data);
 
-            // Get the full template HTML (with CSS embedded)
-            $html = $template->getFullTemplate();
+            // Get the ORIGINAL template HTML and CSS (not PDF-optimized version)
+            // This preserves the template designer's intent
+            $html = $template->html_content;
+            $css = $template->css_content ?? '';
             
             // Fill template with user data
-            $filledHtml = $this->fillTemplate($html, '', $data);
+            $filledHtml = $this->fillTemplate($html, $css, $data);
 
             // Generate PDF using DomPDF
             $pdf = Pdf::loadHTML($filledHtml)
@@ -419,13 +421,19 @@ class UserResumeController extends Controller
      */
     private function fillTemplate($html, $css, $data)
     {
-        // If CSS exists, inject it into HTML (usually not needed as CSS is already in template)
-        if (!empty($css)) {
+        // If CSS exists and not already in HTML, inject it into the head
+        if (!empty($css) && strpos($html, '<style>') === false && strpos($html, '<link') === false) {
             if (strpos($html, '</head>') !== false) {
-                $cssTag = "<style>{$css}</style>";
-                $html = str_replace('</head>', $cssTag . '</head>', $html);
+                // Add CSS before closing head tag
+                $cssTag = "\n    <style>\n{$css}\n    </style>";
+                $html = str_replace('</head>', $cssTag . "\n</head>", $html);
+            } elseif (strpos($html, '<body') !== false) {
+                // If no head tag, add before body
+                $cssTag = "<style>{$css}</style>\n    ";
+                $html = str_replace('<body', $cssTag . '<body', $html);
             } else {
-                $html = "<style>{$css}</style>" . $html;
+                // Add at the very beginning
+                $html = "<style>{$css}</style>\n" . $html;
             }
         }
 
@@ -441,6 +449,12 @@ class UserResumeController extends Controller
 
         foreach ($keys as $key) {
             $placeholder = '{{' . $key . '}}';
+            
+            // Skip if placeholder doesn't exist in HTML
+            if (strpos($html, $placeholder) === false) {
+                continue;
+            }
+            
             $value = $data[$key] ?? '';
 
             if (in_array($key, $rawHtmlKeys)) {
@@ -463,8 +477,10 @@ class UserResumeController extends Controller
     public function preview($template_id)
     {
         $template = Template::findOrFail($template_id);
-        $html = $template->getFullTemplate();
-        $css = '';
+        
+        // Use the original HTML and CSS, not the PDF-optimized version
+        $html = $template->html_content;
+        $css = $template->css_content ?? '';
 
         // Sample data for preview
         $sampleData = $this->getSampleData();
