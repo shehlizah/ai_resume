@@ -112,6 +112,7 @@ class UserResumeController extends Controller
     <meta charset=\"UTF-8\">
     <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">
     <title>Resume</title>
+    <link href=\"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap\" rel=\"stylesheet\">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
@@ -496,17 +497,15 @@ class UserResumeController extends Controller
     <meta charset=\"UTF-8\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <title>Resume Preview</title>
+    <link href=\"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap\" rel=\"stylesheet\">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; line-height: 1.6; background: #f5f5f5; }
-        .resume-wrapper { max-width: 8.5in; height: 11in; margin: 20px auto; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 20px; overflow: hidden; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; background: #f5f5f5; padding: 20px; }
         {$css}
     </style>
 </head>
 <body>
-    <div class=\"resume-wrapper\">
-        {$filledContent}
-    </div>
+    {$filledContent}
 </body>
 </html>";
 
