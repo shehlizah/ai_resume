@@ -100,7 +100,15 @@ class UserResumeController extends Controller
             // Get the ORIGINAL template HTML and CSS (not PDF-optimized version)
             // This preserves the template designer's intent
             $htmlContent = $template->html_content;
-            $css = $template->css_content ?? '';
+            $cssFromDb = $template->css_content ?? '';
+
+            // Extract any <style> tags from the HTML (for templates with embedded CSS)
+            $extracted = $this->extractCssFromHtml($htmlContent);
+            $htmlContent = $extracted['html'];
+            $cssFromHtml = $extracted['css'];
+
+            // Combine CSS: prioritize database CSS, then add CSS from HTML
+            $css = $cssFromDb . "\n" . $cssFromHtml;
 
             // Fill placeholders in the HTML content
             $filledContent = $this->fillTemplate($htmlContent, '', $data);
@@ -113,6 +121,7 @@ class UserResumeController extends Controller
     <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">
     <title>Resume</title>
     <link href=\"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap\" rel=\"stylesheet\">
+    <link href=\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap\" rel=\"stylesheet\">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
@@ -402,43 +411,80 @@ class UserResumeController extends Controller
 
         $skills = $data['skills'];
 
-        // If it's already HTML, return as-is
-        if (strpos($skills, '<') !== false) {
+        // If it's already HTML (contains HTML tags), return as-is
+        if (strpos($skills, '<') !== false && strpos($skills, '>') !== false) {
             return $skills;
         }
 
-        // If it's a comma-separated list, convert to skill items
+        // Parse the skills string into an array
         if (strpos($skills, ',') !== false) {
+            // Comma-separated
             $skillsArray = array_map('trim', explode(',', $skills));
-            $skillItems = [];
-            foreach ($skillsArray as $skill) {
-                if (!empty($skill)) {
-                    $skillItems[] = '<span class="skill-item">' . htmlspecialchars($skill, ENT_QUOTES, 'UTF-8') . '</span>';
-                }
-            }
-            return implode("\n", $skillItems);
-        }
-
-        // If it's line-separated, convert to skill items
-        if (strpos($skills, "\n") !== false) {
+        } elseif (strpos($skills, "\n") !== false) {
+            // Line-separated
             $skillsArray = array_map('trim', explode("\n", $skills));
-            $skillItems = [];
-            foreach ($skillsArray as $skill) {
-                $skill = preg_replace('/^[-•*]\s*/', '', $skill); // Remove bullets
-                if (!empty($skill)) {
-                    $skillItems[] = '<span class="skill-item">' . htmlspecialchars($skill, ENT_QUOTES, 'UTF-8') . '</span>';
-                }
-            }
-            return implode("\n", $skillItems);
+        } else {
+            // Single skill
+            $skillsArray = [trim($skills)];
         }
 
-        // Otherwise, return as plain text (escaped)
-        return htmlspecialchars($skills, ENT_QUOTES, 'UTF-8');
+        // Clean up: remove bullets and empty items
+        $cleanedSkills = [];
+        foreach ($skillsArray as $skill) {
+            $skill = trim($skill);
+            $skill = preg_replace('/^[-•*]\s*/', '', $skill);
+            if (!empty($skill)) {
+                $cleanedSkills[] = $skill;
+            }
+        }
+
+        if (empty($cleanedSkills)) {
+            return '';
+        }
+
+        // Generate skill category structure (works with Editorial Minimal template)
+        // Create a single skill category with all skills
+        $html = '<div class="skill-category">
+    <h3 class="skill-category-title">Technical Skills</h3>
+    <ul class="skill-list">' . "\n";
+
+        foreach ($cleanedSkills as $skill) {
+            $escaped = htmlspecialchars($skill, ENT_QUOTES, 'UTF-8');
+            $html .= '        <li>' . $escaped . '</li>' . "\n";
+        }
+
+        $html .= '    </ul>
+</div>';
+
+        return $html;
     }
 
     /**
      * Fill HTML template with user data
      */
+    /**
+     * Extract CSS from HTML (handles <style> tags)
+     * Returns array with 'html' and 'css' keys
+     */
+    private function extractCssFromHtml($html)
+    {
+        $css = '';
+
+        // Match all <style> tags
+        if (preg_match_all('/<style[^>]*>(.*?)<\/style>/is', $html, $matches)) {
+            foreach ($matches[1] as $styleBlock) {
+                $css .= trim($styleBlock) . "\n";
+            }
+            // Remove all <style> tags from HTML
+            $html = preg_replace('/<style[^>]*>.*?<\/style>/is', '', $html);
+        }
+
+        return [
+            'html' => $html,
+            'css' => $css
+        ];
+    }
+
     private function fillTemplate($html, $css, $data)
     {
         // Define all possible placeholders
@@ -482,7 +528,15 @@ class UserResumeController extends Controller
 
         // Use the original HTML and CSS, not the PDF-optimized version
         $htmlContent = $template->html_content;
-        $css = $template->css_content ?? '';
+        $cssFromDb = $template->css_content ?? '';
+
+        // Extract any <style> tags from the HTML (for templates with embedded CSS)
+        $extracted = $this->extractCssFromHtml($htmlContent);
+        $htmlContent = $extracted['html'];
+        $cssFromHtml = $extracted['css'];
+
+        // Combine CSS: prioritize database CSS, then add CSS from HTML
+        $css = $cssFromDb . "\n" . $cssFromHtml;
 
         // Sample data for preview
         $sampleData = $this->getSampleData();
@@ -498,6 +552,7 @@ class UserResumeController extends Controller
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <title>Resume Preview</title>
     <link href=\"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap\" rel=\"stylesheet\">
+    <link href=\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap\" rel=\"stylesheet\">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; line-height: 1.6; background: #f5f5f5; padding: 20px; }
@@ -554,14 +609,29 @@ private function getSampleData()
     </div>
     <div class="institution-name">University of California, Berkeley</div>
 </div>',
-        'skills' => '<span class="skill-item">PHP</span>
-<span class="skill-item">Laravel</span>
-<span class="skill-item">JavaScript</span>
-<span class="skill-item">React</span>
-<span class="skill-item">MySQL</span>
-<span class="skill-item">Docker</span>
-<span class="skill-item">AWS</span>
-<span class="skill-item">Git</span>',
+        'skills' => '<div class="skill-category">
+    <h3 class="skill-category-title">Technical Skills</h3>
+    <ul class="skill-list">
+        <li>PHP</li>
+        <li>Laravel</li>
+        <li>JavaScript</li>
+        <li>React</li>
+        <li>MySQL</li>
+        <li>Docker</li>
+        <li>AWS</li>
+        <li>Git</li>
+    </ul>
+</div>
+<div class="skill-category">
+    <h3 class="skill-category-title">Professional Skills</h3>
+    <ul class="skill-list">
+        <li>Full Stack Development</li>
+        <li>System Architecture</li>
+        <li>Team Leadership</li>
+        <li>Agile Methodology</li>
+        <li>Cloud Computing</li>
+    </ul>
+</div>',
     ];
 }
 
