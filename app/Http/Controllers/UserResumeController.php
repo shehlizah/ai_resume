@@ -724,8 +724,20 @@ public function generate(Request $request)
         // Fill the full template with user data
         $filledHtml = $this->fillTemplate($html, $css, $data);
 
-        // Generate PDF
-        $pdf = Pdf::loadHTML($filledHtml)->setPaper('A4', 'portrait');
+        // Generate PDF with enhanced options for better layout rendering
+        $pdf = Pdf::loadHTML($filledHtml)
+            ->setPaper('A4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'dpi' => 150,
+                'defaultFont' => 'Arial',
+                'fontDir' => storage_path('fonts'),
+                'logOutputFile' => storage_path('logs/dompdf.log'),
+                'debugPng' => false,
+                'debugKeepTemp' => false,
+                'debugCss' => false,
+            ]);
 
         // ✅ FIXED: Direct save to correct path
         $fileName = 'resume_' . Auth::id() . '_' . time() . '.pdf';

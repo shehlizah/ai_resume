@@ -30,9 +30,26 @@ class Template extends Model
 
     /**
      * Get the full HTML template with CSS embedded
+     * Optimized for DOMPDF rendering with PDF-friendly CSS
      */
     public function getFullTemplate()
     {
+        // CSS optimizations for DOMPDF (doesn't support modern CSS well)
+        $pdfOptimizedCss = $this->css_content;
+        
+        // Replace problematic CSS properties that DOMPDF doesn't handle well
+        // Convert display:flex to display:block for better PDF compatibility
+        $pdfOptimizedCss = preg_replace('/display\s*:\s*flex\s*;/i', 'display: block;', $pdfOptimizedCss);
+        
+        // Convert grid layouts to table-like layouts
+        $pdfOptimizedCss = preg_replace('/display\s*:\s*grid\s*;/i', 'display: block;', $pdfOptimizedCss);
+        
+        // Remove gap property (not supported in block layouts)
+        $pdfOptimizedCss = preg_replace('/\s*gap\s*:\s*[^;]*;/i', '', $pdfOptimizedCss);
+        
+        // Ensure width:100% for sidebar and main content areas
+        $pdfOptimizedCss = preg_replace('/flex\s*:\s*[^;]*;/i', 'width: 100%; display: block;', $pdfOptimizedCss);
+        
         return "<!DOCTYPE html>
 <html lang=\"en\">
 <head>
@@ -41,8 +58,31 @@ class Template extends Model
     <title>{$this->name}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        {$this->css_content}
+        body { font-family: Arial, sans-serif; padding: 10mm; line-height: 1.5; }
+        
+        /* PDF-specific adjustments */
+        @page { margin: 10mm; }
+        
+        /* Ensure sidebars and content areas stack vertically in PDF */
+        .sidebar, .sidebar-left, .sidebar-right, [class*='sidebar'] {
+            width: 100% !important;
+            display: block !important;
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        
+        .main-content, .content, [class*='content'] {
+            width: 100% !important;
+            display: block !important;
+        }
+        
+        /* Prevent page breaks inside sections */
+        .experience-item, .education-item, .skill-item, [class*='-item'] {
+            page-break-inside: avoid;
+            margin-bottom: 10px;
+        }
+        
+        {$pdfOptimizedCss}
     </style>
 </head>
 <body>
