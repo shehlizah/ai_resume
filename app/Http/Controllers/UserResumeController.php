@@ -1301,16 +1301,24 @@ private function callOpenAI($prompt)
      */
     public function uploadTemporary(Request $request)
     {
-        $request->validate([
-            'resume_file' => 'required|file|mimes:pdf,doc,docx|max:10240' // 10MB
-        ]);
-
         try {
+            $request->validate([
+                'resume_file' => 'required|file|mimes:pdf,doc,docx|max:10240' // 10MB
+            ], [
+                'resume_file.required' => 'Please select a file to upload',
+                'resume_file.file' => 'Please upload a valid file',
+                'resume_file.mimes' => 'Only PDF and DOCX files are allowed',
+                'resume_file.max' => 'File size must be less than 10MB'
+            ]);
+
             $file = $request->file('resume_file');
             $user = Auth::user();
             
+            // Create directory if it doesn't exist
+            $uploadDir = "resumes/temp/{$user->id}";
+            
             // Store in temporary storage
-            $path = $file->store("resumes/temp/{$user->id}", 'local');
+            $path = $file->store($uploadDir, 'local');
             
             return response()->json([
                 'success' => true,
@@ -1318,8 +1326,19 @@ private function callOpenAI($prompt)
                 'file_name' => $file->getClientOriginalName(),
                 'message' => 'Resume uploaded successfully'
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Resume upload validation failed', ['errors' => $e->errors()]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => $e->errors()['resume_file'][0] ?? 'Validation failed'
+            ], 422);
         } catch (\Exception $e) {
-            \Log::error('Resume upload failed', ['error' => $e->getMessage()]);
+            \Log::error('Resume upload failed', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             
             return response()->json([
                 'success' => false,

@@ -315,12 +315,12 @@
         const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
         if (!allowedTypes.includes(file.type)) {
-            alert('Please upload a PDF or DOCX file');
+            alert('❌ Please upload a PDF or DOCX file');
             return;
         }
 
         if (file.size > maxSize) {
-            alert('File size must be less than 10MB');
+            alert('❌ File size must be less than 10MB');
             return;
         }
 
@@ -329,6 +329,7 @@
         formData.append('resume_file', file);
 
         interviewUploadStatus.style.display = 'block';
+        document.getElementById('interviewStatusText').textContent = 'Uploading ' + file.name + '...';
 
         fetch('{{ route("user.resumes.upload-temp") }}', {
             method: 'POST',
@@ -337,7 +338,14 @@
             },
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.message || 'Upload failed with status ' + response.status);
+                });
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 // Store the temporary file path/ID
@@ -354,14 +362,14 @@
                     interviewUploadStatus.style.display = 'none';
                 }, 3000);
             } else {
-                alert('Error uploading file: ' + (data.message || 'Unknown error'));
+                alert('❌ Error: ' + (data.message || 'Unknown error'));
                 interviewUploadStatus.style.display = 'none';
             }
         })
         .catch(error => {
             console.error('Error:', error);
             interviewUploadStatus.style.display = 'none';
-            alert('Error uploading file');
+            alert('❌ Error uploading file: ' + error.message);
         });
     }
     </script>
