@@ -84,6 +84,8 @@ class PaymentController extends Controller
      */
     public function stripeSuccess(Request $request)
     {
+        \Log::info('stripeSuccess called', ['session_id' => $request->session_id ?? 'MISSING']);
+
         if (!$request->has('session_id')) {
             return redirect()->route('user.pricing')->with('error', 'Invalid session.');
         }
@@ -91,6 +93,11 @@ class PaymentController extends Controller
         try {
             Stripe::setApiKey(config('services.stripe.secret'));
             $session = StripeSession::retrieve($request->session_id);
+
+            \Log::info('Session Retrieved', [
+                'payment_status' => $session->payment_status ?? 'NULL',
+                'subscription' => $session->subscription ?? 'NULL',
+            ]);
 
             if ($session->payment_status === 'paid' || $session->payment_status === 'unpaid') {
                 $metadata = $session->metadata;

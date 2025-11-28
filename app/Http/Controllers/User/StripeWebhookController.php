@@ -148,8 +148,16 @@ class StripeWebhookController extends Controller
             // Extract trial end date from subscription
             $trialEnd = null;
             $stripeTrialEnd = $subscription['trial_end'] ?? $subscription->trial_end ?? null;
+
+            \Log::info('Webhook Trial Debug', [
+                'stripe_trial_end_raw' => $stripeTrialEnd,
+                'subscription_id' => $subscription['id'] ?? $subscription->id,
+                'has_trial_end' => !empty($stripeTrialEnd),
+            ]);
+
             if ($stripeTrialEnd) {
                 $trialEnd = \Carbon\Carbon::createFromTimestamp($stripeTrialEnd);
+                \Log::info('Trial End Parsed', ['trial_end' => $trialEnd->toDateString()]);
             }
 
             // Create user subscription
