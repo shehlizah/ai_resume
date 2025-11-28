@@ -84,7 +84,11 @@ class PaymentController extends Controller
      */
     public function stripeSuccess(Request $request)
     {
+        \Log::info('=== STRIPE SUCCESS CALLBACK ===');
+        \Log::info('Session ID: ' . ($request->session_id ?? 'MISSING'));
+
         if (!$request->has('session_id')) {
+            \Log::error('No session_id in request');
             return redirect()->route('user.pricing')->with('error', 'Invalid session.');
         }
 
@@ -92,9 +96,13 @@ class PaymentController extends Controller
             Stripe::setApiKey(config('services.stripe.secret'));
             $session = StripeSession::retrieve($request->session_id);
 
+            \Log::info('Session retrieved from Stripe', ['payment_status' => $session->payment_status]);
+
             if ($session->payment_status === 'paid' || $session->payment_status === 'unpaid') {
                 $metadata = $session->metadata;
                 $plan = SubscriptionPlan::findOrFail($metadata['plan_id']);
+
+                \Log::info('Plan found', ['plan_id' => $plan->id, 'plan_name' => $plan->name]);
 
                 // Fetch the full subscription details from Stripe
                 $stripeSubscription = null;
@@ -102,14 +110,18 @@ class PaymentController extends Controller
 
                 if ($session->subscription) {
                     $stripeSubscription = StripeSubscription::retrieve($session->subscription);
+                    \Log::info('Stripe subscription retrieved', ['subscription_id' => $session->subscription]);
 
                     // Extract trial end date if exists
                     if ($stripeSubscription->trial_end) {
                         $trialEnd = Carbon::createFromTimestamp($stripeSubscription->trial_end);
+                        \Log::info('Trial end date found', ['trial_end' => $trialEnd->toDateString()]);
                     }
                 }
 
                 // Create subscription with trial info
+                \Log::info('Creating subscription...', ['plan_id' => $plan->id, 'billing_period' => $metadata['billing_period']]);
+
                 $subscription = $this->createSubscription(
                     $plan,
                     $metadata['billing_period'],
@@ -117,6 +129,8 @@ class PaymentController extends Controller
                     $session->subscription,
                     $trialEnd
                 );
+
+                \Log::info('Subscription created', ['subscription_id' => $subscription->id, 'user_id' => $subscription->user_id]);
 
                 // Get transaction ID
                 $transactionId = $session->payment_intent ?? $session->subscription ?? $session->id;
@@ -262,11 +276,26 @@ class PaymentController extends Controller
      */
     private function createSubscription($plan, $billingPeriod, $gateway, $gatewaySubscriptionId = null, $trialEnd = null)
     {
+        \Log::info('createSubscription called', [
+            'plan_id' => $plan->id,
+            'billing_period' => $billingPeriod,
+            'gateway' => $gateway,
+            'has_trial_end' => !is_null($trialEnd)
+        ]);
+
         $user = auth()->user();
+
+        \Log::info('Auth user', ['user_id' => $user?->id, 'user_email' => $user?->email]);
+
+        if (!$user) {
+            \Log::error('No authenticated user found');
+            throw new \Exception('No authenticated user');
+        }
 
         // Cancel existing active subscription
         $existingSubscription = $user->activeSubscription()->first();
         if ($existingSubscription) {
+            \Log::info('Canceling existing subscription', ['existing_id' => $existingSubscription->id]);
             $existingSubscription->cancel();
         }
 
@@ -285,7 +314,7 @@ class PaymentController extends Controller
 
         $autoRenew = $plan->getPrice($billingPeriod) > 0 ? true : false;
 
-        return UserSubscription::create([
+        $data = [
             'user_id' => $user->id,
             'subscription_plan_id' => $plan->id,
             'billing_period' => $billingPeriod,
@@ -298,7 +327,15 @@ class PaymentController extends Controller
             'auto_renew' => $autoRenew,
             'payment_gateway' => $gateway,
             'gateway_subscription_id' => $gatewaySubscriptionId,
-        ]);
+        ];
+
+        \Log::info('About to create subscription with data:', $data);
+
+        $subscription = UserSubscription::create($data);
+
+        \Log::info('Subscription created successfully', ['id' => $subscription->id, 'user_id' => $subscription->user_id]);
+
+        return $subscription;
     }
 
     /**
