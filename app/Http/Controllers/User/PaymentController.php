@@ -107,66 +107,53 @@ class PaymentController extends Controller
      */
     public function stripeSuccess(Request $request)
     {
-        \Log::info('stripeSuccess called', ['session_id' => $request->session_id ?? 'MISSING']);
+        $debug = "=== STRIPE SUCCESS DEBUG ===\n";
+        $debug .= "Time: " . now()->toDateTimeString() . "\n";
+        $debug .= "Session ID: " . ($request->session_id ?? 'MISSING') . "\n";
+
+        file_put_contents(storage_path('logs/stripe_debug.log'), $debug, FILE_APPEND);
 
         if (!$request->has('session_id')) {
-            \Log::error('No session_id in request');
+            file_put_contents(storage_path('logs/stripe_debug.log'), "ERROR: No session_id\n", FILE_APPEND);
             return redirect()->route('user.pricing')->with('error', 'Invalid session.');
         }
 
         try {
+            file_put_contents(storage_path('logs/stripe_debug.log'), "Retrieving Stripe session...\n", FILE_APPEND);
+
             Stripe::setApiKey(config('services.stripe.secret'));
             $session = StripeSession::retrieve($request->session_id);
 
-            \Log::info('Session Retrieved', [
-                'payment_status' => $session->payment_status ?? 'NULL',
-                'subscription' => $session->subscription ?? 'NULL',
-                'client_reference_id' => $session->client_reference_id ?? 'NULL',
-                'session_id' => $request->session_id,
-            ]);
+            file_put_contents(storage_path('logs/stripe_debug.log'), "Session retrieved. Status: " . ($session->payment_status ?? 'NULL') . "\n", FILE_APPEND);
 
             if ($session->payment_status === 'paid' || $session->payment_status === 'unpaid') {
-                \Log::info('Payment status valid, processing subscription');
+                file_put_contents(storage_path('logs/stripe_debug.log'), "Payment status valid\n", FILE_APPEND);
 
-                // Get user from client_reference_id (not from auth, since session might be lost)
+                // Get user from client_reference_id
                 $userId = $session->client_reference_id;
-                $user = User::findOrFail($userId);
+                file_put_contents(storage_path('logs/stripe_debug.log'), "User ID: $userId\n", FILE_APPEND);
 
-                \Log::info('User found from client_reference_id', ['user_id' => $userId]);
+                $user = User::findOrFail($userId);
+                file_put_contents(storage_path('logs/stripe_debug.log'), "User found: " . $user->email . "\n", FILE_APPEND);
 
                 $metadata = $session->metadata;
-                \Log::info('Metadata', ['metadata' => $metadata->toArray() ?? []]);
-
                 $plan = SubscriptionPlan::findOrFail($metadata['plan_id']);
-                \Log::info('Plan found', ['plan_id' => $plan->id, 'plan_name' => $plan->name]);
+                file_put_contents(storage_path('logs/stripe_debug.log'), "Plan found: " . $plan->name . "\n", FILE_APPEND);
 
-                // Fetch the full subscription details from Stripe
-                $stripeSubscription = null;
+                // Fetch subscription
                 $trialEnd = null;
-
                 if ($session->subscription) {
                     $stripeSubscription = StripeSubscription::retrieve($session->subscription);
+                    file_put_contents(storage_path('logs/stripe_debug.log'), "Stripe Sub trial_end: " . ($stripeSubscription->trial_end ?? 'NULL') . "\n", FILE_APPEND);
 
-                    \Log::info('Stripe Subscription Retrieved', [
-                        'subscription_id' => $session->subscription,
-                        'trial_end' => $stripeSubscription->trial_end ?? 'NULL',
-                        'status' => $stripeSubscription->status ?? 'NULL',
-                    ]);
-
-                    // Extract trial end date if exists
                     if ($stripeSubscription->trial_end) {
                         $trialEnd = Carbon::createFromTimestamp($stripeSubscription->trial_end);
-                        \Log::info('Trial End Date Set', ['trial_end' => $trialEnd->toDateString()]);
+                        file_put_contents(storage_path('logs/stripe_debug.log'), "Trial parsed: " . $trialEnd->toDateString() . "\n", FILE_APPEND);
                     }
                 }
 
-                // Create subscription with trial info
-                \Log::info('Creating subscription', [
-                    'user_id' => $userId,
-                    'plan_id' => $plan->id,
-                    'billing_period' => $metadata['billing_period'],
-                    'trial_end' => $trialEnd ? $trialEnd->toDateString() : 'NULL',
-                ]);
+                // Create subscription
+                file_put_contents(storage_path('logs/stripe_debug.log'), "Creating subscription...\n", FILE_APPEND);
 
                 $subscription = $this->createSubscription(
                     $plan,
@@ -177,7 +164,7 @@ class PaymentController extends Controller
                     $user
                 );
 
-                \Log::info('Subscription created successfully', ['subscription_id' => $subscription->id]);
+                file_put_contents(storage_path('logs/stripe_debug.log'), "Subscription created: " . $subscription->id . "\n", FILE_APPEND);
 
                 // Get transaction ID
                 $transactionId = $session->payment_intent ?? $session->subscription ?? $session->id;
@@ -201,34 +188,33 @@ class PaymentController extends Controller
                         ],
                         'paid_at' => now(),
                     ]);
-                    \Log::info('Payment record created');
+                    file_put_contents(storage_path('logs/stripe_debug.log'), "Payment record created\n", FILE_APPEND);
                 }
 
                 $message = $trialEnd
                     ? "Trial started! Your subscription will begin on " . $trialEnd->format('M d, Y')
                     : "Payment successful! Your subscription is now active.";
 
+                file_put_contents(storage_path('logs/stripe_debug.log'), "Redirecting with success message\n\n", FILE_APPEND);
+
                 return redirect()->route('user.subscription.dashboard')
                     ->with('success', $message);
             }
 
-            \Log::error('Invalid payment status', ['payment_status' => $session->payment_status ?? 'NULL']);
+            file_put_contents(storage_path('logs/stripe_debug.log'), "ERROR: Invalid payment status\n\n", FILE_APPEND);
             return redirect()->route('user.pricing')
                 ->with('error', 'Payment was not completed.');
 
         } catch (\Exception $e) {
-            \Log::error('Exception in stripeSuccess', [
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            $error = "EXCEPTION: " . $e->getMessage() . "\n";
+            $error .= "File: " . $e->getFile() . ":" . $e->getLine() . "\n";
+            $error .= "Trace: " . substr($e->getTraceAsString(), 0, 500) . "\n\n";
+            file_put_contents(storage_path('logs/stripe_debug.log'), $error, FILE_APPEND);
+
             return redirect()->route('user.pricing')
                 ->with('error', 'Error processing payment: ' . $e->getMessage());
         }
-    }
-
-    /**
+    }    /**
      * Process payment with PayPal
      */
     public function paypalCheckout(Request $request)
