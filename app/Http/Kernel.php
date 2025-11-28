@@ -5,5 +5,6 @@ protected $routeMiddleware = [
     'is_admin' => \App\Http\Middleware\IsAdmin::class,
     'admin' => \App\Http\Middleware\AdminMiddleware::class,
     'subscription' => \App\Http\Middleware\CheckSubscription::class,
+    'package.check' => \App\Http\Middleware\CheckActivePackage::class,
 
 ];

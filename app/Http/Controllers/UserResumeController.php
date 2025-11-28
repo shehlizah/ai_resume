@@ -14,15 +14,27 @@ class UserResumeController extends Controller
     /**
      * Show all user resumes
      */
-    public function index()
-    {
-        $resumes = UserResume::where('user_id', Auth::id())
-            ->with('template')
-            ->latest()
-            ->get();
+    // public function index()
+    // {
+    //     $resumes = UserResume::where('user_id', Auth::id())
+    //         ->with('template')
+    //         ->latest()
+    //         ->get();
 
-        return view('user.resumes.index', compact('resumes'));
-    }
+    //     return view('user.resumes.index', compact('resumes'));
+    // }
+
+    public function index()
+{
+    $user = Auth::user();
+    $resumes = UserResume::where('user_id', $user->id)
+        ->with('template')
+        ->paginate(10);
+
+    $hasActivePackage = $user->hasActivePackage();
+
+    return view('user.resumes.index', compact('resumes', 'hasActivePackage'));
+}
 
     /**
      * Show template selection page
@@ -41,11 +53,219 @@ class UserResumeController extends Controller
         $template = Template::findOrFail($template_id);
         return view('user.resumes.fill', compact('template'));
     }
+    
+        private function optimizeCssForPdf($css)
+    {
+        // Remove flexbox
+        $css = preg_replace('/display\s*:\s*flex\s*;?/i', 'display: block;', $css);
+        $css = preg_replace('/display\s*:\s*inline-flex\s*;?/i', 'display: inline-block;', $css);
+        $css = preg_replace('/flex[^:]*:[^;]+;?/i', '', $css);
+        $css = preg_replace('/justify-content\s*:[^;]+;?/i', '', $css);
+        $css = preg_replace('/align-items\s*:[^;]+;?/i', '', $css);
+        
+        // Remove grid
+        $css = preg_replace('/display\s*:\s*grid\s*;?/i', 'display: block;', $css);
+        $css = preg_replace('/grid-[^:]+:[^;]+;?/i', '', $css);
+        
+        // Remove transforms
+        $css = preg_replace('/transform\s*:[^;]+;?/i', '', $css);
+        
+        // Remove viewport units
+        $css = preg_replace('/(\d+(?:\.\d+)?)\s*v[hwminax]+/i', '${1}px', $css);
+        
+        // Remove calc
+        $css = preg_replace('/calc\([^)]+\)/i', 'auto', $css);
+        
+        // Remove position: fixed
+        $css = preg_replace('/position\s*:\s*fixed\s*;?/i', 'position: relative;', $css);
+        
+        return $css;
+    }
 
     /**
      * Generate PDF - CORRECTED VERSION
      */
-    public function generate(Request $request)
+     
+/**
+ * UPDATED generate() METHOD FOR UserResumeController
+ * 
+ * This uses the DomPdfTemplateSanitizer to automatically fix ANY template
+ * Place this in your App\Http\Controllers\UserResumeController
+ */
+
+public function generate(Request $request)
+{
+    try {
+        $validated = $request->validate([
+            'template_id' => 'required|exists:templates,id',
+            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'required|string',
+            'address' => 'nullable|string|max:255',
+            'summary' => 'nullable|string',
+            'experience' => 'nullable|array',
+            'experience.*' => 'nullable|string',
+            'education' => 'nullable|array',
+            'education.*' => 'nullable|string',
+            'job_title' => 'nullable|array',
+            'job_title.*' => 'nullable|string',
+            'company' => 'nullable|array',
+            'company.*' => 'nullable|string',
+            'start_date' => 'nullable|array',
+            'start_date.*' => 'nullable|string',
+            'end_date' => 'nullable|array',
+            'end_date.*' => 'nullable|string',
+            'responsibilities' => 'nullable|array',
+            'responsibilities.*' => 'nullable|string',
+            'degree' => 'nullable|array',
+            'degree.*' => 'nullable|string',
+            'field_of_study' => 'nullable|array',
+            'field_of_study.*' => 'nullable|string',
+            'university' => 'nullable|array',
+            'university.*' => 'nullable|string',
+            'graduation_year' => 'nullable|array',
+            'graduation_year.*' => 'nullable|string',
+            'education_details' => 'nullable|array',
+            'education_details.*' => 'nullable|string',
+            'skills' => 'nullable|string',
+        ]);
+
+        $template = Template::findOrFail($request->template_id);
+        $data = $request->except(['_token', 'template_id']);
+
+        // Build structured content
+        $data['experience'] = $this->buildExperienceHtml($data);
+        $data['education'] = $this->buildEducationHtml($data);
+        $data['skills'] = $this->buildSkillsHtml($data);
+
+        // Get template content
+        $htmlContent = $template->html_content;
+        $cssFromDb = $template->css_content ?? '';
+
+        // Extract any embedded CSS
+        $extracted = $this->extractCssFromHtml($htmlContent);
+        $htmlContent = $extracted['html'];
+        $cssFromHtml = $extracted['css'];
+
+        // Combine CSS
+        $css = $cssFromDb . "\n" . $cssFromHtml;
+
+        // ✅ NEW: Use sanitizer to make template DomPDF-safe
+        $sanitizer = new \App\Services\DomPdfTemplateSanitizer();
+        
+        // Fill placeholders first
+        $filledContent = $this->fillTemplate($htmlContent, '', $data);
+        
+        // Then sanitize and build complete document
+        $filledHtml = $sanitizer->buildSafeDocument($filledContent, $css, []);
+
+        // ✅ UPDATED: DomPDF options for maximum compatibility
+        $pdf = Pdf::loadHTML($filledHtml)
+            ->setPaper('A4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => false,
+                'isFontSubsettingEnabled' => true,
+                'defaultFont' => 'DejaVu Sans',
+                'dpi' => 96,
+                'debugKeepTemp' => false,
+                'debugCss' => false,
+                'debugLayout' => false,
+                'debugLayoutLines' => false,
+                'debugLayoutBlocks' => false,
+                'debugLayoutInline' => false,
+                'debugLayoutPaddingBox' => false,
+            ]);
+
+        // Create directory if needed
+        $directory = storage_path('app/public/resumes');
+        if (!File::exists($directory)) {
+            File::makeDirectory($directory, 0755, true);
+        }
+
+        // Generate filename and save
+        $fileName = 'resume_' . Auth::id() . '_' . time() . '.pdf';
+        $fullPath = $directory . '/' . $fileName;
+
+        // Save PDF
+        File::put($fullPath, $pdf->output());
+
+        // Save to database
+        $resume = UserResume::create([
+            'user_id' => Auth::id(),
+            'template_id' => $template->id,
+            'data' => json_encode($data),
+            'generated_pdf_path' => 'resumes/' . $fileName,
+            'status' => 'completed',
+        ]);
+
+        return redirect()->route('user.resumes.success', $resume->id)
+            ->with('success', 'Resume generated successfully!');
+
+    } catch (\Exception $e) {
+        \Log::error('Resume generation error: ' . $e->getMessage());
+        \Log::error('Stack trace: ' . $e->getTraceAsString());
+        
+        return back()->withInput()->with('error', 'Error generating resume: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Extract CSS from HTML <style> tags
+ */
+private function extractCssFromHtml($html)
+{
+    $css = '';
+
+    if (preg_match_all('/<style[^>]*>(.*?)<\/style>/is', $html, $matches)) {
+        foreach ($matches[1] as $styleBlock) {
+            $css .= trim($styleBlock) . "\n";
+        }
+        $html = preg_replace('/<style[^>]*>.*?<\/style>/is', '', $html);
+    }
+
+    return [
+        'html' => $html,
+        'css' => $css
+    ];
+}
+
+/**
+ * Fill template placeholders
+ */
+private function fillTemplate($html, $css, $data)
+{
+    $keys = [
+        'name', 'title', 'email', 'phone', 'address', 'summary',
+        'experience', 'skills', 'education',
+        'certifications', 'projects', 'languages', 'interests'
+    ];
+
+    $rawHtmlKeys = ['experience', 'skills', 'education', 'certifications', 'projects', 'languages', 'interests'];
+
+    foreach ($keys as $key) {
+        $placeholder = '{{' . $key . '}}';
+
+        if (strpos($html, $placeholder) === false) {
+            continue;
+        }
+
+        $value = $data[$key] ?? '';
+
+        if (in_array($key, $rawHtmlKeys)) {
+            $replaceValue = $value;
+        } else {
+            $replaceValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+        }
+
+        $html = str_replace($placeholder, $replaceValue, $html);
+    }
+
+    return $html;
+}
+
+    public function xgenerate(Request $request)
     {
         try {
             $validated = $request->validate([
@@ -109,40 +329,72 @@ class UserResumeController extends Controller
 
             // Combine CSS: prioritize database CSS, then add CSS from HTML
             $css = $cssFromDb . "\n" . $cssFromHtml;
+            
+            $css = $this->optimizeCssForPdf($css);
+            
 
             // Fill placeholders in the HTML content
             $filledContent = $this->fillTemplate($htmlContent, '', $data);
 
             // Build a complete HTML document for PDF generation
-            $filledHtml = "<!DOCTYPE html>
-<html lang=\"en\">
-<head>
-    <meta charset=\"UTF-8\">
-    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">
-    <title>Resume</title>
-    <link href=\"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap\" rel=\"stylesheet\">
-    <link href=\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap\" rel=\"stylesheet\">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        @page { margin: 15mm; size: A4 portrait; }
-        {$css}
-    </style>
-</head>
-<body>
-    {$filledContent}
-</body>
-</html>";
+                $filledHtmlx = "<!DOCTYPE html>
+    <html lang=\"en\">
+    <head>
+        <meta charset=\"UTF-8\">
+        <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">
+        <title>Resume</title>
+        <link href=\"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap\" rel=\"stylesheet\">
+        <link href=\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap\" rel=\"stylesheet\">
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            @page { margin: 15mm; size: A4 portrait; }
+            {$css}
+        </style>
+    </head>
+    <body>
+        {$filledContent}
+    </body>
+    </html>";
+
+
+    $filledHtml = "<!DOCTYPE html>
+    <html lang=\"en\">
+    <head>
+        <meta charset=\"UTF-8\">
+        <title>Resume</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+                font-family: 'DejaVu Sans', Arial, sans-serif; 
+                line-height: 1.6; 
+                color: #333; 
+                font-size: 11pt;
+            }
+            @page { margin: 12mm; size: A4 portrait; }
+            
+            .job-header, .degree-header { display: table; width: 100%; }
+            .job-title, .degree-name { display: table-cell; width: 65%; }
+            .job-date, .education-date { display: table-cell; width: 35%; text-align: right; }
+            
+            {$css}
+        </style>
+    </head>
+    <body>{$filledContent}</body>
+    </html>";
+
 
             // Generate PDF using DomPDF
-            $pdf = Pdf::loadHTML($filledHtml)
-                ->setPaper('A4', 'portrait')
-                ->setOptions([
-                    'isHtml5ParserEnabled' => true,
-                    'isRemoteEnabled' => true, // Disable remote for security
-                    'chroot' => storage_path('app/public'),
-
-                ]);
+           $pdf = Pdf::loadHTML($filledHtml)
+            ->setPaper('A4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => false,  // ← CHANGED
+                'isFontSubsettingEnabled' => true,
+                'defaultFont' => 'DejaVu Sans',  // ← ADDED
+                'dpi' => 96,
+                'chroot' => storage_path('app/public'),
+            ]);
 
             // Create directory if needed
             $directory = storage_path('app/public/resumes');
@@ -469,7 +721,7 @@ class UserResumeController extends Controller
      * Extract CSS from HTML (handles <style> tags)
      * Returns array with 'html' and 'css' keys
      */
-    private function extractCssFromHtml($html)
+    private function xextractCssFromHtml($html)
     {
         $css = '';
 
@@ -488,7 +740,7 @@ class UserResumeController extends Controller
         ];
     }
 
-    private function fillTemplate($html, $css, $data)
+    private function xfillTemplate($html, $css, $data)
     {
         // Define all possible placeholders
         $keys = [
@@ -522,7 +774,10 @@ class UserResumeController extends Controller
         }
 
         return $html;
-    }    /**
+    }    
+    
+    
+    /**
      * Preview template with sample data
      */
     public function preview($template_id)

@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\Admin\TemplateController;
-use App\Http\Controllers\Admin\TemplateStarterController;
 use App\Http\Controllers\UserResumeController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -15,6 +14,7 @@ use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\StripeWebhookController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\CoverLetterController;
+use App\Http\Middleware\CheckActivePackage;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,20 +43,26 @@ Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleWebhook'
 
 Route::middleware(['auth'])->group(function () {
 
+    // ==========================================
     // User Dashboard
+    // ==========================================
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
     Route::get('/dashboard/stats', [UserDashboardController::class, 'getStats'])->name('user.dashboard.stats');
 
+    // ==========================================
     // Settings
+    // ==========================================
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
 
-    // Pricing & Plans
+    // ==========================================
+    // Pricing & Plans (ALWAYS ACCESSIBLE)
+    // ==========================================
     Route::get('/user/pricing', [SubscriptionController::class, 'pricing'])->name('user.pricing');
 
     // ==========================================
-    // Subscription Management
+    // Subscription Management (ALWAYS ACCESSIBLE)
     // ==========================================
     Route::prefix('subscription')->name('user.subscription.')->group(function () {
         Route::get('/dashboard', [SubscriptionController::class, 'dashboard'])->name('dashboard');
@@ -67,7 +73,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ==========================================
-    // Payment Processing
+    // Payment Processing (ALWAYS ACCESSIBLE)
     // ==========================================
     Route::prefix('payment')->name('user.payment.')->group(function () {
         // Stripe
@@ -83,66 +89,79 @@ Route::middleware(['auth'])->group(function () {
     // ==========================================
     // Resume Management Routes
     // ==========================================
-    Route::prefix('user/resumes')->name('user.resumes.')->group(function () {
+    Route::prefix('resumes')->name('user.resumes.')->group(function () {
+        
+        // UNPROTECTED - Viewing/Browsing (No Package Required)
         Route::get('/', [UserResumeController::class, 'index'])->name('index');
-        Route::get('/choose', [UserResumeController::class, 'chooseTemplate'])->name('choose');
-        Route::get('/preview/{template_id}', [UserResumeController::class, 'preview'])->name('preview');
-        Route::get('/fill/{template_id}', [UserResumeController::class, 'fillForm'])->name('fill');
-        Route::post('/generate', [UserResumeController::class, 'generate'])->name('generate');
-        Route::post('/generate-experience-ai', [UserResumeController::class, 'generateExperienceAI'])->name('generate-experience-ai');
-        Route::post('/generate-skills-ai', [UserResumeController::class, 'generateSkillsAI'])->name('generate-skills-ai');
-        Route::post('/generate-education-ai', [UserResumeController::class, 'generateEducationAI'])->name('generate-education-ai');
-        Route::post('/generate-summary-ai', [UserResumeController::class, 'generateSummaryAI'])->name('generate-summary-ai');
-        Route::get('/success/{id}', [UserResumeController::class, 'success'])->name('success');
         Route::get('/view/{id}', [UserResumeController::class, 'view'])->name('view');
-        Route::get('/download/{id}', [UserResumeController::class, 'download'])->name('download');
         Route::delete('/{id}', [UserResumeController::class, 'destroy'])->name('destroy');
+        
+        // PROTECTED - Creating/Downloading (Package Required)
+        Route::middleware([CheckActivePackage::class])->group(function () {
+            Route::get('/choose', [UserResumeController::class, 'chooseTemplate'])->name('choose');
+            Route::get('/create', [UserResumeController::class, 'chooseTemplate'])->name('create');
+            Route::get('/preview/{template_id}', [UserResumeController::class, 'preview'])->name('preview');
+            Route::get('/fill/{template_id}', [UserResumeController::class, 'fillForm'])->name('fill');
+            Route::post('/generate', [UserResumeController::class, 'generate'])->name('generate');
+            Route::get('/success/{id}', [UserResumeController::class, 'success'])->name('success');
+            Route::get('/download/{id}', [UserResumeController::class, 'download'])->name('download');
+            
+            // AI Generation Routes
+            Route::post('/generate-experience-ai', [UserResumeController::class, 'generateExperienceAI'])->name('generate-experience-ai');
+            Route::post('/generate-skills-ai', [UserResumeController::class, 'generateSkillsAI'])->name('generate-skills-ai');
+            Route::post('/generate-education-ai', [UserResumeController::class, 'generateEducationAI'])->name('generate-education-ai');
+            Route::post('/generate-summary-ai', [UserResumeController::class, 'generateSummaryAI'])->name('generate-summary-ai');
+        });
     });
 
-    // Legacy resume routes (for backwards compatibility)
-    Route::get('/resumes', [UserResumeController::class, 'index'])->name('user.resumes');
-    Route::get('/resumes/create', [UserResumeController::class, 'chooseTemplate'])->name('user.resumes.create');
+    // Legacy resume route (backwards compatibility)
+    Route::get('/user/resumes', [UserResumeController::class, 'index'])->name('user.resumes');
 
     // ==========================================
     // Cover Letter Management Routes
     // ==========================================
     Route::prefix('cover-letters')->name('user.cover-letters.')->group(function () {
+        
+        // UNPROTECTED - Viewing/Browsing (No Package Required)
         Route::get('/', [CoverLetterController::class, 'index'])->name('index');
-        Route::get('/create', [CoverLetterController::class, 'create'])->name('create');
-        Route::post('/store', [CoverLetterController::class, 'store'])->name('store');
-        // Route::post('/store', [\App\Http\Controllers\User\CoverLetterController::class, 'store'])->name('user.cover-letters.store');
-        // AI Generation Route - IMPORTANT: Must be before {coverLetter} routes
-        Route::post('/generate-ai', [CoverLetterController::class, 'generateWithAI'])->name('generate-ai');
-
-        // Template selection routes
-        Route::get('/templates', [CoverLetterController::class, 'selectTemplate'])->name('select-template');
-        Route::get('/templates/{template}/use', [CoverLetterController::class, 'createFromTemplate'])->name('create-from-template');
-
-        // Individual cover letter routes
         Route::get('/{coverLetter}/view', [CoverLetterController::class, 'view'])->name('view');
-        Route::get('/{coverLetter}/print', [CoverLetterController::class, 'print'])->name('print');
-
-        // Route::get('/{coverLetter}/print', [CoverLetterController::class, 'print'])->name('print');
-        Route::get('/{coverLetter}/edit', [CoverLetterController::class, 'edit'])->name('edit');
-        Route::put('/{coverLetter}/update', [CoverLetterController::class, 'update'])->name('update');
         Route::delete('/{coverLetter}/destroy', [CoverLetterController::class, 'destroy'])->name('destroy');
-        Route::get('/{coverLetter}/download', [CoverLetterController::class, 'download'])->name('download');
+        
+        // PROTECTED - Creating/Downloading (Package Required)
+        Route::middleware([CheckActivePackage::class])->group(function () {
+            // Creation routes
+            Route::get('/create', [CoverLetterController::class, 'create'])->name('create');
+            Route::post('/store', [CoverLetterController::class, 'store'])->name('store');
+            
+            // Template selection
+            Route::get('/templates', [CoverLetterController::class, 'selectTemplate'])->name('select-template');
+            Route::get('/templates/{template}/use', [CoverLetterController::class, 'createFromTemplate'])->name('create-from-template');
+            
+            // Editing
+            Route::get('/{coverLetter}/edit', [CoverLetterController::class, 'edit'])->name('edit');
+            Route::put('/{coverLetter}/update', [CoverLetterController::class, 'update'])->name('update');
+            
+            // Downloads and printing
+            Route::get('/{coverLetter}/download', [CoverLetterController::class, 'download'])->name('download');
+            Route::get('/{coverLetter}/print', [CoverLetterController::class, 'print'])->name('print');
+            
+            // AI Generation
+            Route::post('/generate-ai', [CoverLetterController::class, 'generateWithAI'])->name('generate-ai');
+        });
     });
 
     // ==========================================
-    // Add-Ons Purchase & Access
+    // Add-Ons Management
     // ==========================================
     Route::prefix('add-ons')->name('user.add-ons.')->group(function () {
-        // Browse add-ons
+        // Browsing add-ons (no package required)
         Route::get('/', [\App\Http\Controllers\User\AddOnController::class, 'index'])->name('index');
+        Route::get('/{addOn}', [\App\Http\Controllers\User\AddOnController::class, 'show'])->name('show');
 
         // My purchased add-ons
         Route::get('/my-add-ons', [\App\Http\Controllers\User\AddOnController::class, 'myAddOns'])->name('my-add-ons');
 
-        // View specific add-on
-        Route::get('/{addOn}', [\App\Http\Controllers\User\AddOnController::class, 'show'])->name('show');
-
-        // Checkout
+        // Checkout (no package required - add-ons are separate purchases)
         Route::get('/{addOn}/checkout', [\App\Http\Controllers\User\AddOnController::class, 'checkout'])->name('checkout');
         Route::post('/{addOn}/purchase', [\App\Http\Controllers\User\AddOnController::class, 'purchase'])->name('purchase');
 
@@ -150,7 +169,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/payment/{userAddOn}/stripe', [\App\Http\Controllers\User\AddOnController::class, 'stripeCheckout'])->name('stripe-checkout');
         Route::get('/payment/{userAddOn}/success', [\App\Http\Controllers\User\AddOnController::class, 'paymentSuccess'])->name('payment-success');
 
-        // Access purchased content
+        // Access purchased content (requires purchase, not package)
         Route::get('/{addOn}/access', [\App\Http\Controllers\User\AddOnController::class, 'access'])->name('access');
 
         // AI-Powered Features
@@ -174,7 +193,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // ==========================================
-    // Resume Template Management Routes
+    // Resume Template Management
     // ==========================================
     Route::resource('templates', TemplateController::class)->except(['show']);
     Route::get('templates/{id}/preview', [TemplateController::class, 'preview'])->name('templates.preview');
@@ -183,7 +202,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('templates/{id}/duplicate', [TemplateController::class, 'duplicate'])->name('templates.duplicate');
 
     // ==========================================
-    // User Management Routes
+    // User Management
     // ==========================================
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
@@ -267,11 +286,57 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         ->name('add-ons.toggle-status');
     Route::get('add-ons/{addOn}/purchases', [\App\Http\Controllers\Admin\AddOnController::class, 'purchases'])
         ->name('add-ons.purchases');
+
+    // ==========================================
+    // Debug Routes (Admin Only)
+    // ==========================================
+    if (app()->environment('local', 'staging')) {
+        Route::get('/templates/{id}/debug', function($id) {
+            $template = \App\Models\Template::findOrFail($id);
+
+            $issues = [];
+            $warnings = [];
+
+            // Check HTML content
+            if (empty($template->html_content)) {
+                $issues[] = '❌ Template has NO HTML content';
+            } elseif (strlen($template->html_content) < 100) {
+                $warnings[] = '⚠️ Template has very little HTML content (' . strlen($template->html_content) . ' characters)';
+            }
+
+            // Check CSS content
+            if (empty($template->css_content)) {
+                $warnings[] = '⚠️ Template has no CSS styling';
+            }
+
+            // Check for problematic CSS
+            if (!empty($template->css_content)) {
+                if (strpos($template->css_content, 'display: none') !== false) {
+                    $warnings[] = '⚠️ CSS contains "display: none" - might hide content';
+                }
+                if (strpos($template->css_content, 'opacity: 0') !== false) {
+                    $warnings[] = '⚠️ CSS contains "opacity: 0" - might hide content';
+                }
+                if (strpos($template->css_content, 'visibility: hidden') !== false) {
+                    $warnings[] = '⚠️ CSS contains "visibility: hidden" - might hide content';
+                }
+            }
+
+            // Find placeholders
+            $placeholders = [];
+            if (!empty($template->html_content)) {
+                preg_match_all('/\{\{([^}]+)\}\}/', $template->html_content, $matches);
+                $placeholders = array_unique($matches[1]);
+            }
+
+            return view('admin.templates.debug', compact('template', 'issues', 'warnings', 'placeholders'));
+        })->name('templates.debug');
+    }
 });
 
 /*
 |--------------------------------------------------------------------------
-| Test/Debug Routes (Remove in production)
+| Test/Debug Routes (Local Only)
 |--------------------------------------------------------------------------
 */
 
@@ -282,317 +347,36 @@ if (app()->environment('local')) {
             'templates' => \App\Models\Template::take(3)->get(['id', 'name', 'category'])
         ]);
     });
+
+    Route::get('/debug-template/{id}', function($id) {
+        $template = \App\Models\Template::findOrFail($id);
+        $html = $template->html_content . '<style>' . $template->css_content . '</style>';
+        
+        // Check what CSS features are in the template
+        $hasCSSGrid = (stripos($html, 'display: grid') !== false || stripos($html, 'display:grid') !== false);
+        $hasFlexbox = (stripos($html, 'display: flex') !== false || stripos($html, 'display:flex') !== false);
+        $hasGoogleFonts = (stripos($html, 'fonts.googleapis.com') !== false);
+        $hasTransform = (stripos($html, 'transform:') !== false);
+        $hasClipPath = (stripos($html, 'clip-path') !== false);
+        
+        return response()->json([
+            'template_id' => $template->id,
+            'template_name' => $template->name,
+            'html_length' => strlen($html),
+            'css_issues' => [
+                'has_css_grid' => $hasCSSGrid ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
+                'has_flexbox' => $hasFlexbox ? '⚠️ YES - LIMITED SUPPORT' : '✅ NO',
+                'has_google_fonts' => $hasGoogleFonts ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
+                'has_transform' => $hasTransform ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
+                'has_clip_path' => $hasClipPath ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
+            ],
+            'dompdf_compatible' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath),
+            'recommendation' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath) 
+                ? '✅ This template should work with DomPDF' 
+                : '❌ Use the DomPDF-compatible version instead'
+        ]);
+    })->middleware('auth');
 }
-
-/**
- * TEMPORARY DEBUG ROUTE
- * Add this to your routes/web.php file for debugging
- * Remove after fixing the issue!
- */
-
-// Add this inside your admin routes group
-Route::get('/templates/{id}/debug', function($id) {
-    $template = \App\Models\Template::findOrFail($id);
-
-    // Check for common issues
-    $issues = [];
-    $warnings = [];
-
-    // Check HTML content
-    if (empty($template->html_content)) {
-        $issues[] = '❌ Template has NO HTML content';
-    } elseif (strlen($template->html_content) < 100) {
-        $warnings[] = '⚠️ Template has very little HTML content (' . strlen($template->html_content) . ' characters)';
-    }
-
-    // Check CSS content
-    if (empty($template->css_content)) {
-        $warnings[] = '⚠️ Template has no CSS styling';
-    }
-
-    // Check for problematic CSS
-    if (!empty($template->css_content)) {
-        if (strpos($template->css_content, 'display: none') !== false) {
-            $warnings[] = '⚠️ CSS contains "display: none" - might hide content';
-        }
-        if (strpos($template->css_content, 'opacity: 0') !== false) {
-            $warnings[] = '⚠️ CSS contains "opacity: 0" - might hide content';
-        }
-        if (strpos($template->css_content, 'visibility: hidden') !== false) {
-            $warnings[] = '⚠️ CSS contains "visibility: hidden" - might hide content';
-        }
-        if (strpos($template->css_content, 'color: white') !== false ||
-            strpos($template->css_content, 'color:#fff') !== false) {
-            $warnings[] = '⚠️ CSS uses white text - might be invisible on white background';
-        }
-    }
-
-    // Find placeholders
-    $placeholders = [];
-    if (!empty($template->html_content)) {
-        preg_match_all('/\{\{([^}]+)\}\}/', $template->html_content, $matches);
-        $placeholders = array_unique($matches[1]);
-    }
-
-    // Build diagnostic output
-    $output = '<!DOCTYPE html>
-<html>
-<head>
-    <title>Template Debug - ' . htmlspecialchars($template->name) . '</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding: 30px;
-            background: #f5f5f5;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
-        }
-        h2 {
-            color: #34495e;
-            margin-top: 30px;
-            border-left: 4px solid #3498db;
-            padding-left: 15px;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: 200px 1fr;
-            gap: 10px;
-            margin: 20px 0;
-            background: #ecf0f1;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .info-label {
-            font-weight: bold;
-            color: #7f8c8d;
-        }
-        .issue {
-            background: #e74c3c;
-            color: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .warning {
-            background: #f39c12;
-            color: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-        .success {
-            background: #27ae60;
-            color: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-        .code-block {
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-            font-family: "Courier New", monospace;
-            font-size: 14px;
-            margin: 10px 0;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .placeholder-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .placeholder-tag {
-            background: #3498db;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 10px 5px;
-            background: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        .btn:hover {
-            background: #2980b9;
-        }
-        .btn-danger {
-            background: #e74c3c;
-        }
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🔍 Template Diagnostics</h1>
-
-        <div class="info-grid">
-            <div class="info-label">Template Name:</div>
-            <div>' . htmlspecialchars($template->name) . '</div>
-
-            <div class="info-label">Template ID:</div>
-            <div>' . $template->id . '</div>
-
-            <div class="info-label">Category:</div>
-            <div>' . htmlspecialchars($template->category) . '</div>
-
-            <div class="info-label">Status:</div>
-            <div>' . ($template->is_active ? '✅ Active' : '❌ Inactive') . '</div>
-
-            <div class="info-label">Premium:</div>
-            <div>' . ($template->is_premium ? '⭐ Yes' : 'No') . '</div>
-
-            <div class="info-label">Created:</div>
-            <div>' . $template->created_at->format('Y-m-d H:i:s') . '</div>
-        </div>';
-
-    // Show issues
-    if (!empty($issues)) {
-        foreach ($issues as $issue) {
-            $output .= '<div class="issue">🚨 ' . $issue . '</div>';
-        }
-    }
-
-    // Show warnings
-    if (!empty($warnings)) {
-        foreach ($warnings as $warning) {
-            $output .= '<div class="warning">' . $warning . '</div>';
-        }
-    }
-
-    // Show success if no issues
-    if (empty($issues) && empty($warnings)) {
-        $output .= '<div class="success">✅ No obvious issues detected!</div>';
-    }
-
-    // Content lengths
-    $output .= '<h2>📊 Content Statistics</h2>
-        <div class="info-grid">
-            <div class="info-label">HTML Length:</div>
-            <div>' . strlen($template->html_content ?? '') . ' characters</div>
-
-            <div class="info-label">CSS Length:</div>
-            <div>' . strlen($template->css_content ?? '') . ' characters</div>
-
-            <div class="info-label">Description Length:</div>
-            <div>' . strlen($template->description ?? '') . ' characters</div>
-        </div>';
-
-    // Show placeholders
-    if (!empty($placeholders)) {
-        $output .= '<h2>🏷️ Placeholders Found (' . count($placeholders) . ')</h2>
-            <div class="placeholder-list">';
-        foreach ($placeholders as $placeholder) {
-            $output .= '<span class="placeholder-tag">{{' . htmlspecialchars(trim($placeholder)) . '}}</span>';
-        }
-        $output .= '</div>';
-    } else {
-        $output .= '<h2>🏷️ Placeholders</h2>
-            <div class="warning">⚠️ No placeholders found! Preview will show static content only.</div>';
-    }
-
-    // Show HTML preview
-    $output .= '<h2>📝 HTML Content Preview</h2>';
-    if (!empty($template->html_content)) {
-        $htmlPreview = strlen($template->html_content) > 1000
-            ? substr($template->html_content, 0, 1000) . '...'
-            : $template->html_content;
-        $output .= '<div class="code-block">' . htmlspecialchars($htmlPreview) . '</div>';
-    } else {
-        $output .= '<div class="issue">❌ No HTML content!</div>';
-    }
-
-    // Show CSS preview
-    $output .= '<h2>🎨 CSS Content Preview</h2>';
-    if (!empty($template->css_content)) {
-        $cssPreview = strlen($template->css_content) > 1000
-            ? substr($template->css_content, 0, 1000) . '...'
-            : $template->css_content;
-        $output .= '<div class="code-block">' . htmlspecialchars($cssPreview) . '</div>';
-    } else {
-        $output .= '<div class="warning">⚠️ No CSS content!</div>';
-    }
-
-    // Action buttons
-    $output .= '<h2>🔧 Actions</h2>
-        <div>
-            <a href="' . route('admin.templates.preview', $template->id) . '" target="_blank" class="btn">
-                👁️ View Preview
-            </a>
-            <a href="' . route('admin.templates.edit', $template->id) . '" class="btn">
-                ✏️ Edit Template
-            </a>
-            <a href="' . route('admin.templates.index') . '" class="btn">
-                📋 Back to Templates
-            </a>
-        </div>';
-
-    $output .= '</div>
-</body>
-</html>';
-
-    return response($output)->header('Content-Type', 'text/html');
-})->name('admin.templates.debug');
-
-// ADD THIS TEMPORARY ROUTE to routes/web.php for debugging
-
-Route::get('/debug-template/{id}', function($id) {
-    $template = \App\Models\Template::findOrFail($id);
-    $html = $template->getFullTemplate();
-    
-    // Check what CSS features are in the template
-    $hasCSSGrid = (stripos($html, 'display: grid') !== false || stripos($html, 'display:grid') !== false);
-    $hasFlexbox = (stripos($html, 'display: flex') !== false || stripos($html, 'display:flex') !== false);
-    $hasGoogleFonts = (stripos($html, 'fonts.googleapis.com') !== false);
-    $hasTransform = (stripos($html, 'transform:') !== false);
-    $hasClipPath = (stripos($html, 'clip-path') !== false);
-    
-    return response()->json([
-        'template_id' => $template->id,
-        'template_name' => $template->name,
-        'template_slug' => $template->slug,
-        'file_path' => storage_path("app/public/templates/html/{$template->slug}.html"),
-        'file_exists' => file_exists(storage_path("app/public/templates/html/{$template->slug}.html")),
-        'html_length' => strlen($html),
-        'css_issues' => [
-            'has_css_grid' => $hasCSSGrid ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
-            'has_flexbox' => $hasFlexbox ? '⚠️ YES - LIMITED SUPPORT' : '✅ NO',
-            'has_google_fonts' => $hasGoogleFonts ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
-            'has_transform' => $hasTransform ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
-            'has_clip_path' => $hasClipPath ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
-        ],
-        'dompdf_compatible' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath),
-        'recommendation' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath) 
-            ? '✅ This template should work with DomPDF' 
-            : '❌ Use the DomPDF-compatible version instead'
-    ]);
-})->middleware('auth');
-
-// Visit: /debug-template/1 (replace 1 with your template ID)
 
 /*
 |--------------------------------------------------------------------------

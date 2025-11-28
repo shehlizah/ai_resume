@@ -1,416 +1,869 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Resume Builder | Create Your Perfect Resume</title>
-    <meta name="description" content="Create professional resumes in minutes with our easy-to-use resume builder. Choose from premium templates and land your dream job.">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Boxicons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    
-    <!-- Custom Styles -->
-    <style>
-        :root {
-            --primary-color: #6366f1;
-            --secondary-color: #8b5cf6;
-            --dark-color: #1e293b;
-            --light-color: #f8fafc;
-        }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@extends('frontend.layouts.app')
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: var(--dark-color);
-            overflow-x: hidden;
-        }
+@section('title', 'AI Resume By HITECHMAIN')
 
-        /* Header/Navigation */
-        .navbar {
-            padding: 1.5rem 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-        }
-
-        .navbar-brand i {
-            font-size: 2rem;
-        }
-
-        .nav-link {
-            font-weight: 500;
-            color: var(--dark-color);
-            padding: 0.5rem 1rem;
-            transition: color 0.3s ease;
-            text-decoration: none;
-        }
-
-        .nav-link:hover {
-            color: var(--primary-color);
-        }
-
-        .btn-outline-primary-custom {
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-outline-primary-custom:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            border: none;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
-            color: white;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: calc(100vh - 80px);
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-section h1 {
-            font-size: 4rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-        }
-
-        .hero-section p {
-            font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.95);
-            margin-bottom: 3rem;
-            max-width: 700px;
-        }
-
-        /* Main CTA Button */
-        .btn-cta {
-            background: white;
-            color: var(--primary-color);
-            padding: 1.5rem 4rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            border-radius: 16px;
-            border: none;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 1rem;
-            text-decoration: none;
-        }
-
-        .btn-cta:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            color: var(--primary-color);
-        }
-
-        .btn-cta i {
-            font-size: 2rem;
-        }
-
-        /* Features Pills */
-        .feature-pills {
-            display: flex;
-            gap: 1.5rem;
-            margin-top: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .feature-pill {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            color: white;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .feature-pill i {
-            font-size: 1.5rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: #1e293b;
-            color: white;
-            padding: 3rem 0;
-            text-align: center;
-        }
-
-        .dropdown-toggle::after {
-            margin-left: 0.5rem;
-        }
-
-        /* User Stats Badge */
-        .stats-badge {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            color: white;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero-section h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero-section p {
-                font-size: 1.125rem;
-            }
-
-            .btn-cta {
-                padding: 1.25rem 2.5rem;
-                font-size: 1.25rem;
-            }
-
-            .feature-pills {
-                justify-content: center;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Navigation Header -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('home') }}">
-                <i class='bx bxs-file-doc'></i>
-                <span>ResumeBuilder</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    @auth
-                        <!-- Logged-in User Navigation -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('user.dashboard') }}">
-                                <i class='bx bx-home-alt me-1'></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('user.resumes.index') }}">
-                                <i class='bx bx-file me-1'></i> My Resumes
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('user.cover-letters.index') }}">
-                                <i class='bx bx-envelope me-1'></i> Cover Letters
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown ms-3">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <div class="avatar avatar-sm bg-primary bg-opacity-10 rounded-circle me-2" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
-                                    <span class="text-primary fw-bold">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
-                                </div>
-                                <span>{{ auth()->user()->name }}</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{{ route('settings.profile') }}"><i class='bx bx-user me-2'></i>Profile</a></li>
-                                <li><a class="dropdown-item" href="{{ route('user.subscription.dashboard') }}"><i class='bx bx-credit-card me-2'></i>Subscription</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class='bx bx-log-out me-2'></i>Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                    @else
-                        <!-- Guest Navigation -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('packages') }}">Pricing</a>
-                        </li>
-                        <li class="nav-item ms-3">
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary-custom">
-                                Sign In
-                            </a>
-                        </li>
-                        <li class="nav-item ms-2">
-                            <a href="{{ route('register') }}" class="btn btn-primary-custom">
-                                Sign Up
-                            </a>
-                        </li>
-                    @endauth
-                </ul>
+@section('content')
+    <!-- ====== Hero Start ====== -->
+    <section class="ud-hero" id="home">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="ud-hero-content wow fadeInUp" data-wow-delay=".2s">
+              <h1 class="ud-hero-title">
+                Open-Source Resume Templates for You
+              </h1>
+              <p class="ud-hero-desc">
+                AI Resume By HITECHMAIN
+              </p>
+              <ul class="ud-hero-buttons">
+                <li>
+                  <a href="https://links.uideck.com/play-bootstrap-download" rel="nofollow noopener" target="_blank" class="ud-main-btn ud-white-btn">
+                    Download Now
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com/uideck/play-bootstrap" rel="nofollow noopener" target="_blank" class="ud-main-btn ud-link-btn">
+                    Learn More <i class="lni lni-arrow-right"></i>
+                  </a>
+                </li>
+              </ul>
             </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section with Main CTA -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div class="hero-content text-center">
-                        @auth
-                            <!-- For Logged-in Users -->
-                            <div class="stats-badge">
-                                <i class='bx bx-user-check'></i>
-                                <span>Welcome back, {{ auth()->user()->first_name ?? auth()->user()->name }}!</span>
-                            </div>
-                            
-                            <h1>Ready to Build Your Professional Resume?</h1>
-                            <p>Continue where you left off or start creating a brand new resume with our easy-to-use builder.</p>
-                            
-                            <!-- Main CTA Button for Logged-in Users -->
-                            <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('user.dashboard') }}" class="btn-cta">
-                                <span>Go to Dashboard</span>
-                                <i class='bx bx-right-arrow-alt'></i>
-                            </a>
-
-                            <div class="feature-pills justify-content-center">
-                                <div class="feature-pill">
-                                    <i class='bx bxs-file-doc'></i>
-                                    <span>{{ auth()->user()->resumes()->count() }} Resumes</span>
-                                </div>
-                                <div class="feature-pill">
-                                    <i class='bx bxs-envelope'></i>
-                                    <span>{{ auth()->user()->coverLetters()->count() }} Cover Letters</span>
-                                </div>
-                                @if(auth()->user()->activeSubscription)
-                                    <div class="feature-pill">
-                                        <i class='bx bxs-crown'></i>
-                                        <span>Premium Member</span>
-                                    </div>
-                                @endif
-                            </div>
-                        @else
-                            <!-- For Guest Users -->
-                            <h1>Create Your Perfect Resume in Minutes</h1>
-                            <p>Stand out from the crowd with professionally designed resume templates. Easy to customize, ATS-friendly, and ready to download.</p>
-                            
-                            <!-- Main CTA Button for Guests -->
-                            <a href="{{ route('register') }}" class="btn-cta">
-                                <span>Create Your Resume Now</span>
-                                <i class='bx bx-right-arrow-alt'></i>
-                            </a>
-
-                            <div class="feature-pills justify-content-center">
-                                <div class="feature-pill">
-                                    <i class='bx bx-check-circle'></i>
-                                    <span>Free Templates</span>
-                                </div>
-                                <div class="feature-pill">
-                                    <i class='bx bx-check-circle'></i>
-                                    <span>Easy to Use</span>
-                                </div>
-                                <div class="feature-pill">
-                                    <i class='bx bx-check-circle'></i>
-                                    <span>ATS-Friendly</span>
-                                </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <small style="color: rgba(255, 255, 255, 0.8); font-size: 1rem;">
-                                    Already have an account? 
-                                    <a href="{{ route('login') }}" style="color: white; font-weight: 600; text-decoration: underline;">Sign In</a>
-                                </small>
-                            </div>
-                        @endauth
-                    </div>
-                </div>
+            <div
+              class="ud-hero-brands-wrapper wow fadeInUp"
+              data-wow-delay=".3s"
+            >
+              <img src="{{ asset('frontend/assets/images/hero/brand.svg') }}" alt="brand" />
             </div>
+            <div class="ud-hero-image wow fadeInUp" data-wow-delay=".25s">
+              <img src="{{ asset('frontend/assets/images/hero/hero-image.svg') }}" alt="hero-image" />
+              <img
+                src="{{ asset('frontend/assets/images/hero/dotted-shape.svg') }}"
+                alt="shape"
+                class="shape shape-1"
+              />
+              <img
+                src="{{ asset('frontend/assets/images/hero/dotted-shape.svg') }}"
+                alt="shape"
+                class="shape shape-2"
+              />
+            </div>
+          </div>
         </div>
+      </div>
     </section>
+    <!-- ====== Hero End ====== -->
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-md-start mb-3 mb-md-0">
-                    <p style="color: rgba(255,255,255,0.5); margin: 0;">© 2024 ResumeBuilder. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p style="color: rgba(255,255,255,0.5); margin: 0;">Made with ❤️ for job seekers worldwide</p>
-                </div>
+    <!-- ====== Features Start ====== -->
+    <section id="features" class="ud-features">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="ud-section-title">
+              <span>Features</span>
+              <h2>Main Features of Play</h2>
+              <p>
+                There are many variations of passages of Lorem Ipsum available
+                but the majority have suffered alteration in some form.
+              </p>
             </div>
+          </div>
         </div>
-    </footer>
+        <div class="row">
+          <div class="col-xl-3 col-lg-3 col-sm-6">
+            <div class="ud-single-feature wow fadeInUp" data-wow-delay=".1s">
+              <div class="ud-feature-icon">
+                <i class="lni lni-gift"></i>
+              </div>
+              <div class="ud-feature-content">
+                <h3 class="ud-feature-title">Free and Open-Source</h3>
+                <p class="ud-feature-desc">
+                  Lorem Ipsum is simply dummy text of the printing and industry.
+                </p>
+                <a href="javascript:void(0)" class="ud-feature-link">
+                  Learn More
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-3 col-sm-6">
+            <div class="ud-single-feature wow fadeInUp" data-wow-delay=".15s">
+              <div class="ud-feature-icon">
+                <i class="lni lni-move"></i>
+              </div>
+              <div class="ud-feature-content">
+                <h3 class="ud-feature-title">Multipurpose Template</h3>
+                <p class="ud-feature-desc">
+                  Lorem Ipsum is simply dummy text of the printing and industry.
+                </p>
+                <a href="javascript:void(0)" class="ud-feature-link">
+                  Learn More
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-3 col-sm-6">
+            <div class="ud-single-feature wow fadeInUp" data-wow-delay=".2s">
+              <div class="ud-feature-icon">
+                <i class="lni lni-layout"></i>
+              </div>
+              <div class="ud-feature-content">
+                <h3 class="ud-feature-title">High-quality Design</h3>
+                <p class="ud-feature-desc">
+                  Lorem Ipsum is simply dummy text of the printing and industry.
+                </p>
+                <a href="javascript:void(0)" class="ud-feature-link">
+                  Learn More
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-3 col-sm-6">
+            <div class="ud-single-feature wow fadeInUp" data-wow-delay=".25s">
+              <div class="ud-feature-icon">
+                <i class="lni lni-layers"></i>
+              </div>
+              <div class="ud-feature-content">
+                <h3 class="ud-feature-title">All Essential Elements</h3>
+                <p class="ud-feature-desc">
+                  Lorem Ipsum is simply dummy text of the printing and industry.
+                </p>
+                <a href="javascript:void(0)" class="ud-feature-link">
+                  Learn More
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ====== Features End ====== -->
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ====== About Start ====== -->
+    <section id="about" class="ud-about">
+      <div class="container">
+        <div class="ud-about-wrapper wow fadeInUp" data-wow-delay=".2s">
+          <div class="ud-about-content-wrapper">
+            <div class="ud-about-content">
+              <span class="tag">About Us</span>
+              <h2>Brilliant Toolkit to Build Nextgen Website Faster.</h2>
+              <p>
+                The main 'thrust' is to focus on educating attendees on how to
+                best protect highly vulnerable business applications with
+                interactive panel discussions and roundtables led by subject
+                matter experts.
+              </p>
 
-</body>
-</html>
+              <p>
+                The main 'thrust' is to focus on educating attendees on how to
+                best protect highly vulnerable business applications with
+                interactive panel.
+              </p>
+              <a href="javascript:void(0)" class="ud-main-btn">Learn More</a>
+            </div>
+          </div>
+          <div class="ud-about-image">
+            <img src="{{ asset('frontend/assets/images/about/about-image.svg') }}" alt="about-image" />
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ====== About End ====== -->
+
+    <!-- ====== Pricing Start ====== -->
+    <section id="pricing" class="ud-pricing">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="ud-section-title mx-auto text-center">
+              <span>Pricing</span>
+              <h2>Our Pricing Plans</h2>
+              <p>
+                There are many variations of passages of Lorem Ipsum available
+                but the majority have suffered alteration in some form.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-0 align-items-center justify-content-center">
+          <div class="col-lg-4 col-md-6 col-sm-10">
+            <div
+              class="ud-single-pricing first-item wow fadeInUp"
+              data-wow-delay=".15s"
+            >
+              <div class="ud-pricing-header">
+                <h3>STARTING FROM</h3>
+                <h4>$ 19.99/mo</h4>
+              </div>
+              <div class="ud-pricing-body">
+                <ul>
+                  <li>5 User</li>
+                  <li>All UI components</li>
+                  <li>Lifetime access</li>
+                  <li>Free updates</li>
+                  <li>Use on 1 (one) project</li>
+                  <li>4 Months support</li>
+                </ul>
+              </div>
+              <div class="ud-pricing-footer">
+                <a href="javascript:void(0)" class="ud-main-btn ud-border-btn">
+                  Purchase Now
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-10">
+            <div
+              class="ud-single-pricing active wow fadeInUp"
+              data-wow-delay=".1s"
+            >
+              <span class="ud-popular-tag">POPULAR</span>
+              <div class="ud-pricing-header">
+                <h3>STARTING FROM</h3>
+                <h4>$ 30.99/mo</h4>
+              </div>
+              <div class="ud-pricing-body">
+                <ul>
+                  <li>5 User</li>
+                  <li>All UI components</li>
+                  <li>Lifetime access</li>
+                  <li>Free updates</li>
+                  <li>Use on 1 (one) project</li>
+                  <li>4 Months support</li>
+                </ul>
+              </div>
+              <div class="ud-pricing-footer">
+                <a href="javascript:void(0)" class="ud-main-btn ud-white-btn">
+                  Purchase Now
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-10">
+            <div
+              class="ud-single-pricing last-item wow fadeInUp"
+              data-wow-delay=".15s"
+            >
+              <div class="ud-pricing-header">
+                <h3>STARTING FROM</h3>
+                <h4>$ 70.99/mo</h4>
+              </div>
+              <div class="ud-pricing-body">
+                <ul>
+                  <li>5 User</li>
+                  <li>All UI components</li>
+                  <li>Lifetime access</li>
+                  <li>Free updates</li>
+                  <li>Use on 1 (one) project</li>
+                  <li>4 Months support</li>
+                </ul>
+              </div>
+              <div class="ud-pricing-footer">
+                <a href="javascript:void(0)" class="ud-main-btn ud-border-btn">
+                  Purchase Now
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ====== Pricing End ====== -->
+
+    <!-- ====== FAQ Start ====== -->
+    <section id="faq" class="ud-faq">
+      <div class="shape">
+        <img src="{{ asset('frontend/assets/images/faq/shape.svg') }}" alt="shape" />
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="ud-section-title text-center mx-auto">
+              <span>FAQ</span>
+              <h2>Any Questions? Answered</h2>
+              <p>
+                There are many variations of passages of Lorem Ipsum available
+                but the majority have suffered alteration in some form.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="ud-single-faq wow fadeInUp" data-wow-delay=".1s">
+              <div class="accordion">
+                <button
+                  class="ud-faq-btn collapsed"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseOne"
+                >
+                  <span class="icon flex-shrink-0">
+                    <i class="lni lni-chevron-down"></i>
+                  </span>
+                  <span>How to use UIdeck?</span>
+                </button>
+                <div id="collapseOne" class="accordion-collapse collapse">
+                  <div class="ud-faq-body">
+                    Lorem Ipsum is simply dummy text of the printing and
+                    typesetting industry. Lorem Ipsum has been the industry's
+                    standard dummy text ever since the 1500s, when an unknown
+                    printer took a galley of type and scrambled it to make a
+                    type specimen book.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ud-single-faq wow fadeInUp" data-wow-delay=".15s">
+              <div class="accordion">
+                <button
+                  class="ud-faq-btn collapsed"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseTwo"
+                >
+                  <span class="icon flex-shrink-0">
+                    <i class="lni lni-chevron-down"></i>
+                  </span>
+                  <span>How to download icons from Lineicons?</span>
+                </button>
+                <div id="collapseTwo" class="accordion-collapse collapse">
+                  <div class="ud-faq-body">
+                    Lorem Ipsum is simply dummy text of the printing and
+                    typesetting industry. Lorem Ipsum has been the industry's
+                    standard dummy text ever since the 1500s, when an unknown
+                    printer took a galley of type and scrambled it to make a
+                    type specimen book.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ud-single-faq wow fadeInUp" data-wow-delay=".2s">
+              <div class="accordion">
+                <button
+                  class="ud-faq-btn collapsed"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseThree"
+                >
+                  <span class="icon flex-shrink-0">
+                    <i class="lni lni-chevron-down"></i>
+                  </span>
+                  <span>Is GrayGrids part of UIdeck?</span>
+                </button>
+                <div id="collapseThree" class="accordion-collapse collapse">
+                  <div class="ud-faq-body">
+                    Lorem Ipsum is simply dummy text of the printing and
+                    typesetting industry. Lorem Ipsum has been the industry's
+                    standard dummy text ever since the 1500s, when an unknown
+                    printer took a galley of type and scrambled it to make a
+                    type specimen book.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="ud-single-faq wow fadeInUp" data-wow-delay=".1s">
+              <div class="accordion">
+                <button
+                  class="ud-faq-btn collapsed"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseFour"
+                >
+                  <span class="icon flex-shrink-0">
+                    <i class="lni lni-chevron-down"></i>
+                  </span>
+                  <span>Can I use this template for commercial project?</span>
+                </button>
+                <div id="collapseFour" class="accordion-collapse collapse">
+                  <div class="ud-faq-body">
+                    Lorem Ipsum is simply dummy text of the printing and
+                    typesetting industry. Lorem Ipsum has been the industry's
+                    standard dummy text ever since the 1500s, when an unknown
+                    printer took a galley of type and scrambled it to make a
+                    type specimen book.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ud-single-faq wow fadeInUp" data-wow-delay=".15s">
+              <div class="accordion">
+                <button
+                  class="ud-faq-btn collapsed"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseFive"
+                >
+                  <span class="icon flex-shrink-0">
+                    <i class="lni lni-chevron-down"></i>
+                  </span>
+                  <span>Do you have plan releasing Play Pro?</span>
+                </button>
+                <div id="collapseFive" class="accordion-collapse collapse">
+                  <div class="ud-faq-body">
+                    Lorem Ipsum is simply dummy text of the printing and
+                    typesetting industry. Lorem Ipsum has been the industry's
+                    standard dummy text ever since the 1500s, when an unknown
+                    printer took a galley of type and scrambled it to make a
+                    type specimen book.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ud-single-faq wow fadeInUp" data-wow-delay=".2s">
+              <div class="accordion">
+                <button
+                  class="ud-faq-btn collapsed"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseSix"
+                >
+                  <span class="icon flex-shrink-0">
+                    <i class="lni lni-chevron-down"></i>
+                  </span>
+                  <span>Where and how to host this template?</span>
+                </button>
+                <div id="collapseSix" class="accordion-collapse collapse">
+                  <div class="ud-faq-body">
+                    Lorem Ipsum is simply dummy text of the printing and
+                    typesetting industry. Lorem Ipsum has been the industry's
+                    standard dummy text ever since the 1500s, when an unknown
+                    printer took a galley of type and scrambled it to make a
+                    type specimen book.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ====== FAQ End ====== -->
+
+    <!-- ====== Testimonials Start ====== -->
+    <section id="testimonials" class="ud-testimonials">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="ud-section-title mx-auto text-center">
+              <span>Testimonials</span>
+              <h2>What our Customers Says</h2>
+              <p>
+                There are many variations of passages of Lorem Ipsum available
+                but the majority have suffered alteration in some form.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-4 col-md-6">
+            <div
+              class="ud-single-testimonial wow fadeInUp"
+              data-wow-delay=".1s"
+            >
+              <div class="ud-testimonial-ratings">
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+              </div>
+              <div class="ud-testimonial-content">
+                <p>
+                  "Our members are so impressed. It's intuitive. It's clean.
+                  It's distraction free. If you're building a community.
+                </p>
+              </div>
+              <div class="ud-testimonial-info">
+                <div class="ud-testimonial-image">
+                  <img
+                    src="{{ asset('frontend/assets/images/testimonials/author-01.png') }}"
+                    alt="author"
+                  />
+                </div>
+                <div class="ud-testimonial-meta">
+                  <h4>Sabo Masties</h4>
+                  <p>Founder @UIdeck</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div
+              class="ud-single-testimonial wow fadeInUp"
+              data-wow-delay=".15s"
+            >
+              <div class="ud-testimonial-ratings">
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+              </div>
+              <div class="ud-testimonial-content">
+                <p>
+                  "Our members are so impressed. It's intuitive. It's clean.
+                  It's distraction free. If you're building a community.
+                </p>
+              </div>
+              <div class="ud-testimonial-info">
+                <div class="ud-testimonial-image">
+                  <img
+                    src="{{ asset('frontend/assets/images/testimonials/author-02.png') }}"
+                    alt="author"
+                  />
+                </div>
+                <div class="ud-testimonial-meta">
+                  <h4>Margin Gesmu</h4>
+                  <p>Founder @Lineicons</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div
+              class="ud-single-testimonial wow fadeInUp"
+              data-wow-delay=".2s"
+            >
+              <div class="ud-testimonial-ratings">
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+                <i class="lni lni-star-filled"></i>
+              </div>
+              <div class="ud-testimonial-content">
+                <p>
+                  "Our members are so impressed. It's intuitive. It's clean.
+                  It's distraction free. If you're building a community.
+                </p>
+              </div>
+              <div class="ud-testimonial-info">
+                <div class="ud-testimonial-image">
+                  <img
+                    src="{{ asset('frontend/assets/images/testimonials/author-03.png') }}"
+                    alt="author"
+                  />
+                </div>
+                <div class="ud-testimonial-meta">
+                  <h4>William Smith</h4>
+                  <p>Founder @GrayGrids</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="ud-brands wow fadeInUp" data-wow-delay=".2s">
+              <div class="ud-title">
+                <h6>Trusted and Used by</h6>
+              </div>
+              <div class="ud-brands-logo">
+                <div class="ud-single-logo">
+                  <img src="{{ asset('frontend/assets/images/brands/ayroui.svg') }}" alt="ayroui" />
+                </div>
+                <div class="ud-single-logo">
+                  <img src="{{ asset('frontend/assets/images/brands/uideck.svg') }}" alt="uideck" />
+                </div>
+                <div class="ud-single-logo">
+                  <img
+                    src="{{ asset('frontend/assets/images/brands/graygrids.svg') }}"
+                    alt="graygrids"
+                  />
+                </div>
+                <div class="ud-single-logo">
+                  <img
+                    src="{{ asset('frontend/assets/images/brands/lineicons.svg') }}"
+                    alt="lineicons"
+                  />
+                </div>
+                <div class="ud-single-logo">
+                  <img
+                    src="{{ asset('frontend/assets/images/brands/ecommerce-html.svg') }}"
+                    alt="ecommerce-html"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ====== Testimonials End ====== -->
+
+    <!-- ====== Team Start ====== -->
+    <section id="team" class="ud-team">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="ud-section-title mx-auto text-center">
+              <span>Our Team</span>
+              <h2>Meet The Team</h2>
+              <p>
+                There are many variations of passages of Lorem Ipsum available
+                but the majority have suffered alteration in some form.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xl-3 col-lg-3 col-sm-6">
+            <div class="ud-single-team wow fadeInUp" data-wow-delay=".1s">
+              <div class="ud-team-image-wrapper">
+                <div class="ud-team-image">
+                  <img src="{{ asset('frontend/assets/images/team/team-01.png') }}" alt="team" />
+                </div>
+
+                <img
+                  src="{{ asset('frontend/assets/images/team/dotted-shape.svg') }}"
+                  alt="shape"
+                  class="shape shape-1"
+                />
+                <img
+                  src="{{ asset('frontend/assets/images/team/shape-2.svg') }}"
+                  alt="shape"
+                  class="shape shape-2"
+                />
+              </div>
+              <div class="ud-team-info">
+                <h5>Adveen Desuza</h5>
+                <h6>UI Designer</h6>
+              </div>
+              <ul class="ud-team-socials">
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-facebook-filled"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-twitter-filled"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-instagram-filled"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-3 col-sm-6">
+            <div class="ud-single-team wow fadeInUp" data-wow-delay=".15s">
+              <div class="ud-team-image-wrapper">
+                <div class="ud-team-image">
+                  <img src="{{ asset('frontend/assets/images/team/team-02.png') }}" alt="team" />
+                </div>
+
+                <img
+                  src="{{ asset('frontend/assets/images/team/dotted-shape.svg') }}"
+                  alt="shape"
+                  class="shape shape-1"
+                />
+                <img
+                  src="{{ asset('frontend/assets/images/team/shape-2.svg') }}"
+                  alt="shape"
+                  class="shape shape-2"
+                />
+              </div>
+              <div class="ud-team-info">
+                <h5>Jezmin uniya</h5>
+                <h6>Product Designer</h6>
+              </div>
+              <ul class="ud-team-socials">
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-facebook-filled"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-twitter-filled"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-instagram-filled"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-3 col-sm-6">
+            <div class="ud-single-team wow fadeInUp" data-wow-delay=".2s">
+              <div class="ud-team-image-wrapper">
+                <div class="ud-team-image">
+                  <img src="{{ asset('frontend/assets/images/team/team-03.png') }}" alt="team" />
+                </div>
+
+                <img
+                  src="{{ asset('frontend/assets/images/team/dotted-shape.svg') }}"
+                  alt="shape"
+                  class="shape shape-1"
+                />
+                <img
+                  src="{{ asset('frontend/assets/images/team/shape-2.svg') }}"
+                  alt="shape"
+                  class="shape shape-2"
+                />
+              </div>
+              <div class="ud-team-info">
+                <h5>Andrieo Gloree</h5>
+                <h6>App Developer</h6>
+              </div>
+              <ul class="ud-team-socials">
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-facebook-filled"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-twitter-filled"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-instagram-filled"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-3 col-sm-6">
+            <div class="ud-single-team wow fadeInUp" data-wow-delay=".25s">
+              <div class="ud-team-image-wrapper">
+                <div class="ud-team-image">
+                  <img src="{{ asset('frontend//images/team/team-04.png') }}" alt="team" />
+                </div>
+
+                <img
+                  src="{{ asset('frontend/assets/images/team/dotted-shape.svg') }}"
+                  alt="shape"
+                  class="shape shape-1"
+                />
+                <img
+                  src="{{ asset('frontend/assets/images/team/shape-2.svg') }}"
+                  alt="shape"
+                  class="shape shape-2"
+                />
+              </div>
+              <div class="ud-team-info">
+                <h5>Jackie Sanders</h5>
+                <h6>Content Writer</h6>
+              </div>
+              <ul class="ud-team-socials">
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-facebook-filled"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-twitter-filled"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/MusharofChy">
+                    <i class="lni lni-instagram-filled"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ====== Team End ====== -->
+
+    <!-- ====== Contact Start ====== -->
+    <section id="contact" class="ud-contact">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-xl-8 col-lg-7">
+            <div class="ud-contact-content-wrapper">
+              <div class="ud-contact-title">
+                <span>CONTACT US</span>
+                <h2>
+                  Let's talk about <br />
+                  Love to hear from you!
+                </h2>
+              </div>
+              <div class="ud-contact-info-wrapper">
+                <div class="ud-single-info">
+                  <div class="ud-info-icon">
+                    <i class="lni lni-map-marker"></i>
+                  </div>
+                  <div class="ud-info-meta">
+                    <h5>Our Location</h5>
+                    <p>401 Broadway, 24th Floor, Orchard Cloud View, London</p>
+                  </div>
+                </div>
+                <div class="ud-single-info">
+                  <div class="ud-info-icon">
+                    <i class="lni lni-envelope"></i>
+                  </div>
+                  <div class="ud-info-meta">
+                    <h5>How Can We Help?</h5>
+                    <p>info@yourdomain.com</p>
+                    <p>contact@yourdomain.com</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-4 col-lg-5">
+            <div
+              class="ud-contact-form-wrapper wow fadeInUp"
+              data-wow-delay=".2s"
+            >
+              <h3 class="ud-contact-form-title">Send us a Message</h3>
+              <form class="ud-contact-form">
+                <div class="ud-form-group">
+                  <label for="fullName">Full Name*</label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    placeholder="Adam Gelius"
+                  />
+                </div>
+                <div class="ud-form-group">
+                  <label for="email">Email*</label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="example@yourmail.com"
+                  />
+                </div>
+                <div class="ud-form-group">
+                  <label for="phone">Phone*</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    placeholder="+885 1254 5211 552"
+                  />
+                </div>
+                <div class="ud-form-group">
+                  <label for="message">Message*</label>
+                  <textarea
+                    name="message"
+                    rows="1"
+                    placeholder="type your message here"
+                  ></textarea>
+                </div>
+                <div class="ud-form-group mb-0">
+                  <button type="submit" class="ud-main-btn">
+                    Send Message
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ====== Contact End ====== -->
+@endsection
+
+  

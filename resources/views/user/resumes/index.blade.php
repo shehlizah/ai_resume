@@ -8,6 +8,37 @@
             <i class="bx bx-plus me-1"></i> Create New Resume
           </a>
         </div>
+        
+        {{-- Warning banner --}}
+@if(!$hasActivePackage)
+    <div class="alert alert-warning">
+        <strong>No Active Package</strong> - 
+        <a href="{{ route('packages') }}">Subscribe</a> to create and download resumes.
+    </div>
+@endif
+
+{{-- Create button --}}
+@if($hasActivePackage)
+    <a href="{{ route('user.resumes.create') }}" class="btn btn-primary">
+        Create Resume
+    </a>
+@else
+    <button class="btn btn-secondary" disabled>
+        <i class="fas fa-lock"></i> Create Resume (Subscribe First)
+    </button>
+@endif
+
+{{-- Download button --}}
+@if($hasActivePackage)
+    <a href="{{ route('user.resumes.download', $resume->id) }}" class="btn btn-sm btn-primary">
+        Download
+    </a>
+@else
+    <button class="btn btn-sm btn-secondary" disabled>
+        <i class="fas fa-lock"></i> Locked
+    </button>
+@endif
+
         <div class="card-body">
           @if($resumes->isEmpty())
             <div class="text-center py-5">
@@ -45,9 +76,11 @@
                           </div>
                         </div>
                       </td>
-                      <td>
-                        <span class="badge bg-label-primary">{{ $resume->template->name }}</span>
-                      </td>
+                     <td>
+                      <span class="badge {{ $resume->template ? 'bg-label-primary' : 'bg-label-warning' }}">
+                        {{ $resume->template?->name ?? 'Template Deleted' }}
+                      </span>
+                    </td>
                       <td>
                         @if($resume->status === 'completed')
                           <span class="badge bg-label-success">

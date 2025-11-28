@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Http\Middleware\CheckActivePackage;
 
 class User extends Authenticatable
 {
@@ -248,5 +249,28 @@ public function hasInterviewPrepAccess()
         ->where('type', 'interview_prep')
         ->exists();
 }
+
+// Add this method
+public function activePackage()
+{
+    return $this->hasOne(UserSubscription::class)
+        ->where('status', 'active')
+        ->where(function ($query) {
+            $query->whereNull('end_date')
+                  ->orWhere('end_date', '>', now());
+        });
+}
+
+public function hasActivePackage()
+{
+    return $this->activePackage()->exists();
+}
+
+// User model
+// public function hasActivePackage()
+// {
+//     return $this->package_id && 
+//           $this->package_expires_at?->isFuture();
+// }
 
 }

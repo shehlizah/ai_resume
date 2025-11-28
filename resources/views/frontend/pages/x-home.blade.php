@@ -11,7 +11,9 @@
     
     <!-- Boxicons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-     <style>
+    
+    <!-- Custom Styles -->
+    <style>
         :root {
             --primary-color: #6366f1;
             --secondary-color: #8b5cf6;
@@ -58,11 +60,10 @@
 
         .nav-link {
             font-weight: 500;
-            color: var(--primary-color) !important;
+            color: var(--dark-color);
             padding: 0.5rem 1rem;
             transition: color 0.3s ease;
             text-decoration: none;
-
         }
 
         .nav-link:hover {
@@ -243,22 +244,16 @@
             }
         }
     </style>
-  
 </head>
 <body>
-    
-      <!-- Navigation Header -->
+
+    <!-- Navigation Header -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <!--<a class="navbar-brand" href="{{ route('home') }}">-->
-            <!--    <i class='bx bxs-file-doc'></i>-->
-            <!--    <span>JobsEase</span>-->
-            <!--</a>-->
-            
-            <a class="navbar-brand" href="{{ url('/') }}">
-                <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="width: 70%;">
-        </a>
-
+            <a class="navbar-brand" href="{{ route('home') }}">
+                <i class='bx bxs-file-doc'></i>
+                <span>ResumeBuilder</span>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -322,3 +317,100 @@
             </div>
         </div>
     </nav>
+
+    <!-- Hero Section with Main CTA -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="hero-content text-center">
+                        @auth
+                            <!-- For Logged-in Users -->
+                            <div class="stats-badge">
+                                <i class='bx bx-user-check'></i>
+                                <span>Welcome back, {{ auth()->user()->first_name ?? auth()->user()->name }}!</span>
+                            </div>
+                            
+                            <h1>Ready to Build Your Professional Resume?</h1>
+                            <p>Continue where you left off or start creating a brand new resume with our easy-to-use builder.</p>
+                            
+                            <!-- Main CTA Button for Logged-in Users -->
+                            <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('user.dashboard') }}" class="btn-cta">
+                                <span>Go to Dashboard</span>
+                                <i class='bx bx-right-arrow-alt'></i>
+                            </a>
+
+                            <div class="feature-pills justify-content-center">
+                                <div class="feature-pill">
+                                    <i class='bx bxs-file-doc'></i>
+                                    <span>{{ auth()->user()->resumes()->count() }} Resumes</span>
+                                </div>
+                                <div class="feature-pill">
+                                    <i class='bx bxs-envelope'></i>
+                                    <span>{{ auth()->user()->coverLetters()->count() }} Cover Letters</span>
+                                </div>
+                                @if(auth()->user()->activeSubscription)
+                                    <div class="feature-pill">
+                                        <i class='bx bxs-crown'></i>
+                                        <span>Premium Member</span>
+                                    </div>
+                                @endif
+                            </div>
+                        @else
+                            <!-- For Guest Users -->
+                            <h1>Create Your Perfect Resume in Minutes</h1>
+                            <p>Stand out from the crowd with professionally designed resume templates. Easy to customize, ATS-friendly, and ready to download.</p>
+                            
+                            <!-- Main CTA Button for Guests -->
+                            <a href="{{ route('register') }}" class="btn-cta">
+                                <span>Create Your Resume Now</span>
+                                <i class='bx bx-right-arrow-alt'></i>
+                            </a>
+
+                            <div class="feature-pills justify-content-center">
+                                <div class="feature-pill">
+                                    <i class='bx bx-check-circle'></i>
+                                    <span>Free Templates</span>
+                                </div>
+                                <div class="feature-pill">
+                                    <i class='bx bx-check-circle'></i>
+                                    <span>Easy to Use</span>
+                                </div>
+                                <div class="feature-pill">
+                                    <i class='bx bx-check-circle'></i>
+                                    <span>ATS-Friendly</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <small style="color: rgba(255, 255, 255, 0.8); font-size: 1rem;">
+                                    Already have an account? 
+                                    <a href="{{ route('login') }}" style="color: white; font-weight: 600; text-decoration: underline;">Sign In</a>
+                                </small>
+                            </div>
+                        @endauth
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-md-start mb-3 mb-md-0">
+                    <p style="color: rgba(255,255,255,0.5); margin: 0;">© 2024 ResumeBuilder. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p style="color: rgba(255,255,255,0.5); margin: 0;">Made with ❤️ for job seekers worldwide</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

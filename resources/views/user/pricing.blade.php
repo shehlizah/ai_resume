@@ -10,10 +10,10 @@
 
 <!--TEST-->
 
-<script async src="https://js.stripe.com/v3/pricing-table.js"></script>
-<stripe-pricing-table pricing-table-id="prctbl_1STdoCDfpo67wO4dX6Kr1bDX"
-publishable-key="pk_test_51Ngsx6Dfpo67wO4dIywhaxJ5DczHuc6BZdgestz0BZHLcG85vD3QpmNYWEYmTmD2qwMMj0UEonJnwdcoiY6J6mHg006USXIY5Y">
-</stripe-pricing-table>
+<!--<script async src="https://js.stripe.com/v3/pricing-table.js"></script>-->
+<!--<stripe-pricing-table pricing-table-id="prctbl_1STdoCDfpo67wO4dX6Kr1bDX"-->
+<!--publishable-key="pk_test_51Ngsx6Dfpo67wO4dIywhaxJ5DczHuc6BZdgestz0BZHLcG85vD3QpmNYWEYmTmD2qwMMj0UEonJnwdcoiY6J6mHg006USXIY5Y">-->
+<!--</stripe-pricing-table>-->
 
 <!--LIVE -->
    
