@@ -115,13 +115,13 @@
                     <p class="text-muted mb-3">
                       Pay securely with your credit or debit card. All major cards accepted.
                     </p>
-                    <form action="/api/test-submit" method="POST" id="stripeCheckoutForm">
+                    <form action="{{ route('user.payment.stripe.checkout') }}" method="POST" id="stripeCheckoutForm">
                       @csrf
                       <input type="hidden" name="plan_id" value="{{ $plan->id }}">
                       <input type="hidden" name="billing_period" value="{{ $billingPeriod }}">
                       <button type="submit" class="btn btn-primary w-100">
                         <i class="bx bx-lock-alt me-2"></i>
-                        Pay ${{ number_format($amount, 2) }} with Stripe (TEST)
+                        Pay ${{ number_format($amount, 2) }} with Stripe
                       </button>
                     </form>
                   </div>
