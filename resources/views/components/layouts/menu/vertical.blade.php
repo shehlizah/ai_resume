@@ -54,7 +54,7 @@
           </li>
         </ul>
       </li>
-      
+
       <!-- Cover Letters Menu -->
     <!-- Cover Letters Menu with Templates -->
         <li class="menu-item {{ request()->routeIs('admin.cover-letters.*') ? 'active open' : '' }}">
@@ -63,7 +63,7 @@
                 <div>{{ __('Cover Letters') }}</div>
             </a>
             <ul class="menu-sub">
-                
+
                 <li class="menu-item {{ request()->routeIs('admin.cover-letters.templates*') ? 'active' : '' }}">
                     <a class="menu-link" href="{{ route('admin.cover-letters.templates') }}">
                         {{ __('Templates') }}
@@ -103,7 +103,7 @@
       <!--  </ul>-->
       <!--</li>-->
 
-     
+
       {{-- User Management --}}
       <li class="menu-item {{ request()->is('admin/users*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -162,115 +162,110 @@
     {{-- 🔹 USER MENU --}}
     @elseif($user && $user->role === 'user')
 
-      <li class="menu-item {{ request()->is('user.dashboard') ? 'active' : '' }}">
+      <li class="menu-item {{ request()->is('dashboard') ? 'active' : '' }}">
         <a class="menu-link" href="{{ route('user.dashboard') }}">
-          <i class="menu-icon tf-icons bx bx-home"></i>
+          <i class="menu-icon tf-icons bx bx-home-circle"></i>
           <div>{{ __('Dashboard') }}</div>
         </a>
       </li>
 
+      <!-- CAREER JOURNEY PATH -->
+      <li class="menu-header small text-uppercase"><span class="menu-header-text">Career Journey</span></li>
+
+      <!-- 1. Resume Builder -->
       <li class="menu-item {{ request()->is('resumes*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-file"></i>
+          <i class="menu-icon tf-icons bx bx-file-doc"></i>
           <div>{{ __('Resume Builder') }}</div>
         </a>
         <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('resumes') ? 'active' : '' }}">
+          <li class="menu-item {{ request()->is('resumes') && !request()->is('resumes/create') ? 'active' : '' }}">
             <a class="menu-link" href="{{ url('resumes') }}">{{ __('My Resumes') }}</a>
           </li>
           <li class="menu-item {{ request()->is('resumes/create') ? 'active' : '' }}">
             <a class="menu-link" href="{{ url('resumes/create') }}">{{ __('Create New') }}</a>
           </li>
+          <li class="menu-item {{ request()->is('resumes/choose') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('resumes/choose') }}">{{ __('Choose Template') }}</a>
+          </li>
         </ul>
       </li>
 
-     <li class="menu-item {{ request()->is('user/cover-letters*') ? 'active open' : '' }}">
-    <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-envelope"></i>
-        <div>{{ __('Cover Letters') }}</div>
-    </a>
-    <ul class="menu-sub">
-        <li class="menu-item {{ request()->is('user/cover-letters') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ route('user.cover-letters.index') }}">{{ __('My Cover Letters') }}</a>
-        </li>
-        <li class="menu-item {{ request()->is('user/cover-letters/create') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ route('user.cover-letters.create') }}">{{ __('Create New') }}</a>
-        </li>
-    </ul>
-</li>
-
-
-<!-- Add-Ons Menu with Dropdown -->
-<li class="menu-item {{ request()->routeIs('user.add-ons.*') ? 'active open' : '' }}">
-    <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-package"></i>
-        <div>{{ __('Add-Ons') }}</div>
-        @if(auth()->user()->userAddOns()->where('status', 'active')->count() > 0)
-            <span class="badge badge-center rounded-pill bg-success ms-2">
-                {{ auth()->user()->userAddOns()->where('status', 'active')->count() }}
-            </span>
-        @endif
-    </a>
-    <ul class="menu-sub">
-        <!-- Browse All Add-Ons -->
-        <li class="menu-item {{ request()->routeIs('user.add-ons.index') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ route('user.add-ons.index') }}">
-                <!--<i class="bx bx-shopping-bag me-2"></i>-->
-                {{ __('Browse Add-Ons') }}
-            </a>
-        </li>
-        
-        <!-- My Purchased Add-Ons -->
-        <li class="menu-item {{ request()->routeIs('user.add-ons.my-add-ons') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ route('user.add-ons.my-add-ons') }}">
-                <!--<i class="bx bx-folder me-2"></i>-->
-                {{ __('My Add-Ons') }}
-                @if(auth()->user()->userAddOns()->where('status', 'active')->count() > 0)
-                    <span class="badge bg-success ms-2">
-                        {{ auth()->user()->userAddOns()->where('status', 'active')->count() }}
-                    </span>
-                @endif
-            </a>
-        </li>
-
-        <!-- Divider if user has purchased add-ons -->
-        <!--@if(auth()->user()->userAddOns()->where('status', 'active')->count() > 0)-->
-            <!--<li class="menu-divider"></li>-->
-            
-            <!-- Quick Access to Purchased Add-Ons -->
-            <!--@foreach(auth()->user()->userAddOns()->with('addOn')->where('status', 'active')->get() as $userAddOn)-->
-            <!--    <li class="menu-item {{ request()->url() == route('user.add-ons.access', $userAddOn->addOn) ? 'active' : '' }}">-->
-            <!--        <a class="menu-link" href="{{ route('user.add-ons.access', $userAddOn->addOn) }}">-->
-            <!--            <i class="bx {{ $userAddOn->addOn->icon ?? 'bx-gift' }} me-2"></i>-->
-            <!--            {{ Str::limit($userAddOn->addOn->name, 25) }}-->
-            <!--            <span class="badge bg-success ms-2">-->
-            <!--                <i class="bx bx-check"></i>-->
-            <!--            </span>-->
-            <!--        </a>-->
-            <!--    </li>-->
-            <!--@endforeach-->
-        <!--@endif-->
-    </ul>
-</li>
-
-
-     <li class="menu-item {{ request()->is('interview*') ? 'active open' : '' }}">
+      <!-- 2. Cover Letters -->
+      <li class="menu-item {{ request()->is('cover-letters*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-credit-card"></i>
-          <div>{{ __('Subscriptions') }}</div>
+          <i class="menu-icon tf-icons bx bx-envelope"></i>
+          <div>{{ __('Cover Letters') }}</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->is('cover-letters') && !request()->is('cover-letters/create') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('user.cover-letters.index') }}">{{ __('My Cover Letters') }}</a>
+          </li>
+          <li class="menu-item {{ request()->is('cover-letters/create') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('user.cover-letters.create') }}">{{ __('Create New') }}</a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- 3. Job Finder -->
+      <li class="menu-item {{ request()->is('jobs*') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-briefcase"></i>
+          <div>{{ __('Job Finder') }}</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->is('jobs/recommended') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('jobs/recommended') }}">{{ __('Recommended') }}</a>
+          </li>
+          <li class="menu-item {{ request()->is('jobs/by-location') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('jobs/by-location') }}">{{ __('By Location') }}</a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- 4. Interview Preparation -->
+      <li class="menu-item {{ request()->is('interview*') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-chat"></i>
+          <div>{{ __('Interview Prep') }}</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->is('interview/questions') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('interview/questions') }}">{{ __('Practice Questions') }}</a>
+          </li>
+          <li class="menu-item {{ request()->is('interview/ai-practice') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('interview/ai-practice') }}">{{ __('AI Mock Interview') }}
+              <span class="badge badge-center rounded-pill bg-warning ms-2">PRO</span>
+            </a>
+          </li>
+          <li class="menu-item {{ request()->is('interview/expert') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('interview/expert') }}">{{ __('Book Expert Session') }}
+              <span class="badge badge-center rounded-pill bg-danger ms-2">PRO</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Account Section -->
+      <li class="menu-header small text-uppercase"><span class="menu-header-text">Account</span></li>
+
+      <!-- Subscription & Pricing -->
+      <li class="menu-item {{ request()->is('subscription*') || request()->is('pricing') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-crown"></i>
+          <div>{{ __('Pricing & Plans') }}</div>
         </a>
         <ul class="menu-sub">
           <li class="menu-item {{ request()->routeIs('user.subscription.dashboard') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ route('user.subscription.dashboard') }}">{{ __('My Subscriptions') }}</a>
+            <a class="menu-link" href="{{ route('user.subscription.dashboard') }}">{{ __('My Subscription') }}</a>
           </li>
-
-           <li class="menu-item {{ request()->is('pricing') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('pricing') }}">{{ __('View Plans') }}</a>
+          <li class="menu-item {{ request()->is('pricing') || request()->is('user/pricing') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('user.pricing') }}">{{ __('Browse Plans') }}</a>
           </li>
         </ul>
       </li>
 
-
+      <!-- Settings -->
       <li class="menu-item {{ request()->is('settings*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons bx bx-cog"></i>
@@ -282,6 +277,14 @@
           </li>
           <li class="menu-item {{ request()->routeIs('settings.password') ? 'active' : '' }}">
             <a class="menu-link" href="{{ route('settings.password') }}">{{ __('Password') }}</a>
+          </li>
+          <li class="menu-item {{ request()->routeIs('settings.monetization') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('settings.monetization') }}">
+              {{ __('Monetization') }}
+              @if(!auth()->user() || !auth()->user()->subscriptions()->where('status', 'active')->first())
+                <span class="badge badge-center rounded-pill bg-warning ms-2">NEW</span>
+              @endif
+            </a>
           </li>
         </ul>
       </li>

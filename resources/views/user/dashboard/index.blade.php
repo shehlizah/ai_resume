@@ -1,7 +1,7 @@
 @section('title', __('Dashboard'))
 <x-layouts.app :title="__('Dashboard')">
     <div class="row g-4">
-        
+
         <!-- Welcome Banner with CTA -->
         <div class="col-lg-12">
             <div class="card border-0 overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
@@ -33,7 +33,7 @@
                         <i class="bx bx-time-five" style="font-size: 2rem;"></i>
                     </div>
                     <div class="flex-grow-1">
-                        <strong>Free Trial Active!</strong> You have <strong>{{ $subscription->trialDaysRemaining() }} days</strong> remaining. 
+                        <strong>Free Trial Active!</strong> You have <strong>{{ $subscription->trialDaysRemaining() }} days</strong> remaining.
                         @if($subscription->status === 'canceled')
                             Your trial ends on <strong>{{ $subscription->trial_end_date->format('M j, Y') }}</strong>.
                         @else
@@ -159,64 +159,105 @@
 
         <!-- Main Content Area -->
         <div class="col-lg-8">
-            
-            <!-- Quick Actions -->
+
+            <!-- Career Journey Path - New Section -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white border-0">
                     <h6 class="mb-0">
-                        <i class="bx bx-zap me-1"></i> Quick Actions
+                        <i class="bx bx-trending-up me-1"></i> Your Career Journey
                     </h6>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-md-4 col-6">
+                        <!-- Step 1: Create Resume -->
+                        <div class="col-lg-6 col-md-12">
                             <a href="{{ route('user.resumes') }}" class="text-decoration-none">
-                                <div class="p-3 text-center rounded border border-primary border-opacity-25 hover-shadow transition">
-                                    <i class="bx bxs-file-plus text-primary mb-2" style="font-size: 2rem;"></i>
-                                    <h6 class="small mb-0 text-dark">New Resume</h6>
+                                <div class="p-4 rounded border-2 border-primary hover-shadow transition" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);">
+                                    <div class="d-flex align-items-start">
+                                        <div class="badge bg-primary rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">1</div>
+                                        <div>
+                                            <h6 class="mb-1">Create Your Resume</h6>
+                                            <p class="text-muted small mb-0">Build a professional resume with AI-powered suggestions</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </a>
                         </div>
-                        <div class="col-md-4 col-6">
+
+                        <!-- Step 2: Write Cover Letter -->
+                        <div class="col-lg-6 col-md-12">
                             <a href="{{ route('user.cover-letters.create') }}" class="text-decoration-none">
-                                <div class="p-3 text-center rounded border border-success border-opacity-25 hover-shadow transition">
-                                    <i class="bx bxs-envelope text-success mb-2" style="font-size: 2rem;"></i>
-                                    <h6 class="small mb-0 text-dark">Cover Letter</h6>
+                                <div class="p-4 rounded border-2 border-success hover-shadow transition" style="background: linear-gradient(135deg, rgba(52, 168, 83, 0.05) 0%, rgba(52, 168, 83, 0.05) 100%);">
+                                    <div class="d-flex align-items-start">
+                                        <div class="badge bg-success rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">2</div>
+                                        <div>
+                                            <h6 class="mb-1">Write Cover Letter</h6>
+                                            <p class="text-muted small mb-0">Create tailored cover letters with AI assistance</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </a>
                         </div>
-                        <div class="col-md-4 col-6">
-                            <a href="{{ route('user.resumes.choose') }}" class="text-decoration-none">
-                                <div class="p-3 text-center rounded border border-info border-opacity-25 hover-shadow transition">
-                                    <i class="bx bxs-palette text-info mb-2" style="font-size: 2rem;"></i>
-                                    <h6 class="small mb-0 text-dark">Templates</h6>
+
+                        <!-- Step 3: Find Jobs -->
+                        <div class="col-lg-6 col-md-12">
+                            <a href="{{ route('user.jobs.recommended') }}" class="text-decoration-none">
+                                <div class="p-4 rounded border-2 border-info hover-shadow transition" style="background: linear-gradient(135deg, rgba(23, 162, 184, 0.05) 0%, rgba(23, 162, 184, 0.05) 100%);">
+                                    <div class="d-flex align-items-start">
+                                        <div class="badge bg-info rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">3</div>
+                                        <div>
+                                            <h6 class="mb-1">Find Jobs</h6>
+                                            <p class="text-muted small mb-0">Discover opportunities matched to your skills</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </a>
                         </div>
-                        <div class="col-md-4 col-6">
-                            <a href="{{ route('user.resumes') }}" class="text-decoration-none">
-                                <div class="p-3 text-center rounded border border-warning border-opacity-25 hover-shadow transition">
-                                    <i class="bx bxs-folder text-warning mb-2" style="font-size: 2rem;"></i>
-                                    <h6 class="small mb-0 text-dark">My Documents</h6>
+
+                        <!-- Step 4: Interview Prep -->
+                        <div class="col-lg-6 col-md-12">
+                            <a href="{{ route('user.interview.questions') }}" class="text-decoration-none">
+                                <div class="p-4 rounded border-2 border-warning hover-shadow transition" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.05) 0%, rgba(255, 193, 7, 0.05) 100%);">
+                                    <div class="d-flex align-items-start">
+                                        <div class="badge bg-warning rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">4</div>
+                                        <div>
+                                            <h6 class="mb-1">Prepare Interview</h6>
+                                            <p class="text-muted small mb-0">Practice questions and AI mock interviews</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </a>
                         </div>
-                        <div class="col-md-4 col-6">
-                            <a href="{{ route('user.add-ons.index') }}" class="text-decoration-none">
-                                <div class="p-3 text-center rounded border border-secondary border-opacity-25 hover-shadow transition">
-                                    <i class="bx bxs-package text-secondary mb-2" style="font-size: 2rem;"></i>
-                                    <h6 class="small mb-0 text-dark">Add-Ons</h6>
+
+                        @if($hasPremiumAccess)
+                        <!-- Step 5: Expert Session -->
+                        <div class="col-lg-6 col-md-12">
+                            <a href="{{ route('user.interview.expert') }}" class="text-decoration-none">
+                                <div class="p-4 rounded border-2 border-danger hover-shadow transition" style="background: linear-gradient(135deg, rgba(220, 53, 69, 0.05) 0%, rgba(220, 53, 69, 0.05) 100%);">
+                                    <div class="d-flex align-items-start">
+                                        <div class="badge bg-danger rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">5</div>
+                                        <div>
+                                            <h6 class="mb-1">Expert Session</h6>
+                                            <p class="text-muted small mb-0">Get 1-on-1 coaching from industry experts</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </a>
                         </div>
-                        @if(!$hasPremiumAccess)
-                        <div class="col-md-4 col-6">
-                            <a href="{{ route('user.pricing') }}" class="text-decoration-none">
-                                <div class="p-3 text-center rounded border border-danger border-opacity-25 hover-shadow transition">
-                                    <i class="bx bxs-crown text-danger mb-2" style="font-size: 2rem;"></i>
-                                    <h6 class="small mb-0 text-dark">Upgrade</h6>
+                        @else
+                        <!-- Step 5: Expert Session (locked) -->
+                        <div class="col-lg-6 col-md-12">
+                            <div class="p-4 rounded border-2 border-secondary hover-shadow transition opacity-50">
+                                <div class="d-flex align-items-start">
+                                    <div class="badge bg-secondary rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        <i class="bx bx-lock"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Expert Session</h6>
+                                        <p class="text-muted small mb-0">Upgrade to Pro to book 1-on-1 coaching</p>
+                                    </div>
                                 </div>
-                            </a>
+                            </div>
                         </div>
                         @endif
                     </div>
@@ -295,7 +336,7 @@
 
         <!-- Sidebar -->
         <div class="col-lg-4">
-            
+
             <!-- Subscription Details -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white border-0">
@@ -329,7 +370,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">Status</small>
@@ -445,7 +486,7 @@
         .hover-shadow {
             transition: all 0.3s ease;
         }
-        
+
         .hover-shadow:hover {
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
             transform: translateY(-2px);

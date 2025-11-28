@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
+    Volt::route('settings/monetization', 'settings.monetization')->name('settings.monetization');
 
     // ==========================================
     // Pricing & Plans (ALWAYS ACCESSIBLE)
@@ -90,12 +91,12 @@ Route::middleware(['auth'])->group(function () {
     // Resume Management Routes
     // ==========================================
     Route::prefix('resumes')->name('user.resumes.')->group(function () {
-        
+
         // UNPROTECTED - Viewing/Browsing (No Package Required)
         Route::get('/', [UserResumeController::class, 'index'])->name('index');
         Route::get('/view/{id}', [UserResumeController::class, 'view'])->name('view');
         Route::delete('/{id}', [UserResumeController::class, 'destroy'])->name('destroy');
-        
+
         // PROTECTED - Creating/Downloading (Package Required)
         Route::middleware([CheckActivePackage::class])->group(function () {
             Route::get('/choose', [UserResumeController::class, 'chooseTemplate'])->name('choose');
@@ -105,7 +106,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/generate', [UserResumeController::class, 'generate'])->name('generate');
             Route::get('/success/{id}', [UserResumeController::class, 'success'])->name('success');
             Route::get('/download/{id}', [UserResumeController::class, 'download'])->name('download');
-            
+
             // AI Generation Routes
             Route::post('/generate-experience-ai', [UserResumeController::class, 'generateExperienceAI'])->name('generate-experience-ai');
             Route::post('/generate-skills-ai', [UserResumeController::class, 'generateSkillsAI'])->name('generate-skills-ai');
@@ -121,37 +122,76 @@ Route::middleware(['auth'])->group(function () {
     // Cover Letter Management Routes
     // ==========================================
     Route::prefix('cover-letters')->name('user.cover-letters.')->group(function () {
-        
+
         // UNPROTECTED - Viewing/Browsing (No Package Required)
         Route::get('/', [CoverLetterController::class, 'index'])->name('index');
         Route::get('/{coverLetter}/view', [CoverLetterController::class, 'view'])->name('view');
         Route::delete('/{coverLetter}/destroy', [CoverLetterController::class, 'destroy'])->name('destroy');
-        
+
         // PROTECTED - Creating/Downloading (Package Required)
         Route::middleware([CheckActivePackage::class])->group(function () {
             // Creation routes
             Route::get('/create', [CoverLetterController::class, 'create'])->name('create');
             Route::post('/store', [CoverLetterController::class, 'store'])->name('store');
-            
+
             // Template selection
             Route::get('/templates', [CoverLetterController::class, 'selectTemplate'])->name('select-template');
             Route::get('/templates/{template}/use', [CoverLetterController::class, 'createFromTemplate'])->name('create-from-template');
-            
+
             // Editing
             Route::get('/{coverLetter}/edit', [CoverLetterController::class, 'edit'])->name('edit');
             Route::put('/{coverLetter}/update', [CoverLetterController::class, 'update'])->name('update');
-            
+
             // Downloads and printing
             Route::get('/{coverLetter}/download', [CoverLetterController::class, 'download'])->name('download');
             Route::get('/{coverLetter}/print', [CoverLetterController::class, 'print'])->name('print');
-            
+
             // AI Generation
             Route::post('/generate-ai', [CoverLetterController::class, 'generateWithAI'])->name('generate-ai');
         });
     });
 
     // ==========================================
-    // Add-Ons Management
+    // Job Finder (AI)
+    // ==========================================
+    Route::prefix('jobs')->name('user.jobs.')->group(function () {
+        // Recommended jobs
+        Route::get('/recommended', [\App\Http\Controllers\User\JobFinderController::class, 'recommended'])->name('recommended');
+        Route::post('/recommended', [\App\Http\Controllers\User\JobFinderController::class, 'generateRecommended'])->name('generate-recommended');
+
+        // Jobs by location
+        Route::get('/by-location', [\App\Http\Controllers\User\JobFinderController::class, 'byLocation'])->name('by-location');
+        Route::post('/by-location', [\App\Http\Controllers\User\JobFinderController::class, 'generateByLocation'])->name('generate-by-location');
+
+        // Apply to job
+        Route::post('/{jobId}/apply', [\App\Http\Controllers\User\JobFinderController::class, 'applyJob'])->name('apply');
+    });
+
+    // ==========================================
+    // Interview Preparation
+    // ==========================================
+    Route::prefix('interview')->name('user.interview.')->group(function () {
+        // Practice questions (free)
+        Route::get('/questions', [\App\Http\Controllers\User\InterviewPrepController::class, 'questions'])->name('questions');
+
+        // AI Mock Interview (requires PRO)
+        Route::middleware([CheckActivePackage::class])->group(function () {
+            Route::get('/ai-practice', [\App\Http\Controllers\User\InterviewPrepController::class, 'aiPractice'])->name('ai-practice');
+            Route::post('/ai-practice/start', [\App\Http\Controllers\User\InterviewPrepController::class, 'startAIPractice'])->name('ai-practice-start');
+            Route::post('/ai-practice/answer', [\App\Http\Controllers\User\InterviewPrepController::class, 'submitAnswer'])->name('ai-practice-answer');
+            Route::get('/ai-practice/results/{sessionId}', [\App\Http\Controllers\User\InterviewPrepController::class, 'aiResults'])->name('ai-results');
+        });
+
+        // Book Expert Session (requires PRO)
+        Route::middleware([CheckActivePackage::class])->group(function () {
+            Route::get('/expert', [\App\Http\Controllers\User\InterviewPrepController::class, 'bookExpert'])->name('expert');
+            Route::post('/expert/book', [\App\Http\Controllers\User\InterviewPrepController::class, 'bookSession'])->name('book-session');
+            Route::get('/expert/my-sessions', [\App\Http\Controllers\User\InterviewPrepController::class, 'mySessions'])->name('my-sessions');
+        });
+    });
+
+    // ==========================================
+    // Add-Ons Management (Legacy - keeping for backwards compatibility)
     // ==========================================
     Route::prefix('add-ons')->name('user.add-ons.')->group(function () {
         // Browsing add-ons (no package required)
@@ -351,14 +391,14 @@ if (app()->environment('local')) {
     Route::get('/debug-template/{id}', function($id) {
         $template = \App\Models\Template::findOrFail($id);
         $html = $template->html_content . '<style>' . $template->css_content . '</style>';
-        
+
         // Check what CSS features are in the template
         $hasCSSGrid = (stripos($html, 'display: grid') !== false || stripos($html, 'display:grid') !== false);
         $hasFlexbox = (stripos($html, 'display: flex') !== false || stripos($html, 'display:flex') !== false);
         $hasGoogleFonts = (stripos($html, 'fonts.googleapis.com') !== false);
         $hasTransform = (stripos($html, 'transform:') !== false);
         $hasClipPath = (stripos($html, 'clip-path') !== false);
-        
+
         return response()->json([
             'template_id' => $template->id,
             'template_name' => $template->name,
@@ -371,8 +411,8 @@ if (app()->environment('local')) {
                 'has_clip_path' => $hasClipPath ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
             ],
             'dompdf_compatible' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath),
-            'recommendation' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath) 
-                ? '✅ This template should work with DomPDF' 
+            'recommendation' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath)
+                ? '✅ This template should work with DomPDF'
                 : '❌ Use the DomPDF-compatible version instead'
         ]);
     })->middleware('auth');
