@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\SubscriptionPlan;
 use App\Models\UserSubscription;
 use App\Models\Payment;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Stripe\Stripe;
@@ -37,18 +36,6 @@ class PaymentController extends Controller
         try {
             Stripe::setApiKey(config('services.stripe.secret'));
 
-            $successUrl = route('user.payment.stripe.success') . '?session_id={CHECKOUT_SESSION_ID}';
-
-            // DEBUG: Log the success URL
-            file_put_contents(storage_path('logs/checkout_debug.log'),
-                "Checkout called at: " . now() . "\n" .
-                "Success URL: $successUrl\n" .
-                "Plan: " . $plan->name . "\n" .
-                "Amount: $amount\n" .
-                "Trial Days: " . ($plan->trial_days ?? 0) . "\n\n",
-                FILE_APPEND
-            );
-
             $sessionData = [
                 'payment_method_types' => ['card'],
                 'line_items' => [[
@@ -58,7 +45,7 @@ class PaymentController extends Controller
                             'name' => $plan->name . ' Plan',
                             'description' => $plan->description,
                         ],
-                        'unit_amount' => $amount * 100,
+                        'unit_amount' => $amount * 100, // Convert to cents
                         'recurring' => [
                             'interval' => $billingPeriod === 'yearly' ? 'year' : 'month',
                         ],
@@ -66,7 +53,7 @@ class PaymentController extends Controller
                     'quantity' => 1,
                 ]],
                 'mode' => 'subscription',
-                'success_url' => $successUrl,
+                'success_url' => route('user.payment.stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url' => route('user.pricing'),
                 'client_reference_id' => auth()->id(),
                 'metadata' => [
@@ -76,7 +63,7 @@ class PaymentController extends Controller
                 ],
             ];
 
-            // Add trial period
+            // Add trial period if plan has trial days
             if (isset($plan->trial_days) && $plan->trial_days > 0) {
                 $sessionData['subscription_data'] = [
                     'trial_period_days' => $plan->trial_days,
@@ -85,84 +72,51 @@ class PaymentController extends Controller
 
             $session = StripeSession::create($sessionData);
 
-            file_put_contents(storage_path('logs/checkout_debug.log'),
-                "Session created: " . $session->id . "\n" .
-                "Redirect URL: " . $session->url . "\n\n",
-                FILE_APPEND
-            );
-
             return redirect($session->url);
 
         } catch (\Exception $e) {
-            file_put_contents(storage_path('logs/checkout_debug.log'),
-                "ERROR: " . $e->getMessage() . "\n\n",
-                FILE_APPEND
-            );
             return back()->with('error', 'Payment processing failed: ' . $e->getMessage());
         }
-    }    /**
+    }
+
+    /**
      * Handle Stripe success callback
      */
     public function stripeSuccess(Request $request)
     {
-        $debug = "=== STRIPE SUCCESS DEBUG ===\n";
-        $debug .= "Time: " . now()->toDateTimeString() . "\n";
-        $debug .= "Session ID: " . ($request->session_id ?? 'MISSING') . "\n";
-
-        file_put_contents(storage_path('logs/stripe_debug.log'), $debug, FILE_APPEND);
-
         if (!$request->has('session_id')) {
-            file_put_contents(storage_path('logs/stripe_debug.log'), "ERROR: No session_id\n", FILE_APPEND);
             return redirect()->route('user.pricing')->with('error', 'Invalid session.');
         }
 
         try {
-            file_put_contents(storage_path('logs/stripe_debug.log'), "Retrieving Stripe session...\n", FILE_APPEND);
-
             Stripe::setApiKey(config('services.stripe.secret'));
             $session = StripeSession::retrieve($request->session_id);
 
-            file_put_contents(storage_path('logs/stripe_debug.log'), "Session retrieved. Status: " . ($session->payment_status ?? 'NULL') . "\n", FILE_APPEND);
-
             if ($session->payment_status === 'paid' || $session->payment_status === 'unpaid') {
-                file_put_contents(storage_path('logs/stripe_debug.log'), "Payment status valid\n", FILE_APPEND);
-
-                // Get user from client_reference_id
-                $userId = $session->client_reference_id;
-                file_put_contents(storage_path('logs/stripe_debug.log'), "User ID: $userId\n", FILE_APPEND);
-
-                $user = User::findOrFail($userId);
-                file_put_contents(storage_path('logs/stripe_debug.log'), "User found: " . $user->email . "\n", FILE_APPEND);
-
                 $metadata = $session->metadata;
                 $plan = SubscriptionPlan::findOrFail($metadata['plan_id']);
-                file_put_contents(storage_path('logs/stripe_debug.log'), "Plan found: " . $plan->name . "\n", FILE_APPEND);
-
-                // Fetch subscription
+                
+                // Fetch the full subscription details from Stripe
+                $stripeSubscription = null;
                 $trialEnd = null;
+                
                 if ($session->subscription) {
                     $stripeSubscription = StripeSubscription::retrieve($session->subscription);
-                    file_put_contents(storage_path('logs/stripe_debug.log'), "Stripe Sub trial_end: " . ($stripeSubscription->trial_end ?? 'NULL') . "\n", FILE_APPEND);
-
+                    
+                    // Extract trial end date if exists
                     if ($stripeSubscription->trial_end) {
                         $trialEnd = Carbon::createFromTimestamp($stripeSubscription->trial_end);
-                        file_put_contents(storage_path('logs/stripe_debug.log'), "Trial parsed: " . $trialEnd->toDateString() . "\n", FILE_APPEND);
                     }
                 }
-
-                // Create subscription
-                file_put_contents(storage_path('logs/stripe_debug.log'), "Creating subscription...\n", FILE_APPEND);
-
+                
+                // Create subscription with trial info
                 $subscription = $this->createSubscription(
                     $plan,
                     $metadata['billing_period'],
                     'stripe',
                     $session->subscription,
-                    $trialEnd,
-                    $user
+                    $trialEnd
                 );
-
-                file_put_contents(storage_path('logs/stripe_debug.log'), "Subscription created: " . $subscription->id . "\n", FILE_APPEND);
 
                 // Get transaction ID
                 $transactionId = $session->payment_intent ?? $session->subscription ?? $session->id;
@@ -170,7 +124,7 @@ class PaymentController extends Controller
                 // Create payment record only if actually paid
                 if ($session->payment_status === 'paid') {
                     Payment::create([
-                        'user_id' => $userId,
+                        'user_id' => auth()->id(),
                         'user_subscription_id' => $subscription->id,
                         'transaction_id' => $transactionId,
                         'payment_gateway' => 'stripe',
@@ -186,33 +140,26 @@ class PaymentController extends Controller
                         ],
                         'paid_at' => now(),
                     ]);
-                    file_put_contents(storage_path('logs/stripe_debug.log'), "Payment record created\n", FILE_APPEND);
                 }
 
-                $message = $trialEnd
+                $message = $trialEnd 
                     ? "Trial started! Your subscription will begin on " . $trialEnd->format('M d, Y')
                     : "Payment successful! Your subscription is now active.";
-
-                file_put_contents(storage_path('logs/stripe_debug.log'), "Redirecting with success message\n\n", FILE_APPEND);
 
                 return redirect()->route('user.subscription.dashboard')
                     ->with('success', $message);
             }
 
-            file_put_contents(storage_path('logs/stripe_debug.log'), "ERROR: Invalid payment status\n\n", FILE_APPEND);
             return redirect()->route('user.pricing')
                 ->with('error', 'Payment was not completed.');
 
         } catch (\Exception $e) {
-            $error = "EXCEPTION: " . $e->getMessage() . "\n";
-            $error .= "File: " . $e->getFile() . ":" . $e->getLine() . "\n";
-            $error .= "Trace: " . substr($e->getTraceAsString(), 0, 500) . "\n\n";
-            file_put_contents(storage_path('logs/stripe_debug.log'), $error, FILE_APPEND);
-
             return redirect()->route('user.pricing')
                 ->with('error', 'Error processing payment: ' . $e->getMessage());
         }
-    }    /**
+    }
+
+    /**
      * Process payment with PayPal
      */
     public function paypalCheckout(Request $request)
@@ -259,7 +206,7 @@ class PaymentController extends Controller
         ]);
 
         $pendingSubscription = session('pending_subscription');
-
+        
         if (!$pendingSubscription) {
             return redirect()->route('user.pricing')
                 ->with('error', 'Session expired. Please try again.');
@@ -305,7 +252,7 @@ class PaymentController extends Controller
     public function paypalCancel()
     {
         session()->forget('pending_subscription');
-
+        
         return redirect()->route('user.pricing')
             ->with('info', 'Payment was canceled.');
     }
@@ -313,12 +260,9 @@ class PaymentController extends Controller
     /**
      * Create subscription record
      */
-    private function createSubscription($plan, $billingPeriod, $gateway, $gatewaySubscriptionId = null, $trialEnd = null, $user = null)
+    private function createSubscription($plan, $billingPeriod, $gateway, $gatewaySubscriptionId = null, $trialEnd = null)
     {
-        // If no user provided, get from auth (for backward compatibility)
-        if (!$user) {
-            $user = auth()->user();
-        }
+        $user = auth()->user();
 
         // Cancel existing active subscription
         $existingSubscription = $user->activeSubscription()->first();
@@ -327,18 +271,18 @@ class PaymentController extends Controller
         }
 
         $startDate = now();
-
+        
         // If there's a trial, the actual billing starts after trial ends
         if ($trialEnd) {
             $endDate = $trialEnd->copy()->add(
                 $billingPeriod === 'yearly' ? '1 year' : '1 month'
             );
         } else {
-            $endDate = $billingPeriod === 'yearly'
-                ? $startDate->copy()->addYear()
+            $endDate = $billingPeriod === 'yearly' 
+                ? $startDate->copy()->addYear() 
                 : $startDate->copy()->addMonth();
         }
-
+        
         $autoRenew = $plan->getPrice($billingPeriod) > 0 ? true : false;
 
         return UserSubscription::create([
@@ -349,7 +293,7 @@ class PaymentController extends Controller
             'amount' => $plan->getPrice($billingPeriod),
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'trial_end_date' => $trialEnd,
+            'trial_ends_at' => $trialEnd, // ✅ NOW SAVING TRIAL DATE
             'next_billing_date' => $trialEnd ?? $endDate,
             'auto_renew' => $autoRenew,
             'payment_gateway' => $gateway,
