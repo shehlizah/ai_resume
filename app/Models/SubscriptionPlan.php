@@ -16,12 +16,15 @@ class SubscriptionPlan extends Model
         'monthly_price',
         'yearly_price',
         'stripe_price_id',
+        'stripe_monthly_price_id',
+        'stripe_yearly_price_id',
         'template_limit',
         'access_premium_templates',
         'priority_support',
         'custom_branding',
         'features',
         'is_active',
+        'trial_days',
         'sort_order',
     ];
 
@@ -29,6 +32,7 @@ class SubscriptionPlan extends Model
         'monthly_price' => 'decimal:2',
         'yearly_price' => 'decimal:2',
         'template_limit' => 'integer',
+        'trial_days' => 'integer',
         'access_premium_templates' => 'boolean',
         'priority_support' => 'boolean',
         'custom_branding' => 'boolean',

@@ -162,7 +162,7 @@ class StripeWebhookController extends Controller
                 'start_date' => now(),
                 'end_date' => $endDate,
                 'next_billing_date' => $trialEnd ?? $endDate,
-                'trial_ends_at' => $trialEnd,
+                'trial_end_date' => $trialEnd,
                 'auto_renew' => true,
                 'payment_gateway' => 'stripe',
                 'gateway_subscription_id' => $subscription['id'] ?? $subscription->id,

@@ -95,20 +95,20 @@ class PaymentController extends Controller
             if ($session->payment_status === 'paid' || $session->payment_status === 'unpaid') {
                 $metadata = $session->metadata;
                 $plan = SubscriptionPlan::findOrFail($metadata['plan_id']);
-                
+
                 // Fetch the full subscription details from Stripe
                 $stripeSubscription = null;
                 $trialEnd = null;
-                
+
                 if ($session->subscription) {
                     $stripeSubscription = StripeSubscription::retrieve($session->subscription);
-                    
+
                     // Extract trial end date if exists
                     if ($stripeSubscription->trial_end) {
                         $trialEnd = Carbon::createFromTimestamp($stripeSubscription->trial_end);
                     }
                 }
-                
+
                 // Create subscription with trial info
                 $subscription = $this->createSubscription(
                     $plan,
@@ -142,7 +142,7 @@ class PaymentController extends Controller
                     ]);
                 }
 
-                $message = $trialEnd 
+                $message = $trialEnd
                     ? "Trial started! Your subscription will begin on " . $trialEnd->format('M d, Y')
                     : "Payment successful! Your subscription is now active.";
 
@@ -206,7 +206,7 @@ class PaymentController extends Controller
         ]);
 
         $pendingSubscription = session('pending_subscription');
-        
+
         if (!$pendingSubscription) {
             return redirect()->route('user.pricing')
                 ->with('error', 'Session expired. Please try again.');
@@ -252,7 +252,7 @@ class PaymentController extends Controller
     public function paypalCancel()
     {
         session()->forget('pending_subscription');
-        
+
         return redirect()->route('user.pricing')
             ->with('info', 'Payment was canceled.');
     }
@@ -271,18 +271,18 @@ class PaymentController extends Controller
         }
 
         $startDate = now();
-        
+
         // If there's a trial, the actual billing starts after trial ends
         if ($trialEnd) {
             $endDate = $trialEnd->copy()->add(
                 $billingPeriod === 'yearly' ? '1 year' : '1 month'
             );
         } else {
-            $endDate = $billingPeriod === 'yearly' 
-                ? $startDate->copy()->addYear() 
+            $endDate = $billingPeriod === 'yearly'
+                ? $startDate->copy()->addYear()
                 : $startDate->copy()->addMonth();
         }
-        
+
         $autoRenew = $plan->getPrice($billingPeriod) > 0 ? true : false;
 
         return UserSubscription::create([
@@ -293,7 +293,7 @@ class PaymentController extends Controller
             'amount' => $plan->getPrice($billingPeriod),
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'trial_ends_at' => $trialEnd, // ✅ NOW SAVING TRIAL DATE
+            'trial_end_date' => $trialEnd,
             'next_billing_date' => $trialEnd ?? $endDate,
             'auto_renew' => $autoRenew,
             'payment_gateway' => $gateway,
