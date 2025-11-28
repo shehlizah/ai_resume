@@ -1,9 +1,9 @@
 <x-layouts.app :title="$title ?? 'Checkout'">
   <div class="container-xxl flex-grow-1 container-p-y">
-    
+
     <div class="row justify-content-center">
       <div class="col-lg-8">
-        
+
         <!-- Header -->
         <div class="mb-4">
           <a href="{{ route('user.pricing') }}" class="btn btn-sm btn-secondary mb-2">
@@ -93,11 +93,11 @@
                 <h5 class="mb-0">Choose Payment Method</h5>
               </div>
               <div class="card-body">
-                
+
                 @if($currentSubscription)
                   <div class="alert alert-info mb-4">
                     <i class="bx bx-info-circle me-2"></i>
-                    You currently have an active <strong>{{ $currentSubscription->plan->name }}</strong> plan. 
+                    You currently have an active <strong>{{ $currentSubscription->plan->name }}</strong> plan.
                     This will be replaced with the new plan.
                   </div>
                 @endif
@@ -115,7 +115,7 @@
                     <p class="text-muted mb-3">
                       Pay securely with your credit or debit card. All major cards accepted.
                     </p>
-                    <form action="{{ route('user.payment.stripe.checkout') }}" method="POST">
+                    <form action="{{ route('user.payment.stripe.checkout') }}" method="POST" id="stripeCheckoutForm">
                       @csrf
                       <input type="hidden" name="plan_id" value="{{ $plan->id }}">
                       <input type="hidden" name="billing_period" value="{{ $billingPeriod }}">

@@ -49,15 +49,16 @@ Route::prefix('payment')->name('user.payment.')->group(function () {
         return app(PaymentController::class)->stripeSuccess($request);
     })->name('stripe.success');
 
-    Route::post('/stripe/checkout', [PaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
+    Route::post('/stripe/checkout', function(\Illuminate\Http\Request $request) {
+        file_put_contents(storage_path('logs/checkout_hit.log'), "CHECKOUT ROUTE HIT: " . now() . "\nRequest data: " . json_encode($request->all()) . "\n\n", FILE_APPEND);
+        return app(PaymentController::class)->stripeCheckout($request);
+    })->name('stripe.checkout');
 
     // PayPal
     Route::post('/paypal/checkout', [PaymentController::class, 'paypalCheckout'])->name('paypal.checkout');
     Route::post('/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('paypal.success');
     Route::get('/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('paypal.cancel');
-});
-
-/*
+});/*
 |--------------------------------------------------------------------------
 | Authenticated User Routes
 |--------------------------------------------------------------------------
