@@ -103,9 +103,16 @@ class PaymentController extends Controller
                 if ($session->subscription) {
                     $stripeSubscription = StripeSubscription::retrieve($session->subscription);
 
+                    \Log::info('Stripe Subscription Retrieved', [
+                        'subscription_id' => $session->subscription,
+                        'trial_end' => $stripeSubscription->trial_end ?? 'NULL',
+                        'status' => $stripeSubscription->status ?? 'NULL',
+                    ]);
+
                     // Extract trial end date if exists
                     if ($stripeSubscription->trial_end) {
                         $trialEnd = Carbon::createFromTimestamp($stripeSubscription->trial_end);
+                        \Log::info('Trial End Date Set', ['trial_end' => $trialEnd->toDateString()]);
                     }
                 }
 
