@@ -21,7 +21,7 @@ class InterviewPrepController extends Controller
             ->first();
 
         $hasPremiumAccess = $subscription && $subscription->status === 'active';
-        
+
         // Get user's resumes
         $resumes = $user->resumes()->get();
 

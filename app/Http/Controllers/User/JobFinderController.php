@@ -23,7 +23,7 @@ class JobFinderController extends Controller
         $hasPremiumAccess = $subscription && $subscription->status === 'active';
         $jobsViewed = session('jobs_viewed', 0);
         $jobsApplied = session('jobs_applied', 0);
-        
+
         // Get user's resumes
         $resumes = $user->resumes()->get();
 
@@ -123,10 +123,14 @@ class JobFinderController extends Controller
 
         $hasPremiumAccess = $subscription && $subscription->status === 'active';
 
+        // Get user's resumes
+        $resumes = $user->resumes()->get();
+
         return view('user.jobs.by-location', compact(
             'user',
             'subscription',
-            'hasPremiumAccess'
+            'hasPremiumAccess',
+            'resumes'
         ));
     }
 

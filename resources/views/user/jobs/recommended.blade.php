@@ -148,7 +148,7 @@
     function generateJobs() {
         const btn = document.getElementById('generateJobsBtn');
         const resumeId = document.getElementById('resumeSelect')?.value || null;
-        
+
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Loading...';
 
