@@ -19,6 +19,28 @@
             </div>
         </div>
 
+        <!-- CV Selection -->
+        @if($resumes->count() > 0)
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <label class="form-label mb-2">
+                        <i class="bx bx-file me-2"></i><strong>Select a CV for Reference (Optional)</strong>
+                    </label>
+                    <select class="form-select" id="resumeSelect">
+                        <option value="">-- None --</option>
+                        @foreach($resumes as $resume)
+                        <option value="{{ $resume->id }}">{{ $resume->title ?? 'Resume #' . $resume->id }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted d-block mt-2">
+                        <i class="bx bx-info-circle me-1"></i> Choose a CV for the AI to reference when generating relevant interview questions.
+                    </small>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <!-- Main Content -->
         <div class="col-lg-8">
             <!-- Questions List -->

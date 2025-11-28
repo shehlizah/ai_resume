@@ -23,13 +23,17 @@ class JobFinderController extends Controller
         $hasPremiumAccess = $subscription && $subscription->status === 'active';
         $jobsViewed = session('jobs_viewed', 0);
         $jobsApplied = session('jobs_applied', 0);
+        
+        // Get user's resumes
+        $resumes = $user->resumes()->get();
 
         return view('user.jobs.recommended', compact(
             'user',
             'subscription',
             'hasPremiumAccess',
             'jobsViewed',
-            'jobsApplied'
+            'jobsApplied',
+            'resumes'
         ));
     }
 
@@ -38,6 +42,10 @@ class JobFinderController extends Controller
      */
     public function generateRecommended(Request $request)
     {
+        $request->validate([
+            'resume_id' => 'nullable|integer|exists:user_resumes,id'
+        ]);
+
         $user = Auth::user();
         $subscription = UserSubscription::where('user_id', $user->id)
             ->whereIn('status', ['active', 'pending'])
@@ -129,7 +137,8 @@ class JobFinderController extends Controller
     {
         $request->validate([
             'location' => 'required|string',
-            'job_title' => 'required|string'
+            'job_title' => 'required|string',
+            'resume_id' => 'nullable|integer|exists:user_resumes,id'
         ]);
 
         $user = Auth::user();

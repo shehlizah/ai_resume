@@ -49,6 +49,22 @@
                                     <option value="60">1 hour</option>
                                 </select>
                             </div>
+                            @if($resumes->count() > 0)
+                            <div class="col-md-12">
+                                <label class="form-label">
+                                    <i class="bx bx-file me-2"></i> Select a CV for Reference (Optional)
+                                </label>
+                                <select class="form-select" id="resumeId">
+                                    <option value="">-- None --</option>
+                                    @foreach($resumes as $resume)
+                                    <option value="{{ $resume->id }}">{{ $resume->title ?? 'Resume #' . $resume->id }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted d-block mt-2">
+                                    <i class="bx bx-info-circle me-1"></i> Provide your CV so AI can tailor questions to your experience.
+                                </small>
+                            </div>
+                            @endif
                         </div>
                         <button type="submit" class="btn btn-primary btn-lg w-100">
                             <i class="bx bx-play-circle me-2"></i> Start Mock Interview
@@ -141,6 +157,7 @@
         const jobTitle = document.getElementById('jobTitle').value;
         const company = document.getElementById('company').value || 'Your Target Company';
         const interviewType = document.getElementById('interviewType').value;
+        const resumeId = document.getElementById('resumeId')?.value || null;
 
         fetch('{{ route("user.interview.ai-practice-start") }}', {
             method: 'POST',
@@ -151,7 +168,8 @@
             body: JSON.stringify({
                 job_title: jobTitle,
                 company: company,
-                interview_type: interviewType
+                interview_type: interviewType,
+                resume_id: resumeId
             })
         })
         .then(response => response.json())

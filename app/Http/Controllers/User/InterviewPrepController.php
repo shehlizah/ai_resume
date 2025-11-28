@@ -21,6 +21,9 @@ class InterviewPrepController extends Controller
             ->first();
 
         $hasPremiumAccess = $subscription && $subscription->status === 'active';
+        
+        // Get user's resumes
+        $resumes = $user->resumes()->get();
 
         // Mock basic interview questions (free tier)
         $questions = [
@@ -85,7 +88,8 @@ class InterviewPrepController extends Controller
             'user',
             'subscription',
             'hasPremiumAccess',
-            'questions'
+            'questions',
+            'resumes'
         ));
     }
 
@@ -100,7 +104,10 @@ class InterviewPrepController extends Controller
             ->latest()
             ->first();
 
-        return view('user.interview.ai-practice', compact('user', 'subscription'));
+        // Get user's resumes
+        $resumes = $user->resumes()->get();
+
+        return view('user.interview.ai-practice', compact('user', 'subscription', 'resumes'));
     }
 
     /**
@@ -111,7 +118,8 @@ class InterviewPrepController extends Controller
         $request->validate([
             'job_title' => 'required|string',
             'company' => 'required|string',
-            'interview_type' => 'required|in:technical,behavioral,both'
+            'interview_type' => 'required|in:technical,behavioral,both',
+            'resume_id' => 'nullable|integer|exists:user_resumes,id'
         ]);
 
         // TODO: Create interview session in database

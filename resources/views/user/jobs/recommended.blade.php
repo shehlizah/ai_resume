@@ -24,6 +24,28 @@
             </div>
         </div>
 
+        <!-- CV Selection -->
+        @if($resumes->count() > 0)
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <label class="form-label mb-2">
+                        <i class="bx bx-file me-2"></i><strong>Select a CV for Job Matching</strong>
+                    </label>
+                    <select class="form-select" id="resumeSelect">
+                        <option value="">-- Choose CV for better matching --</option>
+                        @foreach($resumes as $resume)
+                        <option value="{{ $resume->id }}">{{ $resume->title ?? 'Resume #' . $resume->id }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted d-block mt-2">
+                        <i class="bx bx-info-circle me-1"></i> Select a CV for AI to find the most relevant job matches for you.
+                    </small>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <!-- Upgrade Banner (if free user) -->
         @if(!$hasPremiumAccess)
         <div class="col-lg-12">
@@ -125,6 +147,8 @@
     <script>
     function generateJobs() {
         const btn = document.getElementById('generateJobsBtn');
+        const resumeId = document.getElementById('resumeSelect')?.value || null;
+        
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Loading...';
 
@@ -133,7 +157,10 @@
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
+            },
+            body: JSON.stringify({
+                resume_id: resumeId
+            })
         })
         .then(response => response.json())
         .then(data => {

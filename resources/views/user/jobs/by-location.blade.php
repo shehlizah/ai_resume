@@ -41,10 +41,28 @@
                                 </button>
                             </div>
                         </div>
+                        @if($resumes->count() > 0)
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label">
+                                    <i class="bx bx-file me-2"></i> Select a CV (Optional)
+                                </label>
+                                <select class="form-select" id="resumeId" name="resume_id">
+                                    <option value="">-- Choose CV for better matching --</option>
+                                    @foreach($resumes as $resume)
+                                    <option value="{{ $resume->id }}">{{ $resume->title ?? 'Resume #' . $resume->id }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted d-block mt-2">
+                                    <i class="bx bx-info-circle me-1"></i> Select a CV for AI to find more relevant matches.
+                                </small>
+                            </div>
+                        </div>
+                        @endif
                     </form>
 
                     @if(!$hasPremiumAccess)
-                    <div class="alert alert-warning border-0 mb-0">
+                    <div class="alert alert-warning border-0 mb-0 mt-3">
                         <i class="bx bx-crown me-2"></i> Free plan: 5 job views per session.
                         <a href="{{ route('user.pricing') }}">Upgrade to Pro</a> for unlimited searches.
                     </div>
@@ -75,6 +93,7 @@
 
         const location = document.getElementById('location').value;
         const jobTitle = document.getElementById('jobTitle').value;
+        const resumeId = document.getElementById('resumeId')?.value || null;
         const resultsContainer = document.getElementById('resultsContainer');
         const emptyState = document.getElementById('emptyState');
 
@@ -86,7 +105,8 @@
             },
             body: JSON.stringify({
                 location: location,
-                job_title: jobTitle
+                job_title: jobTitle,
+                resume_id: resumeId
             })
         })
         .then(response => response.json())

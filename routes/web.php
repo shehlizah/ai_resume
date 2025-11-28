@@ -14,6 +14,8 @@ use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\StripeWebhookController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\CoverLetterController;
+use App\Http\Controllers\User\JobFinderController;
+use App\Http\Controllers\User\InterviewPrepController;
 use App\Http\Middleware\CheckActivePackage;
 
 /*
@@ -151,6 +153,45 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+        });
+    });
+
+    // ==========================================
+    // Job Finder Routes
+    // ==========================================
+    Route::prefix('jobs')->name('user.jobs.')->group(function () {
+        // Recommended jobs (FREE)
+        Route::get('/recommended', [JobFinderController::class, 'recommended'])->name('recommended');
+        Route::post('/recommended', [JobFinderController::class, 'generateRecommended'])->name('recommended');
+
+        // Search by location (FREE)
+        Route::get('/by-location', [JobFinderController::class, 'byLocation'])->name('by-location');
+        Route::post('/by-location', [JobFinderController::class, 'generateByLocation'])->name('by-location');
+
+        // Apply to job (FREE with limits)
+        Route::post('/{jobId}/apply', [JobFinderController::class, 'applyJob'])->name('apply');
+    });
+
+    // ==========================================
+    // Interview Prep Routes
+    // ==========================================
+    Route::prefix('interview')->name('user.interview.')->group(function () {
+        // Practice questions (FREE)
+        Route::get('/questions', [InterviewPrepController::class, 'questions'])->name('questions');
+
+        // AI Mock Interview (PRO)
+        Route::middleware([CheckActivePackage::class])->group(function () {
+            Route::get('/ai-practice', [InterviewPrepController::class, 'aiPractice'])->name('ai-practice');
+            Route::post('/ai-practice/start', [InterviewPrepController::class, 'startAIPractice'])->name('ai-practice-start');
+            Route::post('/ai-practice/answer', [InterviewPrepController::class, 'submitAnswer'])->name('ai-practice-answer');
+            Route::get('/ai-results/{sessionId}', [InterviewPrepController::class, 'aiResults'])->name('ai-results');
+        });
+
+        // Expert booking (PRO)
+        Route::middleware([CheckActivePackage::class])->group(function () {
+            Route::get('/expert', [InterviewPrepController::class, 'bookExpert'])->name('expert');
+            Route::post('/expert/book', [InterviewPrepController::class, 'bookSession'])->name('book-session');
+            Route::get('/my-sessions', [InterviewPrepController::class, 'mySessions'])->name('my-sessions');
         });
     });
 
