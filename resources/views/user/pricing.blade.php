@@ -343,23 +343,19 @@
           </div>
         </div>
 
-        <!-- Testing & Production Pricing Tables -->
-        <div class="col-lg-6">
-          <div class="card border-0 shadow-sm">
-            <div class="card-header bg-warning bg-opacity-10 border-0">
-              <h6 class="mb-0">
-                <i class="bx bx-test-tube me-1"></i> TEST MODE
-              </h6>
-              <small class="text-muted">Use test card: 4242 4242 4242 4242</small>
-            </div>
-            <div class="card-body p-0">
-              <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
-              <stripe-pricing-table pricing-table-id="prctbl_1STdoCDfpo67wO4dX6Kr1bDX"
-              publishable-key="pk_test_51Ngsx6Dfpo67wO4dIywhaxJ5DczHuc6BZdgestz0BZHLcG85vD3QpmNYWEYmTmD2qwMMj0UEonJnwdcoiY6J6mHg006USXIY5Y">
-              </stripe-pricing-table>
-            </div>
-          </div>
-        </div>
+       <!--TEST-->
+
+<script async src="https://js.stripe.com/v3/pricing-table.js"></script>
+<stripe-pricing-table pricing-table-id="prctbl_1STdoCDfpo67wO4dX6Kr1bDX"
+publishable-key="pk_test_51Ngsx6Dfpo67wO4dIywhaxJ5DczHuc6BZdgestz0BZHLcG85vD3QpmNYWEYmTmD2qwMMj0UEonJnwdcoiY6J6mHg006USXIY5Y">
+</stripe-pricing-table>
+
+<!--LIVE -->
+   
+ <!--<script async src="https://js.stripe.com/v3/pricing-table.js"></script>-->
+ <!--   <stripe-pricing-table pricing-table-id="prctbl_1STdVTDfpo67wO4diuVN6NRA"-->
+ <!--   publishable-key="pk_live_51Ngsx6Dfpo67wO4dGZRpVZ1UpDMKFoaY1tFikV4ToYcbvkSBxzb2bNpDqyuvrjADJuJ18AbdZMbVIv1Fm4ufsEqr00iCQyBPdH">-->
+ <!--   </stripe-pricing-table>-->
 
         <!-- Live Pricing -->
         <div class="col-lg-6">
