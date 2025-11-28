@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
+    Volt::route('settings/monetization', 'settings.monetization')->name('settings.monetization');
 
     // ==========================================
     // Pricing & Plans (ALWAYS ACCESSIBLE)
@@ -90,7 +91,7 @@ Route::middleware(['auth'])->group(function () {
     // Resume Management Routes
     // ==========================================
     Route::prefix('resumes')->name('user.resumes.')->group(function () {
-        
+
         // UNPROTECTED - Viewing/Browsing (No Package Required)
         Route::get('/', [UserResumeController::class, 'index'])->name('index');
         Route::get('/view/{id}', [UserResumeController::class, 'view'])->name('view');
@@ -101,8 +102,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/fill/{template_id}', [UserResumeController::class, 'fillForm'])->name('fill');
         Route::post('/generate', [UserResumeController::class, 'generate'])->name('generate');
         Route::get('/success/{id}', [UserResumeController::class, 'success'])->name('success');
-        
-             
+
+
         // AI Generation Routes
         Route::post('/generate-experience-ai', [UserResumeController::class, 'generateExperienceAI'])->name('generate-experience-ai');
         Route::post('/generate-skills-ai', [UserResumeController::class, 'generateSkillsAI'])->name('generate-skills-ai');
@@ -110,9 +111,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/generate-summary-ai', [UserResumeController::class, 'generateSummaryAI'])->name('generate-summary-ai');
         // PROTECTED - Creating/Downloading (Package Required)
         Route::middleware([CheckActivePackage::class])->group(function () {
-          
+
             Route::get('/download/{id}', [UserResumeController::class, 'download'])->name('download');
-   
+
         });
     });
 
@@ -123,7 +124,7 @@ Route::middleware(['auth'])->group(function () {
     // Cover Letter Management Routes
     // ==========================================
     Route::prefix('cover-letters')->name('user.cover-letters.')->group(function () {
-        
+
         // UNPROTECTED - Viewing/Browsing (No Package Required)
         Route::get('/', [CoverLetterController::class, 'index'])->name('index');
         Route::get('/{coverLetter}/view', [CoverLetterController::class, 'view'])->name('view');
@@ -131,25 +132,25 @@ Route::middleware(['auth'])->group(function () {
        // Creation routes
         Route::get('/create', [CoverLetterController::class, 'create'])->name('create');
         Route::post('/store', [CoverLetterController::class, 'store'])->name('store');
-        
+
         // Template selection
         Route::get('/templates', [CoverLetterController::class, 'selectTemplate'])->name('select-template');
         Route::get('/templates/{template}/use', [CoverLetterController::class, 'createFromTemplate'])->name('create-from-template');
-        
+
         // Editing
         Route::get('/{coverLetter}/edit', [CoverLetterController::class, 'edit'])->name('edit');
         Route::put('/{coverLetter}/update', [CoverLetterController::class, 'update'])->name('update');
         // AI Generation
         Route::post('/generate-ai', [CoverLetterController::class, 'generateWithAI'])->name('generate-ai');
-    
+
         // PROTECTED - Creating/Downloading (Package Required)
         Route::middleware([CheckActivePackage::class])->group(function () {
              // Downloads and printing
         Route::get('/{coverLetter}/download', [CoverLetterController::class, 'download'])->name('download');
         Route::get('/{coverLetter}/print', [CoverLetterController::class, 'print'])->name('print');
-            
-            
-          
+
+
+
         });
     });
 
@@ -354,14 +355,14 @@ if (app()->environment('local')) {
     Route::get('/debug-template/{id}', function($id) {
         $template = \App\Models\Template::findOrFail($id);
         $html = $template->html_content . '<style>' . $template->css_content . '</style>';
-        
+
         // Check what CSS features are in the template
         $hasCSSGrid = (stripos($html, 'display: grid') !== false || stripos($html, 'display:grid') !== false);
         $hasFlexbox = (stripos($html, 'display: flex') !== false || stripos($html, 'display:flex') !== false);
         $hasGoogleFonts = (stripos($html, 'fonts.googleapis.com') !== false);
         $hasTransform = (stripos($html, 'transform:') !== false);
         $hasClipPath = (stripos($html, 'clip-path') !== false);
-        
+
         return response()->json([
             'template_id' => $template->id,
             'template_name' => $template->name,
@@ -374,8 +375,8 @@ if (app()->environment('local')) {
                 'has_clip_path' => $hasClipPath ? '❌ YES - NOT COMPATIBLE' : '✅ NO',
             ],
             'dompdf_compatible' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath),
-            'recommendation' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath) 
-                ? '✅ This template should work with DomPDF' 
+            'recommendation' => (!$hasCSSGrid && !$hasGoogleFonts && !$hasTransform && !$hasClipPath)
+                ? '✅ This template should work with DomPDF'
                 : '❌ Use the DomPDF-compatible version instead'
         ]);
     })->middleware('auth');
