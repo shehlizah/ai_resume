@@ -87,21 +87,30 @@ class PaymentController extends Controller
         \Log::info('stripeSuccess called', ['session_id' => $request->session_id ?? 'MISSING']);
 
         if (!$request->has('session_id')) {
+            \Log::error('No session_id in request');
             return redirect()->route('user.pricing')->with('error', 'Invalid session.');
         }
 
         try {
+            \Log::info('User authenticated', ['user_id' => auth()->id() ?? 'NOT_AUTHENTICATED']);
+
             Stripe::setApiKey(config('services.stripe.secret'));
             $session = StripeSession::retrieve($request->session_id);
 
             \Log::info('Session Retrieved', [
                 'payment_status' => $session->payment_status ?? 'NULL',
                 'subscription' => $session->subscription ?? 'NULL',
+                'session_id' => $request->session_id,
             ]);
 
             if ($session->payment_status === 'paid' || $session->payment_status === 'unpaid') {
+                \Log::info('Payment status valid, processing subscription');
+
                 $metadata = $session->metadata;
+                \Log::info('Metadata', ['metadata' => $metadata->toArray() ?? []]);
+
                 $plan = SubscriptionPlan::findOrFail($metadata['plan_id']);
+                \Log::info('Plan found', ['plan_id' => $plan->id, 'plan_name' => $plan->name]);
 
                 // Fetch the full subscription details from Stripe
                 $stripeSubscription = null;
@@ -124,6 +133,13 @@ class PaymentController extends Controller
                 }
 
                 // Create subscription with trial info
+                \Log::info('Creating subscription', [
+                    'user_id' => auth()->id(),
+                    'plan_id' => $plan->id,
+                    'billing_period' => $metadata['billing_period'],
+                    'trial_end' => $trialEnd ? $trialEnd->toDateString() : 'NULL',
+                ]);
+
                 $subscription = $this->createSubscription(
                     $plan,
                     $metadata['billing_period'],
@@ -131,6 +147,8 @@ class PaymentController extends Controller
                     $session->subscription,
                     $trialEnd
                 );
+
+                \Log::info('Subscription created successfully', ['subscription_id' => $subscription->id]);
 
                 // Get transaction ID
                 $transactionId = $session->payment_intent ?? $session->subscription ?? $session->id;
@@ -154,6 +172,7 @@ class PaymentController extends Controller
                         ],
                         'paid_at' => now(),
                     ]);
+                    \Log::info('Payment record created');
                 }
 
                 $message = $trialEnd
@@ -164,10 +183,17 @@ class PaymentController extends Controller
                     ->with('success', $message);
             }
 
+            \Log::error('Invalid payment status', ['payment_status' => $session->payment_status ?? 'NULL']);
             return redirect()->route('user.pricing')
                 ->with('error', 'Payment was not completed.');
 
         } catch (\Exception $e) {
+            \Log::error('Exception in stripeSuccess', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return redirect()->route('user.pricing')
                 ->with('error', 'Error processing payment: ' . $e->getMessage());
         }
