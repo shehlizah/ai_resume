@@ -45,7 +45,7 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <label class="form-label">
-                                    <i class="bx bx-file me-2"></i> Select a CV (Optional)
+                                    <i class="bx bx-file me-2"></i> <strong>Select a CV (Optional)</strong>
                                 </label>
                                 <select class="form-select" id="resumeId" name="resume_id">
                                     <option value="">-- Choose CV for better matching --</option>
@@ -59,6 +59,24 @@
                             </div>
                         </div>
                         @endif
+                        
+                        <!-- OR Upload Resume -->
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-12">
+                                <p class="text-muted small mb-2">Or upload a resume from your computer:</p>
+                                <div class="drop-zone border-2 border-dashed rounded p-3 text-center" id="locationResumeDropZone" style="border-color: #667eea; cursor: pointer; transition: all 0.3s;">
+                                    <i class="bx bx-cloud-upload" style="font-size: 2rem; color: #667eea;"></i>
+                                    <p class="mb-1 small"><strong>Drop resume here or click</strong></p>
+                                    <small class="text-muted">PDF, DOCX (Max 10MB)</small>
+                                    <input type="file" id="locationResumeInput" accept=".pdf,.doc,.docx" style="display: none;">
+                                </div>
+                                <div id="locationUploadStatus" class="mt-2" style="display: none;">
+                                    <div class="alert alert-info border-0 mb-0 py-2">
+                                        <small><i class="bx bx-loader-alt bx-spin me-2"></i> <span id="locationStatusText">Processing resume...</span></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </form>
 
                     @if(!$hasPremiumAccess)
@@ -177,6 +195,102 @@
                 }
             });
         }
+    }
+
+    // Location Resume file upload handling
+    const locationDropZone = document.getElementById('locationResumeDropZone');
+    const locationFileInput = document.getElementById('locationResumeInput');
+    const locationUploadStatus = document.getElementById('locationUploadStatus');
+
+    if (locationDropZone && locationFileInput) {
+        // Click to upload
+        locationDropZone.addEventListener('click', () => locationFileInput.click());
+
+        // Drag and drop
+        locationDropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            locationDropZone.style.borderColor = '#764ba2';
+            locationDropZone.style.backgroundColor = 'rgba(118, 75, 162, 0.05)';
+        });
+
+        locationDropZone.addEventListener('dragleave', () => {
+            locationDropZone.style.borderColor = '#667eea';
+            locationDropZone.style.backgroundColor = 'transparent';
+        });
+
+        locationDropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            locationDropZone.style.borderColor = '#667eea';
+            locationDropZone.style.backgroundColor = 'transparent';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleLocationResumeUpload(files[0]);
+            }
+        });
+
+        // File input change
+        locationFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleLocationResumeUpload(e.target.files[0]);
+            }
+        });
+    }
+
+    function handleLocationResumeUpload(file) {
+        // Validate file
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please upload a PDF or DOCX file');
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size must be less than 10MB');
+            return;
+        }
+
+        // Upload file
+        const formData = new FormData();
+        formData.append('resume_file', file);
+
+        locationUploadStatus.style.display = 'block';
+
+        fetch('{{ route("user.resumes.upload-temp") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Store the temporary file path/ID
+                sessionStorage.setItem('locationUploadedResumeFile', data.file_path);
+                
+                // Update status text
+                document.getElementById('locationStatusText').innerHTML = '<i class="bx bx-check-circle me-2"></i> ' + file.name + ' uploaded!';
+                
+                // Clear file input
+                locationFileInput.value = '';
+                
+                // Hide status after 3 seconds
+                setTimeout(() => {
+                    locationUploadStatus.style.display = 'none';
+                }, 3000);
+            } else {
+                alert('Error uploading file: ' + (data.message || 'Unknown error'));
+                locationUploadStatus.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            locationUploadStatus.style.display = 'none';
+            alert('Error uploading file');
+        });
     }
     </script>
 </x-layouts.app>

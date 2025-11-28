@@ -25,26 +25,76 @@
         </div>
 
         <!-- CV Selection -->
-        @if($resumes->count() > 0)
         <div class="col-lg-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <label class="form-label mb-2">
-                        <i class="bx bx-file me-2"></i><strong>Select a CV for Job Matching</strong>
-                    </label>
-                    <select class="form-select" id="resumeSelect">
-                        <option value="">-- Choose CV for better matching --</option>
-                        @foreach($resumes as $resume)
-                        <option value="{{ $resume->id }}">{{ $resume->title ?? 'Resume #' . $resume->id }}</option>
-                        @endforeach
-                    </select>
-                    <small class="text-muted d-block mt-2">
-                        <i class="bx bx-info-circle me-1"></i> Select a CV for AI to find the most relevant job matches for you.
-                    </small>
+                    <!-- Tabs for selection method -->
+                    <ul class="nav nav-tabs mb-4" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="cv-select-tab" data-bs-toggle="tab" data-bs-target="#cv-select" type="button" role="tab">
+                                <i class="bx bx-file me-2"></i> My Resumes
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="cv-upload-tab" data-bs-toggle="tab" data-bs-target="#cv-upload" type="button" role="tab">
+                                <i class="bx bx-cloud-upload me-2"></i> Upload Resume
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab content -->
+                    <div class="tab-content">
+                        <!-- Select from saved resumes -->
+                        <div class="tab-pane fade show active" id="cv-select" role="tabpanel">
+                            @if($resumes->count() > 0)
+                            <label class="form-label mb-2">
+                                <strong>Select a CV for Job Matching</strong>
+                            </label>
+                            <select class="form-select" id="resumeSelect">
+                                <option value="">-- Choose CV for better matching --</option>
+                                @foreach($resumes as $resume)
+                                <option value="{{ $resume->id }}">{{ $resume->title ?? 'Resume #' . $resume->id }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted d-block mt-2">
+                                <i class="bx bx-info-circle me-1"></i> Select a CV for AI to find the most relevant job matches for you.
+                            </small>
+                            @else
+                            <div class="alert alert-info border-0">
+                                <i class="bx bx-info-circle me-2"></i> You don't have any saved resumes yet. Upload one above to get started!
+                            </div>
+                            @endif
+                        </div>
+
+                        <!-- Upload new resume -->
+                        <div class="tab-pane fade" id="cv-upload" role="tabpanel">
+                            <label class="form-label mb-3">
+                                <strong>Upload a Resume from Your Computer</strong>
+                            </label>
+                            <div class="drop-zone border-2 border-dashed rounded p-4 text-center" id="resumeDropZone" style="border-color: #667eea; cursor: pointer; transition: all 0.3s;">
+                                <i class="bx bx-cloud-upload" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
+                                <div class="mb-2">
+                                    <p class="mb-1"><strong>Drop your resume here or click to browse</strong></p>
+                                    <small class="text-muted">Supported: PDF, DOCX (Max 10MB)</small>
+                                </div>
+                                <input type="file" id="resumeFileInput" accept=".pdf,.doc,.docx" style="display: none;">
+                            </div>
+                            <div id="uploadStatus" class="mt-3" style="display: none;">
+                                <div class="alert alert-info border-0">
+                                    <i class="bx bx-loader-alt bx-spin me-2"></i> <span id="statusText">Processing your resume...</span>
+                                </div>
+                            </div>
+                            <div id="uploadSuccess" class="mt-3" style="display: none;">
+                                <div class="alert alert-success border-0">
+                                    <i class="bx bx-check-circle me-2"></i> Resume uploaded successfully! 
+                                    <span id="uploadedFileName"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        @endif
 
         <!-- Upgrade Banner (if free user) -->
         @if(!$hasPremiumAccess)
@@ -253,6 +303,100 @@
         } else {
             document.getElementById('jobsRemainingBadge').innerHTML = '<i class="bx bx-infinity me-1"></i> Unlimited';
         }
+    }
+
+    // Resume file upload handling
+    const dropZone = document.getElementById('resumeDropZone');
+    const fileInput = document.getElementById('resumeFileInput');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const uploadSuccess = document.getElementById('uploadSuccess');
+
+    if (dropZone && fileInput) {
+        // Click to upload
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#764ba2';
+            dropZone.style.backgroundColor = 'rgba(118, 75, 162, 0.05)';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#667eea';
+            dropZone.style.backgroundColor = 'transparent';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#667eea';
+            dropZone.style.backgroundColor = 'transparent';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+    }
+
+    function handleFileUpload(file) {
+        // Validate file
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please upload a PDF or DOCX file');
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size must be less than 10MB');
+            return;
+        }
+
+        // Upload file
+        const formData = new FormData();
+        formData.append('resume_file', file);
+
+        uploadStatus.style.display = 'block';
+        uploadSuccess.style.display = 'none';
+
+        fetch('{{ route("user.resumes.upload-temp") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            uploadStatus.style.display = 'none';
+            
+            if (data.success) {
+                uploadSuccess.style.display = 'block';
+                document.getElementById('uploadedFileName').textContent = file.name;
+                
+                // Store the temporary file path/ID for job search
+                sessionStorage.setItem('uploadedResumeFile', data.file_path);
+                
+                // Clear file input
+                fileInput.value = '';
+            } else {
+                alert('Error uploading file: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            uploadStatus.style.display = 'none';
+            alert('Error uploading file');
+        });
     }
     </script>
 </x-layouts.app>

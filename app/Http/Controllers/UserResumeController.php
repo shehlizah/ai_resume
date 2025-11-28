@@ -1296,4 +1296,37 @@ private function callOpenAI($prompt)
     }
 }
 
+    /**
+     * Upload temporary resume file for job finder and interview prep
+     */
+    public function uploadTemporary(Request $request)
+    {
+        $request->validate([
+            'resume_file' => 'required|file|mimes:pdf,doc,docx|max:10240' // 10MB
+        ]);
+
+        try {
+            $file = $request->file('resume_file');
+            $user = Auth::user();
+            
+            // Store in temporary storage
+            $path = $file->store("resumes/temp/{$user->id}", 'local');
+            
+            return response()->json([
+                'success' => true,
+                'file_path' => $path,
+                'file_name' => $file->getClientOriginalName(),
+                'message' => 'Resume uploaded successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Resume upload failed', ['error' => $e->getMessage()]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload resume: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+}
+
 }

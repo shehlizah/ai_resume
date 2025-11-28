@@ -52,7 +52,7 @@
                             @if($resumes->count() > 0)
                             <div class="col-md-12">
                                 <label class="form-label">
-                                    <i class="bx bx-file me-2"></i> Select a CV for Reference (Optional)
+                                    <i class="bx bx-file me-2"></i> <strong>Select a CV for Reference (Optional)</strong>
                                 </label>
                                 <select class="form-select" id="resumeId">
                                     <option value="">-- None --</option>
@@ -65,6 +65,24 @@
                                 </small>
                             </div>
                             @endif
+                            
+                            <!-- OR Upload Resume -->
+                            <div class="col-md-12">
+                                <div class="border-top pt-3 mt-2">
+                                    <p class="text-muted small mb-2">Or upload a resume from your computer:</p>
+                                    <div class="drop-zone border-2 border-dashed rounded p-3 text-center" id="interviewResumeDropZone" style="border-color: #667eea; cursor: pointer; transition: all 0.3s;">
+                                        <i class="bx bx-cloud-upload" style="font-size: 2rem; color: #667eea;"></i>
+                                        <p class="mb-1 small"><strong>Drop resume here or click</strong></p>
+                                        <small class="text-muted">PDF, DOCX (Max 10MB)</small>
+                                        <input type="file" id="interviewResumeInput" accept=".pdf,.doc,.docx" style="display: none;">
+                                    </div>
+                                    <div id="interviewUploadStatus" class="mt-2" style="display: none;">
+                                        <div class="alert alert-info border-0 mb-0 py-2">
+                                            <small><i class="bx bx-loader-alt bx-spin me-2"></i> <span id="interviewStatusText">Processing resume...</span></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary btn-lg w-100">
                             <i class="bx bx-play-circle me-2"></i> Start Mock Interview
@@ -249,6 +267,102 @@
         if (confirm('End interview? You can view your results.')) {
             window.location.href = '{{ route("user.interview.ai-results", ["sessionId" => ""]) }}'.replace('""', '"' + currentSessionId + '"');
         }
+    }
+
+    // Interview Resume file upload handling
+    const interviewDropZone = document.getElementById('interviewResumeDropZone');
+    const interviewFileInput = document.getElementById('interviewResumeInput');
+    const interviewUploadStatus = document.getElementById('interviewUploadStatus');
+
+    if (interviewDropZone && interviewFileInput) {
+        // Click to upload
+        interviewDropZone.addEventListener('click', () => interviewFileInput.click());
+
+        // Drag and drop
+        interviewDropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            interviewDropZone.style.borderColor = '#764ba2';
+            interviewDropZone.style.backgroundColor = 'rgba(118, 75, 162, 0.05)';
+        });
+
+        interviewDropZone.addEventListener('dragleave', () => {
+            interviewDropZone.style.borderColor = '#667eea';
+            interviewDropZone.style.backgroundColor = 'transparent';
+        });
+
+        interviewDropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            interviewDropZone.style.borderColor = '#667eea';
+            interviewDropZone.style.backgroundColor = 'transparent';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleInterviewResumeUpload(files[0]);
+            }
+        });
+
+        // File input change
+        interviewFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleInterviewResumeUpload(e.target.files[0]);
+            }
+        });
+    }
+
+    function handleInterviewResumeUpload(file) {
+        // Validate file
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please upload a PDF or DOCX file');
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size must be less than 10MB');
+            return;
+        }
+
+        // Upload file
+        const formData = new FormData();
+        formData.append('resume_file', file);
+
+        interviewUploadStatus.style.display = 'block';
+
+        fetch('{{ route("user.resumes.upload-temp") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Store the temporary file path/ID
+                sessionStorage.setItem('interviewUploadedResumeFile', data.file_path);
+                
+                // Update status text
+                document.getElementById('interviewStatusText').innerHTML = '<i class="bx bx-check-circle me-2"></i> ' + file.name + ' uploaded!';
+                
+                // Clear file input
+                interviewFileInput.value = '';
+                
+                // Hide status after 3 seconds
+                setTimeout(() => {
+                    interviewUploadStatus.style.display = 'none';
+                }, 3000);
+            } else {
+                alert('Error uploading file: ' + (data.message || 'Unknown error'));
+                interviewUploadStatus.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            interviewUploadStatus.style.display = 'none';
+            alert('Error uploading file');
+        });
     }
     </script>
 </x-layouts.app>
