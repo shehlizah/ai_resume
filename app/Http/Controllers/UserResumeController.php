@@ -1378,5 +1378,3 @@ private function callOpenAI($prompt)
         }
     }
 }
-
-}
