@@ -20,6 +20,8 @@ class PaymentController extends Controller
      */
     public function stripeCheckout(Request $request)
     {
+        \Log::info('stripeCheckout called', ['user_id' => auth()->id() ?? 'NOT_AUTHENTICATED']);
+
         $request->validate([
             'plan_id' => 'required|exists:subscription_plans,id',
             'billing_period' => 'required|in:monthly,yearly',
@@ -28,6 +30,14 @@ class PaymentController extends Controller
         $plan = SubscriptionPlan::findOrFail($request->plan_id);
         $billingPeriod = $request->billing_period;
         $amount = $plan->getPrice($billingPeriod);
+
+        \Log::info('Checkout Details', [
+            'plan_id' => $plan->id,
+            'plan_name' => $plan->name,
+            'billing_period' => $billingPeriod,
+            'amount' => $amount,
+            'trial_days' => $plan->trial_days ?? 0,
+        ]);
 
         // Don't process if free plan
         if ($amount == 0) {
@@ -69,13 +79,25 @@ class PaymentController extends Controller
                 $sessionData['subscription_data'] = [
                     'trial_period_days' => $plan->trial_days,
                 ];
+                \Log::info('Trial period added', ['trial_days' => $plan->trial_days]);
             }
 
             $session = StripeSession::create($sessionData);
 
+            \Log::info('Stripe session created', [
+                'session_id' => $session->id,
+                'subscription' => $session->subscription ?? 'NOT_YET',
+                'redirect_url' => $session->url,
+            ]);
+
             return redirect($session->url);
 
         } catch (\Exception $e) {
+            \Log::error('stripeCheckout error', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             return back()->with('error', 'Payment processing failed: ' . $e->getMessage());
         }
     }
@@ -109,7 +131,7 @@ class PaymentController extends Controller
                 // Get user from client_reference_id (not from auth, since session might be lost)
                 $userId = $session->client_reference_id;
                 $user = User::findOrFail($userId);
-                
+
                 \Log::info('User found from client_reference_id', ['user_id' => $userId]);
 
                 $metadata = $session->metadata;
