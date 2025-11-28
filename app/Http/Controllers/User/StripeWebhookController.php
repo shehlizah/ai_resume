@@ -145,6 +145,13 @@ class StripeWebhookController extends Controller
                 $endDate = now()->addMonths(1);
             }
 
+            // Extract trial end date from subscription
+            $trialEnd = null;
+            $stripeTrialEnd = $subscription['trial_end'] ?? $subscription->trial_end ?? null;
+            if ($stripeTrialEnd) {
+                $trialEnd = \Carbon\Carbon::createFromTimestamp($stripeTrialEnd);
+            }
+
             // Create user subscription
             $userSubscription = UserSubscription::create([
                 'user_id' => $user->id,
@@ -154,7 +161,8 @@ class StripeWebhookController extends Controller
                 'amount' => $unitAmount / 100,
                 'start_date' => now(),
                 'end_date' => $endDate,
-                'next_billing_date' => $endDate,
+                'next_billing_date' => $trialEnd ?? $endDate,
+                'trial_ends_at' => $trialEnd,
                 'auto_renew' => true,
                 'payment_gateway' => 'stripe',
                 'gateway_subscription_id' => $subscription['id'] ?? $subscription->id,
