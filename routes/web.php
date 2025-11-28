@@ -58,7 +58,15 @@ Route::prefix('payment')->name('user.payment.')->group(function () {
     Route::post('/paypal/checkout', [PaymentController::class, 'paypalCheckout'])->name('paypal.checkout');
     Route::post('/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('paypal.success');
     Route::get('/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('paypal.cancel');
-});/*
+});
+
+// TEST ENDPOINT
+Route::post('/api/test-submit', function() {
+    file_put_contents(storage_path('logs/test_submit.log'), "TEST ENDPOINT HIT: " . now() . "\n", FILE_APPEND);
+    return response()->json(['success' => true]);
+});
+
+/*
 |--------------------------------------------------------------------------
 | Authenticated User Routes
 |--------------------------------------------------------------------------
