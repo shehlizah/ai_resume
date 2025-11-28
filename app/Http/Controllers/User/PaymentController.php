@@ -20,8 +20,6 @@ class PaymentController extends Controller
      */
     public function stripeCheckout(Request $request)
     {
-        \Log::info('stripeCheckout called', ['user_id' => auth()->id() ?? 'NOT_AUTHENTICATED']);
-
         $request->validate([
             'plan_id' => 'required|exists:subscription_plans,id',
             'billing_period' => 'required|in:monthly,yearly',
@@ -31,14 +29,6 @@ class PaymentController extends Controller
         $billingPeriod = $request->billing_period;
         $amount = $plan->getPrice($billingPeriod);
 
-        \Log::info('Checkout Details', [
-            'plan_id' => $plan->id,
-            'plan_name' => $plan->name,
-            'billing_period' => $billingPeriod,
-            'amount' => $amount,
-            'trial_days' => $plan->trial_days ?? 0,
-        ]);
-
         // Don't process if free plan
         if ($amount == 0) {
             return $this->activateFreePlan($plan);
@@ -46,6 +36,18 @@ class PaymentController extends Controller
 
         try {
             Stripe::setApiKey(config('services.stripe.secret'));
+
+            $successUrl = route('user.payment.stripe.success') . '?session_id={CHECKOUT_SESSION_ID}';
+
+            // DEBUG: Log the success URL
+            file_put_contents(storage_path('logs/checkout_debug.log'),
+                "Checkout called at: " . now() . "\n" .
+                "Success URL: $successUrl\n" .
+                "Plan: " . $plan->name . "\n" .
+                "Amount: $amount\n" .
+                "Trial Days: " . ($plan->trial_days ?? 0) . "\n\n",
+                FILE_APPEND
+            );
 
             $sessionData = [
                 'payment_method_types' => ['card'],
@@ -56,7 +58,7 @@ class PaymentController extends Controller
                             'name' => $plan->name . ' Plan',
                             'description' => $plan->description,
                         ],
-                        'unit_amount' => $amount * 100, // Convert to cents
+                        'unit_amount' => $amount * 100,
                         'recurring' => [
                             'interval' => $billingPeriod === 'yearly' ? 'year' : 'month',
                         ],
@@ -64,7 +66,7 @@ class PaymentController extends Controller
                     'quantity' => 1,
                 ]],
                 'mode' => 'subscription',
-                'success_url' => route('user.payment.stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'success_url' => $successUrl,
                 'cancel_url' => route('user.pricing'),
                 'client_reference_id' => auth()->id(),
                 'metadata' => [
@@ -74,35 +76,31 @@ class PaymentController extends Controller
                 ],
             ];
 
-            // Add trial period if plan has trial days
+            // Add trial period
             if (isset($plan->trial_days) && $plan->trial_days > 0) {
                 $sessionData['subscription_data'] = [
                     'trial_period_days' => $plan->trial_days,
                 ];
-                \Log::info('Trial period added', ['trial_days' => $plan->trial_days]);
             }
 
             $session = StripeSession::create($sessionData);
 
-            \Log::info('Stripe session created', [
-                'session_id' => $session->id,
-                'subscription' => $session->subscription ?? 'NOT_YET',
-                'redirect_url' => $session->url,
-            ]);
+            file_put_contents(storage_path('logs/checkout_debug.log'),
+                "Session created: " . $session->id . "\n" .
+                "Redirect URL: " . $session->url . "\n\n",
+                FILE_APPEND
+            );
 
             return redirect($session->url);
 
         } catch (\Exception $e) {
-            \Log::error('stripeCheckout error', [
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
+            file_put_contents(storage_path('logs/checkout_debug.log'),
+                "ERROR: " . $e->getMessage() . "\n\n",
+                FILE_APPEND
+            );
             return back()->with('error', 'Payment processing failed: ' . $e->getMessage());
         }
-    }
-
-    /**
+    }    /**
      * Handle Stripe success callback
      */
     public function stripeSuccess(Request $request)
