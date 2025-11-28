@@ -44,7 +44,11 @@ Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleWebhook'
 */
 Route::prefix('payment')->name('user.payment.')->group(function () {
     // Stripe
-    Route::get('/stripe/success', [PaymentController::class, 'stripeSuccess'])->name('stripe.success');
+    Route::get('/stripe/success', function(\Illuminate\Http\Request $request) {
+        file_put_contents(storage_path('logs/route_test.log'), "SUCCESS ROUTE HIT: " . now() . " - Session: " . ($request->session_id ?? 'MISSING') . "\n", FILE_APPEND);
+        return app(PaymentController::class)->stripeSuccess($request);
+    })->name('stripe.success');
+
     Route::post('/stripe/checkout', [PaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
 
     // PayPal
