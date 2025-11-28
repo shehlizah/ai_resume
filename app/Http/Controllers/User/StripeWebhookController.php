@@ -17,173 +17,142 @@ class StripeWebhookController extends Controller
     /**
      * Handle Stripe webhooks
      */
-    public function handleWebhook(Request $request)
-    {
-        $payload = $request->getContent();
-        $sig_header = $request->header('Stripe-Signature');
-        $endpoint_secret = config('services.stripe.webhook_secret');
+   public function handleWebhook(Request $request)
+{
+    \Log::info('=== WEBHOOK RECEIVED ===');
+    \Log::info('Payload: ' . $request->getContent());
+    
+    Stripe::setApiKey(config('services.stripe.secret'));
+    
+    $payload = $request->getContent();
+    $sig_header = $request->header('Stripe-Signature');
+    $endpoint_secret = config('services.stripe.webhook_secret');
 
-        // For testing/development without proper signature
-        if (!$endpoint_secret || !$sig_header) {
-            \Log::info('Webhook received without signature (testing mode)', [
-                'has_secret' => !!$endpoint_secret,
-                'has_sig_header' => !!$sig_header
-            ]);
-            $event = json_decode($payload, true);
-        } else {
-            try {
-                $event = Webhook::constructEvent(
-                    $payload,
-                    $sig_header,
-                    $endpoint_secret
-                );
-            } catch (SignatureVerificationException $e) {
-                \Log::error('Webhook signature verification failed', [
-                    'error' => $e->getMessage(),
-                    'has_secret' => !!$endpoint_secret,
-                ]);
-                // In development, still process the webhook
-                if (app()->environment('local')) {
-                    $event = json_decode($payload, true);
-                } else {
-                    return response()->json(['error' => 'Invalid signature'], 400);
-                }
+    // For testing/development without proper signature
+    if (!$endpoint_secret || !$sig_header) {
+        \Log::info('Webhook received without signature (testing mode)');
+        $event = json_decode($payload, true);
+    } else {
+        try {
+            $event = Webhook::constructEvent($payload, $sig_header, $endpoint_secret);
+            \Log::info('Webhook signature verified successfully');
+        } catch (SignatureVerificationException $e) {
+            \Log::error('Webhook signature verification failed: ' . $e->getMessage());
+            if (app()->environment('local')) {
+                $event = json_decode($payload, true);
+            } else {
+                return response()->json(['error' => 'Invalid signature'], 400);
             }
         }
-
-        // Handle the event
-        if (isset($event['type'])) {
-            match ($event['type']) {
-                'customer.subscription.created' => $this->handleSubscriptionCreated($event['data']['object']),
-                'customer.subscription.updated' => $this->handleSubscriptionUpdated($event['data']['object']),
-                'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event['data']['object']),
-                'charge.succeeded' => $this->handleChargeSucceeded($event['data']['object']),
-                'charge.failed' => $this->handleChargeFailed($event['data']['object']),
-                default => null,
-            };
-        } else {
-            match ($event->type ?? null) {
-                'customer.subscription.created' => $this->handleSubscriptionCreated($event->data->object),
-                'customer.subscription.updated' => $this->handleSubscriptionUpdated($event->data->object),
-                'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event->data->object),
-                'charge.succeeded' => $this->handleChargeSucceeded($event->data->object),
-                'charge.failed' => $this->handleChargeFailed($event->data->object),
-                default => null,
-            };
-        }
-
-        return response()->json(['status' => 'success']);
     }
+
+    // Log the event type
+    $eventType = $event['type'] ?? $event->type ?? 'unknown';
+    \Log::info('Event Type: ' . $eventType);
+
+    // Handle the event
+    if (isset($event['type'])) {
+        match ($event['type']) {
+            'customer.subscription.created' => $this->handleSubscriptionCreated($event['data']['object']),
+            'customer.subscription.updated' => $this->handleSubscriptionUpdated($event['data']['object']),
+            'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event['data']['object']),
+            'charge.succeeded' => $this->handleChargeSucceeded($event['data']['object']),
+            'charge.failed' => $this->handleChargeFailed($event['data']['object']),
+            'invoice.payment_succeeded' => $this->handleChargeSucceeded($event['data']['object']), // Add this
+            default => \Log::info('Unhandled event type: ' . $event['type']),
+        };
+    }
+
+    return response()->json(['status' => 'success']);
+}
 
     /**
      * Handle subscription created event
      */
-    private function handleSubscriptionCreated($subscription)
-    {
-        try {
-            // Get customer email to find user
-            $customerId = $subscription['customer'] ?? $subscription->customer ?? null;
+   private function handleSubscriptionCreated($subscription)
+{
+    \Log::info('=== HANDLE SUBSCRIPTION CREATED ===');
+    
+    try {
+        $customerId = $subscription['customer'] ?? $subscription->customer ?? null;
+        \Log::info('Customer ID: ' . $customerId);
 
-            if (!$customerId) {
-                \Log::warning('No customer ID in subscription webhook');
-                return;
-            }
-
-            // Try to get customer details from Stripe
-            try {
-                Stripe::setApiKey(config('services.stripe.secret'));
-                $customer = \Stripe\Customer::retrieve($customerId);
-                $email = $customer->email;
-            } catch (\Exception $e) {
-                // If Stripe API fails (test mode), skip customer lookup
-                \Log::warning('Could not retrieve Stripe customer: ' . $e->getMessage());
-                return;
-            }
-
-            // Find user by email
-            $user = User::where('email', $email)->first();
-            if (!$user) {
-                \Log::warning('User not found for email: ' . $email);
-                return;
-            }
-
-            // Get the price from the subscription
-            $items = $subscription['items']['data'] ?? $subscription->items->data ?? [];
-            if (empty($items)) {
-                \Log::warning('No items in subscription');
-                return;
-            }
-
-            $priceData = $items[0]['price'] ?? $items[0]->price ?? null;
-            if (!$priceData) {
-                \Log::warning('No price data found');
-                return;
-            }
-
-            $priceId = $priceData['id'] ?? $priceData->id ?? null;
-            $unitAmount = $priceData['unit_amount'] ?? $priceData->unit_amount ?? 0;
-            $interval = $priceData['recurring']['interval'] ?? $priceData->recurring->interval ?? 'month';
-
-            // Find the plan by Stripe price ID
-            $plan = SubscriptionPlan::where('stripe_price_id', $priceId)->first();
-
-            if (!$plan) {
-                \Log::warning('Plan not found for Stripe price: ' . $priceId);
-                // For testing, create a basic plan or just log
-                return;
-            }
-
-            // Get billing period - determine based on the plan
-            $billingPeriod = 'monthly'; // Default
-            if (str_contains($plan->slug, '6-month')) {
-                $billingPeriod = 'semi-annual';
-                $endDate = now()->addMonths(6);
-            } elseif (str_contains($plan->slug, 'yearly')) {
-                $billingPeriod = 'yearly';
-                $endDate = now()->addYears(1);
-            } else {
-                $endDate = now()->addMonths(1);
-            }
-
-            // Extract trial end date from subscription
-            $trialEnd = null;
-            $stripeTrialEnd = $subscription['trial_end'] ?? $subscription->trial_end ?? null;
-
-            \Log::info('Webhook Trial Debug', [
-                'stripe_trial_end_raw' => $stripeTrialEnd,
-                'subscription_id' => $subscription['id'] ?? $subscription->id,
-                'has_trial_end' => !empty($stripeTrialEnd),
-            ]);
-
-            if ($stripeTrialEnd) {
-                $trialEnd = \Carbon\Carbon::createFromTimestamp($stripeTrialEnd);
-                \Log::info('Trial End Parsed', ['trial_end' => $trialEnd->toDateString()]);
-            }
-
-            // Create user subscription
-            $userSubscription = UserSubscription::create([
-                'user_id' => $user->id,
-                'subscription_plan_id' => $plan->id,
-                'billing_period' => $billingPeriod,
-                'status' => 'active',
-                'amount' => $unitAmount / 100,
-                'start_date' => now(),
-                'end_date' => $endDate,
-                'next_billing_date' => $trialEnd ?? $endDate,
-                'trial_end_date' => $trialEnd,
-                'auto_renew' => true,
-                'payment_gateway' => 'stripe',
-                'gateway_subscription_id' => $subscription['id'] ?? $subscription->id,
-            ]);
-
-            \Log::info('Subscription created for user ' . $user->id . ': ' . ($subscription['id'] ?? $subscription->id));
-        } catch (\Exception $e) {
-            \Log::error('Error in handleSubscriptionCreated: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
+        if (!$customerId) {
+            \Log::warning('No customer ID in subscription webhook');
+            return;
         }
+
+        // Try to get customer details from Stripe
+        try {
+            Stripe::setApiKey(config('services.stripe.secret'));
+            $customer = \Stripe\Customer::retrieve($customerId);
+            $email = $customer->email;
+            \Log::info('Customer email: ' . $email);
+        } catch (\Exception $e) {
+            \Log::error('Could not retrieve Stripe customer: ' . $e->getMessage());
+            return;
+        }
+
+        // Find user by email
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            \Log::error('User not found for email: ' . $email);
+            return;
+        }
+        \Log::info('User found: ' . $user->id);
+
+        // Get the price from the subscription
+        $items = $subscription['items']['data'] ?? $subscription->items->data ?? [];
+        \Log::info('Subscription items count: ' . count($items));
+        
+        if (empty($items)) {
+            \Log::error('No items in subscription');
+            return;
+        }
+
+        $priceData = $items[0]['price'] ?? $items[0]->price ?? null;
+        if (!$priceData) {
+            \Log::error('No price data found');
+            return;
+        }
+
+        $priceId = $priceData['id'] ?? $priceData->id ?? null;
+        \Log::info('Price ID: ' . $priceId);
+
+        // Find the plan by Stripe price ID
+        $plan = SubscriptionPlan::where('stripe_price_id', $priceId)->first();
+
+        if (!$plan) {
+            \Log::error('Plan not found for Stripe price: ' . $priceId);
+            \Log::info('Available plans in DB: ' . SubscriptionPlan::pluck('stripe_price_id')->toJson());
+            return;
+        }
+        \Log::info('Plan found: ' . $plan->id . ' - ' . $plan->name);
+
+        // ... rest of your subscription creation code
+        
+        $userSubscription = UserSubscription::create([
+            'user_id' => $user->id,
+            'subscription_plan_id' => $plan->id,
+            'billing_period' => $billingPeriod,
+            'status' => 'active',
+            'amount' => $unitAmount / 100,
+            'start_date' => now(),
+            'end_date' => $endDate,
+            'next_billing_date' => $trialEnd ?? $endDate,
+            'trial_end_date' => $trialEnd,
+            'auto_renew' => true,
+            'payment_gateway' => 'stripe',
+            'gateway_subscription_id' => $subscription['id'] ?? $subscription->id,
+        ]);
+
+        \Log::info('✅ SUBSCRIPTION CREATED IN DB - ID: ' . $userSubscription->id);
+        
+    } catch (\Exception $e) {
+        \Log::error('❌ ERROR in handleSubscriptionCreated: ' . $e->getMessage());
+        \Log::error('Stack trace: ' . $e->getTraceAsString());
     }
+}
 
     /**
      * Handle subscription updated event
