@@ -19,6 +19,8 @@ class PaymentController extends Controller
      */
     public function stripeCheckout(Request $request)
     {
+        \Log::info('=== STRIPE CHECKOUT CALLED ===');
+
         $request->validate([
             'plan_id' => 'required|exists:subscription_plans,id',
             'billing_period' => 'required|in:monthly,yearly',
@@ -28,13 +30,18 @@ class PaymentController extends Controller
         $billingPeriod = $request->billing_period;
         $amount = $plan->getPrice($billingPeriod);
 
+        \Log::info('Plan selected', ['plan_id' => $plan->id, 'plan_name' => $plan->name, 'amount' => $amount]);
+
         // Don't process if free plan
         if ($amount == 0) {
+            \Log::info('Free plan selected, activating...');
             return $this->activateFreePlan($plan);
         }
 
         try {
             Stripe::setApiKey(config('services.stripe.secret'));
+
+            \Log::info('Creating Stripe session...');
 
             $sessionData = [
                 'payment_method_types' => ['card'],
@@ -68,9 +75,12 @@ class PaymentController extends Controller
                 $sessionData['subscription_data'] = [
                     'trial_period_days' => $plan->trial_days,
                 ];
+                \Log::info('Trial days added', ['trial_days' => $plan->trial_days]);
             }
 
             $session = StripeSession::create($sessionData);
+
+            \Log::info('Stripe session created', ['session_id' => $session->id, 'url' => $session->url]);
 
             return redirect($session->url);
 
