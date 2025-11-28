@@ -39,6 +39,22 @@ Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleWebhook'
 
 /*
 |--------------------------------------------------------------------------
+| Payment Processing Routes (No Auth Required - User kept from session)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('payment')->name('user.payment.')->group(function () {
+    // Stripe
+    Route::get('/stripe/success', [PaymentController::class, 'stripeSuccess'])->name('stripe.success');
+    Route::post('/stripe/checkout', [PaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
+
+    // PayPal
+    Route::post('/paypal/checkout', [PaymentController::class, 'paypalCheckout'])->name('paypal.checkout');
+    Route::post('/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('paypal.success');
+    Route::get('/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('paypal.cancel');
+});
+
+/*
+|--------------------------------------------------------------------------
 | Authenticated User Routes
 |--------------------------------------------------------------------------
 */
@@ -73,20 +89,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/cancel', [SubscriptionController::class, 'cancel'])->name('cancel');
         Route::post('/resume', [SubscriptionController::class, 'resume'])->name('resume');
         Route::post('/change-billing', [SubscriptionController::class, 'changeBillingPeriod'])->name('change-billing');
-    });
-
-    // ==========================================
-    // Payment Processing (ALWAYS ACCESSIBLE)
-    // ==========================================
-    Route::prefix('payment')->name('user.payment.')->group(function () {
-        // Stripe
-        Route::post('/stripe/checkout', [PaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
-        Route::get('/stripe/success', [PaymentController::class, 'stripeSuccess'])->name('stripe.success');
-
-        // PayPal
-        Route::post('/paypal/checkout', [PaymentController::class, 'paypalCheckout'])->name('paypal.checkout');
-        Route::post('/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('paypal.success');
-        Route::get('/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('paypal.cancel');
     });
 
     // ==========================================

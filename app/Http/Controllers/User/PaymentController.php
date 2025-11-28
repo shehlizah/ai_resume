@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SubscriptionPlan;
 use App\Models\UserSubscription;
 use App\Models\Payment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Stripe\Stripe;
@@ -92,19 +93,24 @@ class PaymentController extends Controller
         }
 
         try {
-            \Log::info('User authenticated', ['user_id' => auth()->id() ?? 'NOT_AUTHENTICATED']);
-
             Stripe::setApiKey(config('services.stripe.secret'));
             $session = StripeSession::retrieve($request->session_id);
 
             \Log::info('Session Retrieved', [
                 'payment_status' => $session->payment_status ?? 'NULL',
                 'subscription' => $session->subscription ?? 'NULL',
+                'client_reference_id' => $session->client_reference_id ?? 'NULL',
                 'session_id' => $request->session_id,
             ]);
 
             if ($session->payment_status === 'paid' || $session->payment_status === 'unpaid') {
                 \Log::info('Payment status valid, processing subscription');
+
+                // Get user from client_reference_id (not from auth, since session might be lost)
+                $userId = $session->client_reference_id;
+                $user = User::findOrFail($userId);
+                
+                \Log::info('User found from client_reference_id', ['user_id' => $userId]);
 
                 $metadata = $session->metadata;
                 \Log::info('Metadata', ['metadata' => $metadata->toArray() ?? []]);
@@ -134,7 +140,7 @@ class PaymentController extends Controller
 
                 // Create subscription with trial info
                 \Log::info('Creating subscription', [
-                    'user_id' => auth()->id(),
+                    'user_id' => $userId,
                     'plan_id' => $plan->id,
                     'billing_period' => $metadata['billing_period'],
                     'trial_end' => $trialEnd ? $trialEnd->toDateString() : 'NULL',
@@ -145,7 +151,8 @@ class PaymentController extends Controller
                     $metadata['billing_period'],
                     'stripe',
                     $session->subscription,
-                    $trialEnd
+                    $trialEnd,
+                    $user
                 );
 
                 \Log::info('Subscription created successfully', ['subscription_id' => $subscription->id]);
@@ -156,7 +163,7 @@ class PaymentController extends Controller
                 // Create payment record only if actually paid
                 if ($session->payment_status === 'paid') {
                     Payment::create([
-                        'user_id' => auth()->id(),
+                        'user_id' => $userId,
                         'user_subscription_id' => $subscription->id,
                         'transaction_id' => $transactionId,
                         'payment_gateway' => 'stripe',
@@ -300,9 +307,12 @@ class PaymentController extends Controller
     /**
      * Create subscription record
      */
-    private function createSubscription($plan, $billingPeriod, $gateway, $gatewaySubscriptionId = null, $trialEnd = null)
+    private function createSubscription($plan, $billingPeriod, $gateway, $gatewaySubscriptionId = null, $trialEnd = null, $user = null)
     {
-        $user = auth()->user();
+        // If no user provided, get from auth (for backward compatibility)
+        if (!$user) {
+            $user = auth()->user();
+        }
 
         // Cancel existing active subscription
         $existingSubscription = $user->activeSubscription()->first();
