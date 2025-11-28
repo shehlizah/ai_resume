@@ -65,7 +65,7 @@
                                 </small>
                             </div>
                             @endif
-                            
+
                             <!-- OR Upload Resume -->
                             <div class="col-md-12">
                                 <div class="border-top pt-3 mt-2">
@@ -294,7 +294,7 @@
             e.preventDefault();
             interviewDropZone.style.borderColor = '#667eea';
             interviewDropZone.style.backgroundColor = 'transparent';
-            
+
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 handleInterviewResumeUpload(files[0]);
@@ -350,13 +350,13 @@
             if (data.success) {
                 // Store the temporary file path/ID
                 sessionStorage.setItem('interviewUploadedResumeFile', data.file_path);
-                
+
                 // Update status text
                 document.getElementById('interviewStatusText').innerHTML = '<i class="bx bx-check-circle me-2"></i> ' + file.name + ' uploaded!';
-                
+
                 // Clear file input
                 interviewFileInput.value = '';
-                
+
                 // Hide status after 3 seconds
                 setTimeout(() => {
                     interviewUploadStatus.style.display = 'none';

@@ -53,7 +53,7 @@ class UserResumeController extends Controller
         $template = Template::findOrFail($template_id);
         return view('user.resumes.fill', compact('template'));
     }
-    
+
         private function optimizeCssForPdf($css)
     {
         // Remove flexbox
@@ -62,33 +62,33 @@ class UserResumeController extends Controller
         $css = preg_replace('/flex[^:]*:[^;]+;?/i', '', $css);
         $css = preg_replace('/justify-content\s*:[^;]+;?/i', '', $css);
         $css = preg_replace('/align-items\s*:[^;]+;?/i', '', $css);
-        
+
         // Remove grid
         $css = preg_replace('/display\s*:\s*grid\s*;?/i', 'display: block;', $css);
         $css = preg_replace('/grid-[^:]+:[^;]+;?/i', '', $css);
-        
+
         // Remove transforms
         $css = preg_replace('/transform\s*:[^;]+;?/i', '', $css);
-        
+
         // Remove viewport units
         $css = preg_replace('/(\d+(?:\.\d+)?)\s*v[hwminax]+/i', '${1}px', $css);
-        
+
         // Remove calc
         $css = preg_replace('/calc\([^)]+\)/i', 'auto', $css);
-        
+
         // Remove position: fixed
         $css = preg_replace('/position\s*:\s*fixed\s*;?/i', 'position: relative;', $css);
-        
+
         return $css;
     }
 
     /**
      * Generate PDF - CORRECTED VERSION
      */
-     
+
 /**
  * UPDATED generate() METHOD FOR UserResumeController
- * 
+ *
  * This uses the DomPdfTemplateSanitizer to automatically fix ANY template
  * Place this in your App\Http\Controllers\UserResumeController
  */
@@ -153,10 +153,10 @@ public function generate(Request $request)
 
         // ✅ NEW: Use sanitizer to make template DomPDF-safe
         $sanitizer = new \App\Services\DomPdfTemplateSanitizer();
-        
+
         // Fill placeholders first
         $filledContent = $this->fillTemplate($htmlContent, '', $data);
-        
+
         // Then sanitize and build complete document
         $filledHtml = $sanitizer->buildSafeDocument($filledContent, $css, []);
 
@@ -206,7 +206,7 @@ public function generate(Request $request)
     } catch (\Exception $e) {
         \Log::error('Resume generation error: ' . $e->getMessage());
         \Log::error('Stack trace: ' . $e->getTraceAsString());
-        
+
         return back()->withInput()->with('error', 'Error generating resume: ' . $e->getMessage());
     }
 }
@@ -329,9 +329,9 @@ private function fillTemplate($html, $css, $data)
 
             // Combine CSS: prioritize database CSS, then add CSS from HTML
             $css = $cssFromDb . "\n" . $cssFromHtml;
-            
+
             $css = $this->optimizeCssForPdf($css);
-            
+
 
             // Fill placeholders in the HTML content
             $filledContent = $this->fillTemplate($htmlContent, '', $data);
@@ -365,18 +365,18 @@ private function fillTemplate($html, $css, $data)
         <title>Resume</title>
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { 
-                font-family: 'DejaVu Sans', Arial, sans-serif; 
-                line-height: 1.6; 
-                color: #333; 
+            body {
+                font-family: 'DejaVu Sans', Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
                 font-size: 11pt;
             }
             @page { margin: 12mm; size: A4 portrait; }
-            
+
             .job-header, .degree-header { display: table; width: 100%; }
             .job-title, .degree-name { display: table-cell; width: 65%; }
             .job-date, .education-date { display: table-cell; width: 35%; text-align: right; }
-            
+
             {$css}
         </style>
     </head>
@@ -698,7 +698,7 @@ private function fillTemplate($html, $css, $data)
         // - Modern Geometric expects: <span class="skill-item">Skill</span>
         // - Editorial Minimal expects: <li>Skill</li> inside <div class="skill-category">
         // We'll generate list items and category structure for Editorial Minimal compatibility
-        
+
         $html = '<div class="skill-category">
     <h3 class="skill-category-title">Technical Skills</h3>
     <ul class="skill-list">' . "\n";
@@ -774,9 +774,9 @@ private function fillTemplate($html, $css, $data)
         }
 
         return $html;
-    }    
-    
-    
+    }
+
+
     /**
      * Preview template with sample data
      */
@@ -1301,8 +1301,11 @@ private function callOpenAI($prompt)
      */
     public function uploadTemporary(Request $request)
     {
+        \Log::info('Upload temp resume called');
+
         try {
-            $request->validate([
+            // Validate the request
+            $validated = $request->validate([
                 'resume_file' => 'required|file|mimes:pdf,doc,docx|max:10240' // 10MB
             ], [
                 'resume_file.required' => 'Please select a file to upload',
@@ -1313,36 +1316,64 @@ private function callOpenAI($prompt)
 
             $file = $request->file('resume_file');
             $user = Auth::user();
-            
-            // Create directory if it doesn't exist
-            $uploadDir = "resumes/temp/{$user->id}";
-            
-            // Store in temporary storage
-            $path = $file->store($uploadDir, 'local');
-            
+
+            \Log::info('File upload details', [
+                'user_id' => $user->id,
+                'file_name' => $file->getClientOriginalName(),
+                'file_size' => $file->getSize(),
+                'file_mime' => $file->getMimeType()
+            ]);
+
+            // Generate unique filename
+            $timestamp = now()->timestamp;
+            $randomStr = \Illuminate\Support\Str::random(8);
+            $extension = $file->getClientOriginalExtension();
+            $filename = "resume_{$timestamp}_{$randomStr}.{$extension}";
+
+            // Create directory path for temp uploads
+            $uploadDir = "uploads/temp/{$user->id}";
+
+            // Ensure directory exists
+            $fullPath = storage_path("app/{$uploadDir}");
+            if (!file_exists($fullPath)) {
+                mkdir($fullPath, 0755, true);
+            }
+
+            // Store file
+            $path = $file->storeAs($uploadDir, $filename, 'local');
+
+            \Log::info('File stored successfully', ['path' => $path]);
+
             return response()->json([
                 'success' => true,
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'message' => 'Resume uploaded successfully'
             ]);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             \Log::error('Resume upload validation failed', ['errors' => $e->errors()]);
-            
+
+            $errorMsg = 'Validation failed';
+            if (isset($e->errors()['resume_file'])) {
+                $errorMsg = $e->errors()['resume_file'][0];
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => $e->errors()['resume_file'][0] ?? 'Validation failed'
+                'message' => $errorMsg
             ], 422);
+
         } catch (\Exception $e) {
             \Log::error('Resume upload failed', [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine()
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to upload resume: ' . $e->getMessage()
+                'message' => $e->getMessage()
             ], 400);
         }
     }

@@ -59,7 +59,7 @@
                             </div>
                         </div>
                         @endif
-                        
+
                         <!-- OR Upload Resume -->
                         <div class="row g-3 mt-1">
                             <div class="col-md-12">
@@ -222,7 +222,7 @@
             e.preventDefault();
             locationDropZone.style.borderColor = '#667eea';
             locationDropZone.style.backgroundColor = 'transparent';
-            
+
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 handleLocationResumeUpload(files[0]);
@@ -278,13 +278,13 @@
             if (data.success) {
                 // Store the temporary file path/ID
                 sessionStorage.setItem('locationUploadedResumeFile', data.file_path);
-                
+
                 // Update status text
                 document.getElementById('locationStatusText').innerHTML = '<i class="bx bx-check-circle me-2"></i> ' + file.name + ' uploaded!';
-                
+
                 // Clear file input
                 locationFileInput.value = '';
-                
+
                 // Hide status after 3 seconds
                 setTimeout(() => {
                     locationUploadStatus.style.display = 'none';

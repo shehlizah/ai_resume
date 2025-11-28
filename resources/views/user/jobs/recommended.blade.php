@@ -86,7 +86,7 @@
                             </div>
                             <div id="uploadSuccess" class="mt-3" style="display: none;">
                                 <div class="alert alert-success border-0">
-                                    <i class="bx bx-check-circle me-2"></i> Resume uploaded successfully! 
+                                    <i class="bx bx-check-circle me-2"></i> Resume uploaded successfully!
                                     <span id="uploadedFileName"></span>
                                 </div>
                             </div>
@@ -331,7 +331,7 @@
             e.preventDefault();
             dropZone.style.borderColor = '#667eea';
             dropZone.style.backgroundColor = 'transparent';
-            
+
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 handleFileUpload(files[0]);
@@ -386,14 +386,14 @@
         })
         .then(data => {
             uploadStatus.style.display = 'none';
-            
+
             if (data.success) {
                 uploadSuccess.style.display = 'block';
                 document.getElementById('uploadedFileName').textContent = file.name;
-                
+
                 // Store the temporary file path/ID for job search
                 sessionStorage.setItem('uploadedResumeFile', data.file_path);
-                
+
                 // Clear file input
                 fileInput.value = '';
             } else {

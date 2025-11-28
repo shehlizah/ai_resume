@@ -111,10 +111,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/generate-skills-ai', [UserResumeController::class, 'generateSkillsAI'])->name('generate-skills-ai');
         Route::post('/generate-education-ai', [UserResumeController::class, 'generateEducationAI'])->name('generate-education-ai');
         Route::post('/generate-summary-ai', [UserResumeController::class, 'generateSummaryAI'])->name('generate-summary-ai');
-        
+
         // Temporary file upload (for job finder and interview prep)
         Route::post('/upload-temp', [UserResumeController::class, 'uploadTemporary'])->name('upload-temp');
-        
+
         // PROTECTED - Creating/Downloading (Package Required)
         Route::middleware([CheckActivePackage::class])->group(function () {
             Route::get('/download/{id}', [UserResumeController::class, 'download'])->name('download');
