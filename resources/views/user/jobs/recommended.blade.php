@@ -458,12 +458,29 @@
     }
 
     function handleFileUpload(file) {
-        // Validate file
+        // Validate file - check both MIME type and extension
         const maxSize = 10 * 1024 * 1024; // 10MB
-        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        const allowedExtensions = ['.pdf', '.doc', '.docx'];
+        const allowedMimeTypes = ['application/pdf', 'application/msword', 'application/x-msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
-        if (!allowedTypes.includes(file.type)) {
-            alert('❌ Please upload a PDF or DOCX file');
+        // Get file extension
+        const fileName = file.name.toLowerCase();
+        const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+
+        // Check both extension and MIME type (either can pass)
+        const hasValidExtension = allowedExtensions.includes(fileExtension);
+        const hasValidMimeType = allowedMimeTypes.includes(file.type);
+
+        console.log('File validation:', {
+            name: file.name,
+            extension: fileExtension,
+            mimeType: file.type,
+            hasValidExtension,
+            hasValidMimeType
+        });
+
+        if (!hasValidExtension && !hasValidMimeType) {
+            alert('❌ Please upload a PDF or DOCX file (detected: ' + fileExtension + ', type: ' + file.type + ')');
             return;
         }
 
@@ -480,6 +497,8 @@
         uploadSuccess.style.display = 'none';
         document.getElementById('statusText').textContent = 'Uploading ' + file.name + '...';
 
+        console.log('Starting file upload:', file.name);
+
         fetch('{{ route("user.resumes.upload-temp") }}', {
             method: 'POST',
             headers: {
@@ -488,6 +507,7 @@
             body: formData
         })
         .then(response => {
+            console.log('Upload response status:', response.status);
             if (!response.ok) {
                 return response.json().then(data => {
                     throw new Error(data.message || 'Upload failed with status ' + response.status);

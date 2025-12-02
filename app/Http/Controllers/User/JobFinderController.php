@@ -181,6 +181,13 @@ class JobFinderController extends Controller
      */
     public function generateByLocation(Request $request)
     {
+        \Log::info('generateByLocation called', [
+            'location' => $request->location,
+            'job_title' => $request->job_title,
+            'resume_id' => $request->resume_id,
+            'uploaded_file' => $request->uploaded_file
+        ]);
+
         $request->validate([
             'location' => 'required|string',
             'job_title' => 'required|string',
@@ -205,28 +212,19 @@ class JobFinderController extends Controller
             ], 403);
         }
 
-        $resumeData = null;
-
-        // Get resume data either from saved resume or uploaded file
-        if ($request->resume_id) {
-            $resume = $user->resumes()->findOrFail($request->resume_id);
-            $resumeData = $resume->data; // Assuming resume data is stored here
-        } elseif ($request->uploaded_file) {
-            // Get the uploaded file content from storage
-            $filePath = storage_path('app/' . $request->uploaded_file);
-            if (file_exists($filePath)) {
-                // TODO: Extract text from PDF/DOCX file
-                $resumeData = "Uploaded resume content"; // Placeholder
-            }
-        }
-
         $resumeProfile = $this->resolveResumeProfile($request, $user);
 
         // Check if we have an uploaded file to send to AI
         $uploadedFilePath = null;
         if ($request->uploaded_file) {
             $uploadedFilePath = storage_path('app/' . ltrim($request->uploaded_file, '/'));
+            \Log::info('File path resolution (by-location)', [
+                'input' => $request->uploaded_file,
+                'resolved' => $uploadedFilePath,
+                'exists' => file_exists($uploadedFilePath)
+            ]);
             if (!file_exists($uploadedFilePath)) {
+                \Log::warning('File does not exist (by-location)', ['path' => $uploadedFilePath]);
                 $uploadedFilePath = null;
             }
         }
@@ -235,28 +233,40 @@ class JobFinderController extends Controller
 
         // If we have an uploaded file, send directly to AI
         if ($uploadedFilePath) {
+            \Log::info('Using uploaded file for AI (by-location)');
             $jobs = $this->openAIService->generateJobsFromResumeFile(
                 $uploadedFilePath,
                 $request->location,
                 $limit
             );
 
-            session(['jobs_viewed' => $jobsViewed + count($jobs)]);
+            $newViewTotal = $jobsViewed + count($jobs);
+            session(['jobs_viewed' => $newViewTotal]);
+
             return response()->json([
                 'success' => true,
                 'jobs' => $jobs
             ]);
         }
 
+        \Log::info('Resume profile check (by-location)', [
+            'has_profile' => !empty($resumeProfile),
+            'has_text' => !empty($resumeProfile['raw_text'] ?? null),
+            'text_length' => strlen($resumeProfile['raw_text'] ?? '')
+        ]);
+
         // If saved resume selected, try AI with extracted text
         if (!empty($resumeProfile) && !empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
+            \Log::info('Using saved resume for AI (by-location)');
             $jobs = $this->openAIService->generateJobsFromResume(
                 $resumeProfile['raw_text'],
                 $request->location,
                 $limit
             );
 
-            session(['jobs_viewed' => $jobsViewed + count($jobs)]);
+            $newViewTotal = $jobsViewed + count($jobs);
+            session(['jobs_viewed' => $newViewTotal]);
+
             return response()->json([
                 'success' => true,
                 'jobs' => $jobs
@@ -264,9 +274,10 @@ class JobFinderController extends Controller
         }
 
         // No resume provided
+        \Log::warning('No resume provided for job generation (by-location)');
         return response()->json([
             'success' => false,
-            'message' => 'Please upload a resume or enter a job title to search for jobs.'
+            'message' => 'Please upload a resume or select a saved resume to search for jobs in this location.'
         ], 422);
     }
 

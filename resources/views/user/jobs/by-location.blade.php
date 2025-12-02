@@ -120,6 +120,14 @@
         const resumeId = document.getElementById('resumeId')?.value || null;
         const uploadedFile = sessionStorage.getItem('locationUploadedResumeFile');
 
+        console.log('searchJobs called', {
+            triggerSource,
+            location,
+            jobTitle,
+            resumeId,
+            uploadedFile
+        });
+
         if (!location || !jobTitle) {
             alert('Please enter both job title and location');
             return;
@@ -127,21 +135,29 @@
 
         showSearchLoadingState();
 
+        const payload = {
+            location: location,
+            job_title: jobTitle,
+            resume_id: resumeId,
+            uploaded_file: uploadedFile
+        };
+
+        console.log('Sending by-location payload:', payload);
+
         fetch('{{ route("user.jobs.by-location") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            body: JSON.stringify({
-                location: location,
-                job_title: jobTitle,
-                resume_id: resumeId,
-                uploaded_file: uploadedFile
-            })
+            body: JSON.stringify(payload)
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('By-location response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('By-location response data:', data);
             if (data.success) {
                 displayResults(data.jobs);
                 emptyState.style.display = 'none';
@@ -150,13 +166,13 @@
                 if (data.redirect) {
                     window.location.href = data.redirect;
                 } else {
-                    alert(data.message);
+                    alert('❌ ' + (data.message || 'Failed to search jobs'));
                 }
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('Error searching jobs. Please try again.');
+            console.error('By-location fetch error:', error);
+            alert('❌ Network error: ' + error.message);
         });
     }
 
@@ -290,12 +306,29 @@
     }
 
     function handleLocationResumeUpload(file) {
-        // Validate file
+        // Validate file - check both MIME type and extension
         const maxSize = 10 * 1024 * 1024; // 10MB
-        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        const allowedExtensions = ['.pdf', '.doc', '.docx'];
+        const allowedMimeTypes = ['application/pdf', 'application/msword', 'application/x-msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
-        if (!allowedTypes.includes(file.type)) {
-            alert('❌ Please upload a PDF or DOCX file');
+        // Get file extension
+        const fileName = file.name.toLowerCase();
+        const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+        
+        // Check both extension and MIME type (either can pass)
+        const hasValidExtension = allowedExtensions.includes(fileExtension);
+        const hasValidMimeType = allowedMimeTypes.includes(file.type);
+        
+        console.log('By-location file validation:', {
+            name: file.name,
+            extension: fileExtension,
+            mimeType: file.type,
+            hasValidExtension,
+            hasValidMimeType
+        });
+
+        if (!hasValidExtension && !hasValidMimeType) {
+            alert('❌ Please upload a PDF or DOCX file (detected: ' + fileExtension + ', type: ' + file.type + ')');
             return;
         }
 
@@ -311,6 +344,8 @@
         locationUploadStatus.style.display = 'block';
         document.getElementById('locationStatusText').textContent = 'Uploading ' + file.name + '...';
 
+        console.log('Starting by-location file upload:', file.name);
+
         fetch('{{ route("user.resumes.upload-temp") }}', {
             method: 'POST',
             headers: {
@@ -319,6 +354,7 @@
             body: formData
         })
         .then(response => {
+            console.log('By-location upload response status:', response.status);
             if (!response.ok) {
                 return response.json().then(data => {
                     throw new Error(data.message || 'Upload failed with status ' + response.status);
@@ -327,9 +363,13 @@
             return response.json();
         })
         .then(data => {
+            console.log('By-location upload response:', data);
+            
             if (data.success) {
                 // Store the temporary file path/ID
-                sessionStorage.setItem('locationUploadedResumeFile', data.file_path);
+                const filePath = data.file_path;
+                console.log('Storing by-location file path:', filePath);
+                sessionStorage.setItem('locationUploadedResumeFile', filePath);
 
                 // Update status text
                 document.getElementById('locationStatusText').innerHTML = '<i class="bx bx-check-circle me-2"></i> ' + file.name + ' uploaded!';
@@ -340,6 +380,8 @@
                 // Auto-trigger search if form is filled
                 const location = document.getElementById('location').value;
                 const jobTitle = document.getElementById('jobTitle').value;
+
+                console.log('Form state:', { location, jobTitle });
 
                 if (location && jobTitle) {
                     // Auto-search after brief delay
