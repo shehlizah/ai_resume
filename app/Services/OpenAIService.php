@@ -22,7 +22,7 @@ class OpenAIService
     public function generateJobRecommendations(string $jobTitle, string $location = null, array $skills = [])
     {
         $cacheKey = 'job_recommendations_' . md5($jobTitle . $location . implode(',', $skills));
-        
+
         return Cache::remember($cacheKey, 3600, function () use ($jobTitle, $location, $skills) {
             $prompt = $this->getJobRecommendationPrompt($jobTitle, $location, $skills);
 
@@ -59,7 +59,7 @@ class OpenAIService
     public function generateInterviewPrep(string $jobTitle, string $experienceLevel = 'mid', string $companyType = 'general')
     {
         $cacheKey = 'interview_prep_' . md5($jobTitle . $experienceLevel . $companyType);
-        
+
         return Cache::remember($cacheKey, 3600, function () use ($jobTitle, $experienceLevel, $companyType) {
             $prompt = $this->getInterviewPrepPrompt($jobTitle, $experienceLevel, $companyType);
 
@@ -246,7 +246,7 @@ PROMPT;
                 $content,
                 $questions
             );
-            
+
             if (!empty($questions[1])) {
                 for ($i = 0; $i < count($questions[1]); $i++) {
                     $sections['common_questions'][] = [
@@ -400,6 +400,90 @@ PROMPT;
 
 
     /**
+     * Generate AI-powered job recommendations from resume file (binary or text)
+     */
+    public function generateJobsFromResumeFile(string $filePath, string $location = null, int $limit = 5): array
+    {
+        try {
+            // Read the file and encode as base64 for sending to AI
+            if (!file_exists($filePath)) {
+                \Log::warning('Resume file not found: ' . $filePath);
+                return [];
+            }
+
+            $fileContent = file_get_contents($filePath);
+            if ($fileContent === false) {
+                \Log::warning('Failed to read resume file: ' . $filePath);
+                return [];
+            }
+
+            // Determine file type
+            $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+            $fileType = match ($extension) {
+                'pdf' => 'application/pdf',
+                'docx', 'doc' => 'application/msword',
+                default => 'application/octet-stream',
+            };
+
+            // Encode file as base64
+            $fileBase64 = base64_encode($fileContent);
+
+            $prompt = $this->buildJobRecommendationFromFilePrompt($fileBase64, $fileType, $location, $limit);
+
+            $response = $this->client->chat()->create([
+                'model' => $this->model,
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'You are an expert career advisor who reads resumes and generates job recommendations. Return ONLY valid JSON.'
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => $prompt
+                    ]
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 2500,
+            ]);
+
+            $content = $response->choices[0]->message->content;
+            return $this->parseJobMatches($content);
+
+        } catch (\Exception $e) {
+            \Log::error('OpenAI Job Generation from File Error: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    private function buildJobRecommendationFromFilePrompt(string $fileBase64, string $fileType, ?string $location, int $limit): string
+    {
+        $locationLine = $location ? "\nPreferred Location: $location" : '';
+
+        return <<<PROMPT
+You have received a resume file in base64 format. Please decode and analyze it to generate $limit relevant job recommendations.
+
+Resume File (base64): {$fileBase64}
+File Type: {$fileType}{$locationLine}
+
+Even if the resume format is unclear or partially corrupted, do your best to extract information about the candidate's skills and experience.
+
+Return ONLY a valid JSON array (no markdown, no extra text) with exactly this structure:
+[
+  {
+    "title": "Job Title",
+    "company": "Company Name",
+    "location": "City, State or Remote",
+    "salary": "$min - $max or Competitive",
+    "description": "Brief job description matching this candidate's profile",
+    "match_score": 85
+  }
+]
+
+Focus on jobs that match the candidate's skills, experience level, and location. Match scores should be 70-95.
+PROMPT;
+    }
+
+    /**
      * Generate AI-powered job recommendations from resume text
      */
     public function generateJobsFromResume(string $resumeText, string $location = null, int $limit = 5): array
@@ -497,11 +581,11 @@ PROMPT;
         $userEmail = $data['user_email'] ?? '';
         $userPhone = $data['user_phone'] ?? '';
         $userAddress = $data['user_address'] ?? '';
-        
+
         $recipientName = $data['recipient_name'] ?? 'Hiring Manager';
         $companyName = $data['company_name'] ?? 'The Company';
         $companyAddress = $data['company_address'] ?? '';
-        
+
         $jobDescription = $data['job_description'] ?? '';
         $additionalInfo = $data['additional_info'] ?? '';
 

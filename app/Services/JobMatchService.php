@@ -260,23 +260,20 @@ class JobMatchService
         $text = $this->extractTextFromFile($fullPath);
 
         // Log what we extracted for debugging
-        \Log::info('Extracted text length: ' . strlen($text), [
+        \Log::info('Extracted text from resume', [
             'file' => $relativePath,
-            'text_preview' => substr($text, 0, 200)
+            'text_length' => strlen($text),
+            'text_preview' => substr($text, 0, 300)
         ]);
 
-        // Be lenient - even 20 chars of text is enough to generate a generic profile
-        if (strlen(trim($text)) < 10) {
-            \Log::warning('Extracted text too short', ['text_length' => strlen($text), 'file' => $relativePath]);
-            return [];
-        }
-
+        // Accept any extracted text - don't be strict
+        // Even empty text will trigger fallback to generic jobs
         $skills = $this->guessSkillsFromText($text);
 
         return [
             'preferred_title' => $this->guessTitle($text) ?? 'Professional',
             'skills' => $skills,
-            'raw_text' => $text,
+            'raw_text' => $text ?? '',
             'experience_years' => $this->guessExperienceYears($text),
         ];
     }
@@ -488,7 +485,7 @@ class JobMatchService
             if ($index !== false) {
                 $data = $zip->getFromIndex($index);
                 $zip->close();
-                
+
                 // Extract text from XML, stripping all tags
                 $text = strip_tags($data);
                 return $this->cleanText($text);
@@ -562,7 +559,7 @@ class JobMatchService
     {
         // Decode common PDF encodings
         $text = preg_replace('/[^\x20-\x7E\n\r\t]/', ' ', $text);
-        
+
         // Remove excessive whitespace but preserve line breaks for structure
         $text = preg_replace('/\n\s*\n/', "\n", $text);
         $text = preg_replace('/[ \t]+/', ' ', $text);
