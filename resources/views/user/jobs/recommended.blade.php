@@ -243,21 +243,22 @@
         const resumeId = document.getElementById('resumeSelect')?.value || null;
         const uploadedFile = sessionStorage.getItem('uploadedResumeFile');
 
-        console.log('generateJobs called', {
-            triggerSource,
-            resumeId,
-            uploadedFile,
-            hasResumeId: !!resumeId,
-            hasUploadedFile: !!uploadedFile
-        });
+        console.log('[generateJobs] Called with triggerSource:', triggerSource);
+        console.log('[generateJobs] resumeId:', resumeId);
+        console.log('[generateJobs] uploadedFile from sessionStorage:', uploadedFile);
 
         // Check if either a saved resume is selected OR a file was uploaded
         const hasResume = resumeId || uploadedFile;
 
+        console.log('[generateJobs] hasResume:', hasResume, '(resumeId:', !!resumeId, 'uploadedFile:', !!uploadedFile + ')');
+
         if (!hasResume) {
+            console.warn('[generateJobs] NO RESUME FOUND - showing error alert');
             alert('⚠️ Please select a resume or upload one to get personalized job recommendations');
             return;
         }
+
+        console.log('[generateJobs] Resume found, proceeding...');
 
         if (btn) {
             btn.disabled = true;
@@ -274,7 +275,7 @@
             uploaded_file: uploadedFile
         };
 
-        console.log('Sending payload to backend', payload);
+        console.log('[generateJobs] Sending payload:', payload);
 
         fetch('{{ route("user.jobs.recommended") }}', {
             method: 'POST',
@@ -285,15 +286,17 @@
             body: JSON.stringify(payload)
         })
         .then(response => {
-            console.log('Response status:', response.status);
+            console.log('[generateJobs] Response status:', response.status);
             return response.json();
         })
         .then(data => {
-            console.log('Response data:', data);
+            console.log('[generateJobs] Response data:', data);
             if (data.success) {
+                console.log('[generateJobs] Success! Jobs count:', data.jobs ? data.jobs.length : 0);
                 displayJobs(data.jobs);
                 updateProgress(data);
             } else {
+                console.warn('[generateJobs] Error response:', data.message);
                 if (data.redirect) {
                     window.location.href = data.redirect;
                 } else {
@@ -306,7 +309,7 @@
             }
         })
         .catch(error => {
-            console.error('Fetch error:', error);
+            console.error('[generateJobs] Fetch error:', error);
             if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="bx bx-search me-2"></i> Find Recommended Jobs';
@@ -518,29 +521,32 @@
         .then(data => {
             uploadStatus.style.display = 'none';
 
-            console.log('Upload response:', data);
+            console.log('Upload complete. Response:', data);
 
-            if (data.success) {
+            if (data.success && data.file_path) {
                 uploadSuccess.style.display = 'block';
                 document.getElementById('uploadedFileName').textContent = file.name;
 
                 // Store the temporary file path/ID for job search
                 const filePath = data.file_path;
-                console.log('Storing file path in sessionStorage:', filePath);
+                console.log('1. Upload succeeded, storing file path:', filePath);
                 sessionStorage.setItem('uploadedResumeFile', filePath);
 
                 // Verify it was stored
                 const storedPath = sessionStorage.getItem('uploadedResumeFile');
-                console.log('Verified stored path:', storedPath);
+                console.log('2. Verified stored path:', storedPath);
 
                 // Clear file input
                 fileInput.value = '';
 
-                // Automatically refresh recommendations using the newly uploaded resume
-                console.log('Calling generateJobs with upload trigger');
-                generateJobs('upload');
+                // Force a short delay to ensure storage is committed
+                setTimeout(() => {
+                    console.log('3. About to trigger generateJobs with file path:', sessionStorage.getItem('uploadedResumeFile'));
+                    // Automatically refresh recommendations using the newly uploaded resume
+                    generateJobs('upload');
+                }, 100);
             } else {
-                alert('❌ Error: ' + (data.message || 'Unknown error'));
+                alert('❌ Upload failed or missing file_path in response: ' + (data.message || 'Unknown error'));
             }
         })
         .catch(error => {

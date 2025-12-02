@@ -314,11 +314,11 @@
         // Get file extension
         const fileName = file.name.toLowerCase();
         const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
-        
+
         // Check both extension and MIME type (either can pass)
         const hasValidExtension = allowedExtensions.includes(fileExtension);
         const hasValidMimeType = allowedMimeTypes.includes(file.type);
-        
+
         console.log('By-location file validation:', {
             name: file.name,
             extension: fileExtension,
@@ -364,7 +364,7 @@
         })
         .then(data => {
             console.log('By-location upload response:', data);
-            
+
             if (data.success) {
                 // Store the temporary file path/ID
                 const filePath = data.file_path;
