@@ -1330,23 +1330,32 @@ private function callOpenAI($prompt)
             $extension = $file->getClientOriginalExtension();
             $filename = "resume_{$timestamp}_{$randomStr}.{$extension}";
 
-            // Create directory path for temp uploads
+            // Create directory path for temp uploads - use full absolute path
             $uploadDir = "uploads/temp/{$user->id}";
-
-            // Ensure directory exists
-            $fullPath = storage_path("app/{$uploadDir}");
+            
+            // Use the full storage path directly to ensure file is stored in the right place
+            $fullPath = storage_path("app/private/{$uploadDir}");
             if (!file_exists($fullPath)) {
                 mkdir($fullPath, 0755, true);
+                \Log::info('Created upload directory', ['path' => $fullPath]);
             }
 
-            // Store file
-            $path = $file->storeAs($uploadDir, $filename, 'local');
+            // Store file directly to absolute path
+            $filePath = $fullPath . DIRECTORY_SEPARATOR . $filename;
+            if (!$file->move($fullPath, $filename)) {
+                throw new \Exception('Failed to move uploaded file');
+            }
 
-            \Log::info('File stored successfully', ['path' => $path]);
+            \Log::info('File stored successfully', [
+                'absolute_path' => $filePath,
+                'relative_path' => $uploadDir . DIRECTORY_SEPARATOR . $filename,
+                'exists' => file_exists($filePath),
+                'size' => filesize($filePath)
+            ]);
 
             return response()->json([
                 'success' => true,
-                'file_path' => $path,
+                'file_path' => $uploadDir . '/' . $filename,  // Return relative path for backend resolution
                 'file_name' => $file->getClientOriginalName(),
                 'message' => 'Resume uploaded successfully'
             ]);

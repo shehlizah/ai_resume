@@ -84,15 +84,35 @@ class JobFinderController extends Controller
         // Check if we have an uploaded file to send to AI
         $uploadedFilePath = null;
         if ($request->uploaded_file) {
-            $uploadedFilePath = storage_path('app/' . ltrim($request->uploaded_file, '/'));
+            // The uploaded_file comes as a relative path like "uploads/temp/2/resume_..."
+            // It's stored in storage/app/private/ so we need to prepend that
+            $uploadedFilePath = storage_path('app/private/' . ltrim($request->uploaded_file, '/'));
+            
             \Log::info('File path resolution', [
                 'input' => $request->uploaded_file,
                 'resolved' => $uploadedFilePath,
-                'exists' => file_exists($uploadedFilePath)
+                'exists' => file_exists($uploadedFilePath),
+                'is_readable' => is_readable($uploadedFilePath),
+                'file_size' => file_exists($uploadedFilePath) ? filesize($uploadedFilePath) : 'N/A'
             ]);
+            
             if (!file_exists($uploadedFilePath)) {
-                \Log::warning('File does not exist', ['path' => $uploadedFilePath]);
-                $uploadedFilePath = null;
+                \Log::warning('File does not exist at resolved path', [
+                    'path' => $uploadedFilePath
+                ]);
+                
+                // Try fallback without /private (in case it was stored elsewhere)
+                $fallbackPath = storage_path('app/' . ltrim($request->uploaded_file, '/'));
+                if (file_exists($fallbackPath)) {
+                    \Log::info('File found at fallback path', ['path' => $fallbackPath]);
+                    $uploadedFilePath = $fallbackPath;
+                } else {
+                    \Log::warning('File not found at either path', [
+                        'primary' => $uploadedFilePath,
+                        'fallback' => $fallbackPath
+                    ]);
+                    $uploadedFilePath = null;
+                }
             }
         }
 
@@ -100,7 +120,7 @@ class JobFinderController extends Controller
 
         // If we have an uploaded file, send directly to AI
         if ($uploadedFilePath) {
-            \Log::info('Using uploaded file for AI');
+            \Log::info('Using uploaded file for AI', ['path' => $uploadedFilePath]);
             $jobs = $this->openAIService->generateJobsFromResumeFile(
                 $uploadedFilePath,
                 'Remote (Any)',
@@ -217,15 +237,35 @@ class JobFinderController extends Controller
         // Check if we have an uploaded file to send to AI
         $uploadedFilePath = null;
         if ($request->uploaded_file) {
-            $uploadedFilePath = storage_path('app/' . ltrim($request->uploaded_file, '/'));
+            // The uploaded_file comes as a relative path like "uploads/temp/2/resume_..."
+            // It's stored in storage/app/private/ so we need to prepend that
+            $uploadedFilePath = storage_path('app/private/' . ltrim($request->uploaded_file, '/'));
+            
             \Log::info('File path resolution (by-location)', [
                 'input' => $request->uploaded_file,
                 'resolved' => $uploadedFilePath,
-                'exists' => file_exists($uploadedFilePath)
+                'exists' => file_exists($uploadedFilePath),
+                'is_readable' => is_readable($uploadedFilePath),
+                'file_size' => file_exists($uploadedFilePath) ? filesize($uploadedFilePath) : 'N/A'
             ]);
+            
             if (!file_exists($uploadedFilePath)) {
-                \Log::warning('File does not exist (by-location)', ['path' => $uploadedFilePath]);
-                $uploadedFilePath = null;
+                \Log::warning('File does not exist at resolved path (by-location)', [
+                    'path' => $uploadedFilePath
+                ]);
+                
+                // Try fallback without /private (in case it was stored elsewhere)
+                $fallbackPath = storage_path('app/' . ltrim($request->uploaded_file, '/'));
+                if (file_exists($fallbackPath)) {
+                    \Log::info('File found at fallback path (by-location)', ['path' => $fallbackPath]);
+                    $uploadedFilePath = $fallbackPath;
+                } else {
+                    \Log::warning('File not found at either path (by-location)', [
+                        'primary' => $uploadedFilePath,
+                        'fallback' => $fallbackPath
+                    ]);
+                    $uploadedFilePath = null;
+                }
             }
         }
 
@@ -233,7 +273,7 @@ class JobFinderController extends Controller
 
         // If we have an uploaded file, send directly to AI
         if ($uploadedFilePath) {
-            \Log::info('Using uploaded file for AI (by-location)');
+            \Log::info('Using uploaded file for AI (by-location)', ['path' => $uploadedFilePath]);
             $jobs = $this->openAIService->generateJobsFromResumeFile(
                 $uploadedFilePath,
                 $request->location,
