@@ -198,6 +198,15 @@
     function generateJobs() {
         const btn = document.getElementById('generateJobsBtn');
         const resumeId = document.getElementById('resumeSelect')?.value || null;
+        const uploadedFile = sessionStorage.getItem('uploadedResumeFile');
+
+        // Check if either a saved resume is selected OR a file was uploaded
+        const hasResume = resumeId || uploadedFile;
+
+        if (!hasResume) {
+            alert('⚠️ Please select a resume or upload one to get personalized job recommendations');
+            return;
+        }
 
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Loading...';
@@ -209,7 +218,8 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({
-                resume_id: resumeId
+                resume_id: resumeId,
+                uploaded_file: uploadedFile
             })
         })
         .then(response => response.json())

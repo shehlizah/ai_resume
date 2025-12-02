@@ -43,7 +43,8 @@ class JobFinderController extends Controller
     public function generateRecommended(Request $request)
     {
         $request->validate([
-            'resume_id' => 'nullable|integer|exists:user_resumes,id'
+            'resume_id' => 'nullable|integer|exists:user_resumes,id',
+            'uploaded_file' => 'nullable|string'
         ]);
 
         $user = Auth::user();
@@ -65,7 +66,22 @@ class JobFinderController extends Controller
             ], 403);
         }
 
-        // TODO: Integrate OpenAI service to generate job recommendations
+        $resumeData = null;
+
+        // Get resume data either from saved resume or uploaded file
+        if ($request->resume_id) {
+            $resume = $user->resumes()->findOrFail($request->resume_id);
+            $resumeData = $resume->data; // Assuming resume data is stored here
+        } elseif ($request->uploaded_file) {
+            // Get the uploaded file content from storage
+            $filePath = storage_path('app/' . $request->uploaded_file);
+            if (file_exists($filePath)) {
+                // TODO: Extract text from PDF/DOCX file
+                $resumeData = "Uploaded resume content"; // Placeholder
+            }
+        }
+
+        // TODO: Integrate OpenAI service to generate job recommendations based on resume data
         // For now, return mock data
         $jobs = [
             [
@@ -142,7 +158,8 @@ class JobFinderController extends Controller
         $request->validate([
             'location' => 'required|string',
             'job_title' => 'required|string',
-            'resume_id' => 'nullable|integer|exists:user_resumes,id'
+            'resume_id' => 'nullable|integer|exists:user_resumes,id',
+            'uploaded_file' => 'nullable|string'
         ]);
 
         $user = Auth::user();
@@ -160,6 +177,21 @@ class JobFinderController extends Controller
                 'success' => false,
                 'message' => 'Free plan limit reached. Upgrade to Pro for unlimited job searches.'
             ], 403);
+        }
+
+        $resumeData = null;
+
+        // Get resume data either from saved resume or uploaded file
+        if ($request->resume_id) {
+            $resume = $user->resumes()->findOrFail($request->resume_id);
+            $resumeData = $resume->data; // Assuming resume data is stored here
+        } elseif ($request->uploaded_file) {
+            // Get the uploaded file content from storage
+            $filePath = storage_path('app/' . $request->uploaded_file);
+            if (file_exists($filePath)) {
+                // TODO: Extract text from PDF/DOCX file
+                $resumeData = "Uploaded resume content"; // Placeholder
+            }
         }
 
         // TODO: Integrate job API and OpenAI service

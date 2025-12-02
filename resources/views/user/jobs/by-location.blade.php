@@ -112,6 +112,7 @@
         const location = document.getElementById('location').value;
         const jobTitle = document.getElementById('jobTitle').value;
         const resumeId = document.getElementById('resumeId')?.value || null;
+        const uploadedFile = sessionStorage.getItem('locationUploadedResumeFile');
         const resultsContainer = document.getElementById('resultsContainer');
         const emptyState = document.getElementById('emptyState');
 
@@ -124,7 +125,8 @@
             body: JSON.stringify({
                 location: location,
                 job_title: jobTitle,
-                resume_id: resumeId
+                resume_id: resumeId,
+                uploaded_file: uploadedFile
             })
         })
         .then(response => response.json())
