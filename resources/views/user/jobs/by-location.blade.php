@@ -106,15 +106,26 @@
     </div>
 
     <script>
-    function searchJobs(event) {
-        event.preventDefault();
+    const jobsList = document.getElementById('jobsList');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const emptyState = document.getElementById('emptyState');
+
+    function searchJobs(event, triggerSource = 'button') {
+        if (event) {
+            event.preventDefault();
+        }
 
         const location = document.getElementById('location').value;
         const jobTitle = document.getElementById('jobTitle').value;
         const resumeId = document.getElementById('resumeId')?.value || null;
         const uploadedFile = sessionStorage.getItem('locationUploadedResumeFile');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const emptyState = document.getElementById('emptyState');
+
+        if (!location || !jobTitle) {
+            alert('Please enter both job title and location');
+            return;
+        }
+
+        showSearchLoadingState();
 
         fetch('{{ route("user.jobs.by-location") }}', {
             method: 'POST',
@@ -149,7 +160,37 @@
         });
     }
 
+    function showSearchLoadingState() {
+        if (!jobsList) {
+            return;
+        }
+
+        jobsList.innerHTML = `
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center justify-content-center py-5">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary mb-3" role="status"></div>
+                        <p class="mb-0">Searching for jobs in your location...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     function displayResults(jobs) {
+        if (!jobs || jobs.length === 0) {
+            jobsList.innerHTML = `
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="bx bx-error-circle mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <h6 class="mb-2">No jobs found</h6>
+                        <p class="text-muted small">Try adjusting your search criteria or uploading a resume for better matches.</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
         let html = '';
         jobs.forEach(job => {
             html += `
@@ -163,8 +204,17 @@
                                     <i class="bx bx-map ms-3 me-1"></i>${job.location}
                                 </p>
                                 <p class="text-muted small mb-0">${job.description}</p>
+                                <p class="text-success small mt-2">
+                                    <i class="bx bx-dollar me-1"></i>${job.salary}
+                                </p>
                             </div>
                             <div class="col-md-4 text-md-end">
+                                <div class="mb-3">
+                                    <div class="text-center">
+                                        <div class="text-warning" style="font-size: 1.5rem; font-weight: bold;">${job.match_score}%</div>
+                                        <small class="text-muted">Match Score</small>
+                                    </div>
+                                </div>
                                 <button class="btn btn-primary btn-sm w-100" onclick="applyJob('${job.id}')">
                                     <i class="bx bx-send me-1"></i> Apply Now
                                 </button>
@@ -174,7 +224,7 @@
                 </div>
             `;
         });
-        document.getElementById('jobsList').innerHTML = html;
+        jobsList.innerHTML = html;
     }
 
     function applyJob(jobId) {
@@ -287,10 +337,22 @@
                 // Clear file input
                 locationFileInput.value = '';
 
-                // Hide status after 3 seconds
-                setTimeout(() => {
-                    locationUploadStatus.style.display = 'none';
-                }, 3000);
+                // Auto-trigger search if form is filled
+                const location = document.getElementById('location').value;
+                const jobTitle = document.getElementById('jobTitle').value;
+
+                if (location && jobTitle) {
+                    // Auto-search after brief delay
+                    setTimeout(() => {
+                        locationUploadStatus.style.display = 'none';
+                        searchJobs(null, 'upload');
+                    }, 800);
+                } else {
+                    // Just hide status if form incomplete
+                    setTimeout(() => {
+                        locationUploadStatus.style.display = 'none';
+                    }, 3000);
+                }
             } else {
                 alert('❌ Error: ' + (data.message || 'Unknown error'));
                 locationUploadStatus.style.display = 'none';
