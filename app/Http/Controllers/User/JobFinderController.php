@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserSubscription;
+use App\Services\JobMatchService;
 
 class JobFinderController extends Controller
 {
+    public function __construct(private readonly JobMatchService $jobMatchService)
+    {
+    }
     /**
      * Show recommended jobs
      */
@@ -66,63 +70,31 @@ class JobFinderController extends Controller
             ], 403);
         }
 
-        $resumeData = null;
+        $resumeProfile = $this->resolveResumeProfile($request, $user);
 
-        // Get resume data either from saved resume or uploaded file
-        if ($request->resume_id) {
-            $resume = $user->resumes()->findOrFail($request->resume_id);
-            $resumeData = $resume->data; // Assuming resume data is stored here
-        } elseif ($request->uploaded_file) {
-            // Get the uploaded file content from storage
-            $filePath = storage_path('app/' . $request->uploaded_file);
-            if (file_exists($filePath)) {
-                // TODO: Extract text from PDF/DOCX file
-                $resumeData = "Uploaded resume content"; // Placeholder
-            }
+        if (empty($resumeProfile)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'We could not read your resume yet. Please upload a PDF or DOCX with visible text and try again.'
+            ], 422);
         }
 
-        // TODO: Integrate OpenAI service to generate job recommendations based on resume data
-        // For now, return mock data
-        $jobs = [
-            [
-                'id' => 1,
-                'title' => 'Senior Laravel Developer',
-                'company' => 'Tech Solutions Inc.',
-                'location' => 'New York, NY',
-                'salary' => '$120,000 - $160,000',
-                'description' => 'Looking for an experienced Laravel developer to lead our backend team.',
-                'match_score' => 95,
-                'apply_url' => '#'
-            ],
-            [
-                'id' => 2,
-                'title' => 'PHP Web Developer',
-                'company' => 'Digital Agency Co.',
-                'location' => 'Remote',
-                'salary' => '$80,000 - $120,000',
-                'description' => 'Join our creative team building web applications.',
-                'match_score' => 88,
-                'apply_url' => '#'
-            ],
-            [
-                'id' => 3,
-                'title' => 'Full Stack Developer',
-                'company' => 'StartUp XYZ',
-                'location' => 'San Francisco, CA',
-                'salary' => '$100,000 - $150,000',
-                'description' => 'Help us build the next big thing.',
-                'match_score' => 82,
-                'apply_url' => '#'
-            ]
-        ];
+        $limit = $hasPremiumAccess ? 8 : 5;
+        $jobs = $this->jobMatchService->generateMatches($resumeProfile, [
+            'limit' => $limit,
+            'location' => 'Remote (Any)'
+        ]);
 
         // Increment view counter
-        session(['jobs_viewed' => $jobsViewed + count($jobs)]);
+        $newViewTotal = $jobsViewed + count($jobs);
+        session(['jobs_viewed' => $newViewTotal]);
+
+        $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
 
         return response()->json([
             'success' => true,
             'jobs' => $jobs,
-            'remaining_views' => $hasPremiumAccess ? 'unlimited' : (5 - $jobsViewed - count($jobs))
+            'remaining_views' => $remainingViews
         ]);
     }
 
@@ -194,20 +166,24 @@ class JobFinderController extends Controller
             }
         }
 
-        // TODO: Integrate job API and OpenAI service
-        $jobs = [
-            [
-                'id' => 'loc1',
-                'title' => $request->job_title . ' in ' . $request->location,
-                'company' => 'Company A',
-                'location' => $request->location,
-                'salary' => 'Competitive',
-                'description' => 'Great opportunity in ' . $request->location,
-                'apply_url' => '#'
-            ]
-        ];
+        $resumeProfile = $this->resolveResumeProfile($request, $user);
 
-        session(['jobs_viewed' => $jobsViewed + 1]);
+        if (empty($resumeProfile)) {
+            $resumeProfile = [
+                'preferred_title' => $request->job_title,
+                'skills' => [],
+                'raw_text' => $request->job_title . ' ' . $request->location,
+            ];
+        }
+
+        $limit = $hasPremiumAccess ? 8 : 5;
+        $jobs = $this->jobMatchService->generateMatches($resumeProfile, [
+            'limit' => $limit,
+            'location' => $request->location,
+            'job_title' => $request->job_title
+        ]);
+
+        session(['jobs_viewed' => $jobsViewed + count($jobs)]);
 
         return response()->json([
             'success' => true,
@@ -246,4 +222,26 @@ class JobFinderController extends Controller
             'message' => 'Application submitted successfully!'
         ]);
     }
+
+        private function resolveResumeProfile(Request $request, $user): array
+        {
+            if ($request->resume_id) {
+                $resume = $user->resumes()->find($request->resume_id);
+                if ($resume) {
+                    $profile = $this->jobMatchService->analyzeStructuredResume($resume->data);
+                    if (!empty($profile)) {
+                        return $profile;
+                    }
+                }
+            }
+
+            if ($request->uploaded_file) {
+                $profile = $this->jobMatchService->analyzeUploadedResume($request->uploaded_file);
+                if (!empty($profile)) {
+                    return $profile;
+                }
+            }
+
+            return [];
+        }
 }

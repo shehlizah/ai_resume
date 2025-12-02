@@ -195,7 +195,9 @@
     </div>
 
     <script>
-    function generateJobs() {
+    const jobsContainer = document.getElementById('jobsContainer');
+
+    function generateJobs(triggerSource = 'button') {
         const btn = document.getElementById('generateJobsBtn');
         const resumeId = document.getElementById('resumeSelect')?.value || null;
         const uploadedFile = sessionStorage.getItem('uploadedResumeFile');
@@ -208,8 +210,15 @@
             return;
         }
 
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Loading...';
+        if (btn) {
+            btn.disabled = true;
+            const label = triggerSource === 'upload'
+                ? '<span class="spinner-border spinner-border-sm me-2"></span>Refreshing matches...'
+                : '<span class="spinner-border spinner-border-sm me-2"></span> Loading...';
+            btn.innerHTML = label;
+        }
+
+        showJobsLoadingState();
 
         fetch('{{ route("user.jobs.recommended") }}', {
             method: 'POST',
@@ -234,17 +243,52 @@
                     alert(data.message);
                 }
             }
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-search me-2"></i> Find Recommended Jobs';
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-search me-2"></i> Find Recommended Jobs';
+            }
         })
         .catch(error => {
             console.error('Error:', error);
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-search me-2"></i> Find Recommended Jobs';
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-search me-2"></i> Find Recommended Jobs';
+            }
+            alert('Something went wrong while generating jobs. Please try again.');
         });
     }
 
+    function showJobsLoadingState() {
+        if (!jobsContainer) {
+            return;
+        }
+
+        jobsContainer.innerHTML = `
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center justify-content-center py-5">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary mb-3" role="status"></div>
+                        <p class="mb-0">Analyzing your resume and finding fresh matches...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     function displayJobs(jobs) {
+        if (!jobs || jobs.length === 0) {
+            jobsContainer.innerHTML = `
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="bx bx-error-circle mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <h6 class="mb-2">We couldn't find any matches yet</h6>
+                        <p class="text-muted small">Try uploading a more detailed resume or pick a different saved resume.</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
         let html = '';
         jobs.forEach(job => {
             html += `
@@ -269,7 +313,7 @@
                                         <small class="text-muted">Match Score</small>
                                     </div>
                                 </div>
-                                <button class="btn btn-primary btn-sm w-100" onclick="applyJob(${job.id})">
+                                <button class="btn btn-primary btn-sm w-100" onclick="applyJob('${job.id}')">
                                     <i class="bx bx-send me-1"></i> Apply
                                 </button>
                             </div>
@@ -278,7 +322,7 @@
                 </div>
             `;
         });
-        document.getElementById('jobsContainer').innerHTML = html;
+        jobsContainer.innerHTML = html;
     }
 
     function applyJob(jobId) {
@@ -406,6 +450,9 @@
 
                 // Clear file input
                 fileInput.value = '';
+
+                // Automatically refresh recommendations using the newly uploaded resume
+                generateJobs('upload');
             } else {
                 alert('❌ Error: ' + (data.message || 'Unknown error'));
             }
