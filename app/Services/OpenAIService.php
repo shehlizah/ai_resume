@@ -511,12 +511,16 @@ Return ONLY a valid JSON array (no markdown, no extra text) with exactly this st
     "location": "City, State or Remote",
     "salary": "\$min - \$max or Competitive",
     "description": "Brief job description matching this candidate's profile",
-    "apply_url": "https://example.com/careers/job-posting",
+    "apply_url": "https://www.indeed.com/jobs?q=Job+Title&l=Location",
     "match_score": 85
   }
 ]
 
-Generate realistic job application URLs (company careers pages, LinkedIn, Indeed, etc.). Focus on jobs that match the candidate's skills, experience level, and location. Match scores should be 70-95.
+For apply_url, generate Indeed or LinkedIn job search URLs using the format:
+- Indeed: https://www.indeed.com/jobs?q=Job+Title&l=City+State
+- LinkedIn: https://www.linkedin.com/jobs/search/?keywords=Job+Title&location=City+State
+
+Replace spaces with + signs in the URL. Focus on jobs that match the candidate's skills, experience level, and location. Match scores should be 70-95.
 PROMPT;
     }
 
