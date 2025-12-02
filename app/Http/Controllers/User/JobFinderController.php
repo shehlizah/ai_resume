@@ -95,65 +95,41 @@ class JobFinderController extends Controller
                 $limit
             );
 
-            if (!empty($jobs)) {
-                $newViewTotal = $jobsViewed + count($jobs);
-                session(['jobs_viewed' => $newViewTotal]);
-                $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
+            $newViewTotal = $jobsViewed + count($jobs);
+            session(['jobs_viewed' => $newViewTotal]);
+            $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
 
-                return response()->json([
-                    'success' => true,
-                    'jobs' => $jobs,
-                    'remaining_views' => $remainingViews
-                ]);
-            }
+            return response()->json([
+                'success' => true,
+                'jobs' => $jobs,
+                'remaining_views' => $remainingViews
+            ]);
         }
 
-        // Fall back to text extraction if no uploaded file or AI fails
-        if (empty($resumeProfile)) {
-            $resumeProfile = [
-                'preferred_title' => 'Professional',
-                'skills' => [],
-                'raw_text' => '',
-                'experience_years' => null
-            ];
-        }
-
-        // Try AI with extracted text
-        if (!empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
+        // If saved resume selected, try AI with extracted text
+        if (!empty($resumeProfile) && !empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
             $jobs = $this->openAIService->generateJobsFromResume(
                 $resumeProfile['raw_text'],
                 'Remote (Any)',
                 $limit
             );
 
-            if (!empty($jobs)) {
-                $newViewTotal = $jobsViewed + count($jobs);
-                session(['jobs_viewed' => $newViewTotal]);
-                $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
+            $newViewTotal = $jobsViewed + count($jobs);
+            session(['jobs_viewed' => $newViewTotal]);
+            $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
 
-                return response()->json([
-                    'success' => true,
-                    'jobs' => $jobs,
-                    'remaining_views' => $remainingViews
-                ]);
-            }
+            return response()->json([
+                'success' => true,
+                'jobs' => $jobs,
+                'remaining_views' => $remainingViews
+            ]);
         }
 
-        // Fall back to rule-based matching
-        $jobs = $this->jobMatchService->generateMatches($resumeProfile, [
-            'limit' => $limit,
-            'location' => 'Remote (Any)'
-        ]);
-
-        $newViewTotal = $jobsViewed + count($jobs);
-        session(['jobs_viewed' => $newViewTotal]);
-        $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
-
+        // No resume provided
         return response()->json([
-            'success' => true,
-            'jobs' => $jobs,
-            'remaining_views' => $remainingViews
-        ]);
+            'success' => false,
+            'message' => 'Please upload a resume or select a saved resume to get job recommendations.'
+        ], 422);
     }
 
     /**
@@ -245,55 +221,33 @@ class JobFinderController extends Controller
                 $limit
             );
 
-            if (!empty($jobs)) {
-                session(['jobs_viewed' => $jobsViewed + count($jobs)]);
-                return response()->json([
-                    'success' => true,
-                    'jobs' => $jobs
-                ]);
-            }
+            session(['jobs_viewed' => $jobsViewed + count($jobs)]);
+            return response()->json([
+                'success' => true,
+                'jobs' => $jobs
+            ]);
         }
 
-        // Fall back to text extraction if no uploaded file or AI fails
-        if (empty($resumeProfile)) {
-            $resumeProfile = [
-                'preferred_title' => $request->job_title ?: 'Professional',
-                'skills' => [],
-                'raw_text' => $request->job_title . ' ' . $request->location,
-                'experience_years' => null
-            ];
-        }
-
-        // Try AI with extracted text
-        if (!empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
+        // If saved resume selected, try AI with extracted text
+        if (!empty($resumeProfile) && !empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
             $jobs = $this->openAIService->generateJobsFromResume(
                 $resumeProfile['raw_text'],
                 $request->location,
                 $limit
             );
 
-            if (!empty($jobs)) {
-                session(['jobs_viewed' => $jobsViewed + count($jobs)]);
-                return response()->json([
-                    'success' => true,
-                    'jobs' => $jobs
-                ]);
-            }
+            session(['jobs_viewed' => $jobsViewed + count($jobs)]);
+            return response()->json([
+                'success' => true,
+                'jobs' => $jobs
+            ]);
         }
 
-        // Fall back to rule-based matching
-        $jobs = $this->jobMatchService->generateMatches($resumeProfile, [
-            'limit' => $limit,
-            'location' => $request->location,
-            'job_title' => $request->job_title
-        ]);
-
-        session(['jobs_viewed' => $jobsViewed + count($jobs)]);
-
+        // No resume provided
         return response()->json([
-            'success' => true,
-            'jobs' => $jobs
-        ]);
+            'success' => false,
+            'message' => 'Please upload a resume or enter a job title to search for jobs.'
+        ], 422);
     }
 
     /**
