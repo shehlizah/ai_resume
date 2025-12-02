@@ -68,6 +68,175 @@ class OpenAIService
     /**
      * Generate interview preparation content - FIXED PARSING
      */
+    /**
+     * Generate interview prep from resume text (Free vs Pro)
+     */
+    public function generateInterviewPrepFromResume(string $resumeText, string $jobTitle, string $experienceLevel, string $plan = 'free')
+    {
+        try {
+            \Log::info('generateInterviewPrepFromResume called', [
+                'job_title' => $jobTitle,
+                'experience_level' => $experienceLevel,
+                'plan' => $plan,
+                'resume_length' => strlen($resumeText)
+            ]);
+
+            $prompt = $plan === 'pro' 
+                ? $this->buildProInterviewPrompt($resumeText, $jobTitle, $experienceLevel)
+                : $this->buildFreeInterviewPrompt($resumeText, $jobTitle, $experienceLevel);
+
+            $response = $this->client->chat()->create([
+                'model' => $this->model,
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'You are an expert interview coach analyzing resumes to create personalized interview questions.'
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => $prompt
+                    ]
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => $plan === 'pro' ? 4000 : 2000,
+            ]);
+
+            $content = $response->choices[0]->message->content;
+            
+            \Log::info('OpenAI interview prep response received', [
+                'response_length' => strlen($content),
+                'preview' => substr($content, 0, 200)
+            ]);
+
+            return $this->parseInterviewPrepJson($content);
+
+        } catch (\Exception $e) {
+            \Log::error('OpenAI Interview Prep from Resume Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Build FREE plan interview prompt (basic questions)
+     */
+    private function buildFreeInterviewPrompt(string $resumeText, string $jobTitle, string $experienceLevel): string
+    {
+        return <<<PROMPT
+Analyze this resume and create 5-8 basic interview questions for a {$experienceLevel}-level {$jobTitle} position.
+
+RESUME:
+{$resumeText}
+
+Return ONLY a valid JSON object (no markdown, no extra text) with this EXACT structure:
+{
+  "questions": [
+    {
+      "question": "Tell me about your experience with [specific skill from resume]?",
+      "sample_answer": "Based on the resume, here's how to answer...",
+      "tips": ["Keep it under 2 minutes", "Focus on specific examples"]
+    }
+  ]
+}
+
+Focus on:
+- General behavioral questions
+- Questions about specific skills/experiences mentioned in the resume
+- Basic "tell me about yourself" type questions
+- Questions about strengths and weaknesses
+
+Make questions realistic and personalized based on the candidate's actual resume content.
+PROMPT;
+    }
+
+    /**
+     * Build PRO plan interview prompt (advanced with technical topics and salary tips)
+     */
+    private function buildProInterviewPrompt(string $resumeText, string $jobTitle, string $experienceLevel): string
+    {
+        return <<<PROMPT
+Analyze this resume and create comprehensive interview preparation for a {$experienceLevel}-level {$jobTitle} position.
+
+RESUME:
+{$resumeText}
+
+Return ONLY a valid JSON object (no markdown, no extra text) with this EXACT structure:
+{
+  "questions": [
+    {
+      "question": "Describe a challenging project from your resume where you [specific detail]",
+      "sample_answer": "Using STAR method: Situation - Task - Action - Result...",
+      "tips": ["Use specific metrics", "Show leadership", "Mention outcomes"]
+    }
+  ],
+  "technical_topics": "Based on the resume, here are key technical areas to study:\n\n- Topic 1: Why it matters and what to focus on\n- Topic 2: Key concepts and common questions\n- Topic 3: Practical applications",
+  "salary_tips": "Based on {$experienceLevel} level and the skills in your resume:\n\nMarket Range: Provide estimate\nNegotiation Strategy: When and how to discuss\nKey Points: What adds value to your case"
+}
+
+Generate 20-25 questions including:
+- Behavioral questions using STAR method
+- Technical/situational questions based on resume skills
+- Leadership and decision-making scenarios
+- Deep dive questions about specific projects mentioned
+- Culture fit and motivation questions
+
+For technical_topics and salary_tips, provide detailed, multi-line text with specific advice based on the actual resume content.
+
+Make everything highly personalized based on the candidate's actual experience, skills, and achievements in the resume.
+PROMPT;
+    }
+
+    /**
+     * Parse interview prep JSON response
+     */
+    private function parseInterviewPrepJson(string $content): array
+    {
+        try {
+            // Extract JSON from response
+            if (preg_match('/\{[\s\S]*\}/m', $content, $matches)) {
+                $json = $matches[0];
+                $data = json_decode($json, true);
+
+                if (is_array($data) && isset($data['questions'])) {
+                    return $data;
+                }
+            }
+
+            \Log::warning('Could not parse interview prep JSON', [
+                'content_preview' => substr($content, 0, 500)
+            ]);
+
+            // Fallback
+            return [
+                'questions' => [
+                    [
+                        'question' => 'Tell me about yourself and your background.',
+                        'sample_answer' => 'Focus on your most relevant experience and skills for this role.',
+                        'tips' => ['Keep it concise (2-3 minutes)', 'Highlight key achievements', 'Connect to the role']
+                    ]
+                ]
+            ];
+
+        } catch (\Exception $e) {
+            \Log::error('Interview prep JSON parse error', [
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'questions' => [
+                    [
+                        'question' => 'Tell me about yourself.',
+                        'sample_answer' => 'Describe your background and experience.',
+                        'tips' => ['Be concise', 'Focus on relevant experience']
+                    ]
+                ]
+            ];
+        }
+    }
+
     public function generateInterviewPrep(string $jobTitle, string $experienceLevel = 'mid', string $companyType = 'general')
     {
         $cacheKey = 'interview_prep_' . md5($jobTitle . $experienceLevel . $companyType);

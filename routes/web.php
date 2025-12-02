@@ -183,6 +183,10 @@ Route::middleware(['auth'])->group(function () {
     // Interview Prep Routes
     // ==========================================
     Route::prefix('interview')->name('user.interview.')->group(function () {
+        // NEW: AI Interview Prep with Resume Upload (FREE + PRO)
+        Route::get('/prep', [InterviewPrepController::class, 'prep'])->name('prep');
+        Route::post('/prep/generate', [InterviewPrepController::class, 'generatePrep'])->name('generate-prep');
+        
         // Practice questions (FREE)
         Route::get('/questions', [InterviewPrepController::class, 'questions'])->name('questions');
 

@@ -6,9 +6,118 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserSubscription;
+use App\Services\OpenAIService;
+use App\Services\JobMatchService;
 
 class InterviewPrepController extends Controller
 {
+    protected $openAIService;
+    protected $jobMatchService;
+
+    public function __construct(OpenAIService $openAIService, JobMatchService $jobMatchService)
+    {
+        $this->openAIService = $openAIService;
+        $this->jobMatchService = $jobMatchService;
+    }
+
+    /**
+     * Show interview prep page with resume upload
+     */
+    public function prep()
+    {
+        $user = Auth::user();
+        $subscription = UserSubscription::where('user_id', $user->id)
+            ->whereIn('status', ['active', 'pending'])
+            ->latest()
+            ->first();
+
+        $hasPremiumAccess = $subscription && $subscription->status === 'active';
+        $resumes = $user->resumes()->get();
+
+        return view('user.interview.prep', compact('hasPremiumAccess', 'resumes'));
+    }
+
+    /**
+     * Generate interview prep from resume
+     */
+    public function generatePrep(Request $request)
+    {
+        $validated = $request->validate([
+            'resume_id' => 'nullable|exists:user_resumes,id',
+            'uploaded_file' => 'nullable|string',
+            'job_title' => 'required|string|max:255',
+            'experience_level' => 'required|in:entry,mid,senior,executive'
+        ]);
+
+        $user = Auth::user();
+        $subscription = UserSubscription::where('user_id', $user->id)
+            ->whereIn('status', ['active', 'pending'])
+            ->latest()
+            ->first();
+
+        $hasPremiumAccess = $subscription && $subscription->status === 'active';
+
+        try {
+            // Extract resume text
+            $resumeText = '';
+            
+            if ($validated['resume_id']) {
+                $resume = $user->resumes()->findOrFail($validated['resume_id']);
+                $filePath = storage_path('app/private/' . $resume->file_path);
+                
+                if (file_exists($filePath)) {
+                    $resumeText = $this->jobMatchService->extractTextFromFile($filePath);
+                }
+            } elseif ($validated['uploaded_file']) {
+                $filePath = storage_path('app/private/' . ltrim($validated['uploaded_file'], '/'));
+                
+                if (file_exists($filePath)) {
+                    $resumeText = $this->jobMatchService->extractTextFromFile($filePath);
+                }
+            }
+
+            if (empty($resumeText)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Could not extract text from resume'
+                ], 400);
+            }
+
+            // Generate interview prep based on plan
+            if ($hasPremiumAccess) {
+                $result = $this->openAIService->generateInterviewPrepFromResume(
+                    $resumeText,
+                    $validated['job_title'],
+                    $validated['experience_level'],
+                    'pro'
+                );
+            } else {
+                $result = $this->openAIService->generateInterviewPrepFromResume(
+                    $resumeText,
+                    $validated['job_title'],
+                    $validated['experience_level'],
+                    'free'
+                );
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $result
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Interview Prep Generation Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate interview prep'
+            ], 500);
+        }
+    }
+
     /**
      * Show practice questions (Free)
      */

@@ -180,7 +180,7 @@
         // Hide empty state and show results container with spinner
         emptyState.style.display = 'none';
         resultsContainer.style.display = 'block';
-        
+
         if (!jobsList) {
             return;
         }
