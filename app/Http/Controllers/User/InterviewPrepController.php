@@ -295,107 +295,138 @@ class InterviewPrepController extends Controller
      */
     public function submitAnswer(Request $request)
     {
-        $request->validate([
-            'session_id' => 'required|string',
-            'question_id' => 'required|integer',
-            'answer' => 'required|string'
-        ]);
-
-        $user = Auth::user();
-
-        // Get session
-        $session = InterviewSession::where('session_id', $request->session_id)
-            ->where('user_id', $user->id)
-            ->firstOrFail();
-
-        // Get current question
-        $currentQuestion = InterviewQuestion::where('id', $request->question_id)
-            ->where('session_id', $request->session_id)
-            ->firstOrFail();
-
-        // Evaluate answer using OpenAI
-        $evaluation = $this->openAIService->evaluateInterviewAnswer(
-            $currentQuestion->question_text,
-            $request->answer,
-            $session->job_title,
-            $session->company
-        );
-
-        // Update question with answer and feedback
-        $currentQuestion->update([
-            'answer_text' => $request->answer,
-            'score' => $evaluation['score'],
-            'feedback' => [
-                'feedback' => $evaluation['feedback'],
-                'strengths' => $evaluation['strengths'],
-                'improvements' => $evaluation['improvements']
-            ],
-            'answered_at' => now(),
-        ]);
-
-        // Get all previous Q&A for context
-        $previousQA = $session->questions()
-            ->whereNotNull('answer_text')
-            ->get()
-            ->map(function ($q) {
-                return [
-                    'question' => $q->question_text,
-                    'answer' => $q->answer_text,
-                    'score' => $q->score
-                ];
-            })
-            ->toArray();
-
-        // Determine if we should generate another question (limit to 5 questions)
-        $questionCount = $session->questions()->count();
-        $nextQuestion = null;
-
-        if ($questionCount < 5) {
-            // Get resume text if available
-            $resumeText = null;
-            $resume = UserResume::where('user_id', $user->id)->latest()->first();
-            if ($resume && $resume->extracted_text) {
-                $resumeText = $resume->extracted_text;
-            }
-
-            // Generate next question
-            $questionData = $this->openAIService->generateInterviewQuestion(
-                $session->job_title,
-                $session->company,
-                $session->interview_type,
-                $resumeText,
-                $previousQA
-            );
-
-            // Store next question
-            $newQuestion = InterviewQuestion::create([
-                'session_id' => $request->session_id,
-                'question_number' => $questionCount + 1,
-                'question_text' => $questionData['question'],
-                'question_type' => $questionData['type'] ?? 'general',
-                'focus_area' => $questionData['focus_area'] ?? null,
+        try {
+            $request->validate([
+                'session_id' => 'required|string',
+                'question_id' => 'required|integer',
+                'answer' => 'required|string'
             ]);
 
-            $nextQuestion = [
-                'id' => $newQuestion->id,
-                'question' => $questionData['question'],
-                'type' => $questionData['type'] ?? 'general',
-                'number' => $questionCount + 1
-            ];
-        } else {
-            // Mark session as complete
-            $session->complete();
-        }
+            $user = Auth::user();
 
-        return response()->json([
-            'success' => true,
-            'feedback' => $evaluation['feedback'],
-            'score' => $evaluation['score'],
-            'strengths' => $evaluation['strengths'],
-            'improvements' => $evaluation['improvements'],
-            'next_question' => $nextQuestion,
-            'is_complete' => is_null($nextQuestion)
-        ]);
+            // Get session
+            $session = InterviewSession::where('session_id', $request->session_id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$session) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Session not found'
+                ], 404);
+            }
+
+            // Get current question
+            $currentQuestion = InterviewQuestion::where('id', $request->question_id)
+                ->where('session_id', $request->session_id)
+                ->first();
+
+            if (!$currentQuestion) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Question not found'
+                ], 404);
+            }
+
+            // Evaluate answer using OpenAI
+            $evaluation = $this->openAIService->evaluateInterviewAnswer(
+                $currentQuestion->question_text,
+                $request->answer,
+                $session->job_title,
+                $session->company
+            );
+
+            // Update question with answer and feedback
+            $currentQuestion->update([
+                'answer_text' => $request->answer,
+                'score' => $evaluation['score'],
+                'feedback' => [
+                    'feedback' => $evaluation['feedback'],
+                    'strengths' => $evaluation['strengths'],
+                    'improvements' => $evaluation['improvements']
+                ],
+                'answered_at' => now(),
+            ]);
+
+            // Get all previous Q&A for context
+            $previousQA = $session->questions()
+                ->whereNotNull('answer_text')
+                ->get()
+                ->map(function ($q) {
+                    return [
+                        'question' => $q->question_text,
+                        'answer' => $q->answer_text,
+                        'score' => $q->score
+                    ];
+                })
+                ->toArray();
+
+            // Determine if we should generate another question (limit to 5 questions)
+            $questionCount = $session->questions()->count();
+            $nextQuestion = null;
+
+            if ($questionCount < 5) {
+                // Get resume text if available
+                $resumeText = null;
+                $resume = UserResume::where('user_id', $user->id)->latest()->first();
+                if ($resume && $resume->extracted_text) {
+                    $resumeText = $resume->extracted_text;
+                }
+
+                // Generate next question
+                $questionData = $this->openAIService->generateInterviewQuestion(
+                    $session->job_title,
+                    $session->company,
+                    $session->interview_type,
+                    $resumeText,
+                    $previousQA
+                );
+
+                // Store next question
+                $newQuestion = InterviewQuestion::create([
+                    'session_id' => $request->session_id,
+                    'question_number' => $questionCount + 1,
+                    'question_text' => $questionData['question'],
+                    'question_type' => $questionData['type'] ?? 'general',
+                    'focus_area' => $questionData['focus_area'] ?? null,
+                ]);
+
+                $nextQuestion = [
+                    'id' => $newQuestion->id,
+                    'question' => $questionData['question'],
+                    'type' => $questionData['type'] ?? 'general',
+                    'number' => $questionCount + 1
+                ];
+            } else {
+                // Mark session as complete
+                $session->complete();
+            }
+
+            return response()->json([
+                'success' => true,
+                'feedback' => $evaluation['feedback'],
+                'score' => $evaluation['score'],
+                'strengths' => $evaluation['strengths'],
+                'improvements' => $evaluation['improvements'],
+                'next_question' => $nextQuestion,
+                'is_complete' => is_null($nextQuestion)
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error: ' . implode(', ', $e->validator->errors()->all())
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Submit Answer Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your answer. Please try again.'
+            ], 500);
+        }
     }
 
     /**

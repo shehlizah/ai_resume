@@ -264,8 +264,15 @@
                 answer: answer
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.status);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Response data:', data); // Debug log
+            
             if (data.success) {
                 // Show feedback
                 alert('Feedback: ' + data.feedback + '\nScore: ' + data.score + '/100');
@@ -275,7 +282,7 @@
                     stopTimer();
                     window.location.href = '/interview/ai-results/' + currentSessionId;
                 } else if (data.next_question) {
-                    currentQuestionId++;
+                    currentQuestionId = data.next_question.id;
                     displayQuestion(data.next_question);
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="bx bx-send me-1"></i> Submit & Next Question';
@@ -289,8 +296,8 @@
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('Error submitting answer');
+            console.error('Error details:', error);
+            alert('Error submitting answer: ' + error.message + '\n\nPlease check the console for more details.');
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="bx bx-send me-1"></i> Submit & Next Question';
         });
