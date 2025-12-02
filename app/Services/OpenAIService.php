@@ -423,99 +423,32 @@ PROMPT;
                 'limit' => $limit
             ]);
 
-            // Read the file and encode as base64 for sending to AI
+            // Read the file
             if (!file_exists($filePath)) {
                 \Log::warning('Resume file not found: ' . $filePath);
                 return [];
             }
 
-            $fileContent = file_get_contents($filePath);
-            if ($fileContent === false) {
-                \Log::warning('Failed to read resume file: ' . $filePath);
+            // Extract text from the resume file using JobMatchService
+            $jobMatchService = app(\App\Services\JobMatchService::class);
+            $resumeText = $jobMatchService->extractTextFromFile($filePath);
+
+            \Log::info('Text extracted from resume', [
+                'text_length' => strlen($resumeText),
+                'text_preview' => substr($resumeText, 0, 300)
+            ]);
+
+            // If text extraction failed or resulted in very short text, return empty
+            if (strlen($resumeText) < 50) {
+                \Log::warning('Insufficient text extracted from resume', [
+                    'text_length' => strlen($resumeText),
+                    'file' => $filePath
+                ]);
                 return [];
             }
 
-            \Log::info('File read successfully', [
-                'file_size' => strlen($fileContent),
-                'file_path' => $filePath
-            ]);
-
-            // Determine file type
-            $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-            $fileType = match ($extension) {
-                'pdf' => 'application/pdf',
-                'docx', 'doc' => 'application/msword',
-                default => 'application/octet-stream',
-            };
-
-            // Encode file as base64
-            $fileBase64 = base64_encode($fileContent);
-
-            \Log::info('File encoded to base64', [
-                'base64_length' => strlen($fileBase64),
-                'file_type' => $fileType
-            ]);
-
-            $prompt = $this->buildJobRecommendationFromFilePrompt($fileBase64, $fileType, $location, $limit);
-
-            \Log::info('Sending request to OpenAI', [
-                'model' => $this->model,
-                'prompt_length' => strlen($prompt)
-            ]);
-
-            $response = $this->client->chat()->create([
-                'model' => $this->model,
-                'messages' => [
-                    [
-                        'role' => 'system',
-                        'content' => 'You are an expert career advisor who reads resumes and generates job recommendations. Return ONLY valid JSON.'
-                    ],
-                    [
-                        'role' => 'user',
-                        'content' => $prompt
-                    ]
-                ],
-                'temperature' => 0.7,
-                'max_tokens' => 2500,
-            ]);
-
-            $content = $response->choices[0]->message->content;
-            \Log::info('OpenAI response received', [
-                'response_length' => strlen($content),
-                'response_preview' => substr($content, 0, 500)
-            ]);
-
-            $jobs = $this->parseJobMatches($content);
-            \Log::info('Jobs parsed successfully', [
-                'job_count' => count($jobs),
-                'jobs' => $jobs
-            ]);
-
-            // If we got no jobs from AI, it might be a parsing issue
-            // Try to extract text from resume and use a simpler approach
-            if (empty($jobs)) {
-                \Log::warning('No jobs returned from AI, attempting text extraction fallback');
-                try {
-                    $text = '';
-                    if ($extension === 'pdf') {
-                        $text = $this->extractTextFromPdf($filePath);
-                    } elseif (in_array($extension, ['doc', 'docx'])) {
-                        $text = $this->extractTextFromDocx($filePath);
-                    }
-
-                    if (!empty($text)) {
-                        \Log::info('Extracted text from resume', ['text_length' => strlen($text)]);
-                        $jobs = $this->generateJobsFromResume($text, $location, $limit);
-                        \Log::info('Generated jobs from extracted text', ['job_count' => count($jobs)]);
-                    }
-                } catch (\Exception $fallbackException) {
-                    \Log::error('Fallback text extraction failed', [
-                        'error' => $fallbackException->getMessage()
-                    ]);
-                }
-            }
-
-            return $jobs;
+            // Use the text-based job generation method
+            return $this->generateJobsFromResume($resumeText, $location, $limit);
 
         } catch (\Exception $e) {
             \Log::error('OpenAI Job Generation from File Error', [
@@ -525,37 +458,6 @@ PROMPT;
             ]);
             return [];
         }
-    }
-
-    private function buildJobRecommendationFromFilePrompt(string $fileBase64, string $fileType, ?string $location, int $limit): string
-    {
-        $locationLine = $location ? "\nPreferred Location: $location" : '';
-
-        return <<<PROMPT
-You are an expert career advisor. You have received a resume file in base64 format below.
-
-Please:
-1. Decode and analyze the base64-encoded resume file
-2. Extract key information about the candidate's skills, experience, and background
-3. Generate exactly $limit relevant job recommendations that match this candidate's profile
-
-Resume File (base64 encoded):
-{$fileBase64}{$locationLine}
-
-IMPORTANT: Return ONLY a valid JSON array with no markdown, code blocks, or additional text. Use this exact structure:
-[
-  {
-    "title": "Job Title",
-    "company": "Company Name",
-    "location": "City, State or Remote",
-    "salary": "\$min-\$max or Competitive",
-    "description": "Brief job description",
-    "match_score": 75
-  }
-]
-
-Return the JSON array only, no other text.
-PROMPT;
     }
 
     /**
