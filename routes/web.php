@@ -269,6 +269,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('toggle-status');
+        Route::post('/{id}/toggle-lifetime-access', [UserController::class, 'toggleLifetimeAccess'])->name('toggle-lifetime-access');
         Route::delete('/{userId}/resumes/{resumeId}', [UserController::class, 'deleteResume'])->name('delete-resume');
         Route::get('/{userId}/resumes/{resumeId}/download', [UserController::class, 'downloadResume'])->name('download-resume');
         Route::post('/bulk-action', [UserController::class, 'bulkAction'])->name('bulk-action');

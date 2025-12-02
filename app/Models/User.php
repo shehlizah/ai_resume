@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role',
         'is_active',
+        'has_lifetime_access',
     ];
 
     /**
@@ -46,6 +47,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'has_lifetime_access' => 'boolean',
         ];
     }
 
@@ -269,7 +271,7 @@ public function hasActivePackage()
 // User model
 // public function hasActivePackage()
 // {
-//     return $this->package_id && 
+//     return $this->package_id &&
 //           $this->package_expires_at?->isFuture();
 // }
 

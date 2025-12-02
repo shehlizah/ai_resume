@@ -55,7 +55,7 @@ class InterviewPrepController extends Controller
             ->latest()
             ->first();
 
-        $hasPremiumAccess = $subscription && $subscription->status === 'active';
+        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
 
         try {
             // Extract resume text
@@ -129,7 +129,7 @@ class InterviewPrepController extends Controller
             ->latest()
             ->first();
 
-        $hasPremiumAccess = $subscription && $subscription->status === 'active';
+        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
 
         // Get user's resumes
         $resumes = $user->resumes()->get();

@@ -23,7 +23,8 @@ new class extends Component {
 
         @php
             $subscription = $this->getSubscription();
-            $hasPremiumAccess = $subscription && $subscription->status === 'active';
+            $user = auth()->user();
+            $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
         @endphp
 
         <!-- Current Plan -->

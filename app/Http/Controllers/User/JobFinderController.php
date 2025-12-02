@@ -28,7 +28,7 @@ class JobFinderController extends Controller
             ->latest()
             ->first();
 
-        $hasPremiumAccess = $subscription && $subscription->status === 'active';
+        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
         $jobsViewed = session('jobs_viewed', 0);
         $jobsApplied = session('jobs_applied', 0);
 
@@ -66,7 +66,7 @@ class JobFinderController extends Controller
             ->latest()
             ->first();
 
-        $hasPremiumAccess = $subscription && $subscription->status === 'active';
+        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
 
         // Free tier: 5 jobs view per session
         $jobsViewed = session('jobs_viewed', 0);
@@ -183,7 +183,7 @@ class JobFinderController extends Controller
             ->latest()
             ->first();
 
-        $hasPremiumAccess = $subscription && $subscription->status === 'active';
+        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
 
         // Get user's resumes
         $resumes = $user->resumes()->get();
@@ -221,7 +221,7 @@ class JobFinderController extends Controller
             ->latest()
             ->first();
 
-        $hasPremiumAccess = $subscription && $subscription->status === 'active';
+        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
         $jobsViewed = session('jobs_viewed', 0);
 
         // Free tier: 5 jobs view per session
@@ -332,7 +332,7 @@ class JobFinderController extends Controller
             ->latest()
             ->first();
 
-        $hasPremiumAccess = $subscription && $subscription->status === 'active';
+        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
         $jobsApplied = session('jobs_applied', 0);
 
         // Free tier: 1 job apply per session

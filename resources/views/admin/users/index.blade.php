@@ -81,15 +81,15 @@
                                 <span class="input-group-text bg-white border-end-0">
                                     <i class="bx bx-search"></i>
                                 </span>
-                                <input type="text" 
-                                       class="form-control border-start-0 ps-0" 
-                                       name="search" 
-                                       placeholder="Search by name or email..." 
+                                <input type="text"
+                                       class="form-control border-start-0 ps-0"
+                                       name="search"
+                                       placeholder="Search by name or email..."
                                        value="{{ request('search') }}">
                                 @if(request('search'))
-                                    <a href="{{ route('admin.users.index') }}" 
-                                       class="btn btn-outline-secondary" 
-                                       data-bs-toggle="tooltip" 
+                                    <a href="{{ route('admin.users.index') }}"
+                                       class="btn btn-outline-secondary"
+                                       data-bs-toggle="tooltip"
                                        title="Clear search">
                                         <i class="bx bx-x"></i>
                                     </a>
@@ -150,8 +150,8 @@
                                 <option value="deactivate">✗ Deactivate</option>
                                 <option value="delete">🗑 Delete</option>
                             </select>
-                            <button type="submit" 
-                                    class="btn btn-sm btn-dark" 
+                            <button type="submit"
+                                    class="btn btn-sm btn-dark"
                                     onclick="return confirm('Apply bulk action to selected users?')">
                                 Apply
                             </button>
@@ -176,9 +176,9 @@
                                 @forelse($users as $user)
                                     <tr>
                                         <td>
-                                            <input type="checkbox" 
-                                                   class="user-checkbox form-check-input" 
-                                                   name="user_ids[]" 
+                                            <input type="checkbox"
+                                                   class="user-checkbox form-check-input"
+                                                   name="user_ids[]"
                                                    value="{{ $user->id }}"
                                                    {{ $user->id === auth()->id() ? 'disabled' : '' }}>
                                         </td>
@@ -211,15 +211,22 @@
                                             </span>
                                         </td>
                                         <td>
-                                            @if($user->is_active)
-                                                <span class="badge bg-success">
-                                                    <i class="bx bx-check"></i> Active
-                                                </span>
-                                            @else
-                                                <span class="badge bg-warning">
-                                                    <i class="bx bx-x"></i> Inactive
-                                                </span>
-                                            @endif
+                                            <div class="d-flex flex-column gap-1">
+                                                @if($user->is_active)
+                                                    <span class="badge bg-success">
+                                                        <i class="bx bx-check"></i> Active
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-warning">
+                                                        <i class="bx bx-x"></i> Inactive
+                                                    </span>
+                                                @endif
+                                                @if($user->has_lifetime_access)
+                                                    <span class="badge bg-primary">
+                                                        <i class="bx bx-infinite"></i> Lifetime Pro
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </td>
                                         <td>
                                             <small class="text-muted">
@@ -229,54 +236,65 @@
                                         <td>
                                             <div class="d-flex gap-1 justify-content-center">
                                                 <!-- View -->
-                                                <a href="{{ route('admin.users.show', $user->id) }}" 
-                                                   class="btn btn-sm btn-outline-info" 
-                                                   data-bs-toggle="tooltip" 
+                                                <a href="{{ route('admin.users.show', $user->id) }}"
+                                                   class="btn btn-sm btn-outline-info"
+                                                   data-bs-toggle="tooltip"
                                                    title="View Details">
                                                     <i class="bx bx-show"></i>
                                                 </a>
 
                                                 <!-- Edit -->
-                                                <a href="{{ route('admin.users.edit', $user->id) }}" 
-                                                   class="btn btn-sm btn-outline-warning" 
-                                                   data-bs-toggle="tooltip" 
+                                                <a href="{{ route('admin.users.edit', $user->id) }}"
+                                                   class="btn btn-sm btn-outline-warning"
+                                                   data-bs-toggle="tooltip"
                                                    title="Edit User">
                                                     <i class="bx bx-edit"></i>
                                                 </a>
 
                                                 @if($user->id !== auth()->id())
+                                                    <!-- Toggle Lifetime Access -->
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-{{ $user->has_lifetime_access ? 'danger' : 'primary' }} toggle-lifetime-btn"
+                                                            data-user-id="{{ $user->id }}"
+                                                            data-user-name="{{ $user->name }}"
+                                                            data-has-access="{{ $user->has_lifetime_access ? 'true' : 'false' }}"
+                                                            data-bs-toggle="tooltip"
+                                                            title="{{ $user->has_lifetime_access ? 'Revoke Lifetime Access' : 'Grant Lifetime Access' }}">
+                                                        <i class="bx {{ $user->has_lifetime_access ? 'bx-crown' : 'bx-crown' }}"></i>
+                                                    </button>
+
                                                     <!-- Toggle Status -->
-                                                    <form method="POST" 
-                                                          action="{{ route('admin.users.toggle-status', $user->id) }}" 
+                                                    <form method="POST"
+                                                          action="{{ route('admin.users.toggle-status', $user->id) }}"
                                                           class="d-inline">
                                                         @csrf
-                                                        <button type="submit" 
-                                                                class="btn btn-sm btn-outline-{{ $user->is_active ? 'secondary' : 'success' }}" 
-                                                                data-bs-toggle="tooltip" 
+                                                        <button type="submit"
+                                                                class="btn btn-sm btn-outline-{{ $user->is_active ? 'secondary' : 'success' }}"
+                                                                data-bs-toggle="tooltip"
                                                                 title="{{ $user->is_active ? 'Deactivate' : 'Activate' }}">
                                                             <i class="bx {{ $user->is_active ? 'bx-lock' : 'bx-lock-open' }}"></i>
                                                         </button>
                                                     </form>
 
                                                     <!-- Delete -->
-                                                    <form method="POST" 
-                                                          action="{{ route('admin.users.destroy', $user->id) }}" 
+                                                    <form method="POST"
+                                                          action="{{ route('admin.users.destroy', $user->id) }}"
                                                           class="d-inline"
                                                           onsubmit="return confirm('Delete {{ $user->name }} and all their resumes?\n\nThis action cannot be undone!')">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" 
-                                                                class="btn btn-sm btn-outline-danger" 
-                                                                data-bs-toggle="tooltip" 
+                                                        <button type="submit"
+                                                                class="btn btn-sm btn-outline-danger"
+                                                                data-bs-toggle="tooltip"
                                                                 title="Delete User">
                                                             <i class="bx bx-trash"></i>
                                                         </button>
                                                     </form>
                                                 @else
                                                     <!-- Can't delete yourself -->
-                                                    <button class="btn btn-sm btn-outline-secondary" 
-                                                            disabled 
-                                                            data-bs-toggle="tooltip" 
+                                                    <button class="btn btn-sm btn-outline-secondary"
+                                                            disabled
+                                                            data-bs-toggle="tooltip"
                                                             title="Can't modify yourself">
                                                         <i class="bx bx-shield"></i>
                                                     </button>
@@ -390,6 +408,38 @@
             document.getElementById('selectAllTable')?.addEventListener('change', function() {
                 document.querySelectorAll('.user-checkbox:not([disabled])').forEach(checkbox => {
                     checkbox.checked = this.checked;
+                });
+            });
+
+            // Toggle Lifetime Access
+            document.querySelectorAll('.toggle-lifetime-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = this.dataset.userId;
+                    const userName = this.dataset.userName;
+                    const hasAccess = this.dataset.hasAccess === 'true';
+                    const action = hasAccess ? 'revoke' : 'grant';
+
+                    if (confirm(`${action === 'grant' ? 'Grant' : 'Revoke'} lifetime Pro access for ${userName}?`)) {
+                        fetch(`/admin/users/${userId}/toggle-lifetime-access`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert('Error: ' + (data.message || 'Failed to update access'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred');
+                        });
+                    }
                 });
             });
         });
