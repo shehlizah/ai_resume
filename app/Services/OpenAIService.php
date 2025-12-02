@@ -81,7 +81,7 @@ class OpenAIService
                 'resume_length' => strlen($resumeText)
             ]);
 
-            $prompt = $plan === 'pro' 
+            $prompt = $plan === 'pro'
                 ? $this->buildProInterviewPrompt($resumeText, $jobTitle, $experienceLevel)
                 : $this->buildFreeInterviewPrompt($resumeText, $jobTitle, $experienceLevel);
 
@@ -102,7 +102,7 @@ class OpenAIService
             ]);
 
             $content = $response->choices[0]->message->content;
-            
+
             \Log::info('OpenAI interview prep response received', [
                 'response_length' => strlen($content),
                 'preview' => substr($content, 0, 200)

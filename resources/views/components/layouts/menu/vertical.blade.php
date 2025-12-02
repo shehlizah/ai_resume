@@ -169,9 +169,6 @@
         </a>
       </li>
 
-      <!-- CAREER JOURNEY PATH -->
-      <li class="menu-header small text-uppercase"><span class="menu-header-text">Career Journey</span></li>
-
       <!-- 1. Resume Builder -->
       <li class="menu-item {{ request()->is('resumes*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -230,6 +227,9 @@
           <div>{{ __('Interview Prep') }}</div>
         </a>
         <ul class="menu-sub">
+          <li class="menu-item {{ request()->is('interview/prep') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('interview/prep') }}">{{ __('AI Interview Prep') }}</a>
+          </li>
           <li class="menu-item {{ request()->is('interview/questions') ? 'active' : '' }}">
             <a class="menu-link" href="{{ url('interview/questions') }}">{{ __('Practice Questions') }}</a>
           </li>
@@ -245,9 +245,6 @@
           </li>
         </ul>
       </li>
-
-      <!-- Account Section -->
-      <li class="menu-header small text-uppercase"><span class="menu-header-text">Account</span></li>
 
       <!-- Subscription & Pricing -->
       <li class="menu-item {{ request()->is('subscription*') || request()->is('pricing') ? 'active open' : '' }}">
@@ -305,6 +302,36 @@
 <!-- / Menu -->
 
 <style>
+/* Sidebar Scrollbar */
+#layout-menu {
+  overflow-y: auto;
+  height: 100vh;
+}
+
+/* Custom Scrollbar for Sidebar */
+#layout-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+#layout-menu::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+#layout-menu::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+#layout-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox scrollbar */
+#layout-menu {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);
+}
+
 /* Base accordion */
 .menu-item .menu-sub {
     max-height: 0;

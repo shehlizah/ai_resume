@@ -2,7 +2,7 @@
 
 <x-layouts.app>
     <div class="container-xxl flex-grow-1 container-p-y">
-        
+
         <!-- Header -->
         <div class="card bg-gradient-primary text-white mb-4">
             <div class="card-body">
@@ -87,7 +87,7 @@
 
                         @if(!$hasPremiumAccess)
                         <div class="alert alert-warning border-0 mt-3 mb-0">
-                            <i class="bx bx-crown me-2"></i> 
+                            <i class="bx bx-crown me-2"></i>
                             <strong>Free Plan:</strong> Basic interview questions
                             <br><a href="{{ route('user.pricing') }}" class="alert-link">Upgrade to Pro</a> for AI scoring, feedback & expert sessions
                         </div>
@@ -228,7 +228,7 @@
         .bg-gradient-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
+
         .question-card {
             border-left: 4px solid #667eea;
             margin-bottom: 1rem;
@@ -236,7 +236,7 @@
             background: #f8f9fa;
             border-radius: 4px;
         }
-        
+
         .answer-box {
             background: white;
             border-radius: 8px;
@@ -256,7 +256,7 @@
         const uploadStatus = document.getElementById('uploadStatus');
 
         dropZone.addEventListener('click', () => fileInput.click());
-        
+
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropZone.style.borderColor = '#4CAF50';
@@ -378,7 +378,7 @@
 
         function displayResults(data) {
             const questionsList = document.getElementById('questionsList');
-            
+
             if (data.questions && data.questions.length > 0) {
                 let html = '';
                 data.questions.forEach((q, index) => {

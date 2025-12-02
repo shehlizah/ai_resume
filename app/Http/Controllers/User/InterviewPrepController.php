@@ -60,17 +60,17 @@ class InterviewPrepController extends Controller
         try {
             // Extract resume text
             $resumeText = '';
-            
+
             if ($validated['resume_id']) {
                 $resume = $user->resumes()->findOrFail($validated['resume_id']);
                 $filePath = storage_path('app/private/' . $resume->file_path);
-                
+
                 if (file_exists($filePath)) {
                     $resumeText = $this->jobMatchService->extractTextFromFile($filePath);
                 }
             } elseif ($validated['uploaded_file']) {
                 $filePath = storage_path('app/private/' . ltrim($validated['uploaded_file'], '/'));
-                
+
                 if (file_exists($filePath)) {
                     $resumeText = $this->jobMatchService->extractTextFromFile($filePath);
                 }
