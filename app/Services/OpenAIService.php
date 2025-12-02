@@ -548,7 +548,7 @@ IMPORTANT: Return ONLY a valid JSON array with no markdown, code blocks, or addi
     "title": "Job Title",
     "company": "Company Name",
     "location": "City, State or Remote",
-    "salary": "$min-$max or Competitive",
+    "salary": "\$min-\$max or Competitive",
     "description": "Brief job description",
     "match_score": 75
   }
@@ -607,7 +607,7 @@ Return ONLY a valid JSON array (no markdown, no extra text) with exactly this st
     "title": "Job Title",
     "company": "Company Name",
     "location": "City, State or Remote",
-    "salary": "$min - $max or Competitive",
+    "salary": "\$min - \$max or Competitive",
     "description": "Brief job description matching this candidate's profile",
     "match_score": 85
   }
