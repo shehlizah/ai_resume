@@ -1332,7 +1332,7 @@ private function callOpenAI($prompt)
 
             // Create directory path for temp uploads - use full absolute path
             $uploadDir = "uploads/temp/{$user->id}";
-            
+
             // Use the full storage path directly to ensure file is stored in the right place
             $fullPath = storage_path("app/private/{$uploadDir}");
             if (!file_exists($fullPath)) {

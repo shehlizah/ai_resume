@@ -12,7 +12,19 @@ class OpenAIService
 
     public function __construct()
     {
-        $this->client = \OpenAI::client(config('services.openai.api_key'));
+        $apiKey = config('services.openai.api_key');
+        \Log::info('OpenAIService initialized', [
+            'has_api_key' => !empty($apiKey),
+            'api_key_length' => strlen($apiKey ?? ''),
+            'model' => config('services.openai.model', 'gpt-4o-mini')
+        ]);
+
+        if (empty($apiKey)) {
+            \Log::error('OpenAI API key is not configured!');
+            throw new \Exception('OpenAI API key is not configured in .env file');
+        }
+
+        $this->client = \OpenAI::client($apiKey);
         $this->model = config('services.openai.model', 'gpt-4o-mini');
     }
 
@@ -479,6 +491,30 @@ PROMPT;
                 'jobs' => $jobs
             ]);
 
+            // If we got no jobs from AI, it might be a parsing issue
+            // Try to extract text from resume and use a simpler approach
+            if (empty($jobs)) {
+                \Log::warning('No jobs returned from AI, attempting text extraction fallback');
+                try {
+                    $text = '';
+                    if ($extension === 'pdf') {
+                        $text = $this->extractTextFromPdf($filePath);
+                    } elseif (in_array($extension, ['doc', 'docx'])) {
+                        $text = $this->extractTextFromDocx($filePath);
+                    }
+
+                    if (!empty($text)) {
+                        \Log::info('Extracted text from resume', ['text_length' => strlen($text)]);
+                        $jobs = $this->generateJobsFromResume($text, $location, $limit);
+                        \Log::info('Generated jobs from extracted text', ['job_count' => count($jobs)]);
+                    }
+                } catch (\Exception $fallbackException) {
+                    \Log::error('Fallback text extraction failed', [
+                        'error' => $fallbackException->getMessage()
+                    ]);
+                }
+            }
+
             return $jobs;
 
         } catch (\Exception $e) {
@@ -496,26 +532,29 @@ PROMPT;
         $locationLine = $location ? "\nPreferred Location: $location" : '';
 
         return <<<PROMPT
-You have received a resume file in base64 format. Please decode and analyze it to generate $limit relevant job recommendations.
+You are an expert career advisor. You have received a resume file in base64 format below.
 
-Resume File (base64): {$fileBase64}
-File Type: {$fileType}{$locationLine}
+Please:
+1. Decode and analyze the base64-encoded resume file
+2. Extract key information about the candidate's skills, experience, and background
+3. Generate exactly $limit relevant job recommendations that match this candidate's profile
 
-Even if the resume format is unclear or partially corrupted, do your best to extract information about the candidate's skills and experience.
+Resume File (base64 encoded):
+{$fileBase64}{$locationLine}
 
-Return ONLY a valid JSON array (no markdown, no extra text) with exactly this structure:
+IMPORTANT: Return ONLY a valid JSON array with no markdown, code blocks, or additional text. Use this exact structure:
 [
   {
     "title": "Job Title",
     "company": "Company Name",
     "location": "City, State or Remote",
-    "salary": "$min - $max or Competitive",
-    "description": "Brief job description matching this candidate's profile",
-    "match_score": 85
+    "salary": "$min-$max or Competitive",
+    "description": "Brief job description",
+    "match_score": 75
   }
 ]
 
-Focus on jobs that match the candidate's skills, experience level, and location. Match scores should be 70-95.
+Return the JSON array only, no other text.
 PROMPT;
     }
 
