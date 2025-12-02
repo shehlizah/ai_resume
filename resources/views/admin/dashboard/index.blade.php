@@ -1,7 +1,7 @@
 @section('title', __('Admin Dashboard'))
 <x-layouts.app :title="__('Admin Dashboard')">
     <div class="row g-4">
-        
+
         <!-- Welcome Section -->
         <div class="col-lg-12">
             <div class="card border-0 overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
@@ -268,99 +268,6 @@
                             </a>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Add-Ons Performance -->
-        <div class="col-lg-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">
-                        <i class="bx bx-package me-1"></i> Add-Ons Performance
-                    </h6>
-                    <a href="{{ route('admin.add-ons.index') }}" class="btn btn-sm btn-primary">
-                        Manage Add-Ons
-                    </a>
-                </div>
-                <div class="card-body">
-                    <div class="row g-4">
-                        <div class="col-lg-3 col-md-6">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar avatar-md me-3">
-                                    <span class="avatar-initial rounded bg-label-primary">
-                                        <i class="bx bx-package fs-4"></i>
-                                    </span>
-                                </div>
-                                <div>
-                                    <small class="text-muted d-block">Total Add-Ons</small>
-                                    <h5 class="mb-0">{{ number_format($totalAddOns) }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar avatar-md me-3">
-                                    <span class="avatar-initial rounded bg-label-success">
-                                        <i class="bx bx-shopping-bag fs-4"></i>
-                                    </span>
-                                </div>
-                                <div>
-                                    <small class="text-muted d-block">Active Sales</small>
-                                    <h5 class="mb-0">{{ number_format($addOnPurchases) }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar avatar-md me-3">
-                                    <span class="avatar-initial rounded bg-label-info">
-                                        <i class="bx bx-dollar-circle fs-4"></i>
-                                    </span>
-                                </div>
-                                <div>
-                                    <small class="text-muted d-block">This Month</small>
-                                    <h5 class="mb-0">${{ number_format($addOnRevenueThisMonth, 2) }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar avatar-md me-3">
-                                    <span class="avatar-initial rounded bg-label-warning">
-                                        <i class="bx bx-trending-up fs-4"></i>
-                                    </span>
-                                </div>
-                                <div>
-                                    <small class="text-muted d-block">Total Revenue</small>
-                                    <h5 class="mb-0">${{ number_format($addOnRevenue, 2) }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if($popularAddOns->count() > 0)
-                        <div class="border-top mt-4 pt-4">
-                            <h6 class="mb-3">🏆 Top Selling Add-Ons</h6>
-                            <div class="row g-3">
-                                @foreach($popularAddOns->take(6) as $addOn)
-                                    <div class="col-lg-4 col-md-6">
-                                        <div class="d-flex align-items-center p-3 rounded border">
-                                            <div class="flex-shrink-0 me-3">
-                                                <div class="avatar avatar-md bg-primary bg-opacity-10 rounded">
-                                                    <i class="bx {{ $addOn->icon ?? 'bx-gift' }} text-primary"></i>
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <strong class="d-block">{{ Str::limit($addOn->name, 20) }}</strong>
-                                                <small class="text-muted">{{ $addOn->user_add_ons_count }} sales</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>
@@ -681,7 +588,7 @@
         .hover-shadow {
             transition: all 0.3s ease;
         }
-        
+
         .hover-shadow:hover {
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
             transform: translateY(-2px);

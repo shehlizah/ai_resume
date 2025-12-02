@@ -413,50 +413,7 @@
                 </div>
             </div>
 
-            <!-- My Add-Ons -->
-            @if(auth()->user()->userAddOns()->count() > 0)
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">
-                            <i class="bx bx-package me-1"></i> My Add-Ons
-                        </h6>
-                        <a href="{{ route('user.add-ons.my-add-ons') }}" class="btn btn-sm btn-link">View All</a>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            @foreach(auth()->user()->userAddOns()->with('addOn')->where('status', 'active')->latest()->take(3)->get() as $userAddOn)
-                                <div class="list-group-item border-0 px-4 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0 me-3">
-                                            <div class="avatar avatar-sm bg-primary bg-opacity-10 rounded">
-                                                <i class="bx {{ $userAddOn->addOn->icon ?? 'bx-gift' }} text-primary"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <strong class="d-block mb-1">{{ $userAddOn->addOn->name }}</strong>
-                                            <small class="text-muted">{{ $userAddOn->purchased_at->diffForHumans() }}</small>
-                                        </div>
-                                        <a href="{{ route('user.add-ons.access', $userAddOn->addOn) }}" class="btn btn-sm btn-primary">
-                                            Access
-                                        </a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @else
-                <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);">
-                    <div class="card-body text-center p-4">
-                        <i class="bx bxs-gift mb-3" style="font-size: 3rem; color: #8b5cf6;"></i>
-                        <h6 class="mb-2">Boost Your Career</h6>
-                        <p class="text-muted small mb-3">Access job boards, interview prep, and career resources</p>
-                        <a href="{{ route('user.add-ons.index') }}" class="btn btn-primary btn-sm w-100">
-                            <i class="bx bx-shopping-bag me-1"></i> Browse Add-Ons
-                        </a>
-                    </div>
-                </div>
-            @endif
+
 
             <!-- Premium Upgrade Card -->
             @if(!$hasPremiumAccess)

@@ -135,13 +135,7 @@
         </ul>
       </li>
 
-    <!-- For Admin Navigation -->
-    <li class="menu-item {{ request()->routeIs('admin.add-ons.*') ? 'active' : '' }}">
-        <a href="{{ route('admin.add-ons.index') }}" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-package"></i>
-            <div data-i18n="Manage Add-Ons">Manage Add-Ons</div>
-        </a>
-    </li>
+
 
       {{-- Settings --}}
       <li class="menu-item {{ request()->is('settings*') ? 'active open' : '' }}">

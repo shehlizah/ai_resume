@@ -962,21 +962,7 @@ private function getSampleData()
         ->with('template')
         ->firstOrFail();
 
-    // Get available add-ons for upsell
-    $addOns = \App\Models\AddOn::active()
-        ->orderBy('sort_order')
-        ->get();
-
-    // Check which add-ons user has already purchased
-    $purchasedAddOnIds = auth()->user()->userAddOns()
-        ->where('status', 'active')
-        ->pluck('add_on_id')
-        ->toArray();
-
-    // Filter out purchased add-ons
-    $availableAddOns = $addOns->whereNotIn('id', $purchasedAddOnIds);
-
-    return view('user.resumes.success', compact('resume', 'availableAddOns'));
+    return view('user.resumes.success', compact('resume'));
 }
 
 

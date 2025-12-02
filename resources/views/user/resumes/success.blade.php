@@ -1,10 +1,10 @@
 <x-layouts.app :title="'Resume Created Successfully'">
     <div class="container-xxl flex-grow-1 container-p-y">
-        
+
         <!-- Success Message -->
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                
+
                 <!-- Main Success Card -->
                 <div class="card border-success mb-4">
                     <div class="card-body text-center py-5">
@@ -17,11 +17,11 @@
                         </p>
 
                         <div class="d-flex justify-content-center gap-3 mb-4">
-                            <a href="{{ route('user.resumes.view', $resume->id) }}" 
+                            <a href="{{ route('user.resumes.view', $resume->id) }}"
                                class="btn btn-primary btn-lg" target="_blank">
                                 <i class="bx bx-show me-1"></i> View Resume
                             </a>
-                            <a href="{{ route('user.resumes.download', $resume->id) }}" 
+                            <a href="{{ route('user.resumes.download', $resume->id) }}"
                                class="btn btn-success btn-lg">
                                 <i class="bx bx-download me-1"></i> Download PDF
                             </a>
@@ -33,68 +33,7 @@
                     </div>
                 </div>
 
-                @if($availableAddOns->count() > 0)
-                    <!-- Add-Ons Upsell Section -->
-                    <div class="card border-primary mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <h4 class="mb-0">🚀 Take Your Job Search to the Next Level!</h4>
-                        </div>
-                        <div class="card-body">
-                            <p class="text-muted mb-4">
-                                Now that you have a professional resume, boost your chances of landing your dream job with these premium add-ons:
-                            </p>
 
-                            <div class="row g-4">
-                                @foreach($availableAddOns->take(2) as $addOn)
-                                    <div class="col-md-6">
-                                        <div class="card h-100 border-primary">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-start mb-3">
-                                                    <i class="bx {{ $addOn->icon ?? 'bx-gift' }}" 
-                                                       style="font-size: 3rem; color: #6366f1;"></i>
-                                                    <div class="ms-3">
-                                                        <h5 class="mb-1">{{ $addOn->name }}</h5>
-                                                        <span class="badge bg-primary">${{ number_format($addOn->price, 2) }}</span>
-                                                    </div>
-                                                </div>
-
-                                                <p class="text-muted small mb-3">{{ Str::limit($addOn->description, 100) }}</p>
-
-                                                @if($addOn->features)
-                                                    <ul class="list-unstyled small mb-3">
-                                                        @foreach(array_slice($addOn->features, 0, 3) as $feature)
-                                                            <li class="mb-1">
-                                                                <i class="bx bx-check text-success me-1"></i>
-                                                                {{ $feature }}
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                @endif
-
-                                                <div class="d-grid gap-2">
-                                                    <a href="{{ route('user.add-ons.checkout', $addOn) }}" 
-                                                       class="btn btn-primary">
-                                                        <i class="bx bx-cart me-1"></i> Get This Add-On
-                                                    </a>
-                                                    <a href="{{ route('user.add-ons.show', $addOn) }}" 
-                                                       class="btn btn-outline-secondary btn-sm">
-                                                        Learn More
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <a href="{{ route('user.add-ons.index') }}" class="btn btn-outline-primary">
-                                    <i class="bx bx-package me-1"></i> View All Add-Ons
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @endif
 
                 <!-- What's Next Section -->
                 <div class="card">
@@ -131,7 +70,7 @@
                                     <div>
                                         <h6>Find Job Opportunities</h6>
                                         <small class="text-muted">
-                                            Use our Job Links add-on to discover verified job boards
+                                            Use our Job Finder to discover verified job boards
                                         </small>
                                     </div>
                                 </div>

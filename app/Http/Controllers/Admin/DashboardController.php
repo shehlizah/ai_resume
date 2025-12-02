@@ -60,8 +60,8 @@ class DashboardController extends Controller
                 Carbon::now()->subMonth()->startOfMonth(),
                 Carbon::now()->subMonth()->endOfMonth()
             ])->count();
-            $userGrowth = $lastMonthUsers > 0 
-                ? round((($thisMonthUsers - $lastMonthUsers) / $lastMonthUsers) * 100) 
+            $userGrowth = $lastMonthUsers > 0
+                ? round((($thisMonthUsers - $lastMonthUsers) / $lastMonthUsers) * 100)
                 : 100;
 
             // Resume Generation Growth Percentage
@@ -73,13 +73,13 @@ class DashboardController extends Controller
                     Carbon::now()->subMonth()->startOfMonth(),
                     Carbon::now()->subMonth()->endOfMonth()
                 ])->count();
-            $downloadGrowth = $lastMonthResumes > 0 
-                ? round((($thisMonthResumes - $lastMonthResumes) / $lastMonthResumes) * 100) 
+            $downloadGrowth = $lastMonthResumes > 0
+                ? round((($thisMonthResumes - $lastMonthResumes) / $lastMonthResumes) * 100)
                 : 100;
 
             // Average Resumes Per Active User
-            $avgDownloadsPerUser = $activeUsers > 0 
-                ? round($downloadsThisMonth / $activeUsers, 2) 
+            $avgDownloadsPerUser = $activeUsers > 0
+                ? round($downloadsThisMonth / $activeUsers, 2)
                 : 0;
 
             // Recent Users (Last 5) - with subscription info
@@ -124,8 +124,8 @@ class DashboardController extends Controller
                 ])->sum('amount');
 
             // Revenue Growth Percentage
-            $revenueGrowth = $revenueLastMonth > 0 
-                ? round((($revenueThisMonth - $revenueLastMonth) / $revenueLastMonth) * 100, 1) 
+            $revenueGrowth = $revenueLastMonth > 0
+                ? round((($revenueThisMonth - $revenueLastMonth) / $revenueLastMonth) * 100, 1)
                 : ($revenueThisMonth > 0 ? 100 : 0);
 
             // Total Revenue (All Time)
@@ -169,29 +169,7 @@ class DashboardController extends Controller
                         ->sum('amount');
                     return $plan;
                 });
-                
-                
-             // Total Add-Ons
-        $totalAddOns = \App\Models\AddOn::count();
-        $activeAddOns = \App\Models\AddOn::where('is_active', true)->count();
-        
-        // Add-On Sales
-        $addOnPurchases = \App\Models\UserAddOn::where('status', 'active')->count();
-        $addOnRevenue = \App\Models\UserAddOn::where('status', 'active')->sum('amount_paid');
-        $addOnRevenueThisMonth = \App\Models\UserAddOn::where('status', 'active')
-            ->whereMonth('purchased_at', now()->month)
-            ->sum('amount_paid');
-        
-        // Popular Add-Ons
-        $popularAddOns = \App\Models\AddOn::withCount([
-            'userAddOns' => function($query) {
-                $query->where('status', 'active');
-            }
-        ])
-        ->orderByDesc('user_add_ons_count')
-        ->take(3)
-        ->get();
-    
+
 
             return view('admin.dashboard.index', [
                 // User Statistics
@@ -201,22 +179,22 @@ class DashboardController extends Controller
                 'adminCount' => $adminCount,
                 'userGrowth' => $userGrowth,
                 'newUsersThisWeek' => $newUsersThisWeek,
-                
+
                 // Template Statistics
                 'totalTemplates' => $totalTemplates,
                 'premiumTemplates' => $premiumTemplates,
                 'activeTemplates' => $activeTemplates,
-                
+
                 // Resume Statistics
                 'downloadsThisMonth' => $downloadsThisMonth,
                 'totalResumesGenerated' => $totalResumesGenerated,
                 'downloadGrowth' => $downloadGrowth,
                 'avgDownloadsPerUser' => $avgDownloadsPerUser,
-                
+
                 // Subscription Statistics
                 'activeSubscriptions' => $activeSubscriptions,
                 'trialSubscriptions' => $trialSubscriptions,
-                
+
                 // Revenue Statistics
                 'revenueThisMonth' => $revenueThisMonth,
                 'revenueGrowth' => $revenueGrowth,
@@ -224,27 +202,19 @@ class DashboardController extends Controller
                 'pendingPayments' => $pendingPayments,
                 'pendingPaymentsAmount' => $pendingPaymentsAmount,
                 'conversionRate' => $conversionRate,
-                
+
                 // Recent Data
                 'recentUsers' => $recentUsers,
                 'popularTemplates' => $popularTemplates,
                 'recentPayments' => $recentPayments,
                 'recentSubscriptions' => $recentSubscriptions,
                 'subscriptionPlans' => $subscriptionPlans,
-                
-                  // Add-Ons Statistics
-            'totalAddOns' => $totalAddOns,
-            'activeAddOns' => $activeAddOns,
-            'addOnPurchases' => $addOnPurchases,
-            'addOnRevenue' => $addOnRevenue,
-            'addOnRevenueThisMonth' => $addOnRevenueThisMonth,
-            'popularAddOns' => $popularAddOns,
-            
+
             ]);
         } catch (\Exception $e) {
             \Log::error('Dashboard Error: ' . $e->getMessage());
             \Log::error('Stack Trace: ' . $e->getTraceAsString());
-            
+
             return view('admin.dashboard.index', [
                 // User Statistics
                 'totalUsers' => 0,
@@ -253,22 +223,22 @@ class DashboardController extends Controller
                 'adminCount' => 0,
                 'userGrowth' => 0,
                 'newUsersThisWeek' => 0,
-                
+
                 // Template Statistics
                 'totalTemplates' => 0,
                 'premiumTemplates' => 0,
                 'activeTemplates' => 0,
-                
+
                 // Resume Statistics
                 'downloadsThisMonth' => 0,
                 'totalResumesGenerated' => 0,
                 'downloadGrowth' => 0,
                 'avgDownloadsPerUser' => 0,
-                
+
                 // Subscription Statistics
                 'activeSubscriptions' => 0,
                 'trialSubscriptions' => 0,
-                
+
                 // Revenue Statistics
                 'revenueThisMonth' => 0,
                 'revenueGrowth' => 0,
@@ -276,14 +246,14 @@ class DashboardController extends Controller
                 'pendingPayments' => 0,
                 'pendingPaymentsAmount' => 0,
                 'conversionRate' => 0,
-                
+
                 // Recent Data
                 'recentUsers' => collect([]),
                 'popularTemplates' => collect([]),
                 'recentPayments' => collect([]),
                 'recentSubscriptions' => collect([]),
                 'subscriptionPlans' => collect([]),
-                
+
                   // Add-Ons Statistics
             'totalAddOns' => $totalAddOns,
             'activeAddOns' => $activeAddOns,
@@ -291,7 +261,7 @@ class DashboardController extends Controller
             'addOnRevenue' => $addOnRevenue,
             'addOnRevenueThisMonth' => $addOnRevenueThisMonth,
             'popularAddOns' => $popularAddOns,
-            
+
             ]);
         }
     }
