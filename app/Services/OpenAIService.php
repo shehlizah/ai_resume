@@ -405,6 +405,12 @@ PROMPT;
     public function generateJobsFromResumeFile(string $filePath, string $location = null, int $limit = 5): array
     {
         try {
+            \Log::info('generateJobsFromResumeFile called', [
+                'file' => $filePath,
+                'location' => $location,
+                'limit' => $limit
+            ]);
+
             // Read the file and encode as base64 for sending to AI
             if (!file_exists($filePath)) {
                 \Log::warning('Resume file not found: ' . $filePath);
@@ -417,6 +423,11 @@ PROMPT;
                 return [];
             }
 
+            \Log::info('File read successfully', [
+                'file_size' => strlen($fileContent),
+                'file_path' => $filePath
+            ]);
+
             // Determine file type
             $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
             $fileType = match ($extension) {
@@ -428,7 +439,17 @@ PROMPT;
             // Encode file as base64
             $fileBase64 = base64_encode($fileContent);
 
+            \Log::info('File encoded to base64', [
+                'base64_length' => strlen($fileBase64),
+                'file_type' => $fileType
+            ]);
+
             $prompt = $this->buildJobRecommendationFromFilePrompt($fileBase64, $fileType, $location, $limit);
+
+            \Log::info('Sending request to OpenAI', [
+                'model' => $this->model,
+                'prompt_length' => strlen($prompt)
+            ]);
 
             $response = $this->client->chat()->create([
                 'model' => $this->model,
@@ -447,10 +468,25 @@ PROMPT;
             ]);
 
             $content = $response->choices[0]->message->content;
-            return $this->parseJobMatches($content);
+            \Log::info('OpenAI response received', [
+                'response_length' => strlen($content),
+                'response_preview' => substr($content, 0, 500)
+            ]);
+
+            $jobs = $this->parseJobMatches($content);
+            \Log::info('Jobs parsed successfully', [
+                'job_count' => count($jobs),
+                'jobs' => $jobs
+            ]);
+
+            return $jobs;
 
         } catch (\Exception $e) {
-            \Log::error('OpenAI Job Generation from File Error: ' . $e->getMessage());
+            \Log::error('OpenAI Job Generation from File Error', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             return [];
         }
     }
@@ -545,20 +581,35 @@ PROMPT;
     private function parseJobMatches(string $json): array
     {
         try {
+            \Log::info('parseJobMatches called', [
+                'input_length' => strlen($json),
+                'input_preview' => substr($json, 0, 300)
+            ]);
+
             // Extract JSON from response (handle markdown code blocks)
             if (preg_match('/\[[\s\S]*\]/', $json, $matches)) {
                 $json = $matches[0];
+                \Log::info('Extracted JSON from response', ['extracted_length' => strlen($json)]);
             }
 
             $jobs = json_decode($json, true);
 
+            \Log::info('JSON decoded', [
+                'is_array' => is_array($jobs),
+                'decoded_count' => is_array($jobs) ? count($jobs) : 0,
+                'json_error' => json_last_error_msg()
+            ]);
+
             if (!is_array($jobs)) {
-                \Log::warning('Invalid job JSON from OpenAI', ['response' => substr($json, 0, 200)]);
+                \Log::warning('Invalid job JSON from OpenAI', [
+                    'response' => substr($json, 0, 500),
+                    'decoded_value' => var_export($jobs, true)
+                ]);
                 return [];
             }
 
             // Validate and clean job data
-            return array_filter(array_map(fn ($job) => [
+            $cleanedJobs = array_map(fn ($job) => [
                 'id' => 'ai-' . md5($job['title'] . $job['company']),
                 'title' => $job['title'] ?? 'Job',
                 'company' => $job['company'] ?? 'Company',
@@ -566,10 +617,25 @@ PROMPT;
                 'salary' => $job['salary'] ?? 'Competitive',
                 'description' => $job['description'] ?? '',
                 'match_score' => min(99, max(0, $job['match_score'] ?? 75))
-            ], $jobs));
+            ], $jobs);
+
+            $filtered = array_filter($cleanedJobs);
+
+            \Log::info('Jobs processed', [
+                'original_count' => count($jobs),
+                'cleaned_count' => count($cleanedJobs),
+                'filtered_count' => count($filtered),
+                'final_jobs' => $filtered
+            ]);
+
+            return $filtered;
 
         } catch (\Exception $e) {
-            \Log::error('Job parsing error: ' . $e->getMessage());
+            \Log::error('Job parsing error', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             return [];
         }
     }
