@@ -784,4 +784,286 @@ RECIPIENT: {$recipientName}, {$companyName}, {$companyAddress}
 Use proper business letter format. Make it compelling, professional, and tailored (300-400 words).
 PROMPT;
     }
+
+    /**
+     * Generate an interview question based on context
+     */
+    public function generateInterviewQuestion(
+        string $jobTitle,
+        string $company,
+        string $interviewType,
+        ?string $resumeText = null,
+        array $previousQA = []
+    ): array {
+        try {
+            $context = "Job Title: {$jobTitle}\nCompany: {$company}\nInterview Type: {$interviewType}";
+
+            if ($resumeText) {
+                $context .= "\n\nCandidate's Resume Summary:\n" . substr($resumeText, 0, 1000);
+            }
+
+            $historyContext = '';
+            if (!empty($previousQA)) {
+                $historyContext = "\n\nPrevious Questions & Answers:\n";
+                foreach ($previousQA as $index => $qa) {
+                    $historyContext .= "\nQ" . ($index + 1) . ": {$qa['question']}";
+                    $historyContext .= "\nA: {$qa['answer']}";
+                    if (isset($qa['score'])) {
+                        $historyContext .= " (Score: {$qa['score']}/100)";
+                    }
+                }
+            }
+
+            $prompt = <<<PROMPT
+You are conducting a {$interviewType} interview for a {$jobTitle} position at {$company}.
+
+{$context}
+{$historyContext}
+
+Generate ONE relevant interview question that:
+1. Is appropriate for the job level and role
+2. Hasn't been asked before (check previous questions)
+3. Tests key competencies for this position
+4. Allows for detailed responses
+
+Return ONLY a JSON object with this structure:
+{
+    "question": "Your interview question here",
+    "type": "behavioral|technical|situational",
+    "focus_area": "leadership|problem_solving|technical_skills|etc"
+}
+PROMPT;
+
+            $response = $this->client->chat()->create([
+                'model' => $this->model,
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are an expert interviewer who asks insightful, relevant questions.'],
+                    ['role' => 'user', 'content' => $prompt]
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 200
+            ]);
+
+            $content = $response->choices[0]->message->content;
+
+            // Parse JSON response
+            $content = trim($content);
+            if (strpos($content, '```json') !== false) {
+                preg_match('/```json\s*(.*?)\s*```/s', $content, $matches);
+                $content = $matches[1] ?? $content;
+            }
+
+            $questionData = json_decode($content, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && isset($questionData['question'])) {
+                return $questionData;
+            }
+
+            // Fallback if JSON parsing fails
+            return [
+                'question' => $content,
+                'type' => 'open_ended',
+                'focus_area' => 'general'
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('OpenAI Interview Question Generation Error: ' . $e->getMessage());
+
+            // Fallback question
+            return [
+                'question' => "Tell me about a challenging project you worked on as a {$jobTitle}. What was your role and how did you contribute to its success?",
+                'type' => 'behavioral',
+                'focus_area' => 'problem_solving'
+            ];
+        }
+    }
+
+    /**
+     * Evaluate an interview answer and provide feedback
+     */
+    public function evaluateInterviewAnswer(
+        string $question,
+        string $answer,
+        string $jobTitle,
+        string $company
+    ): array {
+        try {
+            $prompt = <<<PROMPT
+You are evaluating an interview answer for a {$jobTitle} position at {$company}.
+
+Question: {$question}
+
+Candidate's Answer: {$answer}
+
+Evaluate this answer and provide:
+1. A score from 0-100 (be realistic and fair)
+2. Specific strengths (2-3 points)
+3. Areas for improvement (1-2 points)
+4. Overall feedback (2-3 sentences)
+
+Return ONLY a JSON object with this structure:
+{
+    "score": 85,
+    "strengths": ["Point 1", "Point 2"],
+    "improvements": ["Point 1"],
+    "feedback": "Overall assessment here..."
+}
+PROMPT;
+
+            $response = $this->client->chat()->create([
+                'model' => $this->model,
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are an experienced interviewer who provides constructive, balanced feedback.'],
+                    ['role' => 'user', 'content' => $prompt]
+                ],
+                'temperature' => 0.5,
+                'max_tokens' => 400
+            ]);
+
+            $content = $response->choices[0]->message->content;
+
+            // Parse JSON response
+            $content = trim($content);
+            if (strpos($content, '```json') !== false) {
+                preg_match('/```json\s*(.*?)\s*```/s', $content, $matches);
+                $content = $matches[1] ?? $content;
+            }
+
+            $evaluation = json_decode($content, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && isset($evaluation['score'])) {
+                return [
+                    'score' => (int) $evaluation['score'],
+                    'strengths' => $evaluation['strengths'] ?? [],
+                    'improvements' => $evaluation['improvements'] ?? [],
+                    'feedback' => $evaluation['feedback'] ?? 'Good answer with room for improvement.'
+                ];
+            }
+
+            // Fallback evaluation
+            return [
+                'score' => 70,
+                'strengths' => ['Provided relevant information'],
+                'improvements' => ['Could add more specific examples'],
+                'feedback' => 'Your answer addressed the question but could be strengthened with more concrete details.'
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('OpenAI Answer Evaluation Error: ' . $e->getMessage());
+
+            return [
+                'score' => 75,
+                'strengths' => ['Responded to the question'],
+                'improvements' => ['Add more specific details'],
+                'feedback' => 'Thank you for your response. Consider adding more specific examples in future answers.'
+            ];
+        }
+    }
+
+    /**
+     * Generate a comprehensive final interview report
+     */
+    public function generateFinalInterviewReport(array $sessionData): array
+    {
+        try {
+            $questionsAndAnswers = '';
+            $scores = [];
+
+            foreach ($sessionData['questions'] as $index => $qa) {
+                $questionsAndAnswers .= "\nQ" . ($index + 1) . ": {$qa['question']}";
+                $questionsAndAnswers .= "\nA: {$qa['answer']}";
+                $questionsAndAnswers .= "\nScore: {$qa['score']}/100";
+                if (isset($qa['feedback'])) {
+                    $questionsAndAnswers .= "\nFeedback: {$qa['feedback']}";
+                }
+                $questionsAndAnswers .= "\n";
+                $scores[] = $qa['score'];
+            }
+
+            $averageScore = count($scores) > 0 ? round(array_sum($scores) / count($scores), 1) : 0;
+
+            $prompt = <<<PROMPT
+You are providing a final interview performance report for a candidate interviewing for a {$sessionData['job_title']} position at {$sessionData['company']}.
+
+Interview Performance Summary:
+Total Questions: {$sessionData['total_questions']}
+Average Score: {$averageScore}/100
+
+Questions, Answers & Individual Scores:
+{$questionsAndAnswers}
+
+Provide a comprehensive final report with:
+1. Overall performance summary (3-4 sentences)
+2. Top 3 strengths demonstrated
+3. Top 3 areas for improvement
+4. Specific recommendations for future interviews (3-4 actionable tips)
+5. Final verdict: "Strong Candidate", "Moderate Candidate", or "Needs Improvement"
+
+Return ONLY a JSON object with this structure:
+{
+    "summary": "Overall performance summary...",
+    "strengths": ["Strength 1", "Strength 2", "Strength 3"],
+    "improvements": ["Area 1", "Area 2", "Area 3"],
+    "recommendations": ["Tip 1", "Tip 2", "Tip 3", "Tip 4"],
+    "verdict": "Strong Candidate|Moderate Candidate|Needs Improvement"
+}
+PROMPT;
+
+            $response = $this->client->chat()->create([
+                'model' => $this->model,
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are a senior hiring manager providing constructive interview feedback.'],
+                    ['role' => 'user', 'content' => $prompt]
+                ],
+                'temperature' => 0.6,
+                'max_tokens' => 800
+            ]);
+
+            $content = $response->choices[0]->message->content;
+
+            // Parse JSON response
+            $content = trim($content);
+            if (strpos($content, '```json') !== false) {
+                preg_match('/```json\s*(.*?)\s*```/s', $content, $matches);
+                $content = $matches[1] ?? $content;
+            }
+
+            $report = json_decode($content, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && isset($report['summary'])) {
+                return [
+                    'overall_score' => $averageScore,
+                    'summary' => $report['summary'],
+                    'strengths' => $report['strengths'] ?? [],
+                    'improvements' => $report['improvements'] ?? [],
+                    'recommendations' => $report['recommendations'] ?? [],
+                    'verdict' => $report['verdict'] ?? 'Moderate Candidate'
+                ];
+            }
+
+            // Fallback report
+            return [
+                'overall_score' => $averageScore,
+                'summary' => 'You completed the interview with an average score of ' . $averageScore . '/100. Your responses showed understanding of the role requirements.',
+                'strengths' => ['Completed all questions', 'Provided relevant answers', 'Showed engagement'],
+                'improvements' => ['Add more specific examples', 'Structure answers more clearly', 'Provide quantifiable results'],
+                'recommendations' => ['Practice the STAR method', 'Prepare specific examples beforehand', 'Research the company thoroughly', 'Ask thoughtful questions'],
+                'verdict' => $averageScore >= 80 ? 'Strong Candidate' : ($averageScore >= 60 ? 'Moderate Candidate' : 'Needs Improvement')
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('OpenAI Final Report Generation Error: ' . $e->getMessage());
+
+            $averageScore = $sessionData['overall_score'] ?? 70;
+
+            return [
+                'overall_score' => $averageScore,
+                'summary' => 'You completed the mock interview. Review your individual question feedback for detailed insights.',
+                'strengths' => ['Completed the interview', 'Responded to all questions'],
+                'improvements' => ['Practice with more specific examples', 'Structure your answers clearly'],
+                'recommendations' => ['Use the STAR method', 'Prepare examples beforehand', 'Practice common interview questions'],
+                'verdict' => 'Moderate Candidate'
+            ];
+        }
+    }
 }

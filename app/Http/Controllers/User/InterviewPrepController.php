@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserSubscription;
+use App\Models\InterviewSession;
+use App\Models\InterviewQuestion;
+use App\Models\UserResume;
 use App\Services\OpenAIService;
 use App\Services\JobMatchService;
 
@@ -231,18 +234,58 @@ class InterviewPrepController extends Controller
             'resume_id' => 'nullable|integer|exists:user_resumes,id'
         ]);
 
-        // TODO: Create interview session in database
-        // TODO: Generate questions using OpenAI
+        $user = Auth::user();
 
-        $sessionId = 'session_' . uniqid();
+        // Get resume text if provided
+        $resumeText = null;
+        if ($request->resume_id) {
+            $resume = UserResume::where('id', $request->resume_id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if ($resume && $resume->extracted_text) {
+                $resumeText = $resume->extracted_text;
+            }
+        }
+
+        // Create session in database
+        $sessionId = 'session_' . uniqid() . '_' . time();
+
+        $session = InterviewSession::create([
+            'session_id' => $sessionId,
+            'user_id' => $user->id,
+            'job_title' => $request->job_title,
+            'company' => $request->company,
+            'interview_type' => $request->interview_type,
+            'status' => 'in_progress',
+        ]);
+
+        // Generate first question using OpenAI
+        $questionData = $this->openAIService->generateInterviewQuestion(
+            $request->job_title,
+            $request->company,
+            $request->interview_type,
+            $resumeText,
+            [] // No previous Q&A for first question
+        );
+
+        // Store question in database
+        $question = InterviewQuestion::create([
+            'session_id' => $sessionId,
+            'question_number' => 1,
+            'question_text' => $questionData['question'],
+            'question_type' => $questionData['type'] ?? 'general',
+            'focus_area' => $questionData['focus_area'] ?? null,
+        ]);
 
         return response()->json([
             'success' => true,
             'session_id' => $sessionId,
             'first_question' => [
-                'id' => 1,
-                'question' => 'Tell me about your experience with ' . $request->job_title,
-                'type' => 'open_ended'
+                'id' => $question->id,
+                'question' => $questionData['question'],
+                'type' => $questionData['type'] ?? 'general',
+                'number' => 1
             ]
         ]);
     }
@@ -258,18 +301,100 @@ class InterviewPrepController extends Controller
             'answer' => 'required|string'
         ]);
 
-        // TODO: Store answer
-        // TODO: Get AI feedback
-        // TODO: Generate next question
+        $user = Auth::user();
+
+        // Get session
+        $session = InterviewSession::where('session_id', $request->session_id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        // Get current question
+        $currentQuestion = InterviewQuestion::where('id', $request->question_id)
+            ->where('session_id', $request->session_id)
+            ->firstOrFail();
+
+        // Evaluate answer using OpenAI
+        $evaluation = $this->openAIService->evaluateInterviewAnswer(
+            $currentQuestion->question_text,
+            $request->answer,
+            $session->job_title,
+            $session->company
+        );
+
+        // Update question with answer and feedback
+        $currentQuestion->update([
+            'answer_text' => $request->answer,
+            'score' => $evaluation['score'],
+            'feedback' => [
+                'feedback' => $evaluation['feedback'],
+                'strengths' => $evaluation['strengths'],
+                'improvements' => $evaluation['improvements']
+            ],
+            'answered_at' => now(),
+        ]);
+
+        // Get all previous Q&A for context
+        $previousQA = $session->questions()
+            ->whereNotNull('answer_text')
+            ->get()
+            ->map(function ($q) {
+                return [
+                    'question' => $q->question_text,
+                    'answer' => $q->answer_text,
+                    'score' => $q->score
+                ];
+            })
+            ->toArray();
+
+        // Determine if we should generate another question (limit to 5 questions)
+        $questionCount = $session->questions()->count();
+        $nextQuestion = null;
+
+        if ($questionCount < 5) {
+            // Get resume text if available
+            $resumeText = null;
+            $resume = UserResume::where('user_id', $user->id)->latest()->first();
+            if ($resume && $resume->extracted_text) {
+                $resumeText = $resume->extracted_text;
+            }
+
+            // Generate next question
+            $questionData = $this->openAIService->generateInterviewQuestion(
+                $session->job_title,
+                $session->company,
+                $session->interview_type,
+                $resumeText,
+                $previousQA
+            );
+
+            // Store next question
+            $newQuestion = InterviewQuestion::create([
+                'session_id' => $request->session_id,
+                'question_number' => $questionCount + 1,
+                'question_text' => $questionData['question'],
+                'question_type' => $questionData['type'] ?? 'general',
+                'focus_area' => $questionData['focus_area'] ?? null,
+            ]);
+
+            $nextQuestion = [
+                'id' => $newQuestion->id,
+                'question' => $questionData['question'],
+                'type' => $questionData['type'] ?? 'general',
+                'number' => $questionCount + 1
+            ];
+        } else {
+            // Mark session as complete
+            $session->complete();
+        }
 
         return response()->json([
             'success' => true,
-            'feedback' => 'Great answer! You provided good context and examples.',
-            'score' => 85,
-            'next_question' => [
-                'id' => 2,
-                'question' => 'How would you approach this technical challenge?'
-            ]
+            'feedback' => $evaluation['feedback'],
+            'score' => $evaluation['score'],
+            'strengths' => $evaluation['strengths'],
+            'improvements' => $evaluation['improvements'],
+            'next_question' => $nextQuestion,
+            'is_complete' => is_null($nextQuestion)
         ]);
     }
 
@@ -280,26 +405,69 @@ class InterviewPrepController extends Controller
     {
         $user = Auth::user();
 
-        // TODO: Fetch session from database
+        // Fetch session from database
+        $session = InterviewSession::where('session_id', $sessionId)
+            ->where('user_id', $user->id)
+            ->with('questions')
+            ->firstOrFail();
+
+        // Generate final report if not already generated
+        if (!$session->final_report && $session->status === 'completed') {
+            $questions = $session->questions()
+                ->whereNotNull('answer_text')
+                ->get()
+                ->map(function ($q) {
+                    return [
+                        'question' => $q->question_text,
+                        'answer' => $q->answer_text,
+                        'score' => $q->score,
+                        'feedback' => $q->feedback['feedback'] ?? ''
+                    ];
+                })
+                ->toArray();
+
+            $sessionData = [
+                'job_title' => $session->job_title,
+                'company' => $session->company,
+                'total_questions' => $session->total_questions,
+                'overall_score' => $session->overall_score,
+                'questions' => $questions
+            ];
+
+            $finalReport = $this->openAIService->generateFinalInterviewReport($sessionData);
+
+            // Store the final report
+            $session->update([
+                'final_report' => $finalReport,
+                'final_summary' => $finalReport['summary']
+            ]);
+        }
+
+        // Format session data for view
         $sessionData = [
-            'id' => $sessionId,
-            'job_title' => 'Software Engineer',
-            'company' => 'Tech Company',
-            'overall_score' => 82,
-            'strengths' => [
-                'Clear communication',
-                'Good problem-solving approach',
-                'Relevant experience'
-            ],
-            'improvements' => [
-                'Add more specific examples',
-                'Provide more technical depth',
-                'Practice timing of responses'
-            ],
-            'detailed_feedback' => [
-                'Q1: Tell me about yourself - Score: 85 - Good structure and relevant info',
-                'Q2: Technical question - Score: 80 - Solid approach but could add more depth'
-            ]
+            'id' => $session->session_id,
+            'job_title' => $session->job_title,
+            'company' => $session->company,
+            'interview_type' => ucfirst($session->interview_type),
+            'overall_score' => $session->overall_score,
+            'status' => $session->status,
+            'completed_at' => $session->completed_at,
+            'strengths' => $session->final_report['strengths'] ?? [],
+            'improvements' => $session->final_report['improvements'] ?? [],
+            'recommendations' => $session->final_report['recommendations'] ?? [],
+            'summary' => $session->final_report['summary'] ?? '',
+            'verdict' => $session->final_report['verdict'] ?? 'Moderate Candidate',
+            'detailed_feedback' => $session->questions->map(function ($q) {
+                return [
+                    'number' => $q->question_number,
+                    'question' => $q->question_text,
+                    'answer' => $q->answer_text,
+                    'score' => $q->score,
+                    'feedback' => $q->feedback['feedback'] ?? '',
+                    'strengths' => $q->feedback['strengths'] ?? [],
+                    'improvements' => $q->feedback['improvements'] ?? []
+                ];
+            })->toArray()
         ];
 
         return view('user.interview.ai-results', compact('user', 'sessionData'));
