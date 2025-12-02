@@ -374,7 +374,7 @@
 
                 // Update status text
                 document.getElementById('locationStatusText').innerHTML = '<i class="bx bx-check-circle me-2"></i> ' + file.name + ' uploaded!';
-                
+
                 // Show upload success alert
                 alert('✅ Resume uploaded successfully! Now analyzing with AI...');
 

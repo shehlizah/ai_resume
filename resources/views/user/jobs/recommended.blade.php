@@ -399,15 +399,14 @@
             if (data.success) {
                 // Open the job application URL in a new tab
                 window.open(applyUrl, '_blank');
+            } else {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
                 } else {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                    } else {
-                        alert(data.message);
-                    }
+                    alert(data.message);
                 }
-            });
-        }
+            }
+        });
     }
 
     function updateProgress(data) {
