@@ -243,6 +243,14 @@
         const resumeId = document.getElementById('resumeSelect')?.value || null;
         const uploadedFile = sessionStorage.getItem('uploadedResumeFile');
 
+        console.log('generateJobs called', {
+            triggerSource,
+            resumeId,
+            uploadedFile,
+            hasResumeId: !!resumeId,
+            hasUploadedFile: !!uploadedFile
+        });
+
         // Check if either a saved resume is selected OR a file was uploaded
         const hasResume = resumeId || uploadedFile;
 
@@ -261,19 +269,27 @@
 
         showJobsLoadingState();
 
+        const payload = {
+            resume_id: resumeId,
+            uploaded_file: uploadedFile
+        };
+
+        console.log('Sending payload to backend', payload);
+
         fetch('{{ route("user.jobs.recommended") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            body: JSON.stringify({
-                resume_id: resumeId,
-                uploaded_file: uploadedFile
-            })
+            body: JSON.stringify(payload)
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('Response data:', data);
             if (data.success) {
                 displayJobs(data.jobs);
                 updateProgress(data);
@@ -281,7 +297,7 @@
                 if (data.redirect) {
                     window.location.href = data.redirect;
                 } else {
-                    alert(data.message);
+                    alert('❌ ' + (data.message || 'Failed to generate jobs'));
                 }
             }
             if (btn) {
@@ -290,12 +306,12 @@
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Fetch error:', error);
             if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="bx bx-search me-2"></i> Find Recommended Jobs';
             }
-            alert('Something went wrong while generating jobs. Please try again.');
+            alert('❌ Network error: ' + error.message);
         });
     }
 
@@ -482,17 +498,26 @@
         .then(data => {
             uploadStatus.style.display = 'none';
 
+            console.log('Upload response:', data);
+
             if (data.success) {
                 uploadSuccess.style.display = 'block';
                 document.getElementById('uploadedFileName').textContent = file.name;
 
                 // Store the temporary file path/ID for job search
-                sessionStorage.setItem('uploadedResumeFile', data.file_path);
+                const filePath = data.file_path;
+                console.log('Storing file path in sessionStorage:', filePath);
+                sessionStorage.setItem('uploadedResumeFile', filePath);
+
+                // Verify it was stored
+                const storedPath = sessionStorage.getItem('uploadedResumeFile');
+                console.log('Verified stored path:', storedPath);
 
                 // Clear file input
                 fileInput.value = '';
 
                 // Automatically refresh recommendations using the newly uploaded resume
+                console.log('Calling generateJobs with upload trigger');
                 generateJobs('upload');
             } else {
                 alert('❌ Error: ' + (data.message || 'Unknown error'));

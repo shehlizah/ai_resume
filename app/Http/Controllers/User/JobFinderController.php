@@ -50,6 +50,11 @@ class JobFinderController extends Controller
      */
     public function generateRecommended(Request $request)
     {
+        \Log::info('generateRecommended called', [
+            'resume_id' => $request->resume_id,
+            'uploaded_file' => $request->uploaded_file
+        ]);
+
         $request->validate([
             'resume_id' => 'nullable|integer|exists:user_resumes,id',
             'uploaded_file' => 'nullable|string'
@@ -80,7 +85,13 @@ class JobFinderController extends Controller
         $uploadedFilePath = null;
         if ($request->uploaded_file) {
             $uploadedFilePath = storage_path('app/' . ltrim($request->uploaded_file, '/'));
+            \Log::info('File path resolution', [
+                'input' => $request->uploaded_file,
+                'resolved' => $uploadedFilePath,
+                'exists' => file_exists($uploadedFilePath)
+            ]);
             if (!file_exists($uploadedFilePath)) {
+                \Log::warning('File does not exist', ['path' => $uploadedFilePath]);
                 $uploadedFilePath = null;
             }
         }
@@ -89,6 +100,7 @@ class JobFinderController extends Controller
 
         // If we have an uploaded file, send directly to AI
         if ($uploadedFilePath) {
+            \Log::info('Using uploaded file for AI');
             $jobs = $this->openAIService->generateJobsFromResumeFile(
                 $uploadedFilePath,
                 'Remote (Any)',
@@ -106,8 +118,15 @@ class JobFinderController extends Controller
             ]);
         }
 
+        \Log::info('Resume profile check', [
+            'has_profile' => !empty($resumeProfile),
+            'has_text' => !empty($resumeProfile['raw_text'] ?? null),
+            'text_length' => strlen($resumeProfile['raw_text'] ?? '')
+        ]);
+
         // If saved resume selected, try AI with extracted text
         if (!empty($resumeProfile) && !empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
+            \Log::info('Using saved resume for AI');
             $jobs = $this->openAIService->generateJobsFromResume(
                 $resumeProfile['raw_text'],
                 'Remote (Any)',
@@ -126,6 +145,7 @@ class JobFinderController extends Controller
         }
 
         // No resume provided
+        \Log::warning('No resume provided for job generation');
         return response()->json([
             'success' => false,
             'message' => 'Please upload a resume or select a saved resume to get job recommendations.'
