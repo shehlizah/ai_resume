@@ -19,11 +19,22 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body text-center py-5">
-                    <h1 class="text-primary mb-2" style="font-size: 4rem;">{{ $sessionData['overall_score'] }}%</h1>
-                    <h5 class="mb-3">Overall Score</h5>
-                    <p class="text-muted">Interview for: <strong>{{ $sessionData['job_title'] }} at {{ $sessionData['company'] }}</strong></p>
+                    <h1 class="text-primary mb-2" style="font-size: 4rem;">{{ number_format($sessionData['overall_score'], 1) }}%</h1>
+                    <h5 class="mb-1">Overall Score</h5>
+                    <span class="badge bg-{{ $sessionData['overall_score'] >= 80 ? 'success' : ($sessionData['overall_score'] >= 60 ? 'warning' : 'danger') }} mb-2">
+                        {{ $sessionData['verdict'] }}
+                    </span>
+                    <p class="text-muted mb-0">Interview for: <strong>{{ $sessionData['job_title'] }} at {{ $sessionData['company'] }}</strong></p>
                 </div>
             </div>
+
+            <!-- Summary -->
+            @if(!empty($sessionData['summary']))
+            <div class="alert alert-info border-0 mb-4">
+                <h6 class="alert-heading"><i class="bx bx-info-circle me-1"></i> Summary</h6>
+                <p class="mb-0">{{ $sessionData['summary'] }}</p>
+            </div>
+            @endif
 
             <!-- Strengths -->
             <div class="card border-0 shadow-sm mb-4">
@@ -57,21 +68,63 @@
                 </div>
             </div>
 
+            <!-- Recommendations -->
+            @if(!empty($sessionData['recommendations']))
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0">
+                    <h6 class="mb-0">
+                        <i class="bx bx-bulb text-primary me-1"></i> Recommendations
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="ps-3">
+                        @foreach($sessionData['recommendations'] as $recommendation)
+                        <li class="mb-2">{{ $recommendation }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+            @endif
+
             <!-- Detailed Feedback -->
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-0">
                     <h6 class="mb-0">
-                        <i class="bx bx-comment-detail me-1"></i> Detailed Feedback
+                        <i class="bx bx-comment-detail me-1"></i> Detailed Question Feedback
                     </h6>
                 </div>
                 <div class="card-body">
-                    <div class="timeline">
-                        @foreach($sessionData['detailed_feedback'] as $feedback)
-                        <div class="timeline-item mb-3">
-                            <p class="text-muted small mb-0">{{ $feedback }}</p>
+                    @foreach($sessionData['detailed_feedback'] as $feedback)
+                    <div class="mb-4 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="mb-0">Question {{ $feedback['number'] }}</h6>
+                            <span class="badge bg-{{ $feedback['score'] >= 80 ? 'success' : ($feedback['score'] >= 60 ? 'warning' : 'danger') }}">{{ $feedback['score'] }}/100</span>
                         </div>
-                        @endforeach
+                        <p class="text-muted small mb-2"><strong>Q:</strong> {{ $feedback['question'] }}</p>
+                        <p class="small mb-2"><strong>Your Answer:</strong> {{ Str::limit($feedback['answer'], 150) }}</p>
+                        <p class="small mb-2"><strong>Feedback:</strong> {{ $feedback['feedback'] }}</p>
+                        @if(!empty($feedback['strengths']))
+                        <div class="mb-1">
+                            <small class="text-success"><i class="bx bx-check-circle me-1"></i><strong>Strengths:</strong></small>
+                            <ul class="small mb-0 ps-4">
+                                @foreach($feedback['strengths'] as $strength)
+                                <li>{{ $strength }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
+                        @if(!empty($feedback['improvements']))
+                        <div>
+                            <small class="text-warning"><i class="bx bx-info-circle me-1"></i><strong>Improve:</strong></small>
+                            <ul class="small mb-0 ps-4">
+                                @foreach($feedback['improvements'] as $improvement)
+                                <li>{{ $improvement }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
                     </div>
+                    @endforeach
                 </div>
             </div>
         </div>

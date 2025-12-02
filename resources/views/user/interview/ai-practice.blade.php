@@ -168,6 +168,29 @@
     <script>
     let currentSessionId = null;
     let currentQuestionId = 1;
+    let timerInterval = null;
+    let startTime = null;
+
+    function updateTimer() {
+        if (!startTime) return;
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        document.getElementById('timeElapsed').textContent = 
+            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+        startTime = Date.now();
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
 
     function startInterview(event) {
         event.preventDefault();
@@ -197,6 +220,7 @@
                 displayQuestion(data.first_question);
                 document.getElementById('interviewCard').style.display = 'none';
                 document.getElementById('interviewSession').style.display = 'block';
+                startTimer();
             } else {
                 alert('Error starting interview: ' + (data.message || 'Unknown error'));
             }
@@ -222,7 +246,9 @@
             return;
         }
 
-        const submitBtn = event.target;
+        const submitBtn = document.querySelector('button[onclick="submitAnswer()"]');
+        if (!submitBtn) return;
+        
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
 
@@ -244,16 +270,23 @@
                 // Show feedback
                 alert('Feedback: ' + data.feedback + '\nScore: ' + data.score + '/100');
 
-                // Move to next question
-                if (data.next_question) {
+                // Move to next question or end interview
+                if (data.is_complete) {
+                    stopTimer();
+                    window.location.href = '/interview/ai-results/' + currentSessionId;
+                } else if (data.next_question) {
                     currentQuestionId++;
                     displayQuestion(data.next_question);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bx bx-send me-1"></i> Submit & Next Question';
                 } else {
                     endInterview();
                 }
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bx bx-send me-1"></i> Submit & Next Question';
+                alert('Error: ' + (data.message || 'Failed to submit answer'));
             }
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="bx bx-send me-1"></i> Submit & Next Question';
         })
         .catch(error => {
             console.error('Error:', error);
@@ -265,6 +298,7 @@
 
     function endInterview() {
         if (confirm('End interview? You can view your results.')) {
+            stopTimer();
             window.location.href = '/interview/ai-results/' + currentSessionId;
         }
     }
