@@ -373,7 +373,7 @@
                                         <small class="text-muted">Match Score</small>
                                     </div>
                                 </div>
-                                <button class="btn btn-primary btn-sm w-100" onclick="applyJob('${job.id}')">
+                                <button class="btn btn-primary btn-sm w-100" onclick="applyJob('${job.id}', '${job.apply_url}')">
                                     <i class="bx bx-send me-1"></i> Apply
                                 </button>
                             </div>
@@ -385,19 +385,20 @@
         jobsContainer.innerHTML = html;
     }
 
-    function applyJob(jobId) {
-        if (confirm('Apply to this job?')) {
-            fetch(`/jobs/${jobId}/apply`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
+    function applyJob(jobId, applyUrl) {
+        // Track the application
+        fetch(`/jobs/${jobId}/apply`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Open the job application URL in a new tab
+                window.open(applyUrl, '_blank');
                 } else {
                     if (data.redirect) {
                         window.location.href = data.redirect;

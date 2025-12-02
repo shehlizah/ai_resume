@@ -511,11 +511,12 @@ Return ONLY a valid JSON array (no markdown, no extra text) with exactly this st
     "location": "City, State or Remote",
     "salary": "\$min - \$max or Competitive",
     "description": "Brief job description matching this candidate's profile",
+    "apply_url": "https://example.com/careers/job-posting",
     "match_score": 85
   }
 ]
 
-Focus on jobs that match the candidate's skills, experience level, and location. Match scores should be 70-95.
+Generate realistic job application URLs (company careers pages, LinkedIn, Indeed, etc.). Focus on jobs that match the candidate's skills, experience level, and location. Match scores should be 70-95.
 PROMPT;
     }
 
@@ -557,6 +558,7 @@ PROMPT;
                 'location' => $job['location'] ?? 'Remote',
                 'salary' => $job['salary'] ?? 'Competitive',
                 'description' => $job['description'] ?? '',
+                'apply_url' => $job['apply_url'] ?? '#',
                 'match_score' => min(99, max(0, $job['match_score'] ?? 75))
             ], $jobs);
 

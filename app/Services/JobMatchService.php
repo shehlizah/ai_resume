@@ -508,7 +508,7 @@ class JobMatchService
                     $parser = new \Smalot\PdfParser\Parser();
                     $pdf = $parser->parseFile($path);
                     $text = $pdf->getText();
-                    
+
                     if (!empty($text)) {
                         \Log::info('PDF extracted using PdfParser library', [
                             'text_length' => strlen($text)

@@ -185,8 +185,9 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body d-flex align-items-center justify-content-center py-5">
                     <div class="text-center">
-                        <div class="spinner-border text-primary mb-3" role="status"></div>
-                        <p class="mb-0">Searching for jobs in your location...</p>
+                        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                        <h5 class="text-muted">Analyzing your resume with AI...</h5>
+                        <p class="mb-0 text-muted">Finding the best job matches for you</p>
                     </div>
                 </div>
             </div>
@@ -231,7 +232,7 @@
                                         <small class="text-muted">Match Score</small>
                                     </div>
                                 </div>
-                                <button class="btn btn-primary btn-sm w-100" onclick="applyJob('${job.id}')">
+                                <button class="btn btn-primary btn-sm w-100" onclick="window.open('${job.apply_url || '#'}', '_blank')">
                                     <i class="bx bx-send me-1"></i> Apply Now
                                 </button>
                             </div>
@@ -373,6 +374,9 @@
 
                 // Update status text
                 document.getElementById('locationStatusText').innerHTML = '<i class="bx bx-check-circle me-2"></i> ' + file.name + ' uploaded!';
+                
+                // Show upload success alert
+                alert('✅ Resume uploaded successfully! Now analyzing with AI...');
 
                 // Clear file input
                 locationFileInput.value = '';
