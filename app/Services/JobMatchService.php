@@ -502,6 +502,27 @@ class JobMatchService
     protected function extractFromPdf(string $path): string
     {
         try {
+            // Try using Smalot PDF Parser if available
+            if (class_exists('\Smalot\PdfParser\Parser')) {
+                try {
+                    $parser = new \Smalot\PdfParser\Parser();
+                    $pdf = $parser->parseFile($path);
+                    $text = $pdf->getText();
+                    
+                    if (!empty($text)) {
+                        \Log::info('PDF extracted using PdfParser library', [
+                            'text_length' => strlen($text)
+                        ]);
+                        return $this->cleanText($text);
+                    }
+                } catch (\Exception $e) {
+                    \Log::warning('PdfParser failed, falling back to regex', [
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            // Fallback to regex-based extraction
             $content = @file_get_contents($path);
             if ($content === false) {
                 \Log::warning('Failed to read PDF file: ' . $path);
@@ -510,20 +531,37 @@ class JobMatchService
 
             // Try to extract readable text from PDF binary
             // Look for text streams in PDF
+            $text = '';
             if (preg_match_all('/BT\s+(.+?)\s+ET/s', $content, $matches)) {
                 $text = implode(' ', $matches[1]);
+                // Remove PDF escape sequences
                 $text = preg_replace('/\\\\[0-3][0-7]{0,2}/', ' ', $text);
-                $text = preg_replace('/\((.+?)\)/', '$1', $text);
-                return $this->cleanText($text);
+                // Extract text from parentheses (PDF text strings)
+                $text = preg_replace('/\(([^)]+)\)/', '$1', $text);
+                // Remove Tj and other PDF operators
+                $text = preg_replace('/\s*Tj\s*/', ' ', $text);
+                $text = preg_replace('/\s*TJ\s*/', ' ', $text);
+                $cleaned = $this->cleanText($text);
+                if (strlen($cleaned) > 100) {
+                    \Log::info('PDF extracted using regex method', [
+                        'text_length' => strlen($cleaned)
+                    ]);
+                    return $cleaned;
+                }
             }
 
-            // Fallback: extract any printable ASCII text
-            preg_match_all('/[\x20-\x7E]+/', $content, $matches);
+            // Last resort: extract any printable ASCII text (very crude)
+            preg_match_all('/[a-zA-Z0-9\s\.,;:\-]{4,}/', $content, $matches);
             if (!empty($matches[0])) {
                 $text = implode(' ', $matches[0]);
-                return $this->cleanText($text);
+                $cleaned = $this->cleanText($text);
+                \Log::info('PDF extracted using ASCII fallback', [
+                    'text_length' => strlen($cleaned)
+                ]);
+                return $cleaned;
             }
 
+            \Log::warning('PDF extraction returned no usable text', ['path' => $path]);
             return '';
         } catch (\Exception $e) {
             \Log::error('PDF extraction error: ' . $e->getMessage());
