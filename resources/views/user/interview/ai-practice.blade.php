@@ -265,7 +265,7 @@
 
     function endInterview() {
         if (confirm('End interview? You can view your results.')) {
-            window.location.href = '{{ route("user.interview.ai-results", ["sessionId" => ""]) }}'.replace('""', '"' + currentSessionId + '"');
+            window.location.href = '/interview/ai-results/' + currentSessionId;
         }
     }
 
