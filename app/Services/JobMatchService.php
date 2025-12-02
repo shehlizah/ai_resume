@@ -253,19 +253,28 @@ class JobMatchService
         $fullPath = storage_path('app/' . ltrim($relativePath, '/'));
 
         if (!file_exists($fullPath)) {
+            \Log::warning('Resume file not found at: ' . $fullPath);
             return [];
         }
 
         $text = $this->extractTextFromFile($fullPath);
 
-        if (empty($text)) {
+        // Log what we extracted for debugging
+        \Log::info('Extracted text length: ' . strlen($text), [
+            'file' => $relativePath,
+            'text_preview' => substr($text, 0, 200)
+        ]);
+
+        // Be lenient - even 20 chars of text is enough to generate a generic profile
+        if (strlen(trim($text)) < 10) {
+            \Log::warning('Extracted text too short', ['text_length' => strlen($text), 'file' => $relativePath]);
             return [];
         }
 
         $skills = $this->guessSkillsFromText($text);
 
         return [
-            'preferred_title' => $this->guessTitle($text),
+            'preferred_title' => $this->guessTitle($text) ?? 'Professional',
             'skills' => $skills,
             'raw_text' => $text,
             'experience_years' => $this->guessExperienceYears($text),
@@ -467,44 +476,97 @@ class JobMatchService
 
     protected function extractFromDocx(string $path): string
     {
-        $zip = new \ZipArchive();
-        if ($zip->open($path) === true) {
+        try {
+            $zip = new \ZipArchive();
+            if ($zip->open($path) !== true) {
+                \Log::warning('Failed to open DOCX file as ZIP: ' . $path);
+                return '';
+            }
+
+            // First try to get document.xml
             $index = $zip->locateName('word/document.xml');
             if ($index !== false) {
                 $data = $zip->getFromIndex($index);
                 $zip->close();
-                return $this->cleanText(strip_tags($data));
+                
+                // Extract text from XML, stripping all tags
+                $text = strip_tags($data);
+                return $this->cleanText($text);
             }
-            $zip->close();
-        }
 
-        return '';
+            $zip->close();
+            return '';
+        } catch (\Exception $e) {
+            \Log::error('DOCX extraction error: ' . $e->getMessage());
+            return '';
+        }
     }
 
     protected function extractFromPdf(string $path): string
     {
-        $content = @file_get_contents($path);
-        if ($content === false) {
+        try {
+            $content = @file_get_contents($path);
+            if ($content === false) {
+                \Log::warning('Failed to read PDF file: ' . $path);
+                return '';
+            }
+
+            // Try to extract readable text from PDF binary
+            // Look for text streams in PDF
+            if (preg_match_all('/BT\s+(.+?)\s+ET/s', $content, $matches)) {
+                $text = implode(' ', $matches[1]);
+                $text = preg_replace('/\\\\[0-3][0-7]{0,2}/', ' ', $text);
+                $text = preg_replace('/\((.+?)\)/', '$1', $text);
+                return $this->cleanText($text);
+            }
+
+            // Fallback: extract any printable ASCII text
+            preg_match_all('/[\x20-\x7E]+/', $content, $matches);
+            if (!empty($matches[0])) {
+                $text = implode(' ', $matches[0]);
+                return $this->cleanText($text);
+            }
+
+            return '';
+        } catch (\Exception $e) {
+            \Log::error('PDF extraction error: ' . $e->getMessage());
             return '';
         }
-
-        return $this->cleanText($content);
     }
 
     protected function extractFromBinary(string $path): string
     {
-        $content = @file_get_contents($path);
-        if ($content === false) {
+        try {
+            $content = @file_get_contents($path);
+            if ($content === false) {
+                return '';
+            }
+
+            // Extract readable ASCII text from binary files
+            preg_match_all('/[\x20-\x7E]+/', $content, $matches);
+            if (!empty($matches[0])) {
+                // Filter out short fragments (< 3 chars)
+                $filtered = array_filter($matches[0], fn ($str) => strlen($str) > 2);
+                $text = implode(' ', $filtered);
+                return $this->cleanText($text);
+            }
+
+            return '';
+        } catch (\Exception $e) {
+            \Log::error('Binary file extraction error: ' . $e->getMessage());
             return '';
         }
-
-        return $this->cleanText($content);
     }
 
     protected function cleanText(string $text): string
     {
-        $text = preg_replace('/[^A-Za-z0-9@\.,\-\s]/', ' ', $text);
-        $text = preg_replace('/\s+/', ' ', $text);
+        // Decode common PDF encodings
+        $text = preg_replace('/[^\x20-\x7E\n\r\t]/', ' ', $text);
+        
+        // Remove excessive whitespace but preserve line breaks for structure
+        $text = preg_replace('/\n\s*\n/', "\n", $text);
+        $text = preg_replace('/[ \t]+/', ' ', $text);
+        $text = preg_replace('/ +/', ' ', $text);
 
         return trim($text);
     }

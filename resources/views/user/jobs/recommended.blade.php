@@ -219,10 +219,10 @@
                 document.getElementById('viewsProgress').style.width = '0%';
                 document.getElementById('appCount').textContent = '0 / 1';
                 document.getElementById('appProgress').style.width = '0%';
-                
+
                 btn.disabled = false;
                 btn.innerHTML = '<i class="bx bx-reset me-1"></i> Reset Session Limit';
-                
+
                 alert('✅ Session limit reset! You have 5 new job views.');
             } else {
                 btn.disabled = false;

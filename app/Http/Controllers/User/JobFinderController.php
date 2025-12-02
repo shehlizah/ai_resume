@@ -73,9 +73,13 @@ class JobFinderController extends Controller
         $resumeProfile = $this->resolveResumeProfile($request, $user);
 
         if (empty($resumeProfile)) {
+            \Log::warning('Failed to parse resume for user ' . $user->id, [
+                'resume_id' => $request->resume_id,
+                'uploaded_file' => $request->uploaded_file
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'We could not read your resume yet. Please upload a PDF or DOCX with visible text and try again.'
+                'message' => 'Unable to read the resume. Make sure it\'s a text-based PDF (not scanned image) or a valid DOCX file with actual text content.'
             ], 422);
         }
 
