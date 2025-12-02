@@ -3,6 +3,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
+use App\Models\UserSubscription;
 
 class CheckActivePackage
 {
@@ -14,19 +15,22 @@ class CheckActivePackage
 
         $user = Auth::user();
 
-        // CHECK YOUR DATABASE STRUCTURE:
-        // Option 1: user_packages table
-        if (!$user->activePackage()->exists()) {
-            return redirect()->route('packages')
-                ->with('error', 'You need an active package to download resumes.');
+        // Check if user has lifetime access - bypass all checks
+        if ($user->has_lifetime_access) {
+            return $next($request);
         }
 
-        // Option 2: package_id on users table
-        // if (!$user->package_id || !$user->package_expires_at?->isFuture()) {
-        //     return redirect()->route('user.packages.index')
-        //         ->with('error', 'You need an active package.');
-        // }
+        // Check for active subscription
+        $subscription = UserSubscription::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->first();
 
-        return $next($request);
+        if ($subscription) {
+            return $next($request);
+        }
+
+        // No access - redirect to pricing
+        return redirect()->route('user.pricing')
+            ->with('error', 'This feature requires a Pro subscription. Upgrade now to unlock all features!');
     }
 }
