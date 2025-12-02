@@ -178,6 +178,10 @@ class PaymentController extends Controller
                 ->with('error', 'Payment was not completed.');
 
         } catch (\Exception $e) {
+            \Log::error('Error in stripeSuccess', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return redirect()->route('user.pricing')
                 ->with('error', 'Error processing payment: ' . $e->getMessage());
         }
@@ -341,11 +345,24 @@ class PaymentController extends Controller
 
         \Log::info('About to create subscription with data:', $data);
 
-        $subscription = UserSubscription::create($data);
-
-        \Log::info('Subscription created successfully', ['id' => $subscription->id, 'user_id' => $subscription->user_id]);
-
-        return $subscription;
+        try {
+            $subscription = UserSubscription::create($data);
+            \Log::info('Subscription created successfully', ['id' => $subscription->id, 'user_id' => $subscription->user_id]);
+            return $subscription;
+        } catch (\Illuminate\Database\QueryException $e) {
+            \Log::error('Database error creating subscription', [
+                'error' => $e->getMessage(),
+                'sql' => $e->getSql(),
+                'bindings' => $e->getBindings()
+            ]);
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('Error creating subscription', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 
     /**
