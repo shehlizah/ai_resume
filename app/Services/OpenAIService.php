@@ -398,7 +398,100 @@ PROMPT;
         }
     }
 
+
+    /**
+     * Generate AI-powered job recommendations from resume text
+     */
+    public function generateJobsFromResume(string $resumeText, string $location = null, int $limit = 5): array
+    {
+        try {
+            $prompt = $this->buildJobRecommendationPrompt($resumeText, $location, $limit);
+
+            $response = $this->client->chat()->create([
+                'model' => $this->model,
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'You are an expert career advisor. Analyze resumes and generate highly relevant job recommendations. Return ONLY valid JSON.'
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => $prompt
+                    ]
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 2500,
+            ]);
+
+            $content = $response->choices[0]->message->content;
+            return $this->parseJobMatches($content);
+
+        } catch (\Exception $e) {
+            \Log::error('OpenAI Job Generation Error: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    private function buildJobRecommendationPrompt(string $resumeText, ?string $location, int $limit): string
+    {
+        $locationLine = $location ? "\nPreferred Location: $location" : '';
+
+        return <<<PROMPT
+Analyze this resume and generate $limit relevant job recommendations:
+
+RESUME:
+{$resumeText}{$locationLine}
+
+Return ONLY a valid JSON array (no markdown, no extra text) with exactly this structure:
+[
+  {
+    "title": "Job Title",
+    "company": "Company Name",
+    "location": "City, State or Remote",
+    "salary": "$min - $max or Competitive",
+    "description": "Brief job description matching this candidate's profile",
+    "match_score": 85
+  }
+]
+
+Focus on jobs that match the candidate's skills, experience level, and location. Match scores should be 70-95.
+PROMPT;
+    }
+
+    private function parseJobMatches(string $json): array
+    {
+        try {
+            // Extract JSON from response (handle markdown code blocks)
+            if (preg_match('/\[[\s\S]*\]/', $json, $matches)) {
+                $json = $matches[0];
+            }
+
+            $jobs = json_decode($json, true);
+
+            if (!is_array($jobs)) {
+                \Log::warning('Invalid job JSON from OpenAI', ['response' => substr($json, 0, 200)]);
+                return [];
+            }
+
+            // Validate and clean job data
+            return array_filter(array_map(fn ($job) => [
+                'id' => 'ai-' . md5($job['title'] . $job['company']),
+                'title' => $job['title'] ?? 'Job',
+                'company' => $job['company'] ?? 'Company',
+                'location' => $job['location'] ?? 'Remote',
+                'salary' => $job['salary'] ?? 'Competitive',
+                'description' => $job['description'] ?? '',
+                'match_score' => min(99, max(0, $job['match_score'] ?? 75))
+            ], $jobs));
+
+        } catch (\Exception $e) {
+            \Log::error('Job parsing error: ' . $e->getMessage());
+            return [];
+        }
+    }
+
     private function getCoverLetterPrompt(array $data): string
+
     {
         $userName = $data['user_name'] ?? 'The Applicant';
         $userEmail = $data['user_email'] ?? '';

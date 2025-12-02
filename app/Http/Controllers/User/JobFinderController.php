@@ -7,10 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserSubscription;
 use App\Services\JobMatchService;
+use App\Services\OpenAIService;
 
 class JobFinderController extends Controller
 {
-    public function __construct(private readonly JobMatchService $jobMatchService)
+    public function __construct(
+        private readonly JobMatchService $jobMatchService,
+        private readonly OpenAIService $openAIService
+    )
     {
     }
     /**
@@ -84,10 +88,29 @@ class JobFinderController extends Controller
         }
 
         $limit = $hasPremiumAccess ? 8 : 5;
-        $jobs = $this->jobMatchService->generateMatches($resumeProfile, [
-            'limit' => $limit,
-            'location' => 'Remote (Any)'
-        ]);
+        
+        // Try AI-powered jobs first if we have good resume text
+        if (!empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
+            $jobs = $this->openAIService->generateJobsFromResume(
+                $resumeProfile['raw_text'],
+                'Remote (Any)',
+                $limit
+            );
+
+            // Fall back to JobMatchService if AI fails
+            if (empty($jobs)) {
+                $jobs = $this->jobMatchService->generateMatches($resumeProfile, [
+                    'limit' => $limit,
+                    'location' => 'Remote (Any)'
+                ]);
+            }
+        } else {
+            // Use JobMatchService for basic matching
+            $jobs = $this->jobMatchService->generateMatches($resumeProfile, [
+                'limit' => $limit,
+                'location' => 'Remote (Any)'
+            ]);
+        }
 
         // Increment view counter
         $newViewTotal = $jobsViewed + count($jobs);
@@ -181,11 +204,31 @@ class JobFinderController extends Controller
         }
 
         $limit = $hasPremiumAccess ? 8 : 5;
-        $jobs = $this->jobMatchService->generateMatches($resumeProfile, [
-            'limit' => $limit,
-            'location' => $request->location,
-            'job_title' => $request->job_title
-        ]);
+        
+        // Try AI-powered jobs first if we have good resume text
+        if (!empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
+            $jobs = $this->openAIService->generateJobsFromResume(
+                $resumeProfile['raw_text'],
+                $request->location,
+                $limit
+            );
+
+            // Fall back to JobMatchService if AI fails
+            if (empty($jobs)) {
+                $jobs = $this->jobMatchService->generateMatches($resumeProfile, [
+                    'limit' => $limit,
+                    'location' => $request->location,
+                    'job_title' => $request->job_title
+                ]);
+            }
+        } else {
+            // Use JobMatchService for basic matching
+            $jobs = $this->jobMatchService->generateMatches($resumeProfile, [
+                'limit' => $limit,
+                'location' => $request->location,
+                'job_title' => $request->job_title
+            ]);
+        }
 
         session(['jobs_viewed' => $jobsViewed + count($jobs)]);
 
