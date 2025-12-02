@@ -172,6 +172,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/by-location', [JobFinderController::class, 'byLocation'])->name('by-location');
         Route::post('/by-location', [JobFinderController::class, 'generateByLocation'])->name('by-location');
 
+        // Reset session limit (FREE)
+        Route::post('/reset-session', [JobFinderController::class, 'resetSessionLimit'])->name('reset-session');
+
         // Apply to job (FREE with limits)
         Route::post('/{jobId}/apply', [JobFinderController::class, 'applyJob'])->name('apply');
     });

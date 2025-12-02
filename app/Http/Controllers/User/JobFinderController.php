@@ -244,4 +244,18 @@ class JobFinderController extends Controller
 
             return [];
         }
+
+    /**
+     * Reset job search session limits
+     */
+    public function resetSessionLimit(Request $request)
+    {
+        session(['jobs_viewed' => 0]);
+        session(['jobs_applied' => 0]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Session limit reset successfully'
+        ]);
+    }
 }

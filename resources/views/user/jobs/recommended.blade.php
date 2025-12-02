@@ -154,7 +154,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <small class="text-muted">Views Today</small>
+                            <small class="text-muted">Views This Session</small>
                             <strong id="viewsCount">0 / 5</strong>
                         </div>
                         <div class="progress" style="height: 6px;">
@@ -171,6 +171,9 @@
                         </div>
                     </div>
                     <hr>
+                    <button type="button" class="btn btn-sm btn-outline-secondary w-100 mb-2" onclick="resetSessionLimit()" id="resetBtn">
+                        <i class="bx bx-reset me-1"></i> Reset Session Limit
+                    </button>
                     <a href="{{ route('user.jobs.by-location') }}" class="btn btn-sm btn-outline-primary w-100">
                         <i class="bx bx-map me-1"></i> Search by Location
                     </a>
@@ -196,6 +199,44 @@
 
     <script>
     const jobsContainer = document.getElementById('jobsContainer');
+
+    function resetSessionLimit() {
+        const btn = document.getElementById('resetBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Resetting...';
+
+        fetch('{{ route("user.jobs.reset-session") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reset UI
+                document.getElementById('viewsCount').textContent = '0 / 5';
+                document.getElementById('viewsProgress').style.width = '0%';
+                document.getElementById('appCount').textContent = '0 / 1';
+                document.getElementById('appProgress').style.width = '0%';
+                
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-reset me-1"></i> Reset Session Limit';
+                
+                alert('✅ Session limit reset! You have 5 new job views.');
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-reset me-1"></i> Reset Session Limit';
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-reset me-1"></i> Reset Session Limit';
+            alert('Error resetting session limit');
+        });
+    }
 
     function generateJobs(triggerSource = 'button') {
         const btn = document.getElementById('generateJobsBtn');
