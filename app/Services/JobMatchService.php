@@ -459,7 +459,7 @@ class JobMatchService
         return null;
     }
 
-    protected function extractTextFromFile(string $path): string
+    public function extractTextFromFile(string $path): string
     {
         $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
 
