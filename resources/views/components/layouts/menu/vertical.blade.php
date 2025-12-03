@@ -77,18 +77,37 @@
             </ul>
         </li>
 
-      {{-- Add-Ons Management --}}
-      <li class="menu-item {{ request()->is('admin/add-ons*') ? 'active open' : '' }}">
+      {{-- Job Finder Module --}}
+      <li class="menu-item {{ request()->is('admin/jobs*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-package"></i>
-          <div>{{ __('Add-Ons') }}</div>
+          <i class="menu-icon tf-icons bx bx-briefcase"></i>
+          <div>{{ __('Job Finder') }}</div>
         </a>
         <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('admin/add-ons') && !request()->is('admin/add-ons/create') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ route('admin.add-ons.index') }}">{{ __('All Add-Ons') }}</a>
+          <li class="menu-item {{ request()->is('admin/jobs/user-activity') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/jobs/user-activity') }}">{{ __('User Activity') }}</a>
           </li>
-          <li class="menu-item {{ request()->is('admin/add-ons/create') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ route('admin.add-ons.create') }}">{{ __('Create Add-On') }}</a>
+          <li class="menu-item {{ request()->is('admin/jobs/api-settings') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/jobs/api-settings') }}">{{ __('API Settings') }}</a>
+          </li>
+        </ul>
+      </li>
+
+      {{-- Interview Prep Module --}}
+      <li class="menu-item {{ request()->is('admin/interviews*') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-chat"></i>
+          <div>{{ __('Interview Prep') }}</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->is('admin/interviews/sessions') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/interviews/sessions') }}">{{ __('User Sessions') }}</a>
+          </li>
+          <li class="menu-item {{ request()->is('admin/interviews/questions') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/interviews/questions') }}">{{ __('Question Bank') }}</a>
+          </li>
+          <li class="menu-item {{ request()->is('admin/interviews/settings') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/interviews/settings') }}">{{ __('Settings') }}</a>
           </li>
         </ul>
       </li>
