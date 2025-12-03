@@ -834,8 +834,8 @@ private function fillTemplate($html, $css, $data)
 
         // Add profile picture URL if exists
         if ($resume->photo_path) {
-            // Construct full URL for the picture
-            $userData['picture'] = url('storage/' . $resume->photo_path);
+            // Use Storage::url() for proper public disk URL generation
+            $userData['picture'] = Storage::disk('public')->url($resume->photo_path);
         } else {
             $userData['picture'] = ''; // Empty if no picture
         }
