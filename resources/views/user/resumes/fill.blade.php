@@ -123,7 +123,7 @@
                 @enderror
               </div>
             </div>
-            
+
             <!-- Profile Picture Upload -->
             <div class="row mb-3">
               <div class="col-md-12">
@@ -137,10 +137,10 @@
                     <p class="mb-1 mt-2"><strong>Upload Your Photo</strong></p>
                     <small class="text-muted">JPG, PNG (Max 2MB) • Recommended: 300x300px</small>
                   </div>
-                  <input type="file" 
-                         name="profile_picture" 
-                         id="profilePictureInput" 
-                         class="form-control mt-2 @error('profile_picture') is-invalid @enderror" 
+                  <input type="file"
+                         name="profile_picture"
+                         id="profilePictureInput"
+                         class="form-control mt-2 @error('profile_picture') is-invalid @enderror"
                          accept="image/jpeg,image/png,image/jpg"
                          style="display: none;">
                   <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="document.getElementById('profilePictureInput').click()">

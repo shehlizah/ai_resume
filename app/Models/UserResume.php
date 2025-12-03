@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class UserResume extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'user_resumes';
-    
+
     protected $fillable = [
         'user_id',
         'template_id',
@@ -20,11 +20,11 @@ class UserResume extends Model
         'status',
         'score',
     ];
-    
+
     protected $casts = [
         'data' => 'array',
     ];
-    
+
     /**
      * Get the user who owns this resume
      */
@@ -32,7 +32,7 @@ class UserResume extends Model
     {
         return $this->belongsTo(User::class);
     }
-    
+
     /**
      * Get the template used for this resume
      */
@@ -40,7 +40,7 @@ class UserResume extends Model
     {
         return $this->belongsTo(Template::class);
     }
-    
+
     /**
      * Get the full storage path
      */
@@ -48,7 +48,7 @@ class UserResume extends Model
     {
         return storage_path('app/public/' . $this->generated_pdf_path);
     }
-    
+
     /**
      * Get the public URL
      */

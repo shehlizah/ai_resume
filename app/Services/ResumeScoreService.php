@@ -6,7 +6,7 @@ class ResumeScoreService
 {
     /**
      * Calculate resume score based on completeness and quality
-     * 
+     *
      * @param array $data Resume data
      * @return array ['score' => int, 'feedback' => array, 'suggestions' => array]
      */
@@ -106,7 +106,7 @@ class ResumeScoreService
 
         if (!empty($data['summary'])) {
             $wordCount = str_word_count($data['summary']);
-            
+
             if ($wordCount >= 150 && $wordCount <= 300) {
                 $score = 15;
                 $feedback = "✓ Excellent summary ({$wordCount} words)";
@@ -238,7 +238,7 @@ class ResumeScoreService
 
     /**
      * Get detailed feedback based on user's subscription package
-     * 
+     *
      * @param string $packageType 'basic', 'pro', 'premium'
      * @param array $scoreData Score data from calculateScore()
      * @return array Feedback visible to user based on their package

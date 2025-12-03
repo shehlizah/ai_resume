@@ -110,7 +110,7 @@ class TemplateController extends Controller
         $template->css_content = $validated['css_content'];
         $template->is_premium = $request->has('is_premium');
         $template->is_active = $request->has('is_active');
-        
+
         // Update slug if name changed
         $newSlug = Str::slug($validated['name']);
         if (!str_starts_with($template->slug, $newSlug)) {
@@ -172,7 +172,7 @@ class TemplateController extends Controller
     public function preview($id)
     {
         $template = Template::findOrFail($id);
-        
+
         // Log for debugging
         Log::info('Template Preview', [
             'id' => $template->id,
@@ -202,7 +202,7 @@ class TemplateController extends Controller
 
         // Get HTML content
         $html = $template->html_content;
-        
+
         // Replace all placeholders - try multiple formats
         foreach ($sampleData as $key => $value) {
             // Standard format: {{key}}
@@ -251,7 +251,7 @@ class TemplateController extends Controller
 
             // Summary/Objective
             'summary' => 'Experienced software engineer with 10+ years of expertise in full-stack development, cloud architecture, and agile methodologies. Proven track record of delivering high-quality solutions and leading cross-functional teams to success. Passionate about building scalable applications and mentoring junior developers.',
-            
+
             'objective' => 'Seeking a challenging senior developer role where I can leverage my expertise in modern web technologies to build innovative solutions and contribute to team growth.',
 
             // Experience Section
@@ -415,14 +415,14 @@ class TemplateController extends Controller
     <title>' . htmlspecialchars($templateName) . ' - Preview</title>
     <style>
         /* Reset styles */
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
+
         /* Base styles */
-        body { 
+        body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             line-height: 1.6;
             color: #333;
@@ -430,7 +430,7 @@ class TemplateController extends Controller
             padding: 0;
             margin: 0;
         }
-        
+
         /* Common resume elements */
         .resume-container {
             max-width: 850px;
@@ -438,20 +438,20 @@ class TemplateController extends Controller
             background: white;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
-        
+
         h1, h2, h3, h4, h5, h6 {
             margin-bottom: 0.5em;
         }
-        
+
         ul {
             list-style-position: inside;
         }
-        
+
         a {
             color: #3498db;
             text-decoration: none;
         }
-        
+
         /* Template-specific styles */
         ' . $css . '
     </style>
@@ -500,12 +500,12 @@ class TemplateController extends Controller
     public function duplicate($id)
     {
         $template = Template::findOrFail($id);
-        
+
         $newTemplate = $template->replicate();
         $newTemplate->name = $template->name . ' (Copy)';
         $newTemplate->slug = Str::slug($newTemplate->name) . '-' . time();
         $newTemplate->is_active = false; // Duplicates are inactive by default
-        
+
         // Copy files
         if ($template->html_file_path) {
             $newTemplate->html_file_path = $this->saveHtmlFile($template->html_content, $newTemplate->slug);
@@ -513,7 +513,7 @@ class TemplateController extends Controller
         if ($template->css_file_path) {
             $newTemplate->css_file_path = $this->saveCssFile($template->css_content, $newTemplate->slug);
         }
-        
+
         $newTemplate->save();
 
         return redirect()
@@ -523,17 +523,17 @@ class TemplateController extends Controller
 
     /**
      * Auto-generate preview image for template using sample data
-     * 
+     *
      * NOTE: This is a placeholder implementation. To actually generate screenshot images,
      * you need to install one of these packages:
-     * 
+     *
      * 1. spatie/browsershot (recommended):
      *    - composer require spatie/browsershot
      *    - Requires Node.js and Puppeteer installed on server
      *    - Usage: Browsershot::html($html)->save($path)
-     * 
+     *
      * 2. intervention/image with headless browser
-     * 
+     *
      * For now, this method creates a simple placeholder image.
      * Replace this with actual screenshot generation when ready.
      */
@@ -542,13 +542,13 @@ class TemplateController extends Controller
         try {
             // Get sample data (same as UserResumeController preview)
             $sampleData = $this->getSampleData();
-            
+
             // Fill template with sample data
             $htmlContent = $template->html_content;
             $cssContent = $template->css_content ?? '';
-            
+
             $filledHtml = $this->fillTemplate($htmlContent, $sampleData);
-            
+
             // Build complete HTML with CSS
             $completeHtml = "<!DOCTYPE html>
 <html>
@@ -566,24 +566,24 @@ class TemplateController extends Controller
             /*
             $filename = 'templates/previews/' . $template->slug . '-preview.png';
             $path = storage_path('app/public/' . $filename);
-            
+
             \Spatie\Browsershot\Browsershot::html($completeHtml)
                 ->windowSize(1200, 1500)
                 ->setScreenshotType('png')
                 ->save($path);
-            
+
             return $filename;
             */
-            
+
             // OPTION 2: Placeholder - Create simple text file as placeholder
             // This at least stores the HTML that would be converted to image
             $filename = 'templates/previews/' . $template->slug . '-preview.html';
             Storage::disk('public')->put($filename, $completeHtml);
-            
+
             Log::info('Template preview placeholder created', ['template' => $template->slug]);
-            
+
             return $filename;
-            
+
         } catch (\Exception $e) {
             Log::error('Failed to generate template preview', [
                 'template' => $template->slug,
@@ -599,51 +599,13 @@ class TemplateController extends Controller
     private function fillTemplate($html, $data)
     {
         $keys = ['name', 'title', 'email', 'phone', 'address', 'summary', 'experience', 'skills', 'education'];
-        
+
         foreach ($keys as $key) {
             $placeholder = '{{' . $key . '}}';
             $value = $data[$key] ?? '';
             $html = str_replace($placeholder, $value, $html);
         }
-        
-        return $html;
-    }
 
-    /**
-     * Get sample resume data for preview generation
-     */
-    private function getSampleData()
-    {
-        return [
-            'name' => 'John Doe',
-            'title' => 'Senior Software Engineer',
-            'email' => 'john.doe@example.com',
-            'phone' => '+1 (555) 123-4567',
-            'address' => 'San Francisco, CA',
-            'summary' => 'Experienced software engineer with 8+ years of expertise in full-stack development, specializing in scalable web applications and cloud architecture.',
-            'experience' => '<div class="experience-item">
-                <div class="job-header">
-                    <h3>Senior Software Engineer</h3>
-                    <span>Tech Corp | Jan 2020 - Present</span>
-                </div>
-                <ul>
-                    <li>Led development of microservices architecture serving 1M+ users</li>
-                    <li>Improved system performance by 40% through optimization</li>
-                </ul>
-            </div>',
-            'education' => '<div class="education-item">
-                <div class="degree-header">
-                    <h3>BSc Computer Science</h3>
-                    <span>Stanford University | 2015</span>
-                </div>
-            </div>',
-            'skills' => '<div class="skill-category">
-                <ul class="skill-list">
-                    <li>JavaScript, TypeScript, React</li>
-                    <li>Node.js, Laravel, PHP</li>
-                    <li>AWS, Docker, Kubernetes</li>
-                </ul>
-            </div>'
-        ];
+        return $html;
     }
 }

@@ -144,7 +144,7 @@ public function generate(Request $request)
             $timestamp = time();
             $extension = $file->getClientOriginalExtension();
             $filename = "profile_{$userId}_{$timestamp}.{$extension}";
-            
+
             // Store in public/storage/resumes/photos
             $photoPath = $file->storeAs('resumes/photos', $filename, 'public');
         }
@@ -225,12 +225,23 @@ private function fillTemplate($html, $css, $data)
 
         // Handle picture placeholder specially
         if ($key === 'picture') {
-            if (!empty($value) && filter_var($value, FILTER_VALIDATE_URL)) {
-                // Create img tag if picture URL exists and is valid
-                $replaceValue = '<img src="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '" alt="Profile Picture" class="profile-picture" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">';
+            if (!empty($value)) {
+                // If value looks like a URL, use it as image
+                if (filter_var($value, FILTER_VALIDATE_URL) || strpos($value, 'storage/') !== false) {
+                    $replaceValue = '<img src="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '" alt="Profile Picture" class="profile-picture">';
+                } else {
+                    // Otherwise remove placeholder
+                    $replaceValue = '';
+                }
             } else {
-                // Remove placeholder if no picture
-                $replaceValue = '';
+                // Create avatar with initials if no picture
+                $userName = $data['name'] ?? 'User';
+                $initials = strtoupper(substr($userName, 0, 1));
+                if (preg_match('/\s+/', $userName)) {
+                    $parts = explode(' ', $userName);
+                    $initials = strtoupper(substr($parts[0], 0, 1) . substr($parts[count($parts)-1], 0, 1));
+                }
+                $replaceValue = '<div class="profile-picture profile-avatar" style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; font-family: Arial, sans-serif;">' . $initials . '</div>';
             }
         } elseif (in_array($key, $rawHtmlKeys)) {
             $replaceValue = $value;
@@ -833,8 +844,8 @@ private function fillTemplate($html, $css, $data)
 
         // Get user's subscription package type for score feedback
         $activeSubscription = $user->activeSubscription()->with('plan')->first();
-        $packageType = $activeSubscription && $activeSubscription->plan 
-            ? strtolower($activeSubscription->plan->slug ?? 'basic') 
+        $packageType = $activeSubscription && $activeSubscription->plan
+            ? strtolower($activeSubscription->plan->slug ?? 'basic')
             : 'basic';
 
         // Calculate score and get package-based feedback
@@ -896,7 +907,7 @@ private function fillTemplate($html, $css, $data)
             $scoreBadge .= "
             <div style=\"margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: left;\">
                 <div style=\"font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 8px;\">📊 Feedback:</div>";
-            
+
             if (isset($feedback['feedback']['sections'])) {
                 foreach ($feedback['feedback']['sections'] as $section => $text) {
                     if (!empty($text)) {
@@ -914,7 +925,7 @@ private function fillTemplate($html, $css, $data)
             $scoreBadge .= "
             <div style=\"margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb; text-align: left;\">
                 <div style=\"font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 8px;\">💡 Suggestions:</div>";
-            
+
             foreach ($feedback['suggestions'] as $suggestion) {
                 $scoreBadge .= "<div style=\"font-size: 10px; color: #6b7280; margin-bottom: 6px; line-height: 1.4;\">
                     • {$suggestion}
@@ -1133,29 +1144,18 @@ private function getSampleData()
      */
     public function view($id)
     {
-        $resume = UserResume::where('user_id', Auth::id())->findOrFail($id);
-        $fullPath = storage_path('app/public/' . $resume->generated_pdf_path);
-
-        if (!file_exists($fullPath)) {
-            return redirect()->back()->with('error', 'Resume file not found');
-        }
-
-        return response()->file($fullPath);
+        // Redirect to print-preview since we use browser print-to-PDF
+        return redirect()->route('user.resumes.print-preview', $id);
     }
 
     /**
-     * Download PDF
+     * Download PDF - Redirects to print preview where user can use browser print
      */
     public function download($id)
     {
-        $resume = UserResume::where('user_id', Auth::id())->findOrFail($id);
-        $fullPath = storage_path('app/public/' . $resume->generated_pdf_path);
-
-        if (!file_exists($fullPath)) {
-            return redirect()->back()->with('error', 'Resume file not found');
-        }
-
-        return response()->download($fullPath, 'resume.pdf');
+        // Redirect to print-preview since we use browser print-to-PDF
+        return redirect()->route('user.resumes.print-preview', $id)
+            ->with('info', 'Click "Download PDF" button and use your browser\'s print dialog to save as PDF.');
     }
 
     /**
