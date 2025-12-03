@@ -823,10 +823,16 @@ private function fillTemplate($html, $css, $data)
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; line-height: 1.6; background: #f5f5f5; padding: 20px; }
 
-        /* Print styles */
+        /* Print styles - Remove browser headers/footers */
         @media print {
             body { background: white; padding: 0; }
             .no-print { display: none !important; }
+
+            /* Remove default browser header/footer */
+            @page {
+                margin: 0;
+                size: auto;
+            }
         }
 
         /* Download button */
@@ -848,6 +854,26 @@ private function fillTemplate($html, $css, $data)
             background: #5568d3;
         }
 
+        /* Instructions box */
+        .print-instructions {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 12px;
+            max-width: 250px;
+            z-index: 9999;
+        }
+
+        .print-instructions strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #667eea;
+        }
+
         {$css}
     </style>
 </head>
@@ -855,6 +881,12 @@ private function fillTemplate($html, $css, $data)
     <a href=\"#\" onclick=\"window.print(); return false;\" class=\"download-btn no-print\">
         📥 Download PDF
     </a>
+    <div class=\"print-instructions no-print\">
+        <strong>💡 For Clean PDF:</strong>
+        In print dialog, uncheck:<br>
+        • Headers and footers<br>
+        • Background graphics (optional)
+    </div>
     {$filledContent}
 </body>
 </html>";
