@@ -182,7 +182,7 @@
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
         const minutes = Math.floor(elapsed / 60);
         const seconds = elapsed % 60;
-        document.getElementById('timeElapsed').textContent = 
+        document.getElementById('timeElapsed').textContent =
             `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
@@ -257,7 +257,7 @@
 
         const submitBtn = document.querySelector('button[onclick="submitAnswer()"]');
         if (!submitBtn) return;
-        
+
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
 
@@ -287,7 +287,7 @@
         })
         .then(data => {
             console.log('Response data:', data); // Debug log
-            
+
             if (data.success) {
                 // Show feedback
                 alert('Feedback: ' + data.feedback + '\nScore: ' + data.score + '/100');

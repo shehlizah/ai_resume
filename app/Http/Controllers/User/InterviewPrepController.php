@@ -446,7 +446,7 @@ class InterviewPrepController extends Controller
             \Log::error('Submit Answer Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while processing your answer. Please try again.'
@@ -535,84 +535,7 @@ class InterviewPrepController extends Controller
     public function bookExpert()
     {
         $user = Auth::user();
-        $subscription = UserSubscription::where('user_id', $user->id)
-            ->whereIn('status', ['active', 'pending'])
-            ->latest()
-            ->first();
 
-        // TODO: Fetch available expert slots
-        $experts = [
-            [
-                'id' => 1,
-                'name' => 'John Smith',
-                'title' => 'Senior Tech Recruiter',
-                'experience' => '15+ years',
-                'bio' => 'Specializes in tech interviews and career coaching',
-                'rate' => '$99/hour',
-                'available_slots' => [
-                    '2024-12-05 10:00 AM',
-                    '2024-12-05 2:00 PM',
-                    '2024-12-06 9:00 AM'
-                ]
-            ],
-            [
-                'id' => 2,
-                'name' => 'Sarah Johnson',
-                'title' => 'Career Coach',
-                'experience' => '10+ years',
-                'bio' => 'Expert in interview preparation and personal branding',
-                'rate' => '$79/hour',
-                'available_slots' => [
-                    '2024-12-05 3:00 PM',
-                    '2024-12-06 11:00 AM',
-                    '2024-12-07 10:00 AM'
-                ]
-            ]
-        ];
-
-        return view('user.interview.expert', compact('user', 'subscription', 'experts'));
-    }
-
-    /**
-     * Book an expert session
-     */
-    public function bookSession(Request $request)
-    {
-        $request->validate([
-            'expert_id' => 'required|integer',
-            'time_slot' => 'required|string'
-        ]);
-
-        // TODO: Store booking in database
-        // TODO: Send confirmation email
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Session booked successfully!',
-            'booking_id' => 'BOOK_' . uniqid(),
-            'next_page' => route('user.interview.my-sessions')
-        ]);
-    }
-
-    /**
-     * Show my scheduled sessions
-     */
-    public function mySessions()
-    {
-        $user = Auth::user();
-
-        // TODO: Fetch sessions from database
-        $sessions = [
-            [
-                'id' => 1,
-                'expert_name' => 'John Smith',
-                'scheduled_date' => '2024-12-05 10:00 AM',
-                'duration' => '1 hour',
-                'status' => 'scheduled',
-                'zoom_link' => 'https://zoom.us/j/...'
-            ]
-        ];
-
-        return view('user.interview.my-sessions', compact('user', 'sessions'));
+        return view('user.interview.expert', compact('user'));
     }
 }
