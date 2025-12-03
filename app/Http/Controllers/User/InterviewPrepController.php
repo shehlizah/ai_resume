@@ -304,17 +304,37 @@ class InterviewPrepController extends Controller
 
             $user = Auth::user();
 
+            \Log::info('Submit Answer Request', [
+                'user_id' => $user->id,
+                'session_id' => $request->session_id,
+                'question_id' => $request->question_id,
+                'answer_length' => strlen($request->answer)
+            ]);
+
             // Get session
             $session = InterviewSession::where('session_id', $request->session_id)
                 ->where('user_id', $user->id)
                 ->first();
 
             if (!$session) {
+                \Log::error('Session not found', [
+                    'session_id' => $request->session_id,
+                    'user_id' => $user->id
+                ]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Session not found'
                 ], 404);
             }
+
+            \Log::info('Session found', ['session' => $session->toArray()]);
+
+            // Get ALL questions for this session to debug
+            $allQuestions = InterviewQuestion::where('session_id', $request->session_id)->get();
+            \Log::info('All questions for session', [
+                'count' => $allQuestions->count(),
+                'questions' => $allQuestions->pluck('id', 'question_number')->toArray()
+            ]);
 
             // Get current question
             $currentQuestion = InterviewQuestion::where('id', $request->question_id)
@@ -322,9 +342,14 @@ class InterviewPrepController extends Controller
                 ->first();
 
             if (!$currentQuestion) {
+                \Log::error('Question not found', [
+                    'question_id' => $request->question_id,
+                    'session_id' => $request->session_id,
+                    'available_questions' => $allQuestions->pluck('id')->toArray()
+                ]);
                 return response()->json([
                     'success' => false,
-                    'message' => 'Question not found'
+                    'message' => 'Question not found. Available question IDs: ' . $allQuestions->pluck('id')->implode(', ')
                 ], 404);
             }
 

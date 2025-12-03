@@ -262,8 +262,14 @@
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
 
         const url = '{{ route("user.interview.ai-practice-answer") }}';
+        const requestData = {
+            session_id: currentSessionId,
+            question_id: currentQuestionId,
+            answer: answer
+        };
         console.log('Submitting to URL:', url);
-        console.log('Request data:', { session_id: currentSessionId, question_id: currentQuestionId, answer: answer.substring(0, 50) + '...' });
+        console.log('Full request data:', requestData);
+        console.log('Question ID type:', typeof currentQuestionId, 'Value:', currentQuestionId);
 
         fetch(url, {
             method: 'POST',
@@ -271,11 +277,7 @@
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            body: JSON.stringify({
-                session_id: currentSessionId,
-                question_id: currentQuestionId,
-                answer: answer
-            })
+            body: JSON.stringify(requestData)
         })
         .then(response => {
             if (!response.ok) {
