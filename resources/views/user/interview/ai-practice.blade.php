@@ -171,6 +171,11 @@
     let timerInterval = null;
     let startTime = null;
 
+    // Debug: Log route URLs
+    console.log('Start URL:', '{{ route("user.interview.ai-practice-start") }}');
+    console.log('Answer URL:', '{{ route("user.interview.ai-practice-answer") }}');
+    console.log('Results URL template:', '/interview/ai-results/SESSION_ID');
+
     function updateTimer() {
         if (!startTime) return;
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
@@ -252,7 +257,11 @@
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
 
-        fetch('{{ route("user.interview.ai-practice-answer") }}', {
+        const url = '{{ route("user.interview.ai-practice-answer") }}';
+        console.log('Submitting to URL:', url);
+        console.log('Request data:', { session_id: currentSessionId, question_id: currentQuestionId, answer: answer.substring(0, 50) + '...' });
+
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
