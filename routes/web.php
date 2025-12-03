@@ -346,6 +346,28 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         ->name('add-ons.purchases');
 
     // ==========================================
+    // Job Finder Management
+    // ==========================================
+    Route::prefix('jobs')->name('jobs.')->group(function () {
+        Route::get('/user-activity', [\App\Http\Controllers\Admin\AdminJobController::class, 'userActivity'])->name('user-activity');
+        Route::get('/api-settings', [\App\Http\Controllers\Admin\AdminJobController::class, 'apiSettings'])->name('api-settings');
+        Route::post('/api-settings', [\App\Http\Controllers\Admin\AdminJobController::class, 'updateApiSettings'])->name('update-api-settings');
+        Route::get('/statistics', [\App\Http\Controllers\Admin\AdminJobController::class, 'statistics'])->name('statistics');
+    });
+
+    // ==========================================
+    // Interview Prep Management
+    // ==========================================
+    Route::prefix('interviews')->name('interviews.')->group(function () {
+        Route::get('/sessions', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'sessions'])->name('sessions');
+        Route::get('/sessions/{sessionId}', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'sessionDetails'])->name('session-details');
+        Route::delete('/sessions/{sessionId}', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'deleteSession'])->name('delete-session');
+        Route::get('/questions', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'questions'])->name('questions');
+        Route::get('/settings', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'settings'])->name('settings');
+        Route::post('/settings', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'updateSettings'])->name('update-settings');
+    });
+
+    // ==========================================
     // Debug Routes (Admin Only)
     // ==========================================
     if (app()->environment('local', 'staging')) {

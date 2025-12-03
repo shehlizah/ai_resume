@@ -1,0 +1,191 @@
+@extends('components.layouts.admin')
+
+@section('title', 'Interview Question Bank')
+
+@section('content')
+<div class="container-xxl flex-grow-1 container-p-y">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Interview Question Bank</h4>
+            <p class="text-muted mb-0">Browse all AI-generated interview questions and answers</p>
+        </div>
+        <div>
+            <a href="{{ route('admin.interviews.sessions') }}" class="btn btn-outline-secondary">
+                <i class='bx bx-arrow-back me-1'></i>Back to Sessions
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-lg bg-primary bg-opacity-10 rounded me-3">
+                            <i class="bx bx-message-dots text-primary" style="font-size: 1.75rem;"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Total Questions</small>
+                            <h4 class="mb-0">{{ number_format($stats['total_questions']) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-lg bg-success bg-opacity-10 rounded me-3">
+                            <i class="bx bx-check text-success" style="font-size: 1.75rem;"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Answered</small>
+                            <h4 class="mb-0">{{ number_format($stats['answered_questions']) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-lg bg-info bg-opacity-10 rounded me-3">
+                            <i class="bx bx-bar-chart text-info" style="font-size: 1.75rem;"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Avg Score</small>
+                            <h4 class="mb-0">{{ number_format($stats['avg_score'], 1) }}%</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <small class="text-muted d-block mb-2">By Type</small>
+                    @foreach($stats['by_type'] as $type => $count)
+                        <span class="badge bg-label-primary me-1">{{ ucfirst($type) }}: {{ $count }}</span>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ route('admin.interviews.questions') }}" class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">Search Question</label>
+                    <input type="text" class="form-control" name="search"
+                        placeholder="Search question text..." value="{{ request('search') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Question Type</label>
+                    <select class="form-select" name="type">
+                        <option value="">All Types</option>
+                        <option value="technical" {{ request('type') === 'technical' ? 'selected' : '' }}>Technical</option>
+                        <option value="behavioral" {{ request('type') === 'behavioral' ? 'selected' : '' }}>Behavioral</option>
+                        <option value="general" {{ request('type') === 'general' ? 'selected' : '' }}>General</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class='bx bx-search me-1'></i>Filter
+                    </button>
+                    <a href="{{ route('admin.interviews.questions') }}" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Questions Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 35%">Question</th>
+                            <th style="width: 10%">Type</th>
+                            <th style="width: 15%">User</th>
+                            <th style="width: 10%">Score</th>
+                            <th style="width: 10%">Status</th>
+                            <th style="width: 15%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($questions as $question)
+                        <tr>
+                            <td>{{ $question->question_number }}</td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 300px;" title="{{ $question->question_text }}">
+                                    {{ $question->question_text }}
+                                </div>
+                                @if($question->focus_area)
+                                    <small class="text-muted d-block mt-1">
+                                        <i class='bx bx-target-lock'></i> {{ $question->focus_area }}
+                                    </small>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="badge bg-label-{{ $question->question_type === 'technical' ? 'primary' : ($question->question_type === 'behavioral' ? 'info' : 'secondary') }}">
+                                    {{ ucfirst($question->question_type) }}
+                                </span>
+                            </td>
+                            <td>
+                                @if($question->session && $question->session->user)
+                                    <small>{{ $question->session->user->name }}</small>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($question->score)
+                                    <span class="badge {{ $question->score >= 70 ? 'bg-success' : ($question->score >= 50 ? 'bg-warning' : 'bg-danger') }}">
+                                        {{ number_format($question->score, 0) }}%
+                                    </span>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($question->answer_text)
+                                    <span class="badge bg-success">Answered</span>
+                                @else
+                                    <span class="badge bg-secondary">Pending</span>
+                                @endif
+                            </td>
+                            <td>
+                                <small>{{ $question->created_at->format('M d, Y') }}</small>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <i class='bx bx-message-square-x' style="font-size: 3rem; opacity: 0.3;"></i>
+                                <p class="text-muted mt-2">No questions found</p>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-3">
+                {{ $questions->appends(request()->query())->links() }}
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

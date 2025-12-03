@@ -9,6 +9,8 @@ use App\Models\UserResume;
 use App\Models\UserSubscription;
 use App\Models\Payment;
 use App\Models\SubscriptionPlan;
+use App\Models\InterviewSession;
+use App\Models\InterviewQuestion;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -170,6 +172,24 @@ class DashboardController extends Controller
                     return $plan;
                 });
 
+            // ============================================
+            // NEW: JOB & INTERVIEW STATISTICS
+            // ============================================
+
+            // Job Search Statistics (Session-based tracking)
+            $jobSearchesCount = $totalUsers; // Placeholder - actual tracking would need job_searches table
+            $activeJobLocations = 25; // Placeholder - would track unique locations from searches
+
+            // Interview Session Statistics
+            $interviewSessionsCount = InterviewSession::count();
+            $completedInterviewSessions = InterviewSession::where('status', 'completed')->count();
+            $interviewSessionsThisMonth = InterviewSession::whereMonth('created_at', Carbon::now()->month)->count();
+
+            // Interview Questions Statistics
+            $interviewQuestionsCount = InterviewQuestion::count();
+            $answeredQuestionsCount = InterviewQuestion::whereNotNull('answer_text')->count();
+            $avgInterviewScore = InterviewSession::where('status', 'completed')->avg('overall_score') ?? 0;
+
 
             return view('admin.dashboard.index', [
                 // User Statistics
@@ -209,6 +229,12 @@ class DashboardController extends Controller
                 'recentPayments' => $recentPayments,
                 'recentSubscriptions' => $recentSubscriptions,
                 'subscriptionPlans' => $subscriptionPlans,
+
+                // Job & Interview Statistics
+                'jobSearchesCount' => $jobSearchesCount,
+                'activeJobLocations' => $activeJobLocations,
+                'interviewSessionsCount' => $interviewSessionsCount,
+                'interviewQuestionsCount' => $interviewQuestionsCount,
 
             ]);
         } catch (\Exception $e) {
@@ -254,13 +280,11 @@ class DashboardController extends Controller
                 'recentSubscriptions' => collect([]),
                 'subscriptionPlans' => collect([]),
 
-                  // Add-Ons Statistics
-            'totalAddOns' => $totalAddOns,
-            'activeAddOns' => $activeAddOns,
-            'addOnPurchases' => $addOnPurchases,
-            'addOnRevenue' => $addOnRevenue,
-            'addOnRevenueThisMonth' => $addOnRevenueThisMonth,
-            'popularAddOns' => $popularAddOns,
+                // Job & Interview Statistics
+                'jobSearchesCount' => 0,
+                'activeJobLocations' => 0,
+                'interviewSessionsCount' => 0,
+                'interviewQuestionsCount' => 0,
 
             ]);
         }
