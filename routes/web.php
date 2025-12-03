@@ -103,6 +103,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/choose', [UserResumeController::class, 'chooseTemplate'])->name('choose');
         Route::get('/create', [UserResumeController::class, 'chooseTemplate'])->name('create');
         Route::get('/preview/{template_id}', [UserResumeController::class, 'preview'])->name('preview');
+        Route::get('/print-preview/{id}', [UserResumeController::class, 'printPreview'])->name('print-preview');
         Route::get('/fill/{template_id}', [UserResumeController::class, 'fillForm'])->name('fill');
         Route::post('/generate', [UserResumeController::class, 'generate'])->name('generate');
         Route::get('/success/{id}', [UserResumeController::class, 'success'])->name('success');

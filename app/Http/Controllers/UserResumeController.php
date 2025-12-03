@@ -139,59 +139,18 @@ public function generate(Request $request)
         $data['education'] = $this->buildEducationHtml($data);
         $data['skills'] = $this->buildSkillsHtml($data);
 
-        // Get template content (SAME AS PREVIEW)
-        $htmlContent = $template->html_content;
-        $cssFromDb = $template->css_content ?? '';
-
-        // Extract any embedded CSS
-        $extracted = $this->extractCssFromHtml($htmlContent);
-        $htmlContent = $extracted['html'];
-        $cssFromHtml = $extracted['css'];
-
-        // Combine CSS
-        $css = $cssFromDb . "\n" . $cssFromHtml;
-
-        // Fill placeholders
-        $filledContent = $this->fillTemplate($htmlContent, '', $data);
-
-        // ✅ NEW APPROACH: Build HTML like preview, but with PDF-specific adjustments
-        $pdfHtml = $this->buildPdfHtml($filledContent, $css);
-
-        // Generate PDF with clean HTML
-        $pdf = Pdf::loadHTML($pdfHtml)
-            ->setPaper('A4', 'portrait')
-            ->setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true, // Allow loading fonts
-                'isFontSubsettingEnabled' => true,
-                'defaultFont' => 'Arial',
-                'dpi' => 96,
-            ]);
-
-        // Create directory if needed
-        $directory = storage_path('app/public/resumes');
-        if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
-
-        // Generate filename and save
-        $fileName = 'resume_' . Auth::id() . '_' . time() . '.pdf';
-        $fullPath = $directory . '/' . $fileName;
-
-        // Save PDF
-        File::put($fullPath, $pdf->output());
-
-        // Save to database
+        // Save to database first (no PDF file, will use browser print)
         $resume = UserResume::create([
             'user_id' => Auth::id(),
             'template_id' => $template->id,
             'data' => json_encode($data),
-            'generated_pdf_path' => 'resumes/' . $fileName,
+            'generated_pdf_path' => null, // No server-side PDF
             'status' => 'completed',
         ]);
 
-        return redirect()->route('user.resumes.success', $resume->id)
-            ->with('success', 'Resume generated successfully!');
+        // Redirect to print-preview page (browser print-to-PDF)
+        return redirect()->route('user.resumes.print-preview', $resume->id)
+            ->with('success', 'Resume ready! Click "Download PDF" to save.');
 
     } catch (\Exception $e) {
         \Log::error('Resume generation error: ' . $e->getMessage());
@@ -773,7 +732,7 @@ private function fillTemplate($html, $css, $data)
     {
         // Only replace CSS variables - nothing else
         $css = $this->fixCssForPdf($css);
-        
+
         // Build document EXACTLY like preview (except @page for PDF)
         return "<!DOCTYPE html>
 <html lang=\"en\">
@@ -808,18 +767,99 @@ private function fillTemplate($html, $css, $data)
                 $variables['--' . $varMatch[1]] = trim($varMatch[2]);
             }
         }
-        
+
         // Replace var() with actual values
         $css = preg_replace_callback('/var\((--[\w-]+)(?:,\s*([^)]+))?\)/i', function($matches) use ($variables) {
             $varName = $matches[1];
             $fallback = $matches[2] ?? '#333333';
             return $variables[$varName] ?? $fallback;
         }, $css);
-        
+
         // Remove :root block
         $css = preg_replace('/:root\s*\{[^}]+\}/s', '', $css);
-        
+
         return $css;
+    }
+
+    /**
+     * Show print-preview page with user's actual data
+     */
+    public function printPreview($id)
+    {
+        $resume = UserResume::where('user_id', Auth::id())->findOrFail($id);
+        $template = Template::findOrFail($resume->template_id);
+
+        // Get user's data from database
+        $userData = json_decode($resume->data, true);
+
+        // Get template content
+        $htmlContent = $template->html_content;
+        $cssFromDb = $template->css_content ?? '';
+
+        // Extract any <style> tags from the HTML
+        $extracted = $this->extractCssFromHtml($htmlContent);
+        $htmlContent = $extracted['html'];
+        $cssFromHtml = $extracted['css'];
+
+        // Combine CSS
+        $css = $cssFromDb . "\n" . $cssFromHtml;
+
+        // Replace CSS variables
+        $css = $this->fixCssForPdf($css);
+
+        // Fill placeholders with user data
+        $filledContent = $this->fillTemplate($htmlContent, '', $userData);
+
+        // Build HTML document (exactly like preview)
+        $output = "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>Resume Preview</title>
+    <link href=\"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap\" rel=\"stylesheet\">
+    <link href=\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap\" rel=\"stylesheet\">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; background: #f5f5f5; padding: 20px; }
+
+        /* Print styles */
+        @media print {
+            body { background: white; padding: 0; }
+            .no-print { display: none !important; }
+        }
+
+        /* Download button */
+        .download-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            z-index: 9999;
+        }
+
+        .download-btn:hover {
+            background: #5568d3;
+        }
+
+        {$css}
+    </style>
+</head>
+<body>
+    <a href=\"#\" onclick=\"window.print(); return false;\" class=\"download-btn no-print\">
+        📥 Download PDF
+    </a>
+    {$filledContent}
+</body>
+</html>";
+
+        return response($output)->header('Content-Type', 'text/html; charset=UTF-8');
     }
 
     /**
