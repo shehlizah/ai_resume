@@ -182,12 +182,6 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item" href="{{ route('admin.interviews.session-details', $session->session_id) }}">
-                                                <i class='bx bx-show me-2'></i>View Details
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
                                             <form method="POST" action="{{ route('admin.interviews.delete-session', $session->session_id) }}"
                                                 onsubmit="return confirm('Are you sure you want to delete this session?');">
                                                 @csrf

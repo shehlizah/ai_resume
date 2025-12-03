@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\SystemSetting;
 use Illuminate\Support\Facades\DB;
 
 class AdminJobController extends Controller
@@ -36,13 +37,13 @@ class AdminJobController extends Controller
      */
     public function apiSettings()
     {
-        // Get current API settings from config
+        // Get current API settings from database
         $settings = [
             'openai_enabled' => config('services.openai.enabled', true),
             'openai_key' => config('services.openai.key') ? '••••••••' . substr(config('services.openai.key'), -4) : 'Not set',
-            'job_limit_free' => 5,
-            'job_limit_premium' => 8,
-            'session_limit_enabled' => true,
+            'job_limit_free' => SystemSetting::get('job_limit_free', 5),
+            'job_limit_premium' => SystemSetting::get('job_limit_premium', 8),
+            'session_limit_enabled' => SystemSetting::get('session_limit_enabled', true),
         ];
 
         return view('admin.jobs.api-settings', compact('settings'));
@@ -60,8 +61,10 @@ class AdminJobController extends Controller
             'session_limit_enabled' => 'required|boolean',
         ]);
 
-        // In a real application, you would update these in a settings table or .env
-        // For now, we'll just return success
+        // Save settings to database
+        SystemSetting::set('job_limit_free', $request->job_limit_free, 'integer', 'jobs');
+        SystemSetting::set('job_limit_premium', $request->job_limit_premium, 'integer', 'jobs');
+        SystemSetting::set('session_limit_enabled', $request->session_limit_enabled, 'boolean', 'jobs');
 
         return redirect()->route('admin.jobs.api-settings')
             ->with('success', 'API settings updated successfully');

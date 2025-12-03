@@ -360,7 +360,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // ==========================================
     Route::prefix('interviews')->name('interviews.')->group(function () {
         Route::get('/sessions', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'sessions'])->name('sessions');
-        Route::get('/sessions/{sessionId}', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'sessionDetails'])->name('session-details');
         Route::delete('/sessions/{sessionId}', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'deleteSession'])->name('delete-session');
         Route::get('/questions', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'questions'])->name('questions');
         Route::get('/settings', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'settings'])->name('settings');

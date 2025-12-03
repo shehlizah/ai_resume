@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserSubscription;
+use App\Models\SystemSetting;
 use App\Services\JobMatchService;
 use App\Services\OpenAIService;
 
@@ -116,7 +117,7 @@ class JobFinderController extends Controller
             }
         }
 
-        $limit = $hasPremiumAccess ? 8 : 5;
+        $limit = $hasPremiumAccess ? SystemSetting::get('job_limit_premium', 8) : SystemSetting::get('job_limit_free', 5);
 
         // If we have an uploaded file, send directly to AI
         if ($uploadedFilePath) {
@@ -269,7 +270,7 @@ class JobFinderController extends Controller
             }
         }
 
-        $limit = $hasPremiumAccess ? 8 : 5;
+        $limit = $hasPremiumAccess ? SystemSetting::get('job_limit_premium', 8) : SystemSetting::get('job_limit_free', 5);
 
         // If we have an uploaded file, send directly to AI
         if ($uploadedFilePath) {

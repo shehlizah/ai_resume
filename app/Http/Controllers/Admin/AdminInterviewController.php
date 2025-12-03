@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\InterviewSession;
 use App\Models\InterviewQuestion;
 use App\Models\User;
+use App\Models\SystemSetting;
 use Illuminate\Support\Facades\DB;
 
 class AdminInterviewController extends Controller
@@ -50,18 +51,6 @@ class AdminInterviewController extends Controller
         ];
 
         return view('admin.interviews.sessions', compact('sessions', 'stats'));
-    }
-
-    /**
-     * Show session details
-     */
-    public function sessionDetails($sessionId)
-    {
-        $session = InterviewSession::with(['user', 'questions'])
-            ->where('session_id', $sessionId)
-            ->firstOrFail();
-
-        return view('admin.interviews.session-details', compact('session'));
     }
 
     /**
@@ -121,11 +110,11 @@ class AdminInterviewController extends Controller
     public function settings()
     {
         $settings = [
-            'max_questions_per_session' => 5,
-            'ai_enabled' => true,
+            'max_questions_per_session' => SystemSetting::get('max_questions_per_session', 5),
+            'ai_enabled' => SystemSetting::get('ai_enabled', true),
             'question_types' => ['technical', 'behavioral', 'both'],
-            'scoring_enabled' => true,
-            'feedback_enabled' => true,
+            'scoring_enabled' => SystemSetting::get('scoring_enabled', true),
+            'feedback_enabled' => SystemSetting::get('feedback_enabled', true),
         ];
 
         return view('admin.interviews.settings', compact('settings'));
@@ -143,7 +132,11 @@ class AdminInterviewController extends Controller
             'feedback_enabled' => 'required|boolean',
         ]);
 
-        // In a real application, save to settings table or config
+        // Save settings to database
+        SystemSetting::set('max_questions_per_session', $request->max_questions_per_session, 'integer', 'interviews');
+        SystemSetting::set('ai_enabled', $request->ai_enabled, 'boolean', 'interviews');
+        SystemSetting::set('scoring_enabled', $request->scoring_enabled, 'boolean', 'interviews');
+        SystemSetting::set('feedback_enabled', $request->feedback_enabled, 'boolean', 'interviews');
 
         return redirect()->route('admin.interviews.settings')
             ->with('success', 'Interview settings updated successfully');

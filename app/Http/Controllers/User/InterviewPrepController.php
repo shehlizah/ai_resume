@@ -9,6 +9,7 @@ use App\Models\UserSubscription;
 use App\Models\InterviewSession;
 use App\Models\InterviewQuestion;
 use App\Models\UserResume;
+use App\Models\SystemSetting;
 use App\Services\OpenAIService;
 use App\Services\JobMatchService;
 
@@ -386,11 +387,12 @@ class InterviewPrepController extends Controller
                 })
                 ->toArray();
 
-            // Determine if we should generate another question (limit to 5 questions)
+            // Determine if we should generate another question (check max from settings)
             $questionCount = $session->questions()->count();
+            $maxQuestions = SystemSetting::get('max_questions_per_session', 5);
             $nextQuestion = null;
 
-            if ($questionCount < 5) {
+            if ($questionCount < $maxQuestions) {
                 // Get resume text if available
                 $resumeText = null;
                 $resume = UserResume::where('user_id', $user->id)->latest()->first();
