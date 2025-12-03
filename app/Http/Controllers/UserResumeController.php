@@ -225,8 +225,8 @@ private function fillTemplate($html, $css, $data)
 
         // Handle picture placeholder specially
         if ($key === 'picture') {
-            if (!empty($value)) {
-                // Create img tag if picture URL exists
+            if (!empty($value) && filter_var($value, FILTER_VALIDATE_URL)) {
+                // Create img tag if picture URL exists and is valid
                 $replaceValue = '<img src="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '" alt="Profile Picture" class="profile-picture" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">';
             } else {
                 // Remove placeholder if no picture
@@ -825,6 +825,7 @@ private function fillTemplate($html, $css, $data)
 
         // Add profile picture URL if exists
         if ($resume->photo_path) {
+            // Construct full URL for the picture
             $userData['picture'] = asset('storage/' . $resume->photo_path);
         } else {
             $userData['picture'] = ''; // Empty if no picture
@@ -864,7 +865,7 @@ private function fillTemplate($html, $css, $data)
         $scoreBadge = "
         <div class=\"score-badge no-print\" style=\"
             position: fixed;
-            top: 160px;
+            top: 320px;
             right: 20px;
             background: white;
             padding: 20px;
@@ -1069,6 +1070,7 @@ private function getSampleData()
         'email' => 'john.doe@example.com',
         'phone' => '+1 (555) 123-4567',
         'address' => 'San Francisco, CA',
+        'picture' => '', // No picture in sample data
         'summary' => 'Experienced software engineer with 10+ years of expertise in full-stack development, cloud architecture, and agile methodologies. Proven track record of delivering high-quality solutions and leading cross-functional teams to success.',
         'experience' => '<div class="experience-item">
     <div class="job-header">
