@@ -167,7 +167,8 @@
 
     <script>
     let currentSessionId = null;
-    let currentQuestionId = 1;
+    let currentQuestionId = null; // Store actual DB question ID
+    let currentQuestionNumber = 0; // Track question number for display
     let timerInterval = null;
     let startTime = null;
 
@@ -237,10 +238,13 @@
     }
 
     function displayQuestion(question) {
+        currentQuestionId = question.id; // Store actual DB ID
+        currentQuestionNumber = question.number || currentQuestionNumber + 1;
         document.getElementById('questionText').textContent = question.question;
-        document.getElementById('questionNumber').textContent = currentQuestionId;
+        document.getElementById('questionNumber').textContent = currentQuestionNumber;
         document.getElementById('answerBox').value = '';
         document.getElementById('answerBox').focus();
+        console.log('Displaying question:', { id: currentQuestionId, number: currentQuestionNumber });
     }
 
     function submitAnswer() {
@@ -291,7 +295,6 @@
                     stopTimer();
                     window.location.href = '/interview/ai-results/' + currentSessionId;
                 } else if (data.next_question) {
-                    currentQuestionId = data.next_question.id;
                     displayQuestion(data.next_question);
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="bx bx-send me-1"></i> Submit & Next Question';
