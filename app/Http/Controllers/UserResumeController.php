@@ -144,7 +144,7 @@ public function generate(Request $request)
             $timestamp = time();
             $extension = $file->getClientOriginalExtension();
             $filename = "profile_{$userId}_{$timestamp}.{$extension}";
-            
+
             // Store in storage/app/public/resumes/photos
             $photoPath = $file->storeAs('resumes/photos', $filename, 'public');
         }        // Build structured content (same as before)
