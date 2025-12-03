@@ -767,25 +767,25 @@ private function fillTemplate($html, $css, $data)
     }
 
     /**
-     * Build PDF HTML - Similar to preview but optimized for DomPDF
+     * Build PDF HTML - EXACTLY like preview
      */
     private function buildPdfHtml($html, $css)
     {
-        // Minimal CSS fixes for DomPDF compatibility
+        // Only replace CSS variables - nothing else
         $css = $this->fixCssForPdf($css);
-
-        // Build document like preview
+        
+        // Build document EXACTLY like preview (except @page for PDF)
         return "<!DOCTYPE html>
 <html lang=\"en\">
 <head>
     <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <title>Resume</title>
     <link href=\"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap\" rel=\"stylesheet\">
     <link href=\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap\" rel=\"stylesheet\">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; line-height: 1.6; }
-        @page { margin: 15mm; size: A4 portrait; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; background: #f5f5f5; padding: 20px; }
         {$css}
     </style>
 </head>
@@ -796,7 +796,7 @@ private function fillTemplate($html, $css, $data)
     }
 
     /**
-     * Minimal CSS fixes for PDF - only what absolutely breaks
+     * Minimal CSS fixes for PDF - only CSS variables
      */
     private function fixCssForPdf($css)
     {
@@ -808,20 +808,17 @@ private function fillTemplate($html, $css, $data)
                 $variables['--' . $varMatch[1]] = trim($varMatch[2]);
             }
         }
-
+        
         // Replace var() with actual values
         $css = preg_replace_callback('/var\((--[\w-]+)(?:,\s*([^)]+))?\)/i', function($matches) use ($variables) {
             $varName = $matches[1];
             $fallback = $matches[2] ?? '#333333';
             return $variables[$varName] ?? $fallback;
         }, $css);
-
+        
         // Remove :root block
         $css = preg_replace('/:root\s*\{[^}]+\}/s', '', $css);
-
-        // Fix max-width on resume-container only
-        $css = preg_replace('/\.resume-container\s*\{([^}]*?)max-width\s*:\s*850px;/is', '.resume-container { $1 max-width: 100%;', $css);
-
+        
         return $css;
     }
 
