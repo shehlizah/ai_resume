@@ -537,44 +537,7 @@ class InterviewPrepController extends Controller
     public function bookExpert()
     {
         $user = Auth::user();
-        $myBookings = \App\Models\ExpertBooking::where('user_id', $user->id)
-            ->orderBy('session_date', 'desc')
-            ->limit(5)
-            ->get();
 
-        return view('user.interview.expert', compact('user', 'myBookings'));
-    }
-
-    /**
-     * Store expert booking
-     */
-    public function bookSession(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'nullable|string|max:20',
-            'session_date' => 'required|date|after:now',
-            'session_type' => 'required|in:interview,resume,career',
-            'notes' => 'nullable|string|max:1000',
-        ]);
-
-        $user = Auth::user();
-
-        $booking = \App\Models\ExpertBooking::create([
-            'user_id' => $user->id,
-            'booking_ref' => \App\Models\ExpertBooking::generateBookingRef(),
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
-            'session_date' => $validated['session_date'],
-            'duration' => 60,
-            'session_type' => $validated['session_type'],
-            'notes' => $validated['notes'] ?? null,
-            'status' => 'pending',
-        ]);
-
-        return redirect()->route('user.interview.expert')
-            ->with('success', 'Your booking has been submitted! Booking reference: ' . $booking->booking_ref);
+        return view('user.interview.expert', compact('user'));
     }
 }

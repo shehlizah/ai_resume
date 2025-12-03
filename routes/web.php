@@ -202,7 +202,6 @@ Route::middleware(['auth'])->group(function () {
         // Expert booking (PRO)
         Route::middleware([CheckActivePackage::class])->group(function () {
             Route::get('/expert', [InterviewPrepController::class, 'bookExpert'])->name('expert');
-            Route::post('/expert/book', [InterviewPrepController::class, 'bookSession'])->name('book-session');
             Route::get('/my-sessions', [InterviewPrepController::class, 'mySessions'])->name('my-sessions');
         });
     });
@@ -364,18 +363,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/questions', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'questions'])->name('questions');
         Route::get('/settings', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'settings'])->name('settings');
         Route::post('/settings', [\App\Http\Controllers\Admin\AdminInterviewController::class, 'updateSettings'])->name('update-settings');
-    });
-
-    // ==========================================
-    // Expert Bookings Management
-    // ==========================================
-    Route::prefix('bookings')->name('bookings.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'index'])->name('index');
-        Route::post('/{id}/confirm', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'confirm'])->name('confirm');
-        Route::post('/{id}/complete', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'complete'])->name('complete');
-        Route::post('/{id}/cancel', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'cancel'])->name('cancel');
-        Route::put('/{id}', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'update'])->name('update');
-        Route::delete('/{id}', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'destroy'])->name('destroy');
     });
 
     // ==========================================
