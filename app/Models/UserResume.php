@@ -16,7 +16,9 @@ class UserResume extends Model
         'template_id',
         'data',
         'generated_pdf_path',
+        'photo_path',
         'status',
+        'score',
     ];
     
     protected $casts = [

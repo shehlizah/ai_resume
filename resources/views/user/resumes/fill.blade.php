@@ -53,7 +53,8 @@
       <!-- Form (normal submission) -->
       <form method="POST"
             action="{{ route('user.resumes.generate') }}"
-            id="resumeForm">
+            id="resumeForm"
+            enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="template_id" value="{{ $template->id }}">
 
@@ -120,6 +121,41 @@
                 @error('address')
                   <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
+              </div>
+            </div>
+            
+            <!-- Profile Picture Upload -->
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label class="form-label">Profile Picture (Optional)</label>
+                <div class="border rounded p-3 text-center" style="background: #f8f9fa;">
+                  <div id="picturePreview" class="mb-3" style="display: none;">
+                    <img id="picturePreviewImg" src="" alt="Preview" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #667eea;">
+                  </div>
+                  <div id="pictureUploadZone">
+                    <i class="bx bx-image-add" style="font-size: 2rem; color: #667eea;"></i>
+                    <p class="mb-1 mt-2"><strong>Upload Your Photo</strong></p>
+                    <small class="text-muted">JPG, PNG (Max 2MB) • Recommended: 300x300px</small>
+                  </div>
+                  <input type="file" 
+                         name="profile_picture" 
+                         id="profilePictureInput" 
+                         class="form-control mt-2 @error('profile_picture') is-invalid @enderror" 
+                         accept="image/jpeg,image/png,image/jpg"
+                         style="display: none;">
+                  <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="document.getElementById('profilePictureInput').click()">
+                    <i class="bx bx-upload"></i> Choose Photo
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-danger mt-2" id="removePictureBtn" style="display: none;">
+                    <i class="bx bx-trash"></i> Remove
+                  </button>
+                  @error('profile_picture')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                  @enderror
+                </div>
+                <small class="text-muted d-block mt-1">
+                  <i class="bx bx-info-circle"></i> Your photo will appear on the resume if the template supports it
+                </small>
               </div>
             </div>
           </div>
@@ -812,5 +848,48 @@
         btn.innerHTML = '<i class="bx bx-sparkles me-1"></i> Generate';
       }
     }
+
+    // Profile Picture Preview
+    const profilePictureInput = document.getElementById('profilePictureInput');
+    const picturePreview = document.getElementById('picturePreview');
+    const picturePreviewImg = document.getElementById('picturePreviewImg');
+    const pictureUploadZone = document.getElementById('pictureUploadZone');
+    const removePictureBtn = document.getElementById('removePictureBtn');
+
+    profilePictureInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Validate file size (2MB max)
+        if (file.size > 2 * 1024 * 1024) {
+          alert('File size must be less than 2MB');
+          e.target.value = '';
+          return;
+        }
+
+        // Validate file type
+        if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+          alert('Only JPG and PNG images are allowed');
+          e.target.value = '';
+          return;
+        }
+
+        // Preview the image
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          picturePreviewImg.src = e.target.result;
+          picturePreview.style.display = 'block';
+          pictureUploadZone.style.display = 'none';
+          removePictureBtn.style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    removePictureBtn.addEventListener('click', function() {
+      profilePictureInput.value = '';
+      picturePreview.style.display = 'none';
+      pictureUploadZone.style.display = 'block';
+      removePictureBtn.style.display = 'none';
+    });
   </script>
 </x-layouts.app>

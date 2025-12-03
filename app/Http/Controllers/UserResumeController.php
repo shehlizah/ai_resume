@@ -8,6 +8,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use App\Services\ResumeScoreService;
 
 class UserResumeController extends Controller
 {
@@ -104,6 +105,7 @@ public function generate(Request $request)
             'phone' => 'required|string',
             'address' => 'nullable|string|max:255',
             'summary' => 'nullable|string',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'experience' => 'nullable|array',
             'experience.*' => 'nullable|string',
             'education' => 'nullable|array',
@@ -132,20 +134,39 @@ public function generate(Request $request)
         ]);
 
         $template = Template::findOrFail($request->template_id);
-        $data = $request->except(['_token', 'template_id']);
+        $data = $request->except(['_token', 'template_id', 'profile_picture']);
+
+        // Handle profile picture upload
+        $photoPath = null;
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $userId = Auth::id();
+            $timestamp = time();
+            $extension = $file->getClientOriginalExtension();
+            $filename = "profile_{$userId}_{$timestamp}.{$extension}";
+            
+            // Store in public/storage/resumes/photos
+            $photoPath = $file->storeAs('resumes/photos', $filename, 'public');
+        }
 
         // Build structured content (same as before)
         $data['experience'] = $this->buildExperienceHtml($data);
         $data['education'] = $this->buildEducationHtml($data);
         $data['skills'] = $this->buildSkillsHtml($data);
 
+        // Calculate resume score
+        $scoreService = new ResumeScoreService();
+        $scoreData = $scoreService->calculateScore($data);
+
         // Save to database first (no PDF file, will use browser print)
         $resume = UserResume::create([
             'user_id' => Auth::id(),
             'template_id' => $template->id,
             'data' => json_encode($data),
+            'photo_path' => $photoPath,
             'generated_pdf_path' => null, // No server-side PDF
             'status' => 'completed',
+            'score' => $scoreData['score'],
         ]);
 
         // Redirect to print-preview page (browser print-to-PDF)
@@ -188,7 +209,7 @@ private function fillTemplate($html, $css, $data)
     $keys = [
         'name', 'title', 'email', 'phone', 'address', 'summary',
         'experience', 'skills', 'education',
-        'certifications', 'projects', 'languages', 'interests'
+        'certifications', 'projects', 'languages', 'interests', 'picture'
     ];
 
     $rawHtmlKeys = ['experience', 'skills', 'education', 'certifications', 'projects', 'languages', 'interests'];
@@ -202,7 +223,16 @@ private function fillTemplate($html, $css, $data)
 
         $value = $data[$key] ?? '';
 
-        if (in_array($key, $rawHtmlKeys)) {
+        // Handle picture placeholder specially
+        if ($key === 'picture') {
+            if (!empty($value)) {
+                // Create img tag if picture URL exists
+                $replaceValue = '<img src="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '" alt="Profile Picture" class="profile-picture" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">';
+            } else {
+                // Remove placeholder if no picture
+                $replaceValue = '';
+            }
+        } elseif (in_array($key, $rawHtmlKeys)) {
             $replaceValue = $value;
         } else {
             $replaceValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
@@ -788,9 +818,28 @@ private function fillTemplate($html, $css, $data)
     {
         $resume = UserResume::where('user_id', Auth::id())->findOrFail($id);
         $template = Template::findOrFail($resume->template_id);
+        $user = Auth::user();
 
         // Get user's data from database
         $userData = json_decode($resume->data, true);
+
+        // Add profile picture URL if exists
+        if ($resume->photo_path) {
+            $userData['picture'] = asset('storage/' . $resume->photo_path);
+        } else {
+            $userData['picture'] = ''; // Empty if no picture
+        }
+
+        // Get user's subscription package type for score feedback
+        $activeSubscription = $user->activeSubscription()->with('plan')->first();
+        $packageType = $activeSubscription && $activeSubscription->plan 
+            ? strtolower($activeSubscription->plan->slug ?? 'basic') 
+            : 'basic';
+
+        // Calculate score and get package-based feedback
+        $scoreService = new ResumeScoreService();
+        $scoreData = $scoreService->calculateScore($userData);
+        $feedback = $scoreService->getPackageBasedFeedback($packageType, $scoreData);
 
         // Get template content
         $htmlContent = $template->html_content;
@@ -809,6 +858,72 @@ private function fillTemplate($html, $css, $data)
 
         // Fill placeholders with user data
         $filledContent = $this->fillTemplate($htmlContent, '', $userData);
+
+        // Build score badge HTML
+        $scoreColor = $feedback['score'] >= 80 ? '#10b981' : ($feedback['score'] >= 60 ? '#f59e0b' : '#ef4444');
+        $scoreBadge = "
+        <div class=\"score-badge no-print\" style=\"
+            position: fixed;
+            top: 160px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            text-align: center;
+            min-width: 200px;
+            z-index: 9999;
+        \">
+            <div style=\"font-size: 48px; font-weight: bold; color: {$scoreColor}; line-height: 1;\">
+                {$feedback['score']}
+            </div>
+            <div style=\"font-size: 12px; color: #666; margin-top: 4px;\">Resume Score</div>
+            <div style=\"
+                margin-top: 12px;
+                padding: 8px 12px;
+                background: {$scoreColor};
+                color: white;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 600;
+            \">
+                {$feedback['grade']}
+            </div>";
+
+        // Add feedback based on package
+        if (isset($feedback['feedback']) && $feedback['feedback']) {
+            $scoreBadge .= "
+            <div style=\"margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: left;\">
+                <div style=\"font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 8px;\">📊 Feedback:</div>";
+            
+            if (isset($feedback['feedback']['sections'])) {
+                foreach ($feedback['feedback']['sections'] as $section => $text) {
+                    if (!empty($text)) {
+                        $scoreBadge .= "<div style=\"font-size: 10px; color: #6b7280; margin-bottom: 6px; line-height: 1.4;\">
+                            <strong>{$section}:</strong><br>{$text}
+                        </div>";
+                    }
+                }
+            }
+            $scoreBadge .= "</div>";
+        }
+
+        // Add suggestions for Premium users
+        if (isset($feedback['suggestions']) && $feedback['suggestions']) {
+            $scoreBadge .= "
+            <div style=\"margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb; text-align: left;\">
+                <div style=\"font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 8px;\">💡 Suggestions:</div>";
+            
+            foreach ($feedback['suggestions'] as $suggestion) {
+                $scoreBadge .= "<div style=\"font-size: 10px; color: #6b7280; margin-bottom: 6px; line-height: 1.4;\">
+                    • {$suggestion}
+                </div>";
+            }
+            $scoreBadge .= "</div>";
+        }
+
+        $scoreBadge .= "
+        </div>";
 
         // Build HTML document (exactly like preview)
         $output = "<!DOCTYPE html>
@@ -887,6 +1002,7 @@ private function fillTemplate($html, $css, $data)
         • Headers and footers<br>
         • Background graphics (optional)
     </div>
+    {$scoreBadge}
     {$filledContent}
 </body>
 </html>";

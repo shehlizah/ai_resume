@@ -64,6 +64,9 @@ class TemplateController extends Controller
         if ($request->hasFile('preview_image')) {
             $template->preview_image = $request->file('preview_image')
                 ->store('templates/previews', 'public');
+        } else {
+            // Auto-generate preview if no image provided
+            $template->preview_image = $this->generateTemplatePreview($template);
         }
 
         $template->save();
@@ -128,6 +131,9 @@ class TemplateController extends Controller
             }
             $template->preview_image = $request->file('preview_image')
                 ->store('templates/previews', 'public');
+        } elseif (!$template->preview_image) {
+            // Auto-generate preview if no existing image
+            $template->preview_image = $this->generateTemplatePreview($template);
         }
 
         $template->save();
@@ -513,5 +519,131 @@ class TemplateController extends Controller
         return redirect()
             ->route('admin.templates.edit', $newTemplate->id)
             ->with('success', 'Template duplicated successfully!');
+    }
+
+    /**
+     * Auto-generate preview image for template using sample data
+     * 
+     * NOTE: This is a placeholder implementation. To actually generate screenshot images,
+     * you need to install one of these packages:
+     * 
+     * 1. spatie/browsershot (recommended):
+     *    - composer require spatie/browsershot
+     *    - Requires Node.js and Puppeteer installed on server
+     *    - Usage: Browsershot::html($html)->save($path)
+     * 
+     * 2. intervention/image with headless browser
+     * 
+     * For now, this method creates a simple placeholder image.
+     * Replace this with actual screenshot generation when ready.
+     */
+    private function generateTemplatePreview($template)
+    {
+        try {
+            // Get sample data (same as UserResumeController preview)
+            $sampleData = $this->getSampleData();
+            
+            // Fill template with sample data
+            $htmlContent = $template->html_content;
+            $cssContent = $template->css_content ?? '';
+            
+            $filledHtml = $this->fillTemplate($htmlContent, $sampleData);
+            
+            // Build complete HTML with CSS
+            $completeHtml = "<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=\"UTF-8\">
+    <style>{$cssContent}</style>
+</head>
+<body>
+    {$filledHtml}
+</body>
+</html>";
+
+            // OPTION 1: Using Browsershot (requires installation)
+            // Uncomment after installing: composer require spatie/browsershot
+            /*
+            $filename = 'templates/previews/' . $template->slug . '-preview.png';
+            $path = storage_path('app/public/' . $filename);
+            
+            \Spatie\Browsershot\Browsershot::html($completeHtml)
+                ->windowSize(1200, 1500)
+                ->setScreenshotType('png')
+                ->save($path);
+            
+            return $filename;
+            */
+            
+            // OPTION 2: Placeholder - Create simple text file as placeholder
+            // This at least stores the HTML that would be converted to image
+            $filename = 'templates/previews/' . $template->slug . '-preview.html';
+            Storage::disk('public')->put($filename, $completeHtml);
+            
+            Log::info('Template preview placeholder created', ['template' => $template->slug]);
+            
+            return $filename;
+            
+        } catch (\Exception $e) {
+            Log::error('Failed to generate template preview', [
+                'template' => $template->slug,
+                'error' => $e->getMessage()
+            ]);
+            return null;
+        }
+    }
+
+    /**
+     * Fill template placeholders with sample data
+     */
+    private function fillTemplate($html, $data)
+    {
+        $keys = ['name', 'title', 'email', 'phone', 'address', 'summary', 'experience', 'skills', 'education'];
+        
+        foreach ($keys as $key) {
+            $placeholder = '{{' . $key . '}}';
+            $value = $data[$key] ?? '';
+            $html = str_replace($placeholder, $value, $html);
+        }
+        
+        return $html;
+    }
+
+    /**
+     * Get sample resume data for preview generation
+     */
+    private function getSampleData()
+    {
+        return [
+            'name' => 'John Doe',
+            'title' => 'Senior Software Engineer',
+            'email' => 'john.doe@example.com',
+            'phone' => '+1 (555) 123-4567',
+            'address' => 'San Francisco, CA',
+            'summary' => 'Experienced software engineer with 8+ years of expertise in full-stack development, specializing in scalable web applications and cloud architecture.',
+            'experience' => '<div class="experience-item">
+                <div class="job-header">
+                    <h3>Senior Software Engineer</h3>
+                    <span>Tech Corp | Jan 2020 - Present</span>
+                </div>
+                <ul>
+                    <li>Led development of microservices architecture serving 1M+ users</li>
+                    <li>Improved system performance by 40% through optimization</li>
+                </ul>
+            </div>',
+            'education' => '<div class="education-item">
+                <div class="degree-header">
+                    <h3>BSc Computer Science</h3>
+                    <span>Stanford University | 2015</span>
+                </div>
+            </div>',
+            'skills' => '<div class="skill-category">
+                <ul class="skill-list">
+                    <li>JavaScript, TypeScript, React</li>
+                    <li>Node.js, Laravel, PHP</li>
+                    <li>AWS, Docker, Kubernetes</li>
+                </ul>
+            </div>'
+        ];
     }
 }
