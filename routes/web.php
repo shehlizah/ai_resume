@@ -367,6 +367,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     });
 
     // ==========================================
+    // Expert Bookings Management
+    // ==========================================
+    Route::prefix('bookings')->name('bookings.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'index'])->name('index');
+        Route::post('/{id}/confirm', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'confirm'])->name('confirm');
+        Route::post('/{id}/complete', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'complete'])->name('complete');
+        Route::post('/{id}/cancel', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'cancel'])->name('cancel');
+        Route::put('/{id}', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\ExpertBookingController::class, 'destroy'])->name('destroy');
+    });
+
+    // ==========================================
     // Debug Routes (Admin Only)
     // ==========================================
     if (app()->environment('local', 'staging')) {

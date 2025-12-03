@@ -171,9 +171,11 @@
                         </div>
                     </div>
                     <hr>
+                    @if($user->has_lifetime_access)
                     <button type="button" class="btn btn-sm btn-outline-secondary w-100 mb-2" onclick="resetSessionLimit()" id="resetBtn">
                         <i class="bx bx-reset me-1"></i> Reset Session Limit
                     </button>
+                    @endif
                     <a href="{{ route('user.jobs.by-location') }}" class="btn btn-sm btn-outline-primary w-100">
                         <i class="bx bx-map me-1"></i> Search by Location
                     </a>

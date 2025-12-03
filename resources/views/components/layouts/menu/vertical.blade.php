@@ -112,6 +112,14 @@
         </ul>
       </li>
 
+      {{-- Expert Bookings --}}
+      <li class="menu-item {{ request()->is('admin/bookings*') ? 'active' : '' }}">
+        <a class="menu-link" href="{{ url('admin/bookings') }}">
+          <i class="menu-icon tf-icons bx bx-calendar"></i>
+          <div>{{ __('Expert Bookings') }}</div>
+        </a>
+      </li>
+
       <!--{{-- AI Prompts --}}-->
       <!--<li class="menu-item {{ request()->is('admin/prompts*') ? 'active open' : '' }}">-->
       <!--  <a href="javascript:void(0);" class="menu-link menu-toggle">-->

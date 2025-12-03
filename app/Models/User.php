@@ -275,4 +275,12 @@ public function hasActivePackage()
 //           $this->package_expires_at?->isFuture();
 // }
 
+    /**
+     * Get user's expert bookings
+     */
+    public function expertBookings()
+    {
+        return $this->hasMany(ExpertBooking::class);
+    }
+
 }
