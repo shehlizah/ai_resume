@@ -144,12 +144,10 @@ public function generate(Request $request)
             $timestamp = time();
             $extension = $file->getClientOriginalExtension();
             $filename = "profile_{$userId}_{$timestamp}.{$extension}";
-
-            // Store in public/storage/resumes/photos
+            
+            // Store in storage/app/public/resumes/photos
             $photoPath = $file->storeAs('resumes/photos', $filename, 'public');
-        }
-
-        // Build structured content (same as before)
+        }        // Build structured content (same as before)
         $data['experience'] = $this->buildExperienceHtml($data);
         $data['education'] = $this->buildEducationHtml($data);
         $data['skills'] = $this->buildSkillsHtml($data);
@@ -837,7 +835,7 @@ private function fillTemplate($html, $css, $data)
         // Add profile picture URL if exists
         if ($resume->photo_path) {
             // Construct full URL for the picture
-            $userData['picture'] = asset('storage/' . $resume->photo_path);
+            $userData['picture'] = url('storage/' . $resume->photo_path);
         } else {
             $userData['picture'] = ''; // Empty if no picture
         }
