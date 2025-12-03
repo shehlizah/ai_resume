@@ -305,12 +305,14 @@
                                     </td>
                                     <td class="px-4 py-3 text-end">
                                         <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('user.resumes', $resume->id) }}" class="btn btn-outline-primary" title="View">
+                                            <a href="{{ route('user.resumes.view', $resume->id) }}" class="btn btn-outline-primary" title="View">
                                                 <i class="bx bx-show"></i>
                                             </a>
+                                            @if($subscription && $subscription->status === 'active')
                                             <a href="{{ route('user.resumes.download', $resume->id) }}" class="btn btn-primary" title="Download">
                                                 <i class="bx bx-download"></i>
                                             </a>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

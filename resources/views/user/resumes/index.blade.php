@@ -8,36 +8,6 @@
             <i class="bx bx-plus me-1"></i> Create New Resume
           </a>
         </div>
-        
-        {{-- Warning banner --}}
-@if(!$hasActivePackage)
-    <div class="alert alert-warning">
-        <strong>No Active Package</strong> - 
-        <a href="{{ route('packages') }}">Subscribe</a> to create and download resumes.
-    </div>
-@endif
-
-{{-- Create button --}}
-@if($hasActivePackage)
-    <a href="{{ route('user.resumes.create') }}" class="btn btn-primary">
-        Create Resume
-    </a>
-@else
-    <button class="btn btn-secondary" disabled>
-        <i class="fas fa-lock"></i> Create Resume (Subscribe First)
-    </button>
-@endif
-
-{{-- Download button --}}
-@if($hasActivePackage)
-    <a href="{{ route('user.resumes.download', $resume->id) }}" class="btn btn-sm btn-primary">
-        Download
-    </a>
-@else
-    <button class="btn btn-sm btn-secondary" disabled>
-        <i class="fas fa-lock"></i> Locked
-    </button>
-@endif
 
         <div class="card-body">
           @if($resumes->isEmpty())
@@ -108,22 +78,24 @@
                             <i class="bx bx-dots-vertical-rounded"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end">
-                            <a href="{{ route('user.resumes.view', $resume->id) }}" 
+                            <a href="{{ route('user.resumes.view', $resume->id) }}"
                                class="dropdown-item"
                                target="_blank">
                               <i class="bx bx-show me-2"></i> View PDF
                             </a>
-                            <a href="{{ route('user.resumes.download', $resume->id) }}" 
+                            @if($hasActivePackage)
+                            <a href="{{ route('user.resumes.download', $resume->id) }}"
                                class="dropdown-item">
                               <i class="bx bx-download me-2"></i> Download PDF
                             </a>
-                            <a href="{{ route('user.resumes.fill', $resume->template_id) }}" 
+                            @endif
+                            <a href="{{ route('user.resumes.fill', $resume->template_id) }}"
                                class="dropdown-item">
                               <i class="bx bx-copy me-2"></i> Create Similar
                             </a>
                             <div class="dropdown-divider"></div>
-                            <form action="{{ route('user.resumes.destroy', $resume->id) }}" 
-                                  method="POST" 
+                            <form action="{{ route('user.resumes.destroy', $resume->id) }}"
+                                  method="POST"
                                   onsubmit="return confirm('Are you sure you want to delete this resume?')">
                               @csrf
                               @method('DELETE')
