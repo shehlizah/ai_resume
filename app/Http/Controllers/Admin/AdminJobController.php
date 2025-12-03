@@ -25,7 +25,7 @@ class AdminJobController extends Controller
             'total_users' => User::count(),
             'users_with_resumes' => User::has('resumes')->count(),
             'total_resumes' => \App\Models\UserResume::count(),
-            'active_today' => User::whereDate('last_login_at', today())->count(),
+            'active_today' => User::whereDate('created_at', today())->count(),
         ];
 
         return view('admin.jobs.user-activity', compact('users', 'stats'));

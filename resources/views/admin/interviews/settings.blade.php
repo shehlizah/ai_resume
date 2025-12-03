@@ -1,8 +1,4 @@
-@extends('components.layouts.admin')
-
-@section('title', 'Interview Settings')
-
-@section('content')
+<x-layouts.app :title="__('Interview Settings')">
 <div class="container-xxl flex-grow-1 container-p-y">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -165,4 +161,4 @@
         </div>
     </div>
 </div>
-@endsection
+</x-layouts.app>
