@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 
 class TemplateController extends Controller
 {
@@ -248,6 +249,7 @@ class TemplateController extends Controller
             'github' => 'github.com/johndoe',
             'website' => 'www.johndoe.com',
             'portfolio' => 'johndoe.dev',
+            'picture' => '', // Will be replaced with avatar in fillTemplate
 
             // Summary/Objective
             'summary' => 'Experienced software engineer with 10+ years of expertise in full-stack development, cloud architecture, and agile methodologies. Proven track record of delivering high-quality solutions and leading cross-functional teams to success. Passionate about building scalable applications and mentoring junior developers.',
@@ -540,7 +542,7 @@ class TemplateController extends Controller
     private function generateTemplatePreview($template)
     {
         try {
-            // Get sample data (same as UserResumeController preview)
+            // Get sample data
             $sampleData = $this->getSampleData();
 
             // Fill template with sample data
@@ -554,6 +556,7 @@ class TemplateController extends Controller
 <html>
 <head>
     <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <style>{$cssContent}</style>
 </head>
 <body>
@@ -561,34 +564,34 @@ class TemplateController extends Controller
 </body>
 </html>";
 
-            // OPTION 1: Using Browsershot (requires installation)
-            // Uncomment after installing: composer require spatie/browsershot
-            /*
-            $filename = 'templates/previews/' . $template->slug . '-preview.png';
-            $path = storage_path('app/public/' . $filename);
+            // Create directory if doesn't exist
+            $previewDir = public_path('uploads/templates/previews');
+            if (!File::exists($previewDir)) {
+                File::makeDirectory($previewDir, 0755, true);
+            }
 
-            \Spatie\Browsershot\Browsershot::html($completeHtml)
-                ->windowSize(1200, 1500)
-                ->setScreenshotType('png')
-                ->save($path);
+            // Generate simple placeholder image using GD
+            $filename = $template->slug . '-preview-' . time() . '.png';
+            $path = $previewDir . '/' . $filename;
 
-            return $filename;
-            */
+            // Create a simple preview image with template info
+            $this->generateSimplePreview($template, $path);
 
-            // OPTION 2: Placeholder - Create simple text file as placeholder
-            // This at least stores the HTML that would be converted to image
-            $filename = 'templates/previews/' . $template->slug . '-preview.html';
-            Storage::disk('public')->put($filename, $completeHtml);
+            // Return relative path for database storage
+            $relativePath = 'uploads/templates/previews/' . $filename;
 
-            Log::info('Template preview placeholder created', ['template' => $template->slug]);
+            Log::info('Template preview generated', ['template' => $template->slug, 'path' => $relativePath]);
 
-            return $filename;
+            return $relativePath;
 
         } catch (\Exception $e) {
             Log::error('Failed to generate template preview', [
                 'template' => $template->slug,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
+
+            // Return null - template will save without preview
             return null;
         }
     }
@@ -598,14 +601,104 @@ class TemplateController extends Controller
      */
     private function fillTemplate($html, $data)
     {
-        $keys = ['name', 'title', 'email', 'phone', 'address', 'summary', 'experience', 'skills', 'education'];
+        $keys = ['name', 'title', 'email', 'phone', 'address', 'summary', 'experience', 'skills', 'education', 'picture'];
 
         foreach ($keys as $key) {
             $placeholder = '{{' . $key . '}}';
             $value = $data[$key] ?? '';
+
+            // Handle picture placeholder with avatar
+            if ($key === 'picture' && empty($value)) {
+                $userName = $data['name'] ?? 'User';
+                $initials = strtoupper(substr($userName, 0, 1));
+                if (preg_match('/\s+/', $userName)) {
+                    $parts = explode(' ', $userName);
+                    $initials = strtoupper(substr($parts[0], 0, 1) . substr($parts[count($parts)-1], 0, 1));
+                }
+                $value = '<div class="profile-picture profile-avatar" style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; font-family: Arial, sans-serif;">' . $initials . '</div>';
+            }
+
             $html = str_replace($placeholder, $value, $html);
         }
 
         return $html;
+    }
+
+    /**
+     * Generate a simple preview image using GD library
+     * This creates a card-style preview showing template name and type
+     */
+    private function generateSimplePreview($template, $path)
+    {
+        // Image dimensions
+        $width = 800;
+        $height = 1000;
+
+        // Create image
+        $image = imagecreatetruecolor($width, $height);
+
+        // Define colors
+        $white = imagecolorallocate($image, 255, 255, 255);
+        $black = imagecolorallocate($image, 0, 0, 0);
+        $gray = imagecolorallocate($image, 100, 100, 100);
+        $lightGray = imagecolorallocate($image, 240, 240, 240);
+        $purple = imagecolorallocate($image, 102, 126, 234);
+        $darkPurple = imagecolorallocate($image, 118, 75, 162);
+
+        // Fill background with white
+        imagefill($image, 0, 0, $white);
+
+        // Add gradient effect at top (simulate header)
+        for ($i = 0; $i < 300; $i++) {
+            $color = imagecolorallocatealpha($image, 102, 126, 234, 127 - ($i / 300 * 127));
+            imagefilledrectangle($image, 0, $i, $width, $i + 1, $color);
+        }
+
+        // Add border
+        imagerectangle($image, 0, 0, $width - 1, $height - 1, $gray);
+
+        // Add template name (centered)
+        $templateName = strtoupper($template->name);
+        $fontSize = 5; // Built-in font size
+        $textWidth = imagefontwidth($fontSize) * strlen($templateName);
+        $x = ($width - $textWidth) / 2;
+        imagestring($image, $fontSize, $x, 50, $templateName, $darkPurple);
+
+        // Add template type
+        $category = ucfirst($template->category ?? 'Professional');
+        $textWidth2 = imagefontwidth(3) * strlen($category);
+        $x2 = ($width - $textWidth2) / 2;
+        imagestring($image, 3, $x2, 100, $category, $gray);
+
+        // Add decorative elements (simulate resume sections)
+        // Header section
+        imagefilledrectangle($image, 40, 200, $width - 40, 280, $lightGray);
+        imagestring($image, 3, 50, 220, 'Professional Resume Template', $black);
+        imagestring($image, 2, 50, 245, 'Modern design with clean layout', $gray);
+
+        // Content sections (simulate text blocks)
+        $sections = [
+            ['y' => 320, 'title' => 'EXPERIENCE'],
+            ['y' => 480, 'title' => 'EDUCATION'],
+            ['y' => 640, 'title' => 'SKILLS'],
+        ];
+
+        foreach ($sections as $section) {
+            // Section title
+            imagestring($image, 4, 50, $section['y'], $section['title'], $purple);
+
+            // Section content lines
+            for ($i = 0; $i < 3; $i++) {
+                $lineY = $section['y'] + 30 + ($i * 25);
+                imagefilledrectangle($image, 50, $lineY, $width - 50, $lineY + 8, $lightGray);
+            }
+        }
+
+        // Add footer text
+        imagestring($image, 2, 50, $height - 40, 'Preview generated on ' . date('M d, Y'), $gray);
+
+        // Save image
+        imagepng($image, $path);
+        imagedestroy($image);
     }
 }
