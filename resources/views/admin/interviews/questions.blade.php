@@ -111,11 +111,10 @@
                     <thead>
                         <tr>
                             <th style="width: 5%">#</th>
-                            <th style="width: 35%">Question</th>
+                            <th style="width: 45%">Question & Answer</th>
                             <th style="width: 10%">Type</th>
-                            <th style="width: 15%">User</th>
+                            <th style="width: 15%">User/Job</th>
                             <th style="width: 10%">Score</th>
-                            <th style="width: 10%">Status</th>
                             <th style="width: 15%">Date</th>
                         </tr>
                     </thead>
@@ -124,13 +123,65 @@
                         <tr>
                             <td>{{ $question->question_number }}</td>
                             <td>
-                                <div class="text-truncate" style="max-width: 300px;" title="{{ $question->question_text }}">
-                                    {{ $question->question_text }}
+                                <div class="mb-2">
+                                    <strong class="d-block mb-1 text-primary">Q: {{ $question->question_text }}</strong>
+                                    @if($question->focus_area)
+                                        <small class="text-muted d-block">
+                                            <i class='bx bx-target-lock'></i> Focus: {{ $question->focus_area }}
+                                        </small>
+                                    @endif
                                 </div>
-                                @if($question->focus_area)
-                                    <small class="text-muted d-block mt-1">
-                                        <i class='bx bx-target-lock'></i> {{ $question->focus_area }}
-                                    </small>
+
+                                @if($question->answer_text)
+                                    <div class="mt-2 p-2 bg-light rounded">
+                                        <small class="text-muted d-block mb-1"><strong>Answer:</strong></small>
+                                        <small class="d-block">{{ Str::limit($question->answer_text, 200) }}</small>
+
+                                        @if(strlen($question->answer_text) > 200)
+                                            <button class="btn btn-sm btn-link p-0 mt-1" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#answer-{{ $question->id }}">
+                                                View full answer
+                                            </button>
+                                            <div class="collapse mt-2" id="answer-{{ $question->id }}">
+                                                <small class="d-block">{{ $question->answer_text }}</small>
+
+                                                @if($question->feedback && is_array($question->feedback))
+                                                    <div class="mt-3">
+                                                        @if(isset($question->feedback['feedback']))
+                                                            <div class="mb-2">
+                                                                <small class="text-primary"><strong>Feedback:</strong></small>
+                                                                <small class="d-block">{{ $question->feedback['feedback'] }}</small>
+                                                            </div>
+                                                        @endif
+
+                                                        @if(isset($question->feedback['strengths']) && count($question->feedback['strengths']) > 0)
+                                                            <div class="mb-2">
+                                                                <small class="text-success"><strong>Strengths:</strong></small>
+                                                                <ul class="mb-0">
+                                                                    @foreach($question->feedback['strengths'] as $strength)
+                                                                        <li><small>{{ $strength }}</small></li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+
+                                                        @if(isset($question->feedback['improvements']) && count($question->feedback['improvements']) > 0)
+                                                            <div class="mb-2">
+                                                                <small class="text-warning"><strong>Areas to Improve:</strong></small>
+                                                                <ul class="mb-0">
+                                                                    @foreach($question->feedback['improvements'] as $improvement)
+                                                                        <li><small>{{ $improvement }}</small></li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </div>
+                                @else
+                                    <small class="text-muted"><em>Not answered yet</em></small>
                                 @endif
                             </td>
                             <td>
@@ -140,7 +191,8 @@
                             </td>
                             <td>
                                 @if($question->session && $question->session->user)
-                                    <small>{{ $question->session->user->name }}</small>
+                                    <small class="d-block">{{ $question->session->user->name }}</small>
+                                    <small class="text-muted d-block">{{ $question->session->job_title }}</small>
                                 @else
                                     <span class="text-muted">-</span>
                                 @endif
@@ -155,19 +207,13 @@
                                 @endif
                             </td>
                             <td>
-                                @if($question->answer_text)
-                                    <span class="badge bg-success">Answered</span>
-                                @else
-                                    <span class="badge bg-secondary">Pending</span>
-                                @endif
-                            </td>
-                            <td>
                                 <small>{{ $question->created_at->format('M d, Y') }}</small>
+                                <small class="text-muted d-block">{{ $question->created_at->format('h:i A') }}</small>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4">
+                            <td colspan="6" class="text-center py-4">
                                 <i class='bx bx-message-square-x' style="font-size: 3rem; opacity: 0.3;"></i>
                                 <p class="text-muted mt-2">No questions found</p>
                             </td>
