@@ -4,7 +4,7 @@ namespace App\Services;
 
 /**
  * MINIMAL DomPDF Template Sanitizer
- * 
+ *
  * Only fixes critical DomPDF incompatibilities while preserving template structure
  */
 class DomPdfTemplateSanitizer
@@ -18,10 +18,10 @@ class DomPdfTemplateSanitizer
         foreach ($data as $key => $value) {
             $html = str_replace('{{' . $key . '}}', $value, $html);
         }
-        
+
         // MINIMAL CSS fixes - only what breaks DomPDF
         $css = $this->minimalCssFixes($css);
-        
+
         // Build complete document
         $document = "<!DOCTYPE html>
 <html lang=\"en\">
@@ -30,24 +30,24 @@ class DomPdfTemplateSanitizer
     <title>Resume</title>
     <style>
         /* Base resets */
-        * { 
+        * {
             box-sizing: border-box;
         }
-        
-        body { 
-            font-family: Arial, 'DejaVu Sans', sans-serif; 
-            line-height: 1.6; 
-            color: #333; 
+
+        body {
+            font-family: Arial, 'DejaVu Sans', sans-serif;
+            line-height: 1.6;
+            color: #333;
             font-size: 11pt;
             margin: 0;
             padding: 0;
         }
-        
-        @page { 
+
+        @page {
             margin: 12mm;
-            size: A4 portrait; 
+            size: A4 portrait;
         }
-        
+
         /* Force full width on resume container */
         .resume-container {
             max-width: 100% !important;
@@ -55,34 +55,34 @@ class DomPdfTemplateSanitizer
             margin: 0 !important;
             box-shadow: none !important;
         }
-        
+
         /* Remove pseudo-element decorations that break */
         .header::before, .header::after,
         .experience-item::before, .education-item::before,
         .section-title::after, .contact-item::before {
             display: none !important;
         }
-        
+
         /* Fix grid layouts */
         .contact-info {
             display: block !important;
         }
-        
+
         .contact-item {
             display: block !important;
             margin-bottom: 5px;
         }
-        
+
         .skills-grid {
             display: block !important;
         }
-        
+
         .skill-item {
             display: inline-block !important;
             margin-right: 10px;
             margin-bottom: 8px;
         }
-        
+
         /* Original template CSS (with minimal fixes) */
         {$css}
     </style>
@@ -91,10 +91,10 @@ class DomPdfTemplateSanitizer
     {$html}
 </body>
 </html>";
-        
+
         return $document;
     }
-    
+
     /**
      * Minimal CSS fixes - only critical DomPDF incompatibilities
      */
@@ -103,46 +103,46 @@ class DomPdfTemplateSanitizer
         // Replace CSS variables with actual values
         $variables = $this->extractCssVariables($css);
         $css = $this->replaceCssVariables($css, $variables);
-        
+
         // Remove :root block
         $css = preg_replace('/:root\s*\{[^}]+\}/s', '', $css);
-        
+
         // Fix critical display issues
         $css = preg_replace('/display\s*:\s*flex\s*;/i', 'display: block;', $css);
         $css = preg_replace('/display\s*:\s*grid\s*;/i', 'display: block;', $css);
-        
+
         // Remove flexbox/grid properties
         $css = preg_replace('/\s*(flex-[^:]+|justify-content|align-items|gap|grid-[^:]+)\s*:[^;]+;/i', '', $css);
-        
+
         // Remove unsupported properties
         $css = preg_replace('/\s*(clip-path|transform|filter|backdrop-filter)\s*:[^;]+;/i', '', $css);
-        
+
         // Fix box-shadow (replace with border)
         $css = preg_replace('/box-shadow\s*:[^;]+;/i', '', $css);
-        
+
         // Fix linear gradients (keep background color from gradient start)
         $css = preg_replace_callback('/background\s*:\s*linear-gradient\([^)]*?(#[0-9a-f]{3,6}|rgba?\([^)]+\))[^)]*\)/i', function($matches) {
             return 'background: ' . $this->extractFirstColor($matches[0]);
         }, $css);
-        
+
         // Remove viewport units
         $css = preg_replace('/(\d+(?:\.\d+)?)\s*v[wh]/i', '100%', $css);
-        
+
         // Fix max-width constraint on container
         $css = preg_replace('/\.resume-container\s*\{([^}]*?)max-width\s*:[^;]+;/is', '.resume-container { $1', $css);
-        
+
         // Remove calc()
         $css = preg_replace('/calc\([^)]+\)/i', '100%', $css);
-        
+
         // Remove transitions and animations
         $css = preg_replace('/\s*(transition|animation)\s*:[^;]+;/i', '', $css);
-        
+
         // Remove media queries
         $css = preg_replace('/@media[^{]+\{([^{}]+|\{[^{}]+\})*\}/s', '', $css);
-        
+
         return $css;
     }
-    
+
     /**
      * Extract CSS variables from :root
      */
@@ -157,7 +157,7 @@ class DomPdfTemplateSanitizer
         }
         return $variables;
     }
-    
+
     /**
      * Replace var() with actual values
      */
@@ -169,7 +169,7 @@ class DomPdfTemplateSanitizer
             return $variables[$varName] ?? $fallback;
         }, $css);
     }
-    
+
     /**
      * Extract first color from gradient string
      */
@@ -186,7 +186,7 @@ class DomPdfTemplateSanitizer
         // Fallback
         return '#f0f0f0';
     }
-    
+
     // Keep these for backward compatibility but they won't be used
     public function sanitizeHtml($html) { return $html; }
     public function sanitizeCss($css) { return $this->minimalCssFixes($css); }

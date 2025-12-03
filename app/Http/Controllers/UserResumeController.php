@@ -134,12 +134,12 @@ public function generate(Request $request)
         $template = Template::findOrFail($request->template_id);
         $data = $request->except(['_token', 'template_id']);
 
-        // Build structured content
+        // Build structured content (same as before)
         $data['experience'] = $this->buildExperienceHtml($data);
         $data['education'] = $this->buildEducationHtml($data);
         $data['skills'] = $this->buildSkillsHtml($data);
 
-        // Get template content
+        // Get template content (SAME AS PREVIEW)
         $htmlContent = $template->html_content;
         $cssFromDb = $template->css_content ?? '';
 
@@ -151,31 +151,21 @@ public function generate(Request $request)
         // Combine CSS
         $css = $cssFromDb . "\n" . $cssFromHtml;
 
-        // ✅ NEW: Use sanitizer to make template DomPDF-safe
-        $sanitizer = new \App\Services\DomPdfTemplateSanitizer();
-
-        // Fill placeholders first
+        // Fill placeholders
         $filledContent = $this->fillTemplate($htmlContent, '', $data);
 
-        // Then sanitize and build complete document
-        $filledHtml = $sanitizer->buildSafeDocument($filledContent, $css, []);
+        // ✅ NEW APPROACH: Build HTML like preview, but with PDF-specific adjustments
+        $pdfHtml = $this->buildPdfHtml($filledContent, $css);
 
-        // ✅ UPDATED: DomPDF options for maximum compatibility
-        $pdf = Pdf::loadHTML($filledHtml)
+        // Generate PDF with clean HTML
+        $pdf = Pdf::loadHTML($pdfHtml)
             ->setPaper('A4', 'portrait')
             ->setOptions([
                 'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => false,
+                'isRemoteEnabled' => true, // Allow loading fonts
                 'isFontSubsettingEnabled' => true,
-                'defaultFont' => 'DejaVu Sans',
+                'defaultFont' => 'Arial',
                 'dpi' => 96,
-                'debugKeepTemp' => false,
-                'debugCss' => false,
-                'debugLayout' => false,
-                'debugLayoutLines' => false,
-                'debugLayoutBlocks' => false,
-                'debugLayoutInline' => false,
-                'debugLayoutPaddingBox' => false,
             ]);
 
         // Create directory if needed
@@ -776,6 +766,64 @@ private function fillTemplate($html, $css, $data)
         return $html;
     }
 
+    /**
+     * Build PDF HTML - Similar to preview but optimized for DomPDF
+     */
+    private function buildPdfHtml($html, $css)
+    {
+        // Minimal CSS fixes for DomPDF compatibility
+        $css = $this->fixCssForPdf($css);
+
+        // Build document like preview
+        return "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <title>Resume</title>
+    <link href=\"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap\" rel=\"stylesheet\">
+    <link href=\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap\" rel=\"stylesheet\">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        @page { margin: 15mm; size: A4 portrait; }
+        {$css}
+    </style>
+</head>
+<body>
+    {$html}
+</body>
+</html>";
+    }
+
+    /**
+     * Minimal CSS fixes for PDF - only what absolutely breaks
+     */
+    private function fixCssForPdf($css)
+    {
+        // Extract CSS variables
+        $variables = [];
+        if (preg_match('/:root\s*\{([^}]+)\}/s', $css, $match)) {
+            preg_match_all('/--([\w-]+)\s*:\s*([^;]+);/i', $match[1], $varMatches, PREG_SET_ORDER);
+            foreach ($varMatches as $varMatch) {
+                $variables['--' . $varMatch[1]] = trim($varMatch[2]);
+            }
+        }
+
+        // Replace var() with actual values
+        $css = preg_replace_callback('/var\((--[\w-]+)(?:,\s*([^)]+))?\)/i', function($matches) use ($variables) {
+            $varName = $matches[1];
+            $fallback = $matches[2] ?? '#333333';
+            return $variables[$varName] ?? $fallback;
+        }, $css);
+
+        // Remove :root block
+        $css = preg_replace('/:root\s*\{[^}]+\}/s', '', $css);
+
+        // Fix max-width on resume-container only
+        $css = preg_replace('/\.resume-container\s*\{([^}]*?)max-width\s*:\s*850px;/is', '.resume-container { $1 max-width: 100%;', $css);
+
+        return $css;
+    }
 
     /**
      * Preview template with sample data
