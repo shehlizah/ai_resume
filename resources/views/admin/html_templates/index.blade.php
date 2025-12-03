@@ -19,7 +19,7 @@
         </a>
       </div>
     </div>
-    
+
     <!-- Filter/Stats Bar -->
     <div class="card-body border-bottom">
       <div class="row g-3 align-items-center">
@@ -79,12 +79,12 @@
                 <tr>
                   <td>
                     @if($template->preview_image)
-                      <img src="{{ asset('storage/'.$template->preview_image) }}" 
-                           alt="{{ $template->name }}" 
-                           class="img-thumbnail" 
+                      <img src="{{ asset($template->preview_image) }}"
+                           alt="{{ $template->name }}"
+                           class="img-thumbnail"
                            style="width: 60px; height: 80px; object-fit: cover;">
                     @else
-                      <div class="bg-light d-flex align-items-center justify-content-center" 
+                      <div class="bg-light d-flex align-items-center justify-content-center"
                            style="width: 60px; height: 80px;">
                         <i class="bx bx-image text-muted"></i>
                       </div>
@@ -126,20 +126,20 @@
                       <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown">
                         <i class="bx bx-dots-horizontal-rounded me-1"></i> Manage
                       </button>
-                      
+
                       <div class="dropdown-menu dropdown-menu-end">
                         <!-- PREVIEW BUTTON - NEW! -->
                         <a class="dropdown-item" href="{{ route('admin.templates.preview', $template->id) }}" target="_blank">
                           <i class="bx bx-show me-1"></i> Preview
                         </a>
-                        
+
                         <!-- Edit -->
                         <a class="dropdown-item" href="{{ route('admin.templates.edit', $template->id) }}">
                           <i class="bx bx-edit me-1"></i> Edit
                         </a>
-                        
+
                         <!-- Toggle Active/Inactive -->
-                        <form action="{{ route('admin.templates.toggle-active', $template->id) }}" 
+                        <form action="{{ route('admin.templates.toggle-active', $template->id) }}"
                               method="POST" class="d-inline">
                           @csrf
                           <button type="submit" class="dropdown-item">
@@ -149,7 +149,7 @@
                         </form>
 
                         <!-- Duplicate -->
-                        <form action="{{ route('admin.templates.duplicate', $template->id) }}" 
+                        <form action="{{ route('admin.templates.duplicate', $template->id) }}"
                               method="POST" class="d-inline">
                           @csrf
                           <button type="submit" class="dropdown-item">
@@ -158,11 +158,11 @@
                         </form>
 
                         <div class="dropdown-divider"></div>
-                        
+
                         <!-- Delete -->
-                        <form action="{{ route('admin.templates.destroy', $template->id) }}" 
-                              method="POST" 
-                              onsubmit="return confirm('Are you sure you want to delete this template?')" 
+                        <form action="{{ route('admin.templates.destroy', $template->id) }}"
+                              method="POST"
+                              onsubmit="return confirm('Are you sure you want to delete this template?')"
                               class="d-inline">
                           @csrf
                           @method('DELETE')
@@ -194,7 +194,7 @@
         </div>
         <div class="modal-body">
           <p class="text-muted mb-4">Choose a professional template to start with. You can customize it after importing.</p>
-          
+
           <div class="row g-4" id="starterTemplates">
             <!-- Loading state -->
             <div class="col-12 text-center" id="loadingStarters">
@@ -285,7 +285,7 @@
         })
         .catch(error => {
           console.error('Error loading templates:', error);
-          document.getElementById('loadingStarters').innerHTML = 
+          document.getElementById('loadingStarters').innerHTML =
             '<div class="alert alert-danger">Failed to load templates. Please try again.</div>';
         });
     }
@@ -294,7 +294,7 @@
       const container = document.getElementById('starterTemplates');
       const loadingDiv = document.getElementById('loadingStarters');
       if (loadingDiv) loadingDiv.style.display = 'none';
-      
+
       if (templates.length === 0) {
         container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No starter templates available yet.</p></div>';
         return;
@@ -333,13 +333,13 @@
     // Preview template function
     window.previewTemplate = function(templateId) {
       currentTemplateId = templateId;
-      
+
       fetch(`/admin/templates/starters/${templateId}/content`)
         .then(response => response.json())
         .then(data => {
           const iframe = document.getElementById('previewFrame');
           const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-          
+
           const fullHtml = `
             <!DOCTYPE html>
             <html>
@@ -350,11 +350,11 @@
             <body>${data.html}</body>
             </html>
           `;
-          
+
           iframeDoc.open();
           iframeDoc.write(fullHtml);
           iframeDoc.close();
-          
+
           const previewModalInstance = new bootstrap.Modal(previewModal);
           previewModalInstance.show();
         });
@@ -365,7 +365,7 @@
       currentTemplateId = templateId;
       document.getElementById('cloneTemplateName').value = templateName + ' (Custom)';
       document.getElementById('cloneTemplateForm').action = `/admin/templates/starters/${templateId}/clone`;
-      
+
       const cloneModalInstance = new bootstrap.Modal(cloneModal);
       cloneModalInstance.show();
     };

@@ -5,8 +5,8 @@
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">✏️ Edit Template: {{ $template->name }}</h5>
           <div class="d-flex gap-2">
-            <a href="{{ route('admin.templates.preview', $template->id) }}" 
-               class="btn btn-info btn-sm" 
+            <a href="{{ route('admin.templates.preview', $template->id) }}"
+               class="btn btn-info btn-sm"
                target="_blank">
               <i class="bx bx-show me-1"></i> Full Preview
             </a>
@@ -61,7 +61,7 @@
             <div class="row mb-4">
               <div class="col-md-4">
                 <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="is_premium" name="is_premium" value="1" 
+                  <input class="form-check-input" type="checkbox" id="is_premium" name="is_premium" value="1"
                          {{ old('is_premium', $template->is_premium) ? 'checked' : '' }}>
                   <label class="form-check-label" for="is_premium">
                     <i class="bx bx-crown text-warning"></i> Premium Template
@@ -70,7 +70,7 @@
               </div>
               <div class="col-md-4">
                 <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1" 
+                  <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1"
                          {{ old('is_active', $template->is_active) ? 'checked' : '' }}>
                   <label class="form-check-label" for="is_active">
                     <i class="bx bx-check-circle text-success"></i> Active
@@ -86,7 +86,7 @@
                 <input type="file" class="form-control" id="preview_image" name="preview_image" accept="image/*">
                 @if($template->preview_image)
                   <div class="mt-2">
-                    <img src="{{ asset('storage/'.$template->preview_image) }}" alt="Current preview" style="max-width: 200px; border-radius: 8px;">
+                    <img src="{{ asset($template->preview_image) }}" alt="Current preview" style="max-width: 200px; border-radius: 8px;">
                   </div>
                 @endif
               </div>
@@ -122,9 +122,9 @@
                     <label class="form-label fw-bold">HTML Code</label>
                     <!--<textarea id="htmlCode" name="html_code" class="form-control code-editor" rows="20">{{ old('html_code', $htmlContent) }}</textarea>-->
                     <textarea id="htmlCode" name="html_code" class="form-control" rows="20">{{ $htmlContent ?? '' }}</textarea>
-                    
+
                   </div>
-                  
+
                   <div class="col-lg-6">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                       <label class="form-label fw-bold mb-0">Live Preview</label>
@@ -219,17 +219,17 @@
     function updatePreview() {
       const html = htmlCode.value;
       const css = cssCode.value;
-      
+
       // Create combined HTML with CSS
       const combinedHTML = `
         <style>${css}</style>
         ${html}
       `;
-      
+
       // Update both preview panels
       livePreview.innerHTML = combinedHTML;
       cssLivePreview.innerHTML = combinedHTML;
-      
+
       console.log('Preview updated!');
     }
 
@@ -263,7 +263,7 @@
         reader.onload = function(event) {
           htmlCode.value = event.target.result;
           updatePreview();
-          
+
           // Show success message
           alert('HTML file loaded into editor! You can now edit it.');
         };
@@ -278,7 +278,7 @@
         reader.onload = function(event) {
           cssCode.value = event.target.result;
           updatePreview();
-          
+
           // Show success message
           alert('CSS file loaded into editor! You can now edit it.');
         };
@@ -294,7 +294,7 @@
       line-height: 1.6;
       resize: vertical;
     }
-    
+
     .preview-container {
       border: 1px solid #d9dee3;
       padding: 20px;
@@ -305,11 +305,11 @@
       box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
       border-radius: 8px;
     }
-    
+
     .nav-tabs .nav-link {
       cursor: pointer;
     }
-    
+
     .nav-tabs .nav-link.active {
       font-weight: 600;
     }
