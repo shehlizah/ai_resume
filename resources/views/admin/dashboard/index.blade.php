@@ -209,6 +209,91 @@
             </div>
         </div>
 
+        <!-- Job & Interview Stats -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="avatar avatar-lg bg-primary bg-opacity-10 rounded">
+                                <i class="bx bxs-briefcase text-primary" style="font-size: 1.75rem;"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1 small">Job Searches</h6>
+                            <h3 class="mb-0 text-primary">{{ number_format($jobSearchesCount ?? 0) }}</h3>
+                        </div>
+                    </div>
+                    <div>
+                        <small class="text-muted">This month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="avatar avatar-lg bg-success bg-opacity-10 rounded">
+                                <i class="bx bxs-chat text-success" style="font-size: 1.75rem;"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1 small">Interview Sessions</h6>
+                            <h3 class="mb-0 text-success">{{ number_format($interviewSessionsCount ?? 0) }}</h3>
+                        </div>
+                    </div>
+                    <div>
+                        <small class="text-muted">Total AI practice</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="avatar avatar-lg bg-warning bg-opacity-10 rounded">
+                                <i class="bx bxs-book-content text-warning" style="font-size: 1.75rem;"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1 small">Interview Questions</h6>
+                            <h3 class="mb-0 text-warning">{{ number_format($interviewQuestionsCount ?? 0) }}</h3>
+                        </div>
+                    </div>
+                    <div>
+                        <small class="text-muted">In question bank</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="avatar avatar-lg bg-info bg-opacity-10 rounded">
+                                <i class="bx bxs-map text-info" style="font-size: 1.75rem;"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1 small">Active Locations</h6>
+                            <h3 class="mb-0 text-info">{{ number_format($activeJobLocations ?? 0) }}</h3>
+                        </div>
+                    </div>
+                    <div>
+                        <small class="text-muted">Job search locations</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Quick Actions -->
         <div class="col-lg-12">
             <div class="card border-0 shadow-sm">
@@ -264,6 +349,22 @@
                                 <div class="p-3 text-center rounded border hover-shadow transition">
                                     <i class="bx bx-dollar-circle text-danger mb-2" style="font-size: 2rem;"></i>
                                     <h6 class="small mb-0 text-dark">Payments</h6>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-6">
+                            <a href="{{ url('admin/jobs') }}" class="text-decoration-none">
+                                <div class="p-3 text-center rounded border hover-shadow transition">
+                                    <i class="bx bx-briefcase text-primary mb-2" style="font-size: 2rem;"></i>
+                                    <h6 class="small mb-0 text-dark">Job Sources</h6>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-6">
+                            <a href="{{ url('admin/interview/questions') }}" class="text-decoration-none">
+                                <div class="p-3 text-center rounded border hover-shadow transition">
+                                    <i class="bx bx-chat text-success mb-2" style="font-size: 2rem;"></i>
+                                    <h6 class="small mb-0 text-dark">Interview Bank</h6>
                                 </div>
                             </a>
                         </div>

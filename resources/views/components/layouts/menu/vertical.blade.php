@@ -77,6 +77,44 @@
             </ul>
         </li>
 
+      {{-- Job Management --}}
+      <li class="menu-item {{ request()->is('admin/jobs*') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-briefcase"></i>
+          <div>{{ __('Job Management') }}</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->is('admin/jobs') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/jobs') }}">{{ __('Job Sources') }}</a>
+          </li>
+          <li class="menu-item {{ request()->is('admin/jobs/recommended') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/jobs/recommended') }}">{{ __('Recommended Jobs') }}</a>
+          </li>
+          <li class="menu-item {{ request()->is('admin/jobs/settings') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/jobs/settings') }}">{{ __('Job Settings') }}</a>
+          </li>
+        </ul>
+      </li>
+
+      {{-- Interview Management --}}
+      <li class="menu-item {{ request()->is('admin/interview*') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-chat"></i>
+          <div>{{ __('Interview Module') }}</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->is('admin/interview/questions') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/interview/questions') }}">{{ __('Question Bank') }}</a>
+          </li>
+          <li class="menu-item {{ request()->is('admin/interview/sessions') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/interview/sessions') }}">{{ __('User Sessions') }}</a>
+          </li>
+          <li class="menu-item {{ request()->is('admin/interview/settings') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ url('admin/interview/settings') }}">{{ __('AI Settings') }}</a>
+          </li>
+        </ul>
+      </li>
+
       <!--{{-- AI Prompts --}}-->
       <!--<li class="menu-item {{ request()->is('admin/prompts*') ? 'active open' : '' }}">-->
       <!--  <a href="javascript:void(0);" class="menu-link menu-toggle">-->
