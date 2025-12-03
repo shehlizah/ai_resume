@@ -145,8 +145,16 @@ public function generate(Request $request)
             $extension = $file->getClientOriginalExtension();
             $filename = "profile_{$userId}_{$timestamp}.{$extension}";
 
-            // Store in storage/app/public/resumes/photos
-            $photoPath = $file->storeAs('resumes/photos', $filename, 'public');
+            // Store directly in public/uploads/resumes/photos for direct access
+            $destinationPath = public_path('uploads/resumes/photos');
+
+            // Create directory if it doesn't exist
+            if (!File::exists($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true);
+            }
+
+            $file->move($destinationPath, $filename);
+            $photoPath = 'uploads/resumes/photos/' . $filename;
         }        // Build structured content (same as before)
         $data['experience'] = $this->buildExperienceHtml($data);
         $data['education'] = $this->buildEducationHtml($data);
@@ -223,14 +231,9 @@ private function fillTemplate($html, $css, $data)
 
         // Handle picture placeholder specially
         if ($key === 'picture') {
-            if (!empty($value)) {
-                // If value looks like a URL, use it as image
-                if (filter_var($value, FILTER_VALIDATE_URL) || strpos($value, 'storage/') !== false) {
-                    $replaceValue = '<img src="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '" alt="Profile Picture" class="profile-picture">';
-                } else {
-                    // Otherwise remove placeholder
-                    $replaceValue = '';
-                }
+            if (!empty($value) && (filter_var($value, FILTER_VALIDATE_URL) || strpos($value, 'uploads/') !== false || strpos($value, 'storage/') !== false)) {
+                // If value is a valid URL or path, use it as image
+                $replaceValue = '<img src="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '" alt="Profile Picture" class="profile-picture">';
             } else {
                 // Create avatar with initials if no picture
                 $userName = $data['name'] ?? 'User';
@@ -834,8 +837,8 @@ private function fillTemplate($html, $css, $data)
 
         // Add profile picture URL if exists
         if ($resume->photo_path) {
-            // Use Storage::url() for proper public disk URL generation
-            $userData['picture'] = Storage::disk('public')->url($resume->photo_path);
+            // Use asset() for direct public path access
+            $userData['picture'] = asset($resume->photo_path);
         } else {
             $userData['picture'] = ''; // Empty if no picture
         }
