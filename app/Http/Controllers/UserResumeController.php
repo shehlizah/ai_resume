@@ -943,6 +943,8 @@ private function fillTemplate($html, $css, $data)
 
         // Build download button HTML (only if user has active package)
         $downloadButton = '';
+        $printBlockScript = '';
+
         if ($hasActivePackage) {
             $downloadButton = '
     <a href="#" onclick="window.print(); return false;" class="download-btn no-print">
@@ -953,6 +955,50 @@ private function fillTemplate($html, $css, $data)
     <a href="' . route('user.pricing') . '" class="download-btn no-print" style="background: #f59e0b;">
         🔒 Upgrade to Download
     </a>';
+
+            // Block all print methods for non-subscribed users
+            $printBlockScript = "
+    <script>
+        // Disable Ctrl+P, Cmd+P, and right-click print
+        document.addEventListener('keydown', function(e) {
+            // Block Ctrl+P / Cmd+P
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                e.stopPropagation();
+                alert('⚠️ Print/Download is only available for subscribed users. Please upgrade your plan to access this feature.');
+                return false;
+            }
+        }, true);
+
+        // Block window.print() function
+        window.print = function() {
+            alert('⚠️ Print/Download is only available for subscribed users. Please upgrade your plan to access this feature.');
+            window.location.href = '" . route('user.pricing') . "';
+        };
+
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Block beforeprint event
+        window.addEventListener('beforeprint', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            alert('⚠️ Print/Download is only available for subscribed users. Please upgrade your plan to access this feature.');
+            window.location.href = '" . route('user.pricing') . "';
+        }, true);
+
+        // Additional protection - monitor print media query
+        const printMediaQuery = window.matchMedia('print');
+        printMediaQuery.addListener(function(mql) {
+            if (mql.matches) {
+                alert('⚠️ Print/Download is only available for subscribed users. Please upgrade your plan to access this feature.');
+                window.location.href = '" . route('user.pricing') . "';
+            }
+        });
+    </script>";
         }
 
         // Build HTML document (exactly like preview)
@@ -1021,6 +1067,7 @@ private function fillTemplate($html, $css, $data)
 
         {$css}
     </style>
+    {$printBlockScript}
 </head>
 <body>
     {$downloadButton}
