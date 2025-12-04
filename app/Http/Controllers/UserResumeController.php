@@ -938,6 +938,23 @@ private function fillTemplate($html, $css, $data)
         $scoreBadge .= "
         </div>";
 
+        // Check if user has active package for download button
+        $hasActivePackage = $user->activeSubscription()->exists();
+
+        // Build download button HTML (only if user has active package)
+        $downloadButton = '';
+        if ($hasActivePackage) {
+            $downloadButton = '
+    <a href="#" onclick="window.print(); return false;" class="download-btn no-print">
+        📥 Download PDF
+    </a>';
+        } else {
+            $downloadButton = '
+    <a href="' . route('user.pricing') . '" class="download-btn no-print" style="background: #f59e0b;">
+        🔒 Upgrade to Download
+    </a>';
+        }
+
         // Build HTML document (exactly like preview)
         $output = "<!DOCTYPE html>
 <html lang=\"en\">
@@ -1006,9 +1023,7 @@ private function fillTemplate($html, $css, $data)
     </style>
 </head>
 <body>
-    <a href=\"#\" onclick=\"window.print(); return false;\" class=\"download-btn no-print\">
-        📥 Download PDF
-    </a>
+    {$downloadButton}
     <div class=\"print-instructions no-print\">
         <strong>💡 For Clean PDF:</strong>
         In print dialog, uncheck:<br>
