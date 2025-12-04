@@ -24,17 +24,17 @@
         <div class="col-md-6 col-lg-4">
           <div class="card h-100 hover-shadow">
             @if($template->preview_image)
-              <img src="{{ asset($template->preview_image) }}" 
-                   class="card-img-top" 
+              <img src="{{ asset($template->preview_image) }}"
+                   class="card-img-top"
                    alt="{{ $template->name }}"
                    style="height: 300px; object-fit: cover;">
             @else
-              <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+              <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
                    style="height: 300px;">
                 <i class="bx bx-file" style="font-size: 64px; color: #ddd;"></i>
               </div>
             @endif
-            
+
             <div class="card-body d-flex flex-column">
               <div class="d-flex justify-content-between align-items-start mb-2">
                 <h5 class="card-title mb-0">{{ $template->name }}</h5>
@@ -44,24 +44,38 @@
                   </span>
                 @endif
               </div>
-              
+
               <p class="card-text text-muted small flex-grow-1">
                 {{ Str::limit($template->description, 100) }}
               </p>
-              
+
               <div class="d-grid gap-2">
-                <a href="{{ route('user.resumes.fill', $template->id) }}" 
-                   class="btn btn-primary">
-                  <i class="bx bx-edit me-1"></i> Use This Template
-                </a>
-                <a href="{{ route('user.resumes.preview', $template->id) }}" 
+                @php
+                  $user = auth()->user();
+                  $hasPackage = $user && $user->activeSubscription()->exists();
+                  $hasPremium = $hasPackage && ($user->activeSubscription->plan->name === 'Premium' || $user->has_lifetime_access);
+                  $canUseTemplate = !$template->is_premium || $hasPremium;
+                @endphp
+
+                @if($canUseTemplate)
+                  <a href="{{ route('user.resumes.fill', $template->id) }}"
+                     class="btn btn-primary">
+                    <i class="bx bx-edit me-1"></i> Use This Template
+                  </a>
+                @else
+                  <button class="btn btn-primary" disabled>
+                    <i class="bx bx-lock me-1"></i> Premium Only
+                  </button>
+                @endif
+
+                <a href="{{ route('user.resumes.preview', $template->id) }}"
                    target="_blank"
                    class="btn btn-outline-secondary btn-sm">
                   <i class="bx bx-show me-1"></i> Preview with Sample Data
                 </a>
               </div>
             </div>
-            
+
             <div class="card-footer bg-transparent">
               <small class="text-muted">
                 <i class="bx bx-time me-1"></i>

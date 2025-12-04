@@ -21,10 +21,16 @@
                                class="btn btn-primary btn-lg" target="_blank">
                                 <i class="bx bx-show me-1"></i> View Resume
                             </a>
+                            @if(auth()->user() && auth()->user()->activeSubscription()->exists())
                             <a href="{{ route('user.resumes.download', $resume->id) }}"
                                class="btn btn-success btn-lg">
                                 <i class="bx bx-download me-1"></i> Download PDF
                             </a>
+                            @else
+                            <a href="{{ route('user.pricing') }}" class="btn btn-warning btn-lg">
+                                <i class="bx bx-crown me-1"></i> Upgrade to Download
+                            </a>
+                            @endif
                         </div>
 
                         <a href="{{ route('user.resumes.index') }}" class="btn btn-outline-secondary">
