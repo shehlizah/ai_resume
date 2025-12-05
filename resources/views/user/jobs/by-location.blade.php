@@ -125,12 +125,18 @@
             location,
             jobTitle,
             resumeId,
-            uploadedFile
+            uploadedFile,
+            hasResumeData: !!(resumeId || uploadedFile)
         });
 
         if (!location || !jobTitle) {
             alert('Please enter both job title and location');
             return;
+        }
+
+        // Resume is optional but helpful for better matching
+        if (!resumeId && !uploadedFile) {
+            console.log('No resume provided - searching without resume matching');
         }
 
         showSearchLoadingState();
@@ -412,6 +418,36 @@
             console.error('Error:', error);
             locationUploadStatus.style.display = 'none';
             alert('❌ Error uploading file: ' + error.message);
+        });
+    }
+
+    // Add visual feedback when resume is selected from dropdown
+    const resumeSelect = document.getElementById('resumeId');
+    if (resumeSelect) {
+        resumeSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (this.value) {
+                // Clear any uploaded file since user chose saved resume
+                sessionStorage.removeItem('locationUploadedResumeFile');
+
+                // Show success feedback
+                const locationUploadStatus = document.getElementById('locationUploadStatus');
+                const locationStatusText = document.getElementById('locationStatusText');
+                if (locationUploadStatus && locationStatusText) {
+                    locationUploadStatus.style.display = 'block';
+                    locationStatusText.innerHTML = '<i class="bx bx-check-circle me-2"></i> Using: ' + selectedOption.text;
+                    locationUploadStatus.querySelector('.alert').classList.remove('alert-info');
+                    locationUploadStatus.querySelector('.alert').classList.add('alert-success');
+
+                    setTimeout(() => {
+                        locationUploadStatus.style.display = 'none';
+                        locationUploadStatus.querySelector('.alert').classList.remove('alert-success');
+                        locationUploadStatus.querySelector('.alert').classList.add('alert-info');
+                    }, 2000);
+                }
+
+                console.log('Resume selected from dropdown:', this.value, selectedOption.text);
+            }
         });
     }
     </script>

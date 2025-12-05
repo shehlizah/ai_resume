@@ -314,17 +314,25 @@
 
         // Generate interview prep
         document.getElementById('generateBtn').addEventListener('click', function() {
-            const resumeId = document.getElementById('resumeSelect')?.value;
+            const resumeId = document.getElementById('resumeSelect')?.value || '';
             const jobTitle = document.getElementById('jobTitle').value.trim();
             const experienceLevel = document.getElementById('experienceLevel').value;
+
+            console.log('Generate button clicked', {
+                resumeId,
+                uploadedResumeFile,
+                jobTitle,
+                experienceLevel
+            });
 
             if (!jobTitle) {
                 alert('Please enter a job title');
                 return;
             }
 
+            // Check if either a saved resume is selected OR a file was uploaded
             if (!resumeId && !uploadedResumeFile) {
-                alert('Please upload or select a resume');
+                alert('Please select a saved resume or upload a new one');
                 return;
             }
 
@@ -432,6 +440,36 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // Add visual feedback when resume is selected from dropdown
+        const resumeSelectElement = document.getElementById('resumeSelect');
+        if (resumeSelectElement) {
+            resumeSelectElement.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (this.value) {
+                    // Clear any uploaded file since user chose saved resume
+                    uploadedResumeFile = null;
+
+                    // Show success feedback
+                    const uploadStatus = document.getElementById('uploadStatus');
+                    const statusText = document.getElementById('statusText');
+                    if (uploadStatus && statusText) {
+                        uploadStatus.style.display = 'block';
+                        statusText.innerHTML = '<i class="bx bx-check-circle me-2"></i> Selected: ' + selectedOption.text;
+                        uploadStatus.querySelector('.alert').classList.remove('alert-info');
+                        uploadStatus.querySelector('.alert').classList.add('alert-success');
+
+                        setTimeout(() => {
+                            uploadStatus.style.display = 'none';
+                            uploadStatus.querySelector('.alert').classList.remove('alert-success');
+                            uploadStatus.querySelector('.alert').classList.add('alert-info');
+                        }, 2000);
+                    }
+
+                    console.log('Resume selected from dropdown:', this.value, selectedOption.text);
+                }
+            });
         }
     </script>
 </x-layouts.app>

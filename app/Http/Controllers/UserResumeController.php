@@ -874,7 +874,7 @@ private function fillTemplate($html, $css, $data)
 
         // Build score badge HTML - For header display
         $scoreColor = $feedback['score'] >= 80 ? '#10b981' : ($feedback['score'] >= 60 ? '#f59e0b' : '#ef4444');
-        
+
         // Create header score badge
         $headerScoreBadge = "
         <div class=\"header-score\">
@@ -888,7 +888,7 @@ private function fillTemplate($html, $css, $data)
                 <div class=\"header-score-label\">Resume Score</div>
             </div>
         </div>";
-        
+
         // Old score badge (now hidden via CSS)
         $scoreBadge = "";
 
@@ -1225,22 +1225,29 @@ private function fillTemplate($html, $css, $data)
             }
 
             .action-card {
-                min-width: 60px;
-                max-width: 60px;
-                padding: 12px 8px;
+                min-width: 80px;
+                max-width: 80px;
+                padding: 10px 5px;
                 flex-shrink: 0;
+                flex-direction: column;
             }
 
             .action-card i {
-                font-size: 28px;
-                margin-bottom: 0;
+                font-size: 26px;
+                margin-bottom: 4px;
             }
 
             .action-card div {
-                display: none;
+                display: block;
             }
 
-            .action-card strong,
+            .action-card strong {
+                display: block;
+                font-size: 9px;
+                line-height: 1.2;
+                margin-bottom: 0;
+            }
+
             .action-card small {
                 display: none;
             }
