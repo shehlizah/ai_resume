@@ -872,50 +872,25 @@ private function fillTemplate($html, $css, $data)
         // Fill placeholders with user data
         $filledContent = $this->fillTemplate($htmlContent, '', $userData);
 
-        // Build score badge HTML - New horizontal fixed layout
+        // Build score badge HTML - For header display
         $scoreColor = $feedback['score'] >= 80 ? '#10b981' : ($feedback['score'] >= 60 ? '#f59e0b' : '#ef4444');
         
-        // Build feedback text
-        $feedbackText = '';
-        if (isset($feedback['feedback']) && $feedback['feedback']) {
-            if (isset($feedback['feedback']['sections'])) {
-                $feedbackParts = [];
-                foreach ($feedback['feedback']['sections'] as $section => $text) {
-                    if (!empty($text)) {
-                        $feedbackParts[] = "<strong>{$section}:</strong> {$text}";
-                    }
-                }
-                if (!empty($feedbackParts)) {
-                    $feedbackText = implode(' • ', $feedbackParts);
-                }
-            }
-        }
-        
-        // Add suggestions for Premium users
-        if (isset($feedback['suggestions']) && $feedback['suggestions'] && !empty($feedback['suggestions'])) {
-            if (!empty($feedbackText)) {
-                $feedbackText .= ' • ';
-            }
-            $feedbackText .= '<strong>💡 Suggestions:</strong> ' . implode(', ', $feedback['suggestions']);
-        }
-        
-        $scoreBadge = "
-    <div class=\"score-badge no-print\">
-        <div class=\"score-badge-inner\">
-            <div class=\"score-main\">
-                <div class=\"score-number\" style=\"color: {$scoreColor};\">
-                    {$feedback['score']}
-                </div>
-                <div class=\"score-info\">
-                    <div class=\"score-grade\" style=\"background: {$scoreColor};\">
-                        {$feedback['grade']}
-                    </div>
-                    <div class=\"score-label\">Resume Score</div>
-                </div>
+        // Create header score badge
+        $headerScoreBadge = "
+        <div class=\"header-score\">
+            <div class=\"header-score-number\" style=\"color: white;\">
+                {$feedback['score']}
             </div>
-            " . (!empty($feedbackText) ? "<div class=\"score-feedback\">{$feedbackText}</div>" : "") . "
-        </div>
-    </div>";
+            <div class=\"header-score-info\">
+                <div class=\"header-score-grade\" style=\"background: {$scoreColor};\">
+                    {$feedback['grade']}
+                </div>
+                <div class=\"header-score-label\">Resume Score</div>
+            </div>
+        </div>";
+        
+        // Old score badge (now hidden via CSS)
+        $scoreBadge = "";
 
         // Check if user has active package for download button
         $hasActivePackage = $user->activeSubscription()->exists();
@@ -996,7 +971,7 @@ private function fillTemplate($html, $css, $data)
             font-family: Arial, sans-serif;
             line-height: 1.6;
             background: #e5e7eb;
-            padding-top: 240px;
+            padding-top: 180px;
             padding-bottom: 80px;
         }
 
@@ -1024,6 +999,14 @@ private function fillTemplate($html, $css, $data)
             padding: 15px 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             z-index: 9998;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-content {
+            flex: 1;
         }
 
         .preview-header h1 {
@@ -1037,10 +1020,46 @@ private function fillTemplate($html, $css, $data)
             opacity: 0.9;
         }
 
+        /* Score Badge in Header */
+        .header-score {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 10px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-score-number {
+            font-size: 36px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .header-score-info {
+            text-align: left;
+        }
+
+        .header-score-grade {
+            padding: 4px 12px;
+            border-radius: 6px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .header-score-label {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
         /* Action Cards Container */
         .action-cards {
             position: fixed;
-            top: 75px;
+            top: 100px;
             left: 0;
             right: 0;
             display: flex;
@@ -1096,66 +1115,9 @@ private function fillTemplate($html, $css, $data)
             color: #666;
         }
 
-        /* Score Badge - Fixed below action cards */
+        /* Score Badge - Hidden (moved to header) */
         .score-badge {
-            position: fixed;
-            top: 155px;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 12px 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            z-index: 9996;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .score-badge-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-        }
-
-        .score-main {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .score-number {
-            font-size: 36px;
-            font-weight: bold;
-            line-height: 1;
-        }
-
-        .score-info {
-            text-align: left;
-        }
-
-        .score-grade {
-            padding: 4px 12px;
-            border-radius: 6px;
-            color: white;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 4px;
-        }
-
-        .score-label {
-            font-size: 11px;
-            color: #666;
-        }
-
-        .score-feedback {
-            flex: 1;
-            font-size: 11px;
-            color: #666;
-            line-height: 1.4;
-            max-height: 40px;
-            overflow-y: auto;
+            display: none;
         }
 
         /* A4 Paper View */
@@ -1214,24 +1176,46 @@ private function fillTemplate($html, $css, $data)
         /* Mobile Responsive */
         @media (max-width: 768px) {
             body {
-                padding-top: 320px;
+                padding-top: 180px;
                 background: #f5f5f5;
             }
 
             .preview-header {
                 padding: 12px 15px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
             }
 
-            .preview-header h1 {
+            .header-content h1 {
                 font-size: 18px;
             }
 
-            .preview-header p {
+            .header-content p {
                 font-size: 11px;
             }
 
+            .header-score {
+                width: 100%;
+                justify-content: space-between;
+                padding: 8px 15px;
+            }
+
+            .header-score-number {
+                font-size: 28px;
+            }
+
+            .header-score-grade {
+                font-size: 10px;
+                padding: 3px 10px;
+            }
+
+            .header-score-label {
+                font-size: 10px;
+            }
+
             .action-cards {
-                top: 60px;
+                top: 120px;
                 padding: 8px 10px;
                 gap: 8px;
                 flex-wrap: nowrap;
@@ -1257,41 +1241,6 @@ private function fillTemplate($html, $css, $data)
 
             .action-card small {
                 font-size: 9px;
-            }
-
-            .score-badge {
-                top: 125px;
-                padding: 10px 10px;
-            }
-
-            .score-badge-inner {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-
-            .score-main {
-                gap: 10px;
-                width: 100%;
-            }
-
-            .score-number {
-                font-size: 32px;
-            }
-
-            .score-grade {
-                font-size: 11px;
-                padding: 3px 10px;
-            }
-
-            .score-label {
-                font-size: 10px;
-            }
-
-            .score-feedback {
-                width: 100%;
-                font-size: 10px;
-                max-height: 60px;
             }
 
             .a4-wrapper {
@@ -1322,10 +1271,13 @@ private function fillTemplate($html, $css, $data)
     {$printBlockScript}
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header with Score -->
     <div class=\"preview-header no-print\">
-        <h1>📄 Resume Preview</h1>
-        <p>Review your resume and take the next step in your career journey</p>
+        <div class=\"header-content\">
+            <h1>📄 Resume Preview</h1>
+            <p>Review your resume and take the next step in your career journey</p>
+        </div>
+        {$headerScoreBadge}
     </div>
 
     <!-- Action Cards -->
@@ -1344,11 +1296,11 @@ private function fillTemplate($html, $css, $data)
                 <small>Practice with AI</small>
             </div>
         </a>
-        <a href=\"#\" onclick=\"alert('Job Search feature coming soon!'); return false;\" class=\"action-card warning\">
-            <i class='bx bx-search-alt'></i>
+        <a href=\"" . route('user.jobs.by-location') . "\" class=\"action-card warning\">
+            <i class='bx bx-map'></i>
             <div>
-                <strong>Job Search</strong>
-                <small>Find opportunities</small>
+                <strong>Job by Location</strong>
+                <small>Find nearby jobs</small>
             </div>
         </a>
     </div>
