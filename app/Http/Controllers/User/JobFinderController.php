@@ -51,17 +51,18 @@ class JobFinderController extends Controller
      */
     public function generateRecommended(Request $request)
     {
-        \Log::info('generateRecommended called', [
-            'resume_id' => $request->resume_id,
-            'uploaded_file' => $request->uploaded_file
-        ]);
+        try {
+            \Log::info('generateRecommended called', [
+                'resume_id' => $request->resume_id,
+                'uploaded_file' => $request->uploaded_file
+            ]);
 
-        $request->validate([
-            'resume_id' => 'nullable|integer|exists:user_resumes,id',
-            'uploaded_file' => 'nullable|string'
-        ]);
+            $request->validate([
+                'resume_id' => 'nullable|integer|exists:user_resumes,id',
+                'uploaded_file' => 'nullable|string'
+            ]);
 
-        $user = Auth::user();
+            $user = Auth::user();
         $subscription = UserSubscription::where('user_id', $user->id)
             ->whereIn('status', ['active', 'pending'])
             ->latest()
@@ -171,6 +172,17 @@ class JobFinderController extends Controller
             'success' => false,
             'message' => 'Please upload a resume or select a saved resume to get job recommendations.'
         ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error in generateRecommended', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while searching for jobs. Please try again.'
+            ], 500);
+        }
     }
 
     /**
@@ -202,21 +214,22 @@ class JobFinderController extends Controller
      */
     public function generateByLocation(Request $request)
     {
-        \Log::info('generateByLocation called', [
-            'location' => $request->location,
-            'job_title' => $request->job_title,
-            'resume_id' => $request->resume_id,
-            'uploaded_file' => $request->uploaded_file
-        ]);
+        try {
+            \Log::info('generateByLocation called', [
+                'location' => $request->location,
+                'job_title' => $request->job_title,
+                'resume_id' => $request->resume_id,
+                'uploaded_file' => $request->uploaded_file
+            ]);
 
-        $request->validate([
-            'location' => 'required|string',
-            'job_title' => 'required|string',
-            'resume_id' => 'nullable|integer|exists:user_resumes,id',
-            'uploaded_file' => 'nullable|string'
-        ]);
+            $request->validate([
+                'location' => 'required|string',
+                'job_title' => 'required|string',
+                'resume_id' => 'nullable|integer|exists:user_resumes,id',
+                'uploaded_file' => 'nullable|string'
+            ]);
 
-        $user = Auth::user();
+            $user = Auth::user();
         $subscription = UserSubscription::where('user_id', $user->id)
             ->whereIn('status', ['active', 'pending'])
             ->latest()
@@ -316,10 +329,10 @@ class JobFinderController extends Controller
 
         // No resume provided - search without resume matching
         \Log::info('Searching without resume (by-location) - using job title and location only');
-        $jobs = $this->openAIService->generateJobsByLocation(
+        $jobs = $this->openAIService->generateJobRecommendations(
             $request->job_title,
             $request->location,
-            $limit
+            [] // No skills array when searching without resume
         );
 
         $newViewTotal = $jobsViewed + count($jobs);
@@ -330,6 +343,17 @@ class JobFinderController extends Controller
             'jobs' => $jobs,
             'without_resume' => true
         ]);
+        } catch (\Exception $e) {
+            \Log::error('Error in generateByLocation', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while searching for jobs. Please try again.'
+            ], 500);
+        }
     }
 
     /**

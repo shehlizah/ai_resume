@@ -46,14 +46,15 @@ class InterviewPrepController extends Controller
      */
     public function generatePrep(Request $request)
     {
-        $validated = $request->validate([
-            'resume_id' => 'nullable|exists:user_resumes,id',
-            'uploaded_file' => 'nullable|string',
-            'job_title' => 'required|string|max:255',
-            'experience_level' => 'required|in:entry,mid,senior,executive'
-        ]);
+        try {
+            $validated = $request->validate([
+                'resume_id' => 'nullable|exists:user_resumes,id',
+                'uploaded_file' => 'nullable|string',
+                'job_title' => 'required|string|max:255',
+                'experience_level' => 'required|in:entry,mid,senior,executive'
+            ]);
 
-        $user = Auth::user();
+            $user = Auth::user();
         $subscription = UserSubscription::where('user_id', $user->id)
             ->whereIn('status', ['active', 'pending'])
             ->latest()
@@ -62,28 +63,23 @@ class InterviewPrepController extends Controller
         $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
 
         try {
-            // Extract resume text
-            $resumeText = '';
+            // Extract resume text using the same approach as JobFinderController
+            $resumeProfile = [];
 
             if ($validated['resume_id']) {
                 $resume = $user->resumes()->findOrFail($validated['resume_id']);
-                $filePath = storage_path('app/private/' . $resume->file_path);
-
-                if (file_exists($filePath)) {
-                    $resumeText = $this->jobMatchService->extractTextFromFile($filePath);
-                }
+                $resumeProfile = $this->jobMatchService->analyzeStructuredResume($resume->data);
             } elseif ($validated['uploaded_file']) {
-                $filePath = storage_path('app/private/' . ltrim($validated['uploaded_file'], '/'));
-
-                if (file_exists($filePath)) {
-                    $resumeText = $this->jobMatchService->extractTextFromFile($filePath);
-                }
+                $resumeProfile = $this->jobMatchService->analyzeUploadedResume($validated['uploaded_file']);
             }
 
-            if (empty($resumeText)) {
+            // Extract text from profile
+            $resumeText = $resumeProfile['raw_text'] ?? '';
+
+            if (empty($resumeText) || strlen($resumeText) < 50) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Could not extract text from resume'
+                    'message' => 'Could not extract text from resume. Please ensure your resume contains sufficient information.'
                 ], 400);
             }
 
@@ -244,8 +240,9 @@ class InterviewPrepController extends Controller
                 ->where('user_id', $user->id)
                 ->first();
 
-            if ($resume && $resume->extracted_text) {
-                $resumeText = $resume->extracted_text;
+            if ($resume) {
+                $resumeProfile = $this->jobMatchService->analyzeStructuredResume($resume->data);
+                $resumeText = $resumeProfile['raw_text'] ?? null;
             }
         }
 
@@ -396,8 +393,9 @@ class InterviewPrepController extends Controller
                 // Get resume text if available
                 $resumeText = null;
                 $resume = UserResume::where('user_id', $user->id)->latest()->first();
-                if ($resume && $resume->extracted_text) {
-                    $resumeText = $resume->extracted_text;
+                if ($resume) {
+                    $resumeProfile = $this->jobMatchService->analyzeStructuredResume($resume->data);
+                    $resumeText = $resumeProfile['raw_text'] ?? null;
                 }
 
                 // Generate next question
