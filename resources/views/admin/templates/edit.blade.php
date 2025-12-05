@@ -138,7 +138,7 @@
             </h6>
 
             <!-- Current Preview Status -->
-            @if($template->preview_image && Storage::exists($template->preview_image))
+            @if($template->preview_image && File::exists(public_path($template->preview_image)))
               <div class="mb-3">
                 <div class="d-flex align-items-start gap-3">
                   <img src="{{ asset($template->preview_image) }}"

@@ -63,8 +63,17 @@ class TemplateController extends Controller
 
         // Handle preview image
         if ($request->hasFile('preview_image')) {
-            $template->preview_image = $request->file('preview_image')
-                ->store('templates/previews', 'public');
+            $file = $request->file('preview_image');
+            $filename = $template->slug . '-' . time() . '.' . $file->getClientOriginalExtension();
+
+            // Save directly to public/uploads/templates/previews
+            $destinationPath = public_path('uploads/templates/previews');
+            if (!File::exists($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true);
+            }
+
+            $file->move($destinationPath, $filename);
+            $template->preview_image = 'uploads/templates/previews/' . $filename;
         } else {
             // Auto-generate preview if no image provided
             $template->preview_image = $this->generateTemplatePreview($template);
@@ -124,14 +133,32 @@ class TemplateController extends Controller
 
         // Handle preview image
         if ($request->has('remove_custom_preview') && $template->preview_image) {
-            Storage::disk('public')->delete($template->preview_image);
+            // Delete from public directory
+            $imagePath = public_path($template->preview_image);
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
             $template->preview_image = null;
         } elseif ($request->hasFile('preview_image')) {
+            // Delete old image if exists
             if ($template->preview_image) {
-                Storage::disk('public')->delete($template->preview_image);
+                $oldImagePath = public_path($template->preview_image);
+                if (File::exists($oldImagePath)) {
+                    File::delete($oldImagePath);
+                }
             }
-            $template->preview_image = $request->file('preview_image')
-                ->store('templates/previews', 'public');
+
+            // Save new image
+            $file = $request->file('preview_image');
+            $filename = $template->slug . '-' . time() . '.' . $file->getClientOriginalExtension();
+
+            $destinationPath = public_path('uploads/templates/previews');
+            if (!File::exists($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true);
+            }
+
+            $file->move($destinationPath, $filename);
+            $template->preview_image = 'uploads/templates/previews/' . $filename;
         } elseif (!$template->preview_image) {
             // Auto-generate preview if no existing image
             $template->preview_image = $this->generateTemplatePreview($template);
@@ -149,9 +176,12 @@ class TemplateController extends Controller
      */
     public function destroy(Template $template)
     {
-        // Delete files
+        // Delete files from public directory
         if ($template->preview_image) {
-            Storage::disk('public')->delete($template->preview_image);
+            $imagePath = public_path($template->preview_image);
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
         }
         if ($template->html_file_path) {
             Storage::disk('public')->delete($template->html_file_path);

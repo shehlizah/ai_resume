@@ -132,7 +132,7 @@
                                     </button>
                                 </form>
 
-                                <form method="POST" 
+                                <form method="POST"
                                       action="{{ route('admin.users.destroy', $user->id) }}"
                                       onsubmit="return confirm('⚠️ DELETE USER?\n\nThis will permanently delete:\n• User account\n• All resumes ({{ $user->resumes_count }})\n• All PDF files\n\nThis action CANNOT be undone!\n\nType DELETE to confirm:') && prompt('Type DELETE to confirm:') === 'DELETE'">
                                     @csrf
@@ -157,7 +157,7 @@
                     <div class="card-header bg-white border-bottom">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
-                                <i class="bx bx-file text-primary"></i> Resumes 
+                                <i class="bx bx-file text-primary"></i> Resumes
                                 <span class="badge bg-secondary rounded-pill">{{ $resumes->total() }}</span>
                             </h5>
                         </div>
@@ -183,8 +183,8 @@
                                                     @if($resume->template)
                                                         <div class="d-flex align-items-center gap-2">
                                                             @if($resume->template->preview_image)
-                                                                <img src="{{ asset('storage/' . $resume->template->preview_image) }}" 
-                                                                     alt="Template" 
+                                                                <img src="{{ asset($resume->template->preview_image) }}"
+                                                                     alt="Template"
                                                                      class="template-thumb">
                                                             @else
                                                                 <div class="template-thumb bg-light d-flex align-items-center justify-content-center">
@@ -234,21 +234,21 @@
                                                 <td>
                                                     <div class="d-flex gap-1 justify-content-center">
                                                         @if($resume->generated_pdf_path)
-                                                            <a href="{{ route('admin.users.download-resume', [$user->id, $resume->id]) }}" 
+                                                            <a href="{{ route('admin.users.download-resume', [$user->id, $resume->id]) }}"
                                                                class="btn btn-sm btn-outline-success"
                                                                data-bs-toggle="tooltip"
                                                                title="Download PDF">
                                                                 <i class="bx bx-download"></i>
                                                             </a>
                                                         @endif
-                                                        
-                                                        <form method="POST" 
+
+                                                        <form method="POST"
                                                               action="{{ route('admin.users.delete-resume', [$user->id, $resume->id]) }}"
                                                               class="d-inline"
                                                               onsubmit="return confirm('Delete this resume?')">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" 
+                                                            <button type="submit"
                                                                     class="btn btn-sm btn-outline-danger"
                                                                     data-bs-toggle="tooltip"
                                                                     title="Delete Resume">
