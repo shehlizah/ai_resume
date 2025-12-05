@@ -44,7 +44,10 @@
 
     <!-- Next Step Popup Guide -->
     @if(session('show_next_step_popup'))
-      <x-next-step-popup :nextStep="session('show_next_step_popup')" />
+      @php
+        $popupStep = session()->pull('show_next_step_popup');
+      @endphp
+      <x-next-step-popup :nextStep="$popupStep" />
     @endif
     <!-- / Next Step Popup Guide -->
   </body>

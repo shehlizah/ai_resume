@@ -25,18 +25,18 @@ class PopupGuideMiddleware
                 $nextStep = $user->getNextStepPopup();
 
                 if ($nextStep) {
-                    session(['show_next_step_popup' => $nextStep, 'popup_immediate' => true]);
-                    // Reset the checked flag so popup shows
-                    session()->forget('popup_checked_this_session');
+                    session(['show_next_step_popup' => $nextStep]);
+                    // Mark as checked so it doesn't show again this session
+                    session(['popup_checked_this_session' => true]);
                 }
             }
-            // Check on login (when session doesn't have checked flag)
-            else if (!session()->has('popup_checked_this_session')) {
+            // Check on login (when session doesn't have checked flag and no popup is queued)
+            else if (!session()->has('popup_checked_this_session') && !session()->has('show_next_step_popup')) {
                 $nextStep = $user->getNextStepPopup();
 
                 if ($nextStep) {
                     // Store the next step popup to show on login
-                    session(['show_next_step_popup' => $nextStep, 'popup_immediate' => true]);
+                    session(['show_next_step_popup' => $nextStep]);
                 }
 
                 // Mark that we've checked for this session
