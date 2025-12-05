@@ -872,71 +872,50 @@ private function fillTemplate($html, $css, $data)
         // Fill placeholders with user data
         $filledContent = $this->fillTemplate($htmlContent, '', $userData);
 
-        // Build score badge HTML
+        // Build score badge HTML - New horizontal fixed layout
         $scoreColor = $feedback['score'] >= 80 ? '#10b981' : ($feedback['score'] >= 60 ? '#f59e0b' : '#ef4444');
-        $scoreBadge = "
-        <div class=\"score-badge no-print\" style=\"
-            position: fixed;
-            top: 320px;
-            right: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-            text-align: center;
-            min-width: 200px;
-            z-index: 9999;
-        \">
-            <div style=\"font-size: 48px; font-weight: bold; color: {$scoreColor}; line-height: 1;\">
-                {$feedback['score']}
-            </div>
-            <div style=\"font-size: 12px; color: #666; margin-top: 4px;\">Resume Score</div>
-            <div style=\"
-                margin-top: 12px;
-                padding: 8px 12px;
-                background: {$scoreColor};
-                color: white;
-                border-radius: 6px;
-                font-size: 14px;
-                font-weight: 600;
-            \">
-                {$feedback['grade']}
-            </div>";
-
-        // Add feedback based on package
+        
+        // Build feedback text
+        $feedbackText = '';
         if (isset($feedback['feedback']) && $feedback['feedback']) {
-            $scoreBadge .= "
-            <div style=\"margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: left;\">
-                <div style=\"font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 8px;\">📊 Feedback:</div>";
-
             if (isset($feedback['feedback']['sections'])) {
+                $feedbackParts = [];
                 foreach ($feedback['feedback']['sections'] as $section => $text) {
                     if (!empty($text)) {
-                        $scoreBadge .= "<div style=\"font-size: 10px; color: #6b7280; margin-bottom: 6px; line-height: 1.4;\">
-                            <strong>{$section}:</strong><br>{$text}
-                        </div>";
+                        $feedbackParts[] = "<strong>{$section}:</strong> {$text}";
                     }
                 }
+                if (!empty($feedbackParts)) {
+                    $feedbackText = implode(' • ', $feedbackParts);
+                }
             }
-            $scoreBadge .= "</div>";
         }
-
+        
         // Add suggestions for Premium users
-        if (isset($feedback['suggestions']) && $feedback['suggestions']) {
-            $scoreBadge .= "
-            <div style=\"margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb; text-align: left;\">
-                <div style=\"font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 8px;\">💡 Suggestions:</div>";
-
-            foreach ($feedback['suggestions'] as $suggestion) {
-                $scoreBadge .= "<div style=\"font-size: 10px; color: #6b7280; margin-bottom: 6px; line-height: 1.4;\">
-                    • {$suggestion}
-                </div>";
+        if (isset($feedback['suggestions']) && $feedback['suggestions'] && !empty($feedback['suggestions'])) {
+            if (!empty($feedbackText)) {
+                $feedbackText .= ' • ';
             }
-            $scoreBadge .= "</div>";
+            $feedbackText .= '<strong>💡 Suggestions:</strong> ' . implode(', ', $feedback['suggestions']);
         }
-
-        $scoreBadge .= "
-        </div>";
+        
+        $scoreBadge = "
+    <div class=\"score-badge no-print\">
+        <div class=\"score-badge-inner\">
+            <div class=\"score-main\">
+                <div class=\"score-number\" style=\"color: {$scoreColor};\">
+                    {$feedback['score']}
+                </div>
+                <div class=\"score-info\">
+                    <div class=\"score-grade\" style=\"background: {$scoreColor};\">
+                        {$feedback['grade']}
+                    </div>
+                    <div class=\"score-label\">Resume Score</div>
+                </div>
+            </div>
+            " . (!empty($feedbackText) ? "<div class=\"score-feedback\">{$feedbackText}</div>" : "") . "
+        </div>
+    </div>";
 
         // Check if user has active package for download button
         $hasActivePackage = $user->activeSubscription()->exists();
@@ -1016,8 +995,8 @@ private function fillTemplate($html, $css, $data)
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
-            background: #f5f5f5;
-            padding-top: 140px;
+            background: #e5e7eb;
+            padding-top: 240px;
             padding-bottom: 80px;
         }
 
@@ -1025,11 +1004,12 @@ private function fillTemplate($html, $css, $data)
         @media print {
             body { background: white; padding: 0; padding-top: 0; padding-bottom: 0; }
             .no-print { display: none !important; }
+            .a4-wrapper { box-shadow: none; margin: 0; }
 
             /* Remove default browser header/footer */
             @page {
                 margin: 0;
-                size: auto;
+                size: A4;
             }
         }
 
@@ -1041,47 +1021,45 @@ private function fillTemplate($html, $css, $data)
             right: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px;
+            padding: 15px 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             z-index: 9998;
         }
 
         .preview-header h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 600;
             margin-bottom: 5px;
         }
 
         .preview-header p {
-            font-size: 14px;
+            font-size: 13px;
             opacity: 0.9;
         }
 
         /* Action Cards Container */
         .action-cards {
             position: fixed;
-            top: 100px;
+            top: 75px;
             left: 0;
             right: 0;
             display: flex;
-            gap: 15px;
-            padding: 0 20px;
+            gap: 10px;
+            padding: 10px 20px;
             background: #f5f5f5;
-            padding-bottom: 20px;
             z-index: 9997;
-            overflow-x: auto;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .action-card {
             flex: 1;
-            min-width: 200px;
             background: white;
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 12px;
             text-align: center;
             text-decoration: none;
             color: #333;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
@@ -1090,17 +1068,17 @@ private function fillTemplate($html, $css, $data)
         }
 
         .action-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.12);
         }
 
-        .action-card.primary { border-top: 4px solid #667eea; }
-        .action-card.success { border-top: 4px solid #10b981; }
-        .action-card.warning { border-top: 4px solid #f59e0b; }
+        .action-card.primary { border-top: 3px solid #667eea; }
+        .action-card.success { border-top: 3px solid #10b981; }
+        .action-card.warning { border-top: 3px solid #f59e0b; }
 
         .action-card i {
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: 24px;
+            margin-bottom: 6px;
         }
 
         .action-card.primary i { color: #667eea; }
@@ -1108,21 +1086,90 @@ private function fillTemplate($html, $css, $data)
         .action-card.warning i { color: #f59e0b; }
 
         .action-card strong {
-            font-size: 16px;
+            font-size: 13px;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .action-card small {
-            font-size: 12px;
+            font-size: 10px;
             color: #666;
         }
 
-        /* Resume Content Container */
-        .resume-container {
-            padding: 20px;
-            max-width: 900px;
+        /* Score Badge - Fixed below action cards */
+        .score-badge {
+            position: fixed;
+            top: 155px;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 9996;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .score-badge-inner {
+            max-width: 1200px;
             margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .score-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .score-number {
+            font-size: 36px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .score-info {
+            text-align: left;
+        }
+
+        .score-grade {
+            padding: 4px 12px;
+            border-radius: 6px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .score-feedback {
+            flex: 1;
+            font-size: 11px;
+            color: #666;
+            line-height: 1.4;
+            max-height: 40px;
+            overflow-y: auto;
+        }
+
+        /* A4 Paper View */
+        .a4-wrapper {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .resume-container {
+            padding: 0;
         }
 
         /* Footer */
@@ -1133,21 +1180,21 @@ private function fillTemplate($html, $css, $data)
             right: 0;
             background: white;
             border-top: 1px solid #e5e7eb;
-            padding: 15px 20px;
+            padding: 12px 20px;
             text-align: center;
-            font-size: 14px;
+            font-size: 12px;
             color: #666;
             z-index: 9998;
         }
 
-        /* Download button - repositioned */
+        /* Download button */
         .download-btn {
             position: fixed;
-            bottom: 80px;
+            bottom: 50px;
             right: 20px;
             background: #667eea;
             color: white;
-            padding: 15px 30px;
+            padding: 12px 25px;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
@@ -1156,7 +1203,7 @@ private function fillTemplate($html, $css, $data)
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .download-btn:hover {
@@ -1164,98 +1211,109 @@ private function fillTemplate($html, $css, $data)
             transform: scale(1.05);
         }
 
-        /* Score badge - adjusted position */
-        .score-badge {
-            position: fixed;
-            bottom: 160px;
-            right: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-            text-align: center;
-            min-width: 200px;
-            max-width: 250px;
-            z-index: 9999;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
         /* Mobile Responsive */
         @media (max-width: 768px) {
             body {
-                padding-top: 200px;
+                padding-top: 320px;
+                background: #f5f5f5;
             }
 
             .preview-header {
-                padding: 15px;
+                padding: 12px 15px;
             }
 
             .preview-header h1 {
-                font-size: 20px;
+                font-size: 18px;
             }
 
             .preview-header p {
-                font-size: 12px;
-            }
-
-            .action-cards {
-                top: 80px;
-                flex-direction: column;
-                padding: 10px;
-                padding-bottom: 15px;
-                max-height: 110px;
-                overflow-x: hidden;
-                overflow-y: auto;
-            }
-
-            .action-card {
-                min-width: 100%;
-                flex-direction: row;
-                justify-content: flex-start;
-                padding: 15px;
-                text-align: left;
-            }
-
-            .action-card i {
-                font-size: 28px;
-                margin-bottom: 0;
-                margin-right: 15px;
-            }
-
-            .action-card strong {
-                font-size: 14px;
-            }
-
-            .action-card small {
                 font-size: 11px;
             }
 
-            .resume-container {
-                padding: 10px;
+            .action-cards {
+                top: 60px;
+                padding: 8px 10px;
+                gap: 8px;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .action-card {
+                min-width: 110px;
+                padding: 10px 8px;
+                flex-shrink: 0;
+            }
+
+            .action-card i {
+                font-size: 20px;
+                margin-bottom: 4px;
+            }
+
+            .action-card strong {
+                font-size: 11px;
+                margin-bottom: 2px;
+            }
+
+            .action-card small {
+                font-size: 9px;
+            }
+
+            .score-badge {
+                top: 125px;
+                padding: 10px 10px;
+            }
+
+            .score-badge-inner {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .score-main {
+                gap: 10px;
+                width: 100%;
+            }
+
+            .score-number {
+                font-size: 32px;
+            }
+
+            .score-grade {
+                font-size: 11px;
+                padding: 3px 10px;
+            }
+
+            .score-label {
+                font-size: 10px;
+            }
+
+            .score-feedback {
+                width: 100%;
+                font-size: 10px;
+                max-height: 60px;
+            }
+
+            .a4-wrapper {
+                width: 100%;
+                min-height: auto;
+                margin: 10px auto;
+                box-shadow: none;
             }
 
             .download-btn {
-                bottom: 60px;
+                bottom: 45px;
                 right: 10px;
                 left: 10px;
                 width: calc(100% - 20px);
                 justify-content: center;
                 padding: 12px 20px;
-                font-size: 14px;
-            }
-
-            .score-badge {
-                position: relative;
-                bottom: auto;
-                right: auto;
-                margin: 15px auto;
-                max-width: 100%;
+                font-size: 13px;
             }
 
             .preview-footer {
-                padding: 10px;
-                font-size: 12px;
+                padding: 8px 10px;
+                font-size: 10px;
             }
         }
 
@@ -1298,9 +1356,11 @@ private function fillTemplate($html, $css, $data)
     {$downloadButton}
     {$scoreBadge}
 
-    <!-- Resume Content -->
-    <div class=\"resume-container\">
-        {$filledContent}
+    <!-- Resume Content in A4 Paper View -->
+    <div class=\"a4-wrapper\">
+        <div class=\"resume-container\">
+            {$filledContent}
+        </div>
     </div>
 
     <!-- Footer -->
