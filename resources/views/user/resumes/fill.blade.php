@@ -163,8 +163,9 @@
 
         <!-- Professional Summary -->
         <div class="card mb-4">
-          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#summarySection" role="button" aria-expanded="false" aria-controls="summarySection" style="cursor: pointer;">
+          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#summarySection" role="button" aria-expanded="false" aria-controls="summarySection" style="cursor: pointer;">
             <h6 class="mb-0"><i class="bx bx-file-blank"></i> Professional Summary</h6>
+            <i class="bx bx-chevron-down"></i>
           </div>
           <div class="collapse" id="summarySection">
             <div class="card-body">
@@ -188,8 +189,9 @@
 
         <!-- Experience -->
         <div class="card mb-4">
-          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#experienceSection" role="button" aria-expanded="false" aria-controls="experienceSection" style="cursor: pointer;">
+          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#experienceSection" role="button" aria-expanded="false" aria-controls="experienceSection" style="cursor: pointer;">
             <h6 class="mb-0"><i class="bx bx-briefcase"></i> Experience</h6>
+            <i class="bx bx-chevron-down"></i>
           </div>
           <div class="collapse" id="experienceSection">
             <div class="card-body">
@@ -234,8 +236,9 @@
 
         <!-- Skills -->
         <div class="card mb-4">
-          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#skillsSection" role="button" aria-expanded="false" aria-controls="skillsSection" style="cursor: pointer;">
+          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#skillsSection" role="button" aria-expanded="false" aria-controls="skillsSection" style="cursor: pointer;">
             <h6 class="mb-0"><i class="bx bx-star"></i> Skills</h6>
+            <i class="bx bx-chevron-down"></i>
           </div>
           <div class="collapse" id="skillsSection">
             <div class="card-body">
@@ -259,8 +262,9 @@
 
         <!-- Education -->
         <div class="card mb-4">
-          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#educationSection" role="button" aria-expanded="false" aria-controls="educationSection" style="cursor: pointer;">
+          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#educationSection" role="button" aria-expanded="false" aria-controls="educationSection" style="cursor: pointer;">
             <h6 class="mb-0"><i class="bx bx-book"></i> Education</h6>
+            <i class="bx bx-chevron-down"></i>
           </div>
           <div class="collapse" id="educationSection">
             <div class="card-body">
