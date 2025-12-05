@@ -1001,7 +1001,7 @@ private function fillTemplate($html, $css, $data)
     </script>";
         }
 
-        // Build HTML document (exactly like preview)
+        // Build HTML document with header, footer, and navigation
         $output = "<!DOCTYPE html>
 <html lang=\"en\">
 <head>
@@ -1010,13 +1010,20 @@ private function fillTemplate($html, $css, $data)
     <title>Resume Preview</title>
     <link href=\"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;600&display=swap\" rel=\"stylesheet\">
     <link href=\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap\" rel=\"stylesheet\">
+    <link href=\"https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css\" rel=\"stylesheet\">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; line-height: 1.6; background: #f5f5f5; padding: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background: #f5f5f5;
+            padding-top: 140px;
+            padding-bottom: 80px;
+        }
 
         /* Print styles - Remove browser headers/footers */
         @media print {
-            body { background: white; padding: 0; }
+            body { background: white; padding: 0; padding-top: 0; padding-bottom: 0; }
             .no-print { display: none !important; }
 
             /* Remove default browser header/footer */
@@ -1026,43 +1033,230 @@ private function fillTemplate($html, $css, $data)
             }
         }
 
-        /* Download button */
+        /* Header */
+        .preview-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 9998;
+        }
+
+        .preview-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .preview-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Action Cards Container */
+        .action-cards {
+            position: fixed;
+            top: 100px;
+            left: 0;
+            right: 0;
+            display: flex;
+            gap: 15px;
+            padding: 0 20px;
+            background: #f5f5f5;
+            padding-bottom: 20px;
+            z-index: 9997;
+            overflow-x: auto;
+        }
+
+        .action-card {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .action-card.primary { border-top: 4px solid #667eea; }
+        .action-card.success { border-top: 4px solid #10b981; }
+        .action-card.warning { border-top: 4px solid #f59e0b; }
+
+        .action-card i {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .action-card.primary i { color: #667eea; }
+        .action-card.success i { color: #10b981; }
+        .action-card.warning i { color: #f59e0b; }
+
+        .action-card strong {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .action-card small {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Resume Content Container */
+        .resume-container {
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Footer */
+        .preview-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            z-index: 9998;
+        }
+
+        /* Download button - repositioned */
         .download-btn {
             position: fixed;
-            top: 20px;
+            bottom: 80px;
             right: 20px;
             background: #667eea;
             color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 15px 30px;
+            border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
         }
 
         .download-btn:hover {
             background: #5568d3;
+            transform: scale(1.05);
         }
 
-        /* Instructions box */
-        .print-instructions {
+        /* Score badge - adjusted position */
+        .score-badge {
             position: fixed;
-            top: 80px;
+            bottom: 160px;
             right: 20px;
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            font-size: 12px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            text-align: center;
+            min-width: 200px;
             max-width: 250px;
             z-index: 9999;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .print-instructions strong {
-            display: block;
-            margin-bottom: 8px;
-            color: #667eea;
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 200px;
+            }
+
+            .preview-header {
+                padding: 15px;
+            }
+
+            .preview-header h1 {
+                font-size: 20px;
+            }
+
+            .preview-header p {
+                font-size: 12px;
+            }
+
+            .action-cards {
+                top: 80px;
+                flex-direction: column;
+                padding: 10px;
+                padding-bottom: 15px;
+                max-height: 110px;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
+            .action-card {
+                min-width: 100%;
+                flex-direction: row;
+                justify-content: flex-start;
+                padding: 15px;
+                text-align: left;
+            }
+
+            .action-card i {
+                font-size: 28px;
+                margin-bottom: 0;
+                margin-right: 15px;
+            }
+
+            .action-card strong {
+                font-size: 14px;
+            }
+
+            .action-card small {
+                font-size: 11px;
+            }
+
+            .resume-container {
+                padding: 10px;
+            }
+
+            .download-btn {
+                bottom: 60px;
+                right: 10px;
+                left: 10px;
+                width: calc(100% - 20px);
+                justify-content: center;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .score-badge {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                margin: 15px auto;
+                max-width: 100%;
+            }
+
+            .preview-footer {
+                padding: 10px;
+                font-size: 12px;
+            }
         }
 
         {$css}
@@ -1070,15 +1264,49 @@ private function fillTemplate($html, $css, $data)
     {$printBlockScript}
 </head>
 <body>
-    {$downloadButton}
-    <div class=\"print-instructions no-print\">
-        <strong>💡 For Clean PDF:</strong>
-        In print dialog, uncheck:<br>
-        • Headers and footers<br>
-        • Background graphics (optional)
+    <!-- Header -->
+    <div class=\"preview-header no-print\">
+        <h1>📄 Resume Preview</h1>
+        <p>Review your resume and take the next step in your career journey</p>
     </div>
+
+    <!-- Action Cards -->
+    <div class=\"action-cards no-print\">
+        <a href=\"" . route('user.resumes.index') . "\" class=\"action-card primary\">
+            <i class='bx bx-arrow-back'></i>
+            <div>
+                <strong>Go Back</strong>
+                <small>Return to My Resumes</small>
+            </div>
+        </a>
+        <a href=\"" . route('user.interview.prep') . "\" class=\"action-card success\">
+            <i class='bx bx-microphone'></i>
+            <div>
+                <strong>Interview Prep</strong>
+                <small>Practice with AI</small>
+            </div>
+        </a>
+        <a href=\"#\" onclick=\"alert('Job Search feature coming soon!'); return false;\" class=\"action-card warning\">
+            <i class='bx bx-search-alt'></i>
+            <div>
+                <strong>Job Search</strong>
+                <small>Find opportunities</small>
+            </div>
+        </a>
+    </div>
+
+    {$downloadButton}
     {$scoreBadge}
-    {$filledContent}
+
+    <!-- Resume Content -->
+    <div class=\"resume-container\">
+        {$filledContent}
+    </div>
+
+    <!-- Footer -->
+    <div class=\"preview-footer no-print\">
+        <p>© 2025 AI Resume Builder. Need help? <a href=\"#\" style=\"color: #667eea; text-decoration: none;\">Contact Support</a></p>
+    </div>
 </body>
 </html>";
 
