@@ -121,9 +121,15 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted small mb-3">
+                    <p class="text-muted small mb-2">
                         Our AI analyzes your resume to find the best matching opportunities
                     </p>
+                    <div class="alert alert-info border-0 py-2 mb-3" style="background-color: #e8f4ff;">
+                        <small>
+                            <i class="bx bx-info-circle me-1"></i>
+                            <strong>Note:</strong> These are AI-generated job suggestions. Click "Apply Now" to search for similar positions on job boards.
+                        </small>
+                    </div>
                     <button class="btn btn-primary btn-block w-100" id="generateJobsBtn" onclick="generateJobs()">
                         <i class="bx bx-search me-2"></i> Find Recommended Jobs
                     </button>

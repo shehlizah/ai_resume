@@ -697,8 +697,11 @@ PROMPT;
 
     private function buildJobSearchPrompt(string $jobTitle, string $location, int $limit): string
     {
+        $encodedTitle = urlencode($jobTitle);
+        $encodedLocation = urlencode($location);
+        
         return <<<PROMPT
-Generate $limit realistic job listings for the following search:
+Generate $limit realistic job opportunities for the following search:
 
 Job Title: {$jobTitle}
 Location: {$location}
@@ -706,21 +709,23 @@ Location: {$location}
 Return ONLY a valid JSON array (no markdown, no extra text) with exactly this structure:
 [
   {
-    "title": "Job Title",
-    "company": "Company Name",
+    "title": "Specific Job Title",
+    "company": "Real or Realistic Company Name",
     "location": "City, State or Remote",
-    "salary": "\$min - \$max or Competitive",
-    "description": "Brief job description (2-3 sentences)",
-    "apply_url": "https://www.indeed.com/jobs?q=Job+Title&l=Location",
+    "salary": "\$min - \$max (e.g., \$80,000 - \$120,000)",
+    "description": "Detailed job description with key responsibilities and requirements (3-4 sentences)",
+    "apply_url": "https://www.indeed.com/jobs?q={$encodedTitle}&l={$encodedLocation}",
     "match_score": 75
   }
 ]
 
-For apply_url, generate Indeed or LinkedIn job search URLs using the format:
-- Indeed: https://www.indeed.com/jobs?q=Job+Title&l=City+State
-- LinkedIn: https://www.linkedin.com/jobs/search/?keywords=Job+Title&location=City+State
-
-Replace spaces with + signs in the URL. Generate diverse companies and realistic salary ranges. Match scores should be 70-85 since no resume is provided for matching.
+IMPORTANT:
+- Generate diverse, realistic companies (mix of well-known companies and realistic names)
+- Make descriptions specific and detailed
+- Include realistic salary ranges based on the role and location
+- For apply_url, use this exact format: https://www.indeed.com/jobs?q={$encodedTitle}&l={$encodedLocation}
+- Match scores should be 70-85 since no resume is provided for matching
+- Focus on currently available job types in the market
 PROMPT;
     }
 
@@ -729,7 +734,7 @@ PROMPT;
         $locationLine = $location ? "\nPreferred Location: $location" : '';
 
         return <<<PROMPT
-Analyze this resume and generate $limit relevant job recommendations:
+Analyze this resume and generate $limit highly relevant job recommendations:
 
 RESUME:
 {$resumeText}{$locationLine}
@@ -737,21 +742,24 @@ RESUME:
 Return ONLY a valid JSON array (no markdown, no extra text) with exactly this structure:
 [
   {
-    "title": "Job Title",
-    "company": "Company Name",
+    "title": "Specific Job Title matching resume",
+    "company": "Real or Realistic Company Name",
     "location": "City, State or Remote",
-    "salary": "\$min - \$max or Competitive",
-    "description": "Brief job description matching this candidate's profile",
-    "apply_url": "https://www.indeed.com/jobs?q=Job+Title&l=Location",
+    "salary": "\$min - \$max (realistic range)",
+    "description": "Detailed job description explaining why this matches the candidate's profile (3-4 sentences)",
+    "apply_url": "https://www.indeed.com/viewjob?jk=example",
     "match_score": 85
   }
 ]
 
-For apply_url, generate Indeed or LinkedIn job search URLs using the format:
-- Indeed: https://www.indeed.com/jobs?q=Job+Title&l=City+State
-- LinkedIn: https://www.linkedin.com/jobs/search/?keywords=Job+Title&location=City+State
-
-Replace spaces with + signs in the URL. Focus on jobs that match the candidate's skills, experience level, and location. Match scores should be 70-95.
+IMPORTANT:
+- Generate diverse companies that would hire someone with this background
+- Match job titles and descriptions to the candidate's actual skills and experience
+- Include specific reasons why this job matches in the description
+- Use realistic salary ranges based on the candidate's experience level
+- For apply_url, use Indeed search format: https://www.indeed.com/jobs?q=[UrlEncodedJobTitle]&l=[UrlEncodedLocation]
+- Match scores should be 75-95 based on how well the job fits the resume
+- Prioritize jobs the candidate is actually qualified for
 PROMPT;
     }
 

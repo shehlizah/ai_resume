@@ -70,6 +70,13 @@ class JobFinderController extends Controller
 
             $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
 
+            \Log::info('Checking premium access', [
+                'user_id' => $user->id,
+                'has_lifetime_access' => $user->has_lifetime_access,
+                'subscription_status' => $subscription ? $subscription->status : 'no_subscription',
+                'hasPremiumAccess' => $hasPremiumAccess
+            ]);
+
             // Free tier: 5 jobs view per session
             $jobsViewed = session('jobs_viewed', 0);
 
@@ -79,6 +86,10 @@ class JobFinderController extends Controller
                     'message' => 'Free plan limit reached. View 5 jobs per session. Upgrade to Pro for unlimited access.',
                     'redirect' => route('user.pricing')
                 ], 403);
+            }
+
+            if ($hasPremiumAccess) {
+                \Log::info('Premium user - no session limits applied');
             }
 
             $resumeProfile = $this->resolveResumeProfile($request, $user);
@@ -151,7 +162,7 @@ class JobFinderController extends Controller
             // More lenient check - accept if we have any profile data
             if (!empty($resumeProfile)) {
                 $resumeText = $resumeProfile['raw_text'] ?? '';
-                
+
                 // If no raw text but we have structured data, create a summary
                 if (empty($resumeText) || strlen($resumeText) < 20) {
                     \Log::info('Building resume text from structured profile data');
@@ -164,14 +175,14 @@ class JobFinderController extends Controller
                     }
                     $resumeText = implode("\n", $parts);
                 }
-                
+
                 if (!empty($resumeText)) {
                     \Log::info('Using resume profile for AI', [
                         'text_length' => strlen($resumeText),
                         'has_title' => !empty($resumeProfile['preferred_title']),
                         'skills_count' => count($resumeProfile['skills'] ?? [])
                     ]);
-                    
+
                     $jobs = $this->openAIService->generateJobsFromResume(
                         $resumeText,
                         'Remote (Any)',
@@ -257,21 +268,33 @@ class JobFinderController extends Controller
             ]);
 
             $user = Auth::user();
-        $subscription = UserSubscription::where('user_id', $user->id)
-            ->whereIn('status', ['active', 'pending'])
-            ->latest()
-            ->first();
+            $subscription = UserSubscription::where('user_id', $user->id)
+                ->whereIn('status', ['active', 'pending'])
+                ->latest()
+                ->first();
 
-        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
-        $jobsViewed = session('jobs_viewed', 0);
+            $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
+            
+            \Log::info('Checking premium access (by-location)', [
+                'user_id' => $user->id,
+                'has_lifetime_access' => $user->has_lifetime_access,
+                'subscription_status' => $subscription ? $subscription->status : 'no_subscription',
+                'hasPremiumAccess' => $hasPremiumAccess
+            ]);
+            
+            $jobsViewed = session('jobs_viewed', 0);
 
-        // Free tier: 5 jobs view per session
-        if (!$hasPremiumAccess && $jobsViewed >= 5) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Free plan limit reached. Upgrade to Pro for unlimited job searches.'
-            ], 403);
-        }
+            // Free tier: 5 jobs view per session
+            if (!$hasPremiumAccess && $jobsViewed >= 5) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Free plan limit reached. Upgrade to Pro for unlimited job searches.'
+                ], 403);
+            }
+            
+            if ($hasPremiumAccess) {
+                \Log::info('Premium user (by-location) - no session limits applied');
+            }
 
         $resumeProfile = $this->resolveResumeProfile($request, $user);
 
@@ -425,15 +448,15 @@ class JobFinderController extends Controller
                         'has_data' => !empty($resume->data),
                         'data_keys' => is_array($resume->data) ? array_keys($resume->data) : 'not_array'
                     ]);
-                    
+
                     $profile = $this->jobMatchService->analyzeStructuredResume($resume->data);
-                    
+
                     \Log::info('Resume profile analyzed', [
                         'profile_empty' => empty($profile),
                         'profile_keys' => !empty($profile) ? array_keys($profile) : [],
                         'raw_text_length' => strlen($profile['raw_text'] ?? '')
                     ]);
-                    
+
                     if (!empty($profile)) {
                         return $profile;
                     }
@@ -443,13 +466,13 @@ class JobFinderController extends Controller
             if ($request->uploaded_file) {
                 \Log::info('Analyzing uploaded file', ['file_path' => $request->uploaded_file]);
                 $profile = $this->jobMatchService->analyzeUploadedResume($request->uploaded_file);
-                
+
                 \Log::info('Uploaded file profile analyzed', [
                     'profile_empty' => empty($profile),
                     'profile_keys' => !empty($profile) ? array_keys($profile) : [],
                     'raw_text_length' => strlen($profile['raw_text'] ?? '')
                 ]);
-                
+
                 if (!empty($profile)) {
                     return $profile;
                 }
