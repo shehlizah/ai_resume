@@ -196,9 +196,15 @@
 
   <!-- Mobile Responsive Styles -->
   <style>
-    /* Pagination Styling - Force smaller icons */
+    /* Pagination Styling - Hide prev/next arrows, keep only page numbers */
     .pagination {
       margin: 0;
+    }
+    
+    /* Hide the first and last items (Previous and Next) */
+    .pagination .page-item:first-child,
+    .pagination .page-item:last-child {
+      display: none;
     }
 
     .pagination .page-link {
@@ -208,31 +214,6 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .pagination .page-item:first-child .page-link,
-    .pagination .page-item:last-child .page-link {
-      font-size: 0.75rem;
-      padding: 0.5rem 0.65rem;
-    }
-
-    /* Force pagination icons to be smaller - target all possible selectors */
-    .pagination svg,
-    .pagination .page-link svg,
-    nav[role="navigation"] svg,
-    nav[aria-label="Pagination Navigation"] svg {
-      width: 14px !important;
-      height: 14px !important;
-      max-width: 14px !important;
-      max-height: 14px !important;
-      vertical-align: middle;
-      display: inline-block;
-    }
-
-    /* Override any inline styles on SVG paths */
-    .pagination svg path,
-    .pagination .page-link svg path {
-      stroke-width: 1.5 !important;
     }
 
     @media (max-width: 768px) {
