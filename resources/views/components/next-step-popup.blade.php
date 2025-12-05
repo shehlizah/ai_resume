@@ -18,7 +18,7 @@ $popupConfig = [
         'message' => 'You have your resume and cover letter ready! Time to ace your interviews with AI-powered practice sessions.',
         'buttonText' => 'Start Interview Prep',
         'buttonIcon' => 'bx-microphone',
-        'route' => route('user.interview-prep.index'),
+        'route' => route('user.interview.prep'),
     ],
 ];
 
