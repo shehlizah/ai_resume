@@ -35,7 +35,7 @@ class InterviewPrepController extends Controller
             ->latest()
             ->first();
 
-        $hasPremiumAccess = $subscription && $subscription->status === 'active';
+        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
         $resumes = $user->resumes()->get();
 
         return view('user.interview.prep', compact('hasPremiumAccess', 'resumes'));
@@ -55,14 +55,13 @@ class InterviewPrepController extends Controller
             ]);
 
             $user = Auth::user();
-        $subscription = UserSubscription::where('user_id', $user->id)
-            ->whereIn('status', ['active', 'pending'])
-            ->latest()
-            ->first();
+            $subscription = UserSubscription::where('user_id', $user->id)
+                ->whereIn('status', ['active', 'pending'])
+                ->latest()
+                ->first();
 
-        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
+            $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
 
-        try {
             // Extract resume text using the same approach as JobFinderController
             $resumeProfile = [];
 

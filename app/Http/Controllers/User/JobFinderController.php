@@ -63,115 +63,115 @@ class JobFinderController extends Controller
             ]);
 
             $user = Auth::user();
-        $subscription = UserSubscription::where('user_id', $user->id)
-            ->whereIn('status', ['active', 'pending'])
-            ->latest()
-            ->first();
+            $subscription = UserSubscription::where('user_id', $user->id)
+                ->whereIn('status', ['active', 'pending'])
+                ->latest()
+                ->first();
 
-        $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
+            $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
 
-        // Free tier: 5 jobs view per session
-        $jobsViewed = session('jobs_viewed', 0);
+            // Free tier: 5 jobs view per session
+            $jobsViewed = session('jobs_viewed', 0);
 
-        if (!$hasPremiumAccess && $jobsViewed >= 5) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Free plan limit reached. View 5 jobs per session. Upgrade to Pro for unlimited access.',
-                'redirect' => route('user.pricing')
-            ], 403);
-        }
+            if (!$hasPremiumAccess && $jobsViewed >= 5) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Free plan limit reached. View 5 jobs per session. Upgrade to Pro for unlimited access.',
+                    'redirect' => route('user.pricing')
+                ], 403);
+            }
 
-        $resumeProfile = $this->resolveResumeProfile($request, $user);
+            $resumeProfile = $this->resolveResumeProfile($request, $user);
 
-        // Check if we have an uploaded file to send to AI
-        $uploadedFilePath = null;
-        if ($request->uploaded_file) {
-            // The uploaded_file comes as a relative path like "uploads/temp/2/resume_..."
-            // It's stored in storage/app/private/ so we need to prepend that
-            $uploadedFilePath = storage_path('app/private/' . ltrim($request->uploaded_file, '/'));
+            // Check if we have an uploaded file to send to AI
+            $uploadedFilePath = null;
+            if ($request->uploaded_file) {
+                // The uploaded_file comes as a relative path like "uploads/temp/2/resume_..."
+                // It's stored in storage/app/private/ so we need to prepend that
+                $uploadedFilePath = storage_path('app/private/' . ltrim($request->uploaded_file, '/'));
 
-            \Log::info('File path resolution', [
-                'input' => $request->uploaded_file,
-                'resolved' => $uploadedFilePath,
-                'exists' => file_exists($uploadedFilePath),
-                'is_readable' => is_readable($uploadedFilePath),
-                'file_size' => file_exists($uploadedFilePath) ? filesize($uploadedFilePath) : 'N/A'
-            ]);
-
-            if (!file_exists($uploadedFilePath)) {
-                \Log::warning('File does not exist at resolved path', [
-                    'path' => $uploadedFilePath
+                \Log::info('File path resolution', [
+                    'input' => $request->uploaded_file,
+                    'resolved' => $uploadedFilePath,
+                    'exists' => file_exists($uploadedFilePath),
+                    'is_readable' => is_readable($uploadedFilePath),
+                    'file_size' => file_exists($uploadedFilePath) ? filesize($uploadedFilePath) : 'N/A'
                 ]);
 
-                // Try fallback without /private (in case it was stored elsewhere)
-                $fallbackPath = storage_path('app/' . ltrim($request->uploaded_file, '/'));
-                if (file_exists($fallbackPath)) {
-                    \Log::info('File found at fallback path', ['path' => $fallbackPath]);
-                    $uploadedFilePath = $fallbackPath;
-                } else {
-                    \Log::warning('File not found at either path', [
-                        'primary' => $uploadedFilePath,
-                        'fallback' => $fallbackPath
+                if (!file_exists($uploadedFilePath)) {
+                    \Log::warning('File does not exist at resolved path', [
+                        'path' => $uploadedFilePath
                     ]);
-                    $uploadedFilePath = null;
+
+                    // Try fallback without /private (in case it was stored elsewhere)
+                    $fallbackPath = storage_path('app/' . ltrim($request->uploaded_file, '/'));
+                    if (file_exists($fallbackPath)) {
+                        \Log::info('File found at fallback path', ['path' => $fallbackPath]);
+                        $uploadedFilePath = $fallbackPath;
+                    } else {
+                        \Log::warning('File not found at either path', [
+                            'primary' => $uploadedFilePath,
+                            'fallback' => $fallbackPath
+                        ]);
+                        $uploadedFilePath = null;
+                    }
                 }
             }
-        }
 
-        $limit = $hasPremiumAccess ? SystemSetting::get('job_limit_premium', 8) : SystemSetting::get('job_limit_free', 5);
+            $limit = $hasPremiumAccess ? SystemSetting::get('job_limit_premium', 8) : SystemSetting::get('job_limit_free', 5);
 
-        // If we have an uploaded file, send directly to AI
-        if ($uploadedFilePath) {
-            \Log::info('Using uploaded file for AI', ['path' => $uploadedFilePath]);
-            $jobs = $this->openAIService->generateJobsFromResumeFile(
-                $uploadedFilePath,
-                'Remote (Any)',
-                $limit
-            );
+            // If we have an uploaded file, send directly to AI
+            if ($uploadedFilePath) {
+                \Log::info('Using uploaded file for AI', ['path' => $uploadedFilePath]);
+                $jobs = $this->openAIService->generateJobsFromResumeFile(
+                    $uploadedFilePath,
+                    'Remote (Any)',
+                    $limit
+                );
 
-            $newViewTotal = $jobsViewed + count($jobs);
-            session(['jobs_viewed' => $newViewTotal]);
-            $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
+                $newViewTotal = $jobsViewed + count($jobs);
+                session(['jobs_viewed' => $newViewTotal]);
+                $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
 
-            return response()->json([
-                'success' => true,
-                'jobs' => $jobs,
-                'remaining_views' => $remainingViews
+                return response()->json([
+                    'success' => true,
+                    'jobs' => $jobs,
+                    'remaining_views' => $remainingViews
+                ]);
+            }
+
+            \Log::info('Resume profile check', [
+                'has_profile' => !empty($resumeProfile),
+                'has_text' => !empty($resumeProfile['raw_text'] ?? null),
+                'text_length' => strlen($resumeProfile['raw_text'] ?? '')
             ]);
-        }
 
-        \Log::info('Resume profile check', [
-            'has_profile' => !empty($resumeProfile),
-            'has_text' => !empty($resumeProfile['raw_text'] ?? null),
-            'text_length' => strlen($resumeProfile['raw_text'] ?? '')
-        ]);
+            // If saved resume selected, try AI with extracted text
+            if (!empty($resumeProfile) && !empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
+                \Log::info('Using saved resume for AI');
+                $jobs = $this->openAIService->generateJobsFromResume(
+                    $resumeProfile['raw_text'],
+                    'Remote (Any)',
+                    $limit
+                );
 
-        // If saved resume selected, try AI with extracted text
-        if (!empty($resumeProfile) && !empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
-            \Log::info('Using saved resume for AI');
-            $jobs = $this->openAIService->generateJobsFromResume(
-                $resumeProfile['raw_text'],
-                'Remote (Any)',
-                $limit
-            );
+                $newViewTotal = $jobsViewed + count($jobs);
+                session(['jobs_viewed' => $newViewTotal]);
+                $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
 
-            $newViewTotal = $jobsViewed + count($jobs);
-            session(['jobs_viewed' => $newViewTotal]);
-            $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
+                return response()->json([
+                    'success' => true,
+                    'jobs' => $jobs,
+                    'remaining_views' => $remainingViews
+                ]);
+            }
 
+            // No resume provided
+            \Log::warning('No resume provided for job generation');
             return response()->json([
-                'success' => true,
-                'jobs' => $jobs,
-                'remaining_views' => $remainingViews
-            ]);
-        }
-
-        // No resume provided
-        \Log::warning('No resume provided for job generation');
-        return response()->json([
-            'success' => false,
-            'message' => 'Please upload a resume or select a saved resume to get job recommendations.'
-        ], 422);
+                'success' => false,
+                'message' => 'Please upload a resume or select a saved resume to get job recommendations.'
+            ], 422);
         } catch (\Exception $e) {
             \Log::error('Error in generateRecommended', [
                 'error' => $e->getMessage(),
@@ -329,10 +329,10 @@ class JobFinderController extends Controller
 
         // No resume provided - search without resume matching
         \Log::info('Searching without resume (by-location) - using job title and location only');
-        $jobs = $this->openAIService->generateJobRecommendations(
+        $jobs = $this->openAIService->generateJobsByLocation(
             $request->job_title,
             $request->location,
-            [] // No skills array when searching without resume
+            $limit
         );
 
         $newViewTotal = $jobsViewed + count($jobs);

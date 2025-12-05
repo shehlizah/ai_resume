@@ -662,6 +662,68 @@ PROMPT;
         }
     }
 
+    /**
+     * Generate job listings by job title and location without resume
+     */
+    public function generateJobsByLocation(string $jobTitle, string $location, int $limit = 5): array
+    {
+        try {
+            $prompt = $this->buildJobSearchPrompt($jobTitle, $location, $limit);
+
+            $response = $this->client->chat()->create([
+                'model' => $this->model,
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'You are an expert job search assistant. Generate realistic job listings based on job title and location. Return ONLY valid JSON.'
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => $prompt
+                    ]
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 2500,
+            ]);
+
+            $content = $response->choices[0]->message->content;
+            return $this->parseJobMatches($content);
+
+        } catch (\Exception $e) {
+            \Log::error('OpenAI Job Search Error: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    private function buildJobSearchPrompt(string $jobTitle, string $location, int $limit): string
+    {
+        return <<<PROMPT
+Generate $limit realistic job listings for the following search:
+
+Job Title: {$jobTitle}
+Location: {$location}
+
+Return ONLY a valid JSON array (no markdown, no extra text) with exactly this structure:
+[
+  {
+    "title": "Job Title",
+    "company": "Company Name",
+    "location": "City, State or Remote",
+    "salary": "\$min - \$max or Competitive",
+    "description": "Brief job description (2-3 sentences)",
+    "apply_url": "https://www.indeed.com/jobs?q=Job+Title&l=Location",
+    "match_score": 75
+  }
+]
+
+For apply_url, generate Indeed or LinkedIn job search URLs using the format:
+- Indeed: https://www.indeed.com/jobs?q=Job+Title&l=City+State
+- LinkedIn: https://www.linkedin.com/jobs/search/?keywords=Job+Title&location=City+State
+
+Replace spaces with + signs in the URL. Generate diverse companies and realistic salary ranges. Match scores should be 70-85 since no resume is provided for matching.
+PROMPT;
+    }
+
     private function buildJobRecommendationPrompt(string $resumeText, ?string $location, int $limit): string
     {
         $locationLine = $location ? "\nPreferred Location: $location" : '';
