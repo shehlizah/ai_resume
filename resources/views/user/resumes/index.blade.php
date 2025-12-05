@@ -154,8 +154,22 @@
 
             <!-- Pagination -->
             @if($resumes->hasPages())
-            <div class="mt-4">
-              {{ $resumes->links() }}
+            <div class="mt-4 d-flex justify-content-center">
+              <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm mb-0">
+                  @foreach(range(1, $resumes->lastPage()) as $page)
+                    @if($page == $resumes->currentPage())
+                      <li class="page-item active">
+                        <span class="page-link">{{ $page }}</span>
+                      </li>
+                    @else
+                      <li class="page-item">
+                        <a class="page-link" href="{{ $resumes->url($page) }}">{{ $page }}</a>
+                      </li>
+                    @endif
+                  @endforeach
+                </ul>
+              </nav>
             </div>
             @endif
           @endif
@@ -196,39 +210,27 @@
 
   <!-- Mobile Responsive Styles -->
   <style>
-    /* Pagination Styling - Hide prev/next arrows, keep only page numbers */
-    .pagination {
-      margin: 0;
+    /* Clean Pagination Styling */
+    .pagination-sm .page-link {
+      padding: 0.4rem 0.7rem;
+      font-size: 0.875rem;
+      border-radius: 0.25rem;
+      margin: 0 0.15rem;
     }
     
-    /* Hide the first and last items (Previous and Next) */
-    .pagination .page-item:first-child,
-    .pagination .page-item:last-child {
-      display: none;
-    }
-
-    .pagination .page-link {
-      padding: 0.5rem 0.75rem;
-      font-size: 0.875rem;
-      line-height: 1.25;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    .pagination-sm .page-item.active .page-link {
+      background-color: #667eea;
+      border-color: #667eea;
     }
 
     @media (max-width: 768px) {
-      /* Pagination mobile */
-      .pagination {
-        flex-wrap: wrap;
-        gap: 0.25rem;
-        justify-content: center;
+      .pagination-sm .page-link {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
       }
-
-      .pagination .page-link {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.75rem;
-        min-width: 35px;
-        min-height: 35px;
+      
+      .pagination {
+        gap: 0.1rem;
       }
 
       .pagination .page-item:first-child .page-link,
