@@ -314,12 +314,22 @@ class JobFinderController extends Controller
             ]);
         }
 
-        // No resume provided
-        \Log::warning('No resume provided for job generation (by-location)');
+        // No resume provided - search without resume matching
+        \Log::info('Searching without resume (by-location) - using job title and location only');
+        $jobs = $this->openAIService->generateJobsByLocation(
+            $request->job_title,
+            $request->location,
+            $limit
+        );
+
+        $newViewTotal = $jobsViewed + count($jobs);
+        session(['jobs_viewed' => $newViewTotal]);
+
         return response()->json([
-            'success' => false,
-            'message' => 'Please upload a resume or select a saved resume to search for jobs in this location.'
-        ], 422);
+            'success' => true,
+            'jobs' => $jobs,
+            'without_resume' => true
+        ]);
     }
 
     /**

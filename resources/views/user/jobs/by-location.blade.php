@@ -56,6 +56,9 @@
                                 <small class="text-muted d-block mt-2">
                                     <i class="bx bx-info-circle me-1"></i> Select a CV for AI to find more relevant matches.
                                 </small>
+                                <div id="resumeStatusIndicator" class="alert alert-success border-0 mt-2" style="display: none; padding: 8px 12px;">
+                                    <small><i class="bx bx-check-circle me-1"></i> <span id="resumeStatusText">Resume selected</span></small>
+                                </div>
                             </div>
                         </div>
                         @endif
@@ -106,6 +109,12 @@
     </div>
 
     <script>
+    // Clear uploaded file from session storage on page load
+    window.addEventListener('DOMContentLoaded', function() {
+        sessionStorage.removeItem('locationUploadedResumeFile');
+        console.log('Cleared locationUploadedResumeFile from sessionStorage on page load');
+    });
+
     const jobsList = document.getElementById('jobsList');
     const resultsContainer = document.getElementById('resultsContainer');
     const emptyState = document.getElementById('emptyState');
@@ -385,8 +394,19 @@
                 // Update status text
                 document.getElementById('locationStatusText').innerHTML = '<i class="bx bx-check-circle me-2"></i> ' + file.name + ' uploaded!';
 
-                // Show upload success alert
-                alert('✅ Resume uploaded successfully! Now analyzing with AI...');
+                // Show persistent resume status indicator
+                const statusIndicator = document.getElementById('resumeStatusIndicator');
+                const statusText = document.getElementById('resumeStatusText');
+                if (statusIndicator && statusText) {
+                    statusText.textContent = 'Uploaded: ' + file.name;
+                    statusIndicator.style.display = 'block';
+                    
+                    // Clear dropdown selection
+                    const resumeSelect = document.getElementById('resumeId');
+                    if (resumeSelect) {
+                        resumeSelect.value = '';
+                    }
+                }
 
                 // Clear file input
                 locationFileInput.value = '';
@@ -426,27 +446,25 @@
     if (resumeSelect) {
         resumeSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
+            const statusIndicator = document.getElementById('resumeStatusIndicator');
+            const statusText = document.getElementById('resumeStatusText');
+            
             if (this.value) {
                 // Clear any uploaded file since user chose saved resume
                 sessionStorage.removeItem('locationUploadedResumeFile');
-
-                // Show success feedback
-                const locationUploadStatus = document.getElementById('locationUploadStatus');
-                const locationStatusText = document.getElementById('locationStatusText');
-                if (locationUploadStatus && locationStatusText) {
-                    locationUploadStatus.style.display = 'block';
-                    locationStatusText.innerHTML = '<i class="bx bx-check-circle me-2"></i> Using: ' + selectedOption.text;
-                    locationUploadStatus.querySelector('.alert').classList.remove('alert-info');
-                    locationUploadStatus.querySelector('.alert').classList.add('alert-success');
-
-                    setTimeout(() => {
-                        locationUploadStatus.style.display = 'none';
-                        locationUploadStatus.querySelector('.alert').classList.remove('alert-success');
-                        locationUploadStatus.querySelector('.alert').classList.add('alert-info');
-                    }, 2000);
+                
+                // Show status indicator
+                if (statusIndicator && statusText) {
+                    statusText.textContent = 'Using: ' + selectedOption.text;
+                    statusIndicator.style.display = 'block';
                 }
-
+                
                 console.log('Resume selected from dropdown:', this.value, selectedOption.text);
+            } else {
+                // Hide status indicator when deselected
+                if (statusIndicator) {
+                    statusIndicator.style.display = 'none';
+                }
             }
         });
     }
