@@ -1176,7 +1176,7 @@ private function fillTemplate($html, $css, $data)
         /* Mobile Responsive */
         @media (max-width: 768px) {
             body {
-                padding-top: 180px;
+                padding-top: 210px;
                 background: #f5f5f5;
             }
 
@@ -1215,32 +1215,34 @@ private function fillTemplate($html, $css, $data)
             }
 
             .action-cards {
-                top: 120px;
-                padding: 8px 10px;
-                gap: 8px;
+                top: 145px;
+                padding: 10px;
+                gap: 10px;
                 flex-wrap: nowrap;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
+                justify-content: center;
             }
 
             .action-card {
-                min-width: 110px;
-                padding: 10px 8px;
+                min-width: 60px;
+                max-width: 60px;
+                padding: 12px 8px;
                 flex-shrink: 0;
             }
 
             .action-card i {
-                font-size: 20px;
-                margin-bottom: 4px;
+                font-size: 28px;
+                margin-bottom: 0;
             }
 
-            .action-card strong {
-                font-size: 11px;
-                margin-bottom: 2px;
+            .action-card div {
+                display: none;
             }
 
+            .action-card strong,
             .action-card small {
-                font-size: 9px;
+                display: none;
             }
 
             .a4-wrapper {
