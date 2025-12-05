@@ -53,11 +53,7 @@
                             <select class="form-select" id="resumeSelect">
                                 <option value="">-- Choose CV for better matching --</option>
                                 @foreach($resumes as $resume)
-                                    @php
-                                        $resumeData = is_string($resume->data) ? json_decode($resume->data, true) : $resume->data;
-                                        $resumeName = $resumeData['name'] ?? 'Resume #' . $resume->id;
-                                    @endphp
-                                    <option value="{{ $resume->id }}">{{ $resumeName }}</option>
+                                    <option value="{{ $resume->id }}">{{ $resume->display_name }}</option>
                                 @endforeach
                             </select>
                             <small class="text-muted d-block mt-2">

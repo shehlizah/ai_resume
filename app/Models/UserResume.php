@@ -56,4 +56,38 @@ class UserResume extends Model
     {
         return asset('storage/' . $this->generated_pdf_path);
     }
+
+    /**
+     * Get the resume name from data
+     */
+    public function getNameAttribute()
+    {
+        $data = $this->data;
+        return $data['name'] ?? $data['title'] ?? 'Resume #' . $this->id;
+    }
+
+    /**
+     * Get the resume title (job title) from data
+     */
+    public function getTitleAttribute()
+    {
+        $data = $this->data;
+        return $data['title'] ?? $data['name'] ?? 'Resume #' . $this->id;
+    }
+
+    /**
+     * Get a display label for the resume
+     */
+    public function getDisplayNameAttribute()
+    {
+        $data = $this->data;
+        $name = $data['name'] ?? null;
+        $title = $data['title'] ?? null;
+        
+        if ($name && $title) {
+            return $name . ' - ' . $title;
+        }
+        
+        return $name ?? $title ?? 'Resume #' . $this->id;
+    }
 }

@@ -33,16 +33,13 @@
                 </thead>
                 <tbody>
                   @foreach($resumes as $resume)
-                    @php
-                      $resumeData = is_array($resume->data) ? $resume->data : json_decode($resume->data, true);
-                    @endphp
                     <tr>
                       <td>
                         <div class="d-flex align-items-center">
                           <i class="bx bx-file-blank me-2" style="font-size: 24px; color: #667eea;"></i>
                           <div>
-                            <div class="fw-semibold">{{ $resumeData['name'] ?? 'Resume' }}</div>
-                            <small class="text-muted">{{ $resumeData['title'] ?? '' }}</small>
+                            <div class="fw-semibold">{{ $resume->name }}</div>
+                            <small class="text-muted">{{ $resume->title }}</small>
                           </div>
                         </div>
                       </td>
