@@ -83,11 +83,11 @@ class UserResume extends Model
         $data = $this->data;
         $name = $data['name'] ?? null;
         $title = $data['title'] ?? null;
-        
+
         if ($name && $title) {
             return $name . ' - ' . $title;
         }
-        
+
         return $name ?? $title ?? 'Resume #' . $this->id;
     }
 }

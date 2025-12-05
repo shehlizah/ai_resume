@@ -37,6 +37,9 @@
                                     <option value="{{ $resume->id }}">{{ $resume->display_name }}</option>
                                 @endforeach
                             </select>
+                            <div id="resumeStatusIndicator" class="alert alert-success border-0 mt-2" style="display: none; padding: 8px 12px;">
+                                <small><i class="bx bx-check-circle me-1"></i> <span id="resumeStatusText">Resume selected</span></small>
+                            </div>
                         </div>
 
                         <div class="text-center my-3">
@@ -250,6 +253,12 @@
         const hasPremiumAccess = @json($hasPremiumAccess);
         let uploadedResumeFile = null;
 
+        // Clear uploaded file on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            uploadedResumeFile = null;
+            console.log('Cleared uploadedResumeFile on page load');
+        });
+
         // File upload handling
         const dropZone = document.getElementById('resumeDropZone');
         const fileInput = document.getElementById('resumeFileInput');
@@ -297,6 +306,21 @@
                 if (data.success) {
                     uploadedResumeFile = data.file_path;
                     document.getElementById('statusText').innerHTML = '<i class="bx bx-check-circle me-2"></i>' + file.name + ' uploaded!';
+
+                    // Show persistent resume status indicator
+                    const statusIndicator = document.getElementById('resumeStatusIndicator');
+                    const statusText = document.getElementById('resumeStatusText');
+                    if (statusIndicator && statusText) {
+                        statusText.textContent = 'Uploaded: ' + file.name;
+                        statusIndicator.style.display = 'block';
+
+                        // Clear dropdown selection
+                        const resumeSelect = document.getElementById('resumeSelect');
+                        if (resumeSelect) {
+                            resumeSelect.value = '';
+                        }
+                    }
+
                     setTimeout(() => {
                         uploadStatus.style.display = 'none';
                     }, 2000);
@@ -447,27 +471,25 @@
         if (resumeSelectElement) {
             resumeSelectElement.addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
+                const statusIndicator = document.getElementById('resumeStatusIndicator');
+                const statusText = document.getElementById('resumeStatusText');
+
                 if (this.value) {
                     // Clear any uploaded file since user chose saved resume
                     uploadedResumeFile = null;
 
-                    // Show success feedback
-                    const uploadStatus = document.getElementById('uploadStatus');
-                    const statusText = document.getElementById('statusText');
-                    if (uploadStatus && statusText) {
-                        uploadStatus.style.display = 'block';
-                        statusText.innerHTML = '<i class="bx bx-check-circle me-2"></i> Selected: ' + selectedOption.text;
-                        uploadStatus.querySelector('.alert').classList.remove('alert-info');
-                        uploadStatus.querySelector('.alert').classList.add('alert-success');
-
-                        setTimeout(() => {
-                            uploadStatus.style.display = 'none';
-                            uploadStatus.querySelector('.alert').classList.remove('alert-success');
-                            uploadStatus.querySelector('.alert').classList.add('alert-info');
-                        }, 2000);
+                    // Show status indicator
+                    if (statusIndicator && statusText) {
+                        statusText.textContent = 'Using: ' + selectedOption.text;
+                        statusIndicator.style.display = 'block';
                     }
 
                     console.log('Resume selected from dropdown:', this.value, selectedOption.text);
+                } else {
+                    // Hide status indicator when deselected
+                    if (statusIndicator) {
+                        statusIndicator.style.display = 'none';
+                    }
                 }
             });
         }

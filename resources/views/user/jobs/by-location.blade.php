@@ -400,7 +400,7 @@
                 if (statusIndicator && statusText) {
                     statusText.textContent = 'Uploaded: ' + file.name;
                     statusIndicator.style.display = 'block';
-                    
+
                     // Clear dropdown selection
                     const resumeSelect = document.getElementById('resumeId');
                     if (resumeSelect) {
@@ -448,17 +448,17 @@
             const selectedOption = this.options[this.selectedIndex];
             const statusIndicator = document.getElementById('resumeStatusIndicator');
             const statusText = document.getElementById('resumeStatusText');
-            
+
             if (this.value) {
                 // Clear any uploaded file since user chose saved resume
                 sessionStorage.removeItem('locationUploadedResumeFile');
-                
+
                 // Show status indicator
                 if (statusIndicator && statusText) {
                     statusText.textContent = 'Using: ' + selectedOption.text;
                     statusIndicator.style.display = 'block';
                 }
-                
+
                 console.log('Resume selected from dropdown:', this.value, selectedOption.text);
             } else {
                 // Hide status indicator when deselected
