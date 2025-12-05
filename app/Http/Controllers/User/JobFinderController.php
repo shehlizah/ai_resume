@@ -143,34 +143,61 @@ class JobFinderController extends Controller
             \Log::info('Resume profile check', [
                 'has_profile' => !empty($resumeProfile),
                 'has_text' => !empty($resumeProfile['raw_text'] ?? null),
-                'text_length' => strlen($resumeProfile['raw_text'] ?? '')
+                'text_length' => strlen($resumeProfile['raw_text'] ?? ''),
+                'profile_keys' => !empty($resumeProfile) ? array_keys($resumeProfile) : []
             ]);
 
             // If saved resume selected, try AI with extracted text
-            if (!empty($resumeProfile) && !empty($resumeProfile['raw_text']) && strlen($resumeProfile['raw_text']) > 50) {
-                \Log::info('Using saved resume for AI');
-                $jobs = $this->openAIService->generateJobsFromResume(
-                    $resumeProfile['raw_text'],
-                    'Remote (Any)',
-                    $limit
-                );
+            // More lenient check - accept if we have any profile data
+            if (!empty($resumeProfile)) {
+                $resumeText = $resumeProfile['raw_text'] ?? '';
+                
+                // If no raw text but we have structured data, create a summary
+                if (empty($resumeText) || strlen($resumeText) < 20) {
+                    \Log::info('Building resume text from structured profile data');
+                    $parts = [];
+                    if (!empty($resumeProfile['preferred_title'])) {
+                        $parts[] = 'Title: ' . $resumeProfile['preferred_title'];
+                    }
+                    if (!empty($resumeProfile['skills'])) {
+                        $parts[] = 'Skills: ' . implode(', ', (array)$resumeProfile['skills']);
+                    }
+                    $resumeText = implode("\n", $parts);
+                }
+                
+                if (!empty($resumeText)) {
+                    \Log::info('Using resume profile for AI', [
+                        'text_length' => strlen($resumeText),
+                        'has_title' => !empty($resumeProfile['preferred_title']),
+                        'skills_count' => count($resumeProfile['skills'] ?? [])
+                    ]);
+                    
+                    $jobs = $this->openAIService->generateJobsFromResume(
+                        $resumeText,
+                        'Remote (Any)',
+                        $limit
+                    );
 
-                $newViewTotal = $jobsViewed + count($jobs);
-                session(['jobs_viewed' => $newViewTotal]);
-                $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
+                    $newViewTotal = $jobsViewed + count($jobs);
+                    session(['jobs_viewed' => $newViewTotal]);
+                    $remainingViews = $hasPremiumAccess ? 'unlimited' : max(0, 5 - $newViewTotal);
 
-                return response()->json([
-                    'success' => true,
-                    'jobs' => $jobs,
-                    'remaining_views' => $remainingViews
-                ]);
+                    return response()->json([
+                        'success' => true,
+                        'jobs' => $jobs,
+                        'remaining_views' => $remainingViews
+                    ]);
+                }
             }
 
-            // No resume provided
-            \Log::warning('No resume provided for job generation');
+            // No resume provided or insufficient data
+            \Log::warning('No resume provided or insufficient data for job generation', [
+                'has_profile' => !empty($resumeProfile),
+                'profile_data' => $resumeProfile
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Please upload a resume or select a saved resume to get job recommendations.'
+                'message' => 'Could not extract sufficient information from the resume. Please try uploading a different resume or ensure your saved resume contains work experience and skills.'
             ], 422);
         } catch (\Exception $e) {
             \Log::error('Error in generateRecommended', [
@@ -393,7 +420,20 @@ class JobFinderController extends Controller
             if ($request->resume_id) {
                 $resume = $user->resumes()->find($request->resume_id);
                 if ($resume) {
+                    \Log::info('Analyzing resume data', [
+                        'resume_id' => $resume->id,
+                        'has_data' => !empty($resume->data),
+                        'data_keys' => is_array($resume->data) ? array_keys($resume->data) : 'not_array'
+                    ]);
+                    
                     $profile = $this->jobMatchService->analyzeStructuredResume($resume->data);
+                    
+                    \Log::info('Resume profile analyzed', [
+                        'profile_empty' => empty($profile),
+                        'profile_keys' => !empty($profile) ? array_keys($profile) : [],
+                        'raw_text_length' => strlen($profile['raw_text'] ?? '')
+                    ]);
+                    
                     if (!empty($profile)) {
                         return $profile;
                     }
@@ -401,7 +441,15 @@ class JobFinderController extends Controller
             }
 
             if ($request->uploaded_file) {
+                \Log::info('Analyzing uploaded file', ['file_path' => $request->uploaded_file]);
                 $profile = $this->jobMatchService->analyzeUploadedResume($request->uploaded_file);
+                
+                \Log::info('Uploaded file profile analyzed', [
+                    'profile_empty' => empty($profile),
+                    'profile_keys' => !empty($profile) ? array_keys($profile) : [],
+                    'raw_text_length' => strlen($profile['raw_text'] ?? '')
+                ]);
+                
                 if (!empty($profile)) {
                     return $profile;
                 }
