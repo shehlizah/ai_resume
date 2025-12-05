@@ -211,9 +211,6 @@
           <li class="menu-item {{ request()->is('resumes/create') ? 'active' : '' }}">
             <a class="menu-link" href="{{ url('resumes/create') }}">{{ __('Create New') }}</a>
           </li>
-          <li class="menu-item {{ request()->is('resumes/choose') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ url('resumes/choose') }}">{{ __('Choose Template') }}</a>
-          </li>
         </ul>
       </li>
 
@@ -303,14 +300,6 @@
           </li>
           <li class="menu-item {{ request()->routeIs('settings.password') ? 'active' : '' }}">
             <a class="menu-link" href="{{ route('settings.password') }}">{{ __('Password') }}</a>
-          </li>
-          <li class="menu-item {{ request()->routeIs('settings.monetization') ? 'active' : '' }}">
-            <a class="menu-link" href="{{ route('settings.monetization') }}">
-              {{ __('Monetization') }}
-              @if(!auth()->user() || !auth()->user()->subscriptions()->where('status', 'active')->first())
-                <span class="badge badge-center rounded-pill bg-warning ms-2">NEW</span>
-              @endif
-            </a>
           </li>
         </ul>
       </li>

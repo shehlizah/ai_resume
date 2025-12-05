@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{name}} - Resume</title>
+</head>
+<body>
+    <div class="resume-container">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="profile-section">
+                <div class="profile-photo">
+                    {{#if picture}}
+                    <img src="{{picture}}" alt="{{name}}">
+                    {{else}}
+                    <div class="photo-placeholder"></div>
+                    {{/if}}
+                </div>
+                <div class="header-info">
+                    <h1>{{name}}</h1>
+                    <p class="contact-item">📧 {{email}}</p>
+                    <p class="contact-item">📱 {{phone}}</p>
+                    <p class="contact-item">📍 {{address}}</p>
+                    <p class="contact-item">🔗 {{linkedin}}</p>
+                </div>
+            </div>
+            <div class="qr-code">
+                {{#if qr_code}}
+                <img src="{{qr_code}}" alt="QR Code">
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- Left Sidebar -->
+            <div class="sidebar">
+                <!-- Objective -->
+                <div class="section">
+                    <h2 class="section-title">OBJECTIVE</h2>
+                    <div class="section-content">
+                        <p>{{professional_summary}}</p>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="section">
+                    <h2 class="section-title">SUMMARY</h2>
+                    <div class="section-content">
+                        <p>{{summary}}</p>
+                    </div>
+                </div>
+
+                <!-- Languages -->
+                <div class="section">
+                    <h2 class="section-title">LANGUAGES</h2>
+                    <div class="section-content">
+                        {{#each languages}}
+                        <div class="list-item">• {{this}}</div>
+                        {{/each}}
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="section">
+                    <h2 class="section-title">SKILLS</h2>
+                    <div class="section-content">
+                        {{#each skills}}
+                        <div class="list-item">• {{this}}</div>
+                        {{/each}}
+                    </div>
+                </div>
+
+                <!-- Other -->
+                <div class="section">
+                    <h2 class="section-title">OTHER</h2>
+                    <div class="section-content">
+                        <p>{{other_info}}</p>
+                    </div>
+                </div>
+
+                <!-- References -->
+                <div class="section">
+                    <h2 class="section-title">REFERENCES</h2>
+                    <div class="section-content">
+                        {{#each references}}
+                        <div class="reference-item">
+                            <strong>{{name}}</strong><br>
+                            {{title}}<br>
+                            {{company}}<br>
+                            {{phone}}<br>
+                            {{email}}
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Experience -->
+                <div class="section">
+                    <h2 class="section-title-main">EXPERIENCE</h2>
+                    <div class="section-content">
+                        {{#each experience}}
+                        <div class="experience-item">
+                            <div class="job-header">
+                                <strong>{{position}}</strong>
+                                <span class="date">{{start_date}} - {{end_date}}</span>
+                            </div>
+                            <div class="company">{{company}}, {{location}}</div>
+                            <p class="description">{{description}}</p>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+
+                <!-- Education -->
+                <div class="section">
+                    <h2 class="section-title-main">EDUCATION</h2>
+                    <div class="section-content">
+                        {{#each education}}
+                        <div class="education-item">
+                            <div class="edu-header">
+                                <strong>{{degree}}</strong>
+                                <span class="date">{{start_date}} - {{end_date}}</span>
+                            </div>
+                            <div class="institution">{{institution}}, {{location}}</div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+
+                <!-- Certificates -->
+                <div class="section">
+                    <h2 class="section-title-main">CERTIFICATES</h2>
+                    <div class="section-content">
+                        {{#each certificates}}
+                        <div class="certificate-item">
+                            <div class="cert-header">
+                                <strong>{{name}}</strong>
+                                <span class="date">{{date}}</span>
+                            </div>
+                            <div class="issuer">{{issuer}}</div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

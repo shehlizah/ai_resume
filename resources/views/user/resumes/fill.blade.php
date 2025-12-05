@@ -892,4 +892,62 @@
       removePictureBtn.style.display = 'none';
     });
   </script>
+
+  <!-- Mobile Responsive Styles for Resume Form -->
+  <style>
+    @media (max-width: 768px) {
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+      }
+
+      .card-header .btn {
+        width: 100%;
+      }
+
+      .experience-entry,
+      .education-entry,
+      .certificate-entry {
+        padding: 1rem;
+      }
+
+      .btn-group {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn-group .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+
+      #experienceContainer .border,
+      #educationContainer .border,
+      #certificatesContainer .border {
+        padding: 1rem !important;
+        margin-bottom: 1rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .row .col-md-6,
+      .row .col-md-4 {
+        margin-bottom: 1rem;
+      }
+
+      .card-body {
+        padding: 1rem;
+      }
+
+      .form-label {
+        font-size: 0.9rem;
+      }
+
+      .btn-sm {
+        font-size: 0.8rem;
+        padding: 0.375rem 0.75rem;
+      }
+    }
+  </style>
 </x-layouts.app>

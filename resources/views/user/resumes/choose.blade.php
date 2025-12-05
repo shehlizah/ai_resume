@@ -67,12 +67,6 @@
                     <i class="bx bx-lock me-1"></i> Premium Only
                   </button>
                 @endif
-
-                <a href="{{ route('user.resumes.preview', $template->id) }}"
-                   target="_blank"
-                   class="btn btn-outline-secondary btn-sm">
-                  <i class="bx bx-show me-1"></i> Preview with Sample Data
-                </a>
               </div>
             </div>
 
@@ -95,6 +89,45 @@
     .hover-shadow:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .col-md-6.col-lg-4 {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .card-img-top {
+        height: 200px !important;
+      }
+
+      .card-body {
+        padding: 1rem;
+      }
+
+      .card-title {
+        font-size: 1rem;
+      }
+
+      .card-text {
+        font-size: 0.85rem;
+      }
+
+      .btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .col-md-6.col-lg-4 {
+        margin-bottom: 1.5rem;
+      }
+
+      .card-img-top {
+        height: 180px !important;
+      }
     }
   </style>
 </x-layouts.app>

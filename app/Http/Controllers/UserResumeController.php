@@ -1216,9 +1216,9 @@ private function getSampleData()
      */
     public function download($id)
     {
-        // Redirect to print-preview since we use browser print-to-PDF
-        return redirect()->route('user.resumes.print-preview', $id)
-            ->with('info', 'Click "Download PDF" button and use your browser\'s print dialog to save as PDF.');
+        // Redirect to dashboard after download
+        return redirect()->route('user.dashboard')
+            ->with('success', 'Resume ready for download!');
     }
 
     /**

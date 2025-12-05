@@ -170,7 +170,7 @@ class PaymentController extends Controller
                     ? "Trial started! Your subscription will begin on " . $trialEnd->format('M d, Y')
                     : "Payment successful! Your subscription is now active.";
 
-                return redirect()->route('user.subscription.dashboard')
+                return redirect()->route('user.resumes.index')
                     ->with('success', $message);
             }
 
@@ -270,7 +270,7 @@ class PaymentController extends Controller
 
         session()->forget('pending_subscription');
 
-        return redirect()->route('user.subscription.dashboard')
+        return redirect()->route('user.resumes.index')
             ->with('success', 'Payment successful! Your subscription is now active.');
     }
 

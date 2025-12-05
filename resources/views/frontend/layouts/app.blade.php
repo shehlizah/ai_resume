@@ -46,7 +46,10 @@
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/lineicons.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/ud-styles.css') }}" />
-    
+
+    <!-- Mobile Responsive Styles -->
+    <link rel="stylesheet" href="{{ asset('css/mobile-responsive.css') }}">
+
     @yield('styles')
   </head>
   <body>
@@ -60,9 +63,9 @@
     <script src="{{ asset('frontend/assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('frontend/assets/js/wow.min.js') }}"></script>
     <script src="{{ asset('frontend/assets/js/main.js') }}"></script>
-    
+
     @yield('scripts')
-    
+
     <script>
       // ==== for menu scroll
       const pageLink = document.querySelectorAll(".ud-menu-scroll");

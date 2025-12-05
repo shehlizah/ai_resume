@@ -1,0 +1,160 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.resume-container {
+    max-width: 210mm;
+    margin: 0 auto;
+    background: white;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333;
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 40px;
+    border-bottom: 3px solid #ffd700;
+}
+
+.profile-photo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #ffd700;
+    flex-shrink: 0;
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.name-section {
+    flex: 1;
+    padding: 0 25px;
+}
+
+.name {
+    font-size: 30pt;
+    font-weight: bold;
+    color: #2c3e50;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.job-title {
+    font-size: 12pt;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.qr-code {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #ffd700;
+    flex-shrink: 0;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+    display: flex;
+    min-height: calc(297mm - 180px);
+}
+
+/* Left Column */
+.left-column {
+    width: 40%;
+    padding: 25px 20px 25px 40px;
+}
+
+.highlight-section {
+    margin-bottom: 20px;
+}
+
+.section-title.yellow-bg {
+    background: #ffd700;
+    color: #2c3e50;
+    font-size: 11pt;
+    font-weight: bold;
+    padding: 8px 15px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.section-text {
+    font-size: 9pt;
+    color: #555;
+    line-height: 1.6;
+    text-align: justify;
+    padding: 0 5px;
+}
+
+.section-content {
+    font-size: 9pt;
+    color: #555;
+    line-height: 1.6;
+    padding: 0 5px;
+}
+
+/* Right Column */
+.right-column {
+    width: 60%;
+    padding: 25px 40px 25px 30px;
+    border-left: 3px solid #ffd700;
+}
+
+.section {
+    margin-bottom: 25px;
+}
+
+.section-title-plain {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #2c3e50;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #ffd700;
+    letter-spacing: 1px;
+}
+
+.experience-content,
+.certificates-content,
+.languages-content {
+    font-size: 10pt;
+    color: #444;
+    line-height: 1.6;
+}
+
+/* Print Styles */
+@media print {
+    .resume-container {
+        max-width: 100%;
+    }
+
+    @page {
+        size: A4;
+        margin: 0;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    .left-column,
+    .right-column {
+        width: 100%;
+        border: none;
+    }
+}

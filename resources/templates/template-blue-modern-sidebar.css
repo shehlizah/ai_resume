@@ -1,0 +1,260 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', 'Helvetica', sans-serif;
+    font-size: 10pt;
+    line-height: 1.4;
+    color: #333;
+}
+
+.resume-container {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    background: white;
+}
+
+/* Header Section */
+.header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.profile-section {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.profile-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: white;
+    border: 4px solid white;
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #e0e0e0;
+}
+
+.header-info h1 {
+    font-size: 32pt;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.contact-item {
+    font-size: 9pt;
+    margin: 3px 0;
+}
+
+.qr-code {
+    width: 80px;
+    height: 80px;
+    background: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.qr-code img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+    display: flex;
+    min-height: calc(297mm - 180px);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 35%;
+    background: #1e293b;
+    color: white;
+    padding: 30px 25px;
+}
+
+.sidebar .section {
+    margin-bottom: 25px;
+}
+
+.sidebar .section-title {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #60a5fa;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #60a5fa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar .section-content {
+    font-size: 9pt;
+    line-height: 1.5;
+}
+
+.sidebar .list-item {
+    margin: 5px 0;
+    padding-left: 10px;
+}
+
+.reference-item {
+    margin-bottom: 15px;
+    font-size: 8pt;
+    line-height: 1.6;
+}
+
+/* Main Content */
+.main-content {
+    width: 65%;
+    padding: 30px 30px 30px 35px;
+    background: white;
+}
+
+.main-content .section {
+    margin-bottom: 25px;
+}
+
+.section-title-main {
+    font-size: 13pt;
+    font-weight: bold;
+    color: #1e3a8a;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #3b82f6;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Experience Items */
+.experience-item {
+    margin-bottom: 15px;
+}
+
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+.job-header strong {
+    font-size: 11pt;
+    color: #1e3a8a;
+}
+
+.date {
+    font-size: 8pt;
+    color: #666;
+    font-style: italic;
+}
+
+.company {
+    font-size: 9pt;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.description {
+    font-size: 9pt;
+    color: #444;
+    line-height: 1.5;
+    text-align: justify;
+}
+
+/* Education Items */
+.education-item {
+    margin-bottom: 12px;
+}
+
+.edu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+.edu-header strong {
+    font-size: 10pt;
+    color: #1e3a8a;
+}
+
+.institution {
+    font-size: 9pt;
+    color: #555;
+}
+
+/* Certificate Items */
+.certificate-item {
+    margin-bottom: 10px;
+}
+
+.cert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.cert-header strong {
+    font-size: 10pt;
+    color: #1e3a8a;
+}
+
+.issuer {
+    font-size: 8pt;
+    color: #666;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .resume-container {
+        width: 100%;
+        margin: 0;
+        box-shadow: none;
+    }
+
+    @page {
+        size: A4;
+        margin: 0;
+    }
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar,
+    .main-content {
+        width: 100%;
+    }
+}

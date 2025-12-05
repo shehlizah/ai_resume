@@ -1,0 +1,167 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.resume-container {
+    max-width: 210mm;
+    margin: 0 auto;
+    background: white;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333;
+}
+
+/* Red Header */
+.header {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    color: white;
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-photo {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid white;
+    flex-shrink: 0;
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.header-text {
+    flex: 1;
+}
+
+.name {
+    font-size: 32pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+}
+
+.job-title {
+    font-size: 12pt;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.contact-icons span {
+    font-size: 8pt;
+    margin-right: 15px;
+    display: inline-block;
+}
+
+.qr-code {
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+    display: flex;
+    min-height: calc(297mm - 190px);
+}
+
+/* Red Sidebar */
+.sidebar {
+    width: 35%;
+    background: #8b1a1a;
+    color: white;
+    padding: 30px 25px;
+}
+
+.sidebar-section {
+    margin-bottom: 25px;
+}
+
+.sidebar-title {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #ffb3b3;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #ffb3b3;
+    letter-spacing: 1px;
+}
+
+.sidebar-text {
+    font-size: 9pt;
+    line-height: 1.6;
+    text-align: justify;
+    color: #e0e0e0;
+}
+
+.list-content {
+    font-size: 9pt;
+    line-height: 1.7;
+    color: #e0e0e0;
+}
+
+/* Main Content */
+.main-content {
+    width: 65%;
+    padding: 30px 35px;
+    background: white;
+}
+
+.main-section {
+    margin-bottom: 25px;
+}
+
+.main-title {
+    font-size: 13pt;
+    font-weight: bold;
+    color: #c0392b;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e74c3c;
+    letter-spacing: 1px;
+}
+
+.experience-content,
+.education-content,
+.certificates-content {
+    font-size: 10pt;
+    color: #444;
+    line-height: 1.6;
+}
+
+/* Print Styles */
+@media print {
+    .resume-container {
+        max-width: 100%;
+    }
+
+    @page {
+        size: A4;
+        margin: 0;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar,
+    .main-content {
+        width: 100%;
+    }
+}

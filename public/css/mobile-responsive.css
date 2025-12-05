@@ -1,0 +1,417 @@
+/* ===================================
+   GLOBAL MOBILE RESPONSIVE STYLES
+   =================================== */
+
+/* Base Responsive Setup */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+/* Mobile First - Base styles for mobile */
+body {
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Container Adjustments */
+.container {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Typography Responsive */
+h1 {
+    font-size: clamp(1.75rem, 5vw, 3rem);
+}
+
+h2 {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+h3 {
+    font-size: clamp(1.25rem, 3vw, 2rem);
+}
+
+h4 {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+}
+
+p {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    line-height: 1.6;
+}
+
+/* Buttons Responsive */
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-outline-primary {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+}
+
+/* Cards Responsive */
+.card {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Tables Responsive */
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        font-size: 0.875rem;
+    }
+
+    th, td {
+        padding: 0.5rem !important;
+    }
+}
+
+/* Forms Responsive */
+.form-control,
+.form-select {
+    font-size: 1rem;
+}
+
+@media (max-width: 576px) {
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        font-size: 0.875rem;
+    }
+}
+
+/* Navbar Responsive */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: white;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-nav {
+        align-items: flex-start !important;
+    }
+
+    .nav-item {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .nav-link {
+        padding: 0.75rem 1rem !important;
+    }
+
+    .dropdown-menu {
+        position: static !important;
+        transform: none !important;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Modal Responsive */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    .modal-content {
+        border-radius: 8px;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+}
+
+/* Grid System Responsive */
+@media (max-width: 768px) {
+    .row {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+
+    .col,
+    [class*="col-"] {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+/* Spacing Utilities Responsive */
+@media (max-width: 576px) {
+    .mb-5 { margin-bottom: 2rem !important; }
+    .mt-5 { margin-top: 2rem !important; }
+    .py-5 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+    .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+}
+
+/* Dashboard/Admin Panel Responsive */
+@media (max-width: 1199px) {
+    .layout-menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .layout-menu.active {
+        transform: translateX(0);
+    }
+
+    .layout-page {
+        padding-left: 0 !important;
+    }
+}
+
+@media (max-width: 991px) {
+    .layout-navbar {
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand img {
+        max-width: 120px;
+    }
+}
+
+/* Resume Templates Grid Responsive */
+@media (max-width: 1200px) {
+    .templates-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .templates-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .template-card {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Pricing Cards Responsive */
+@media (max-width: 991px) {
+    .pricing-card {
+        margin-bottom: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .pricing-card {
+        padding: 1.5rem;
+    }
+
+    .pricing-card .price {
+        font-size: 2rem;
+    }
+}
+
+/* Resume Builder Form Responsive */
+@media (max-width: 768px) {
+    .resume-builder-container {
+        padding: 1rem;
+    }
+
+    .resume-preview {
+        display: none;
+    }
+
+    .preview-toggle-mobile {
+        display: block !important;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .resume-preview.active-mobile {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: white;
+        z-index: 999;
+        overflow-y: auto;
+        padding: 1rem;
+    }
+}
+
+/* File Upload Responsive */
+@media (max-width: 576px) {
+    .file-upload-wrapper {
+        padding: 1rem;
+    }
+
+    .file-upload-text {
+        font-size: 0.875rem;
+    }
+}
+
+/* Status Badges Responsive */
+@media (max-width: 576px) {
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* Action Buttons Group Responsive */
+@media (max-width: 576px) {
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Stats Cards Responsive */
+@media (max-width: 768px) {
+    .stats-card {
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .stats-card .icon {
+        margin: 0 auto 0.5rem;
+    }
+}
+
+/* Footer Responsive */
+@media (max-width: 768px) {
+    footer {
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    footer .row {
+        margin-bottom: 1rem;
+    }
+
+    footer .col-md-4 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Print View Mobile Fix */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        font-size: 12pt;
+    }
+}
+
+/* Tablet Specific (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .container {
+        max-width: 720px;
+    }
+
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* Large Mobile (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+    .container {
+        max-width: 540px;
+    }
+}
+
+/* Small Mobile (max-width: 575px) */
+@media (max-width: 575px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+
+    .btn-lg {
+        font-size: 1rem;
+        padding: 0.75rem 1.25rem;
+    }
+}
+
+/* Horizontal Scroll Fix */
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.row {
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+/* Touch Target Sizes (Accessibility) */
+@media (max-width: 768px) {
+    button,
+    a.btn,
+    .clickable {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Loading States Mobile */
+@media (max-width: 576px) {
+    .spinner-border {
+        width: 2rem;
+        height: 2rem;
+    }
+}

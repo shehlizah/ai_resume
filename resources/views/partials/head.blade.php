@@ -31,4 +31,7 @@
 <!-- Include Styles -->
 @include('partials.styles')
 
+<!-- Mobile Responsive Styles -->
+<link rel="stylesheet" href="{{ asset('css/mobile-responsive.css') }}">
+
 @livewireStyles

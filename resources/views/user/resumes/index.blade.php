@@ -116,4 +116,63 @@
       </div>
     </div>
   </div>
+
+  <!-- Mobile Responsive Styles -->
+  <style>
+    @media (max-width: 768px) {
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+      }
+
+      .card-header .btn {
+        width: 100%;
+      }
+
+      .table-responsive {
+        font-size: 0.85rem;
+      }
+
+      .table thead {
+        display: none;
+      }
+
+      .table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+      }
+
+      .table tbody td {
+        display: block;
+        text-align: left;
+        padding: 0.5rem 0;
+        border: none;
+      }
+
+      .table tbody td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: inline-block;
+        margin-right: 0.5rem;
+      }
+
+      .table tbody td:first-child:before {
+        content: '';
+      }
+    }
+
+    @media (max-width: 576px) {
+      .dropdown-menu {
+        font-size: 0.85rem;
+      }
+
+      .badge {
+        font-size: 0.7rem;
+      }
+    }
+  </style>
 </x-layouts.app>
