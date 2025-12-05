@@ -163,35 +163,42 @@
 
         <!-- Professional Summary -->
         <div class="card mb-4">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="mb-0"><i class="bx bx-file-blank"></i> Professional Summary</h6>
-              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#summaryAIModal">
-                <i class="bx bx-sparkles"></i> Generate with AI
-              </button>
-            </div>
-            <textarea name="summary"
+          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#summarySection" role="button" aria-expanded="false" aria-controls="summarySection" style="cursor: pointer;">
+            <h6 class="mb-0"><i class="bx bx-file-blank"></i> Professional Summary</h6>
+          </div>
+          <div class="collapse" id="summarySection">
+            <div class="card-body">
+              <div class="d-flex justify-content-end mb-3">
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#summaryAIModal">
+                  <i class="bx bx-sparkles"></i> Generate with AI
+                </button>
+              </div>
+              <textarea name="summary"
                       rows="3"
                       class="form-control @error('summary') is-invalid @enderror"
                       id="summaryField"
                       placeholder="Write a brief professional summary about yourself...">{{ old('summary') }}</textarea>
             <small class="text-muted">A 2-3 sentence overview of your professional background and goals</small>
-            @error('summary')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+              @error('summary')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
           </div>
         </div>
 
         <!-- Experience -->
         <div class="card mb-4">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="mb-0"><i class="bx bx-briefcase"></i> Experience</h6>
-              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
-                <i class="bx bx-plus"></i> Add More
-              </button>
-            </div>
-            <div id="experienceContainer">
+          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#experienceSection" role="button" aria-expanded="false" aria-controls="experienceSection" style="cursor: pointer;">
+            <h6 class="mb-0"><i class="bx bx-briefcase"></i> Experience</h6>
+          </div>
+          <div class="collapse" id="experienceSection">
+            <div class="card-body">
+              <div class="d-flex justify-content-end mb-3">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
+                  <i class="bx bx-plus"></i> Add More
+                </button>
+              </div>
+              <div id="experienceContainer">
               <div class="mb-4 p-3 border-bottom" id="experienceWrapper0">
                 <label class="form-label fw-500 mt-2 mb-2">Experience 1 <span class="badge bg-secondary ms-2">Entry</span></label>
                 <div class="row g-2 mb-2">
@@ -217,44 +224,52 @@
                 </div>
               </div>
             </div>
-            <small class="text-muted">Example: Senior Developer at ABC Corp (2020-Present) - Led development team and managed projects</small>
-            @error('experience.0')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+              <small class="text-muted">Example: Senior Developer at ABC Corp (2020-Present) - Led development team and managed projects</small>
+              @error('experience.0')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
           </div>
         </div>
 
         <!-- Skills -->
         <div class="card mb-4">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="mb-0"><i class="bx bx-star"></i> Skills</h6>
-              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#skillsAIModal">
-                <i class="bx bx-sparkles"></i> Generate with AI
-              </button>
-            </div>
-            <textarea name="skills"
+          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#skillsSection" role="button" aria-expanded="false" aria-controls="skillsSection" style="cursor: pointer;">
+            <h6 class="mb-0"><i class="bx bx-star"></i> Skills</h6>
+          </div>
+          <div class="collapse" id="skillsSection">
+            <div class="card-body">
+              <div class="d-flex justify-content-end mb-3">
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#skillsAIModal">
+                  <i class="bx bx-sparkles"></i> Generate with AI
+                </button>
+              </div>
+              <textarea name="skills"
                       rows="4"
                       class="form-control @error('skills') is-invalid @enderror"
                       id="skillsField"
                       placeholder="List your skills...">{{ old('skills') }}</textarea>
-            <small class="text-muted">Example: PHP, Laravel, Vue.js, MySQL, AWS, Docker</small>
-            @error('skills')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+              <small class="text-muted">Example: PHP, Laravel, Vue.js, MySQL, AWS, Docker</small>
+              @error('skills')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
           </div>
         </div>
 
         <!-- Education -->
         <div class="card mb-4">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="mb-0"><i class="bx bx-book"></i> Education</h6>
-              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
-                <i class="bx bx-plus"></i> Add More
-              </button>
-            </div>
-            <div id="educationContainer">
+          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#educationSection" role="button" aria-expanded="false" aria-controls="educationSection" style="cursor: pointer;">
+            <h6 class="mb-0"><i class="bx bx-book"></i> Education</h6>
+          </div>
+          <div class="collapse" id="educationSection">
+            <div class="card-body">
+              <div class="d-flex justify-content-end mb-3">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
+                  <i class="bx bx-plus"></i> Add More
+                </button>
+              </div>
+              <div id="educationContainer">
               <div class="mb-4 p-3 border-bottom" id="educationWrapper0">
                 <label class="form-label fw-500 mt-2 mb-2">Education 1 <span class="badge bg-secondary ms-2">Entry</span></label>
                 <div class="row g-2 mb-2">
@@ -282,19 +297,15 @@
                 </div>
               </div>
             </div>
-            <small class="text-muted">Example: BS Computer Science, XYZ University (2018) - GPA: 3.8/4.0</small>
-            @error('education.0')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+              <small class="text-muted">Example: BS Computer Science, XYZ University (2018) - GPA: 3.8/4.0</small>
+              @error('education.0')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
           </div>
         </div>
 
         <!-- Submit -->
-        <div class="alert alert-info">
-          <i class="bx bx-info-circle me-2"></i>
-          Your resume preview will be generated and opened in a new tab!
-        </div>
-
         <button type="submit" class="btn btn-primary btn-lg w-100" id="generateBtn">
           <i class="bx bx-show me-1"></i> Generate Preview
         </button>
