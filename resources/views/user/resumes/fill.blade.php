@@ -292,11 +292,11 @@
         <!-- Submit -->
         <div class="alert alert-info">
           <i class="bx bx-info-circle me-2"></i>
-          Your resume will be generated and opened in a new tab!
+          Your resume preview will be generated and opened in a new tab!
         </div>
 
         <button type="submit" class="btn btn-primary btn-lg w-100" id="generateBtn">
-          <i class="bx bx-file me-1"></i> Generate Resume PDF
+          <i class="bx bx-show me-1"></i> Generate Preview
         </button>
       </form>
     </div>
