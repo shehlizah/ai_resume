@@ -53,10 +53,10 @@ $config = $popupConfig[$nextStep] ?? null;
 </div>
 
 <script>
-    // Show modal after 10 seconds
-    setTimeout(function() {
+    // Show modal immediately
+    document.addEventListener('DOMContentLoaded', function() {
         const modal = new bootstrap.Modal(document.getElementById('nextStepModal'));
         modal.show();
-    }, 10000);
+    });
 </script>
 @endif

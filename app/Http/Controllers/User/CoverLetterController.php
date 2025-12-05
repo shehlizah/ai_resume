@@ -100,7 +100,7 @@ class CoverLetterController extends Controller
 
         // return redirect()->route('user.cover-letters.index')
         //     ->with('success', 'Cover letter created successfully!');
-            
+
             // Correct ability check
     $this->authorize('create', CoverLetter::class);
 
@@ -124,8 +124,8 @@ class CoverLetterController extends Controller
     return redirect()
         ->route('user.cover-letters.index')
         ->with('success', 'Cover letter created successfully.');
-        
-            
+
+
     } catch (\Exception $e) {
         dd([
             'error' => $e->getMessage(),
@@ -188,27 +188,27 @@ class CoverLetterController extends Controller
         $this->authorize('view', $coverLetter);
 
         $pdf = Pdf::loadView('user.cover-letters.pdf', compact('coverLetter'));
-        
+
         return $pdf->download($coverLetter->title . '.pdf');
     }
-    
+
     public function download(CoverLetter $coverLetter)
 {
     $this->authorize('view', $coverLetter);
 
     // Use your existing print.blade.php for PDF
     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('user.cover-letters.print', compact('coverLetter'));
-    
+
     return $pdf->download($coverLetter->title . '.pdf');
 }
 
 
-    
+
           public function print(CoverLetter $coverLetter)
     {
         // Authorize user
         $this->authorize('view', $coverLetter);
-    
+
         // Load the print view (your existing blade)
         return view('user.cover-letters.print', compact('coverLetter'));
     }

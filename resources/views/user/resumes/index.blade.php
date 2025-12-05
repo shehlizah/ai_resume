@@ -217,7 +217,7 @@
       border-radius: 0.25rem;
       margin: 0 0.15rem;
     }
-    
+
     .pagination-sm .page-item.active .page-link {
       background-color: #667eea;
       border-color: #667eea;
@@ -228,7 +228,7 @@
         padding: 0.35rem 0.6rem;
         font-size: 0.8rem;
       }
-      
+
       .pagination {
         gap: 0.1rem;
       }
