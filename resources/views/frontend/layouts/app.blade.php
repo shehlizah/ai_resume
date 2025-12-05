@@ -14,17 +14,17 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@yield('title', 'AI Resume By HITECHMAIN')</title>
+    <title>@yield('title', 'Jobsease - AI-Powered Career Platform')</title>
 
     <!-- Primary Meta Tags -->
-<meta name="title" content="@yield('meta_title', 'AI Resume By HITECHMAI')">
-<meta name="description" content="@yield('meta_description', 'AI Resume By HITECHMAI')">
+<meta name="title" content="@yield('meta_title', 'Jobsease - AI-Powered Career Platform')">
+<meta name="description" content="@yield('meta_description', 'Create professional resumes, cover letters, find jobs and prepare for interviews with AI assistance')">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="@yield('og_url', 'https://shehlizah.com')">
-<meta property="og:title" content="@yield('og_title', 'AI Resume By HITECHMAI')">
-<meta property="og:description" content="@yield('og_description', 'AI Resume By HITECHMAI')">
+<meta property="og:title" content="@yield('og_title', 'Jobsease - AI-Powered Career Platform')">
+<meta property="og:description" content="@yield('og_description', 'Create professional resumes, cover letters, find jobs and prepare for interviews with AI')">
 <!--<meta property="og:image" content="@yield('og_image', 'https://uideck.com/wp-content/uploads/2021/09/play-meta-bs.jpg')">-->
 
 <!-- Twitter -->

@@ -412,7 +412,7 @@
         const parent = this.closest('.menu-item');
         const menu = parent.parentNode;
 
-        // Close other open items (Sneat accordion behavior)
+        // Close other open items (accordion behavior)
         menu.querySelectorAll('.menu-item.open').forEach(item => {
           if (item !== parent) item.classList.remove('open');
         });

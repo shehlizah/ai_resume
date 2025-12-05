@@ -24,12 +24,12 @@
           <div class="row g-0">
             <div class="col-md-6 d-flex align-items-center">
               <div class="card-body">
-                <h1 class="h4 card-title">Sneat Design Laravel Livewire</h1>
-                <p class="card-text mb-5">The Starter Kit integrates Sneat components into Laravel Livewire. Visit our live docs and demo to explore the components.</p>
+                <h1 class="h4 card-title">Jobsease - AI Career Platform</h1>
+                <p class="card-text mb-5">Your complete AI-powered career solution. Create resumes, generate cover letters, find jobs, and ace interviews with AI assistance.</p>
                 <ul class="mb-0">
                   <li class="mb-3">Read the Laravel <a href="https://laravel.com/docs" target="_blank">Documentation</a></li>
-                  <li class="mb-3">Read the Sneat Laravel <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/documentation/laravel-introduction.html" target="_blank">Documentation</a></li>
-                  <li>Sneat <a href="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template-free/demo/" target="_blank">Components</a></li>
+                  <li class="mb-3">Read the Jobsease <a href="https://jobsease.com/docs" target="_blank">Documentation</a></li>
+                  <li>Explore <a href="https://jobsease.com/features" target="_blank">Features</a></li>
                 </ul>
               </div>
             </div>

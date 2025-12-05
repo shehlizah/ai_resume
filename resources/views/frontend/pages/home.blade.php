@@ -1,7 +1,7 @@
 
 @extends('frontend.layouts.app')
 
-@section('title', 'AI Resume By HITECHMAIN')
+@section('title', 'Jobsease - AI-Powered Career Platform')
 
 @section('content')
     <!-- ====== Hero Start ====== -->
@@ -14,7 +14,7 @@
                 Open-Source Resume Templates for You
               </h1>
               <p class="ud-hero-desc">
-                AI Resume By HITECHMAIN
+                Jobsease - Your AI Career Assistant
               </p>
               <ul class="ud-hero-buttons">
                 <li>
