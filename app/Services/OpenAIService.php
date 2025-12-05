@@ -699,7 +699,7 @@ PROMPT;
     {
         $encodedTitle = urlencode($jobTitle);
         $encodedLocation = urlencode($location);
-        
+
         return <<<PROMPT
 Generate $limit realistic job opportunities for the following search:
 

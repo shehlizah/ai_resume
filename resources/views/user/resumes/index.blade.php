@@ -3,21 +3,64 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">📄 My Resumes</h5>
+          <h5 class="mb-0">📄 My Resumes ({{ $resumes->total() }})</h5>
           <a href="{{ route('user.resumes.choose') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Create New Resume
           </a>
         </div>
 
         <div class="card-body">
+          @php
+            $hasAnyResumes = \App\Models\UserResume::where('user_id', Auth::id())->exists();
+          @endphp
+
+          @if($hasAnyResumes)
+          <!-- Filter and Sort Controls -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label class="form-label small text-muted">Search</label>
+              <input type="text"
+                     class="form-control"
+                     id="searchInput"
+                     placeholder="Search by name or title..."
+                     value="{{ request('search') }}">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small text-muted">Status</label>
+              <select class="form-select" id="statusFilter" onchange="applyFilters()">
+                <option value="all" {{ request('status') == 'all' || !request('status') ? 'selected' : '' }}>All Status</option>
+                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small text-muted">Sort By</label>
+              <select class="form-select" id="sortFilter" onchange="applyFilters()">
+                <option value="latest" {{ request('sort_by') == 'latest' || !request('sort_by') ? 'selected' : '' }}>Latest First</option>
+                <option value="oldest" {{ request('sort_by') == 'oldest' ? 'selected' : '' }}>Oldest First</option>
+                <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>Name (A-Z)</option>
+              </select>
+            </div>
+          </div>
+          @endif
+
           @if($resumes->isEmpty())
             <div class="text-center py-5">
               <i class="bx bx-file" style="font-size: 64px; color: #ddd;"></i>
-              <h5 class="mt-3 text-muted">No resumes yet</h5>
-              <p class="text-muted">Create your first professional resume now!</p>
-              <a href="{{ route('user.resumes.choose') }}" class="btn btn-primary mt-2">
-                <i class="bx bx-plus me-1"></i> Choose Template
-              </a>
+              @if($hasAnyResumes && (request('search') || request('status')))
+                <h5 class="mt-3 text-muted">No resumes match your filters</h5>
+                <p class="text-muted">Try adjusting your search or filters</p>
+                <button onclick="clearFilters()" class="btn btn-outline-primary mt-2">
+                  <i class="bx bx-x me-1"></i> Clear Filters
+                </button>
+              @else
+                <h5 class="mt-3 text-muted">No resumes yet</h5>
+                <p class="text-muted">Create your first professional resume now!</p>
+                <a href="{{ route('user.resumes.choose') }}" class="btn btn-primary mt-2">
+                  <i class="bx bx-plus me-1"></i> Choose Template
+                </a>
+              @endif
             </div>
           @else
             <div class="table-responsive">
@@ -108,11 +151,48 @@
                 </tbody>
               </table>
             </div>
+
+            <!-- Pagination -->
+            @if($resumes->hasPages())
+            <div class="mt-4">
+              {{ $resumes->links() }}
+            </div>
+            @endif
           @endif
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Filter JavaScript -->
+  <script>
+    let searchTimeout;
+
+    // Search with debounce
+    document.getElementById('searchInput')?.addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        applyFilters();
+      }, 500);
+    });
+
+    function applyFilters() {
+      const status = document.getElementById('statusFilter').value;
+      const sortBy = document.getElementById('sortFilter').value;
+      const search = document.getElementById('searchInput').value;
+
+      const params = new URLSearchParams();
+      if (status && status !== 'all') params.append('status', status);
+      if (sortBy && sortBy !== 'latest') params.append('sort_by', sortBy);
+      if (search) params.append('search', search);
+
+      window.location.href = '{{ route("user.resumes.index") }}' + (params.toString() ? '?' + params.toString() : '');
+    }
+
+    function clearFilters() {
+      window.location.href = '{{ route("user.resumes.index") }}';
+    }
+  </script>
 
   <!-- Mobile Responsive Styles -->
   <style>

@@ -274,14 +274,14 @@ class JobFinderController extends Controller
                 ->first();
 
             $hasPremiumAccess = $user->has_lifetime_access || ($subscription && $subscription->status === 'active');
-            
+
             \Log::info('Checking premium access (by-location)', [
                 'user_id' => $user->id,
                 'has_lifetime_access' => $user->has_lifetime_access,
                 'subscription_status' => $subscription ? $subscription->status : 'no_subscription',
                 'hasPremiumAccess' => $hasPremiumAccess
             ]);
-            
+
             $jobsViewed = session('jobs_viewed', 0);
 
             // Free tier: 5 jobs view per session
@@ -291,7 +291,7 @@ class JobFinderController extends Controller
                     'message' => 'Free plan limit reached. Upgrade to Pro for unlimited job searches.'
                 ], 403);
             }
-            
+
             if ($hasPremiumAccess) {
                 \Log::info('Premium user (by-location) - no session limits applied');
             }

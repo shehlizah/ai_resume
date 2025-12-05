@@ -41,14 +41,14 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div class="alert alert-info border-0 py-2 mt-3 mb-3" style="background-color: #e8f4ff;">
                             <small>
                                 <i class="bx bx-info-circle me-1"></i>
                                 <strong>Note:</strong> These are AI-generated job suggestions based on your criteria. Links direct to job search pages where you can find similar real positions.
                             </small>
                         </div>
-                        
+
                         @if($resumes->count() > 0)
                         <div class="row g-3">
                             <div class="col-md-12">

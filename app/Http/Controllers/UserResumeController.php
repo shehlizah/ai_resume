@@ -25,17 +25,51 @@ class UserResumeController extends Controller
     //     return view('user.resumes.index', compact('resumes'));
     // }
 
-    public function index()
-{
-    $user = Auth::user();
-    $resumes = UserResume::where('user_id', $user->id)
-        ->with('template')
-        ->paginate(10);
+    public function index(Request $request)
+    {
+        $user = Auth::user();
 
-    $hasActivePackage = $user->hasActivePackage();
+        // Get filter and sort parameters
+        $status = $request->get('status');
+        $sortBy = $request->get('sort_by', 'latest'); // default to latest
+        $search = $request->get('search');
 
-    return view('user.resumes.index', compact('resumes', 'hasActivePackage'));
-}
+        // Start query
+        $query = UserResume::where('user_id', $user->id)
+            ->with('template');
+
+        // Apply status filter
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        // Apply search filter
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->whereRaw('LOWER(JSON_EXTRACT(data, "$.name")) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(JSON_EXTRACT(data, "$.title")) LIKE ?', ['%' . strtolower($search) . '%']);
+            });
+        }
+
+        // Apply sorting
+        switch ($sortBy) {
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'name':
+                $query->orderByRaw('JSON_EXTRACT(data, "$.name") ASC');
+                break;
+            case 'latest':
+            default:
+                $query->latest();
+                break;
+        }
+
+        $resumes = $query->paginate(10)->withQueryString();
+        $hasActivePackage = $user->hasActivePackage();
+
+        return view('user.resumes.index', compact('resumes', 'hasActivePackage', 'status', 'sortBy', 'search'));
+    }
 
     /**
      * Show template selection page
