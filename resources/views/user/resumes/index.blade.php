@@ -196,7 +196,7 @@
 
   <!-- Mobile Responsive Styles -->
   <style>
-    /* Pagination Styling */
+    /* Pagination Styling - Force smaller icons */
     .pagination {
       margin: 0;
     }
@@ -205,6 +205,9 @@
       padding: 0.5rem 0.75rem;
       font-size: 0.875rem;
       line-height: 1.25;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .pagination .page-item:first-child .page-link,
@@ -213,11 +216,23 @@
       padding: 0.5rem 0.65rem;
     }
 
-    /* Make pagination icons smaller */
-    .pagination svg {
-      width: 12px !important;
-      height: 12px !important;
+    /* Force pagination icons to be smaller - target all possible selectors */
+    .pagination svg,
+    .pagination .page-link svg,
+    nav[role="navigation"] svg,
+    nav[aria-label="Pagination Navigation"] svg {
+      width: 14px !important;
+      height: 14px !important;
+      max-width: 14px !important;
+      max-height: 14px !important;
       vertical-align: middle;
+      display: inline-block;
+    }
+
+    /* Override any inline styles on SVG paths */
+    .pagination svg path,
+    .pagination .page-link svg path {
+      stroke-width: 1.5 !important;
     }
 
     @media (max-width: 768px) {
@@ -225,11 +240,14 @@
       .pagination {
         flex-wrap: wrap;
         gap: 0.25rem;
+        justify-content: center;
       }
 
       .pagination .page-link {
         padding: 0.4rem 0.6rem;
         font-size: 0.75rem;
+        min-width: 35px;
+        min-height: 35px;
       }
 
       .pagination .page-item:first-child .page-link,
@@ -237,9 +255,14 @@
         padding: 0.4rem 0.5rem;
       }
 
-      .pagination svg {
-        width: 10px !important;
-        height: 10px !important;
+      .pagination svg,
+      .pagination .page-link svg,
+      nav[role="navigation"] svg,
+      nav[aria-label="Pagination Navigation"] svg {
+        width: 12px !important;
+        height: 12px !important;
+        max-width: 12px !important;
+        max-height: 12px !important;
       }
 
       .card-header {
