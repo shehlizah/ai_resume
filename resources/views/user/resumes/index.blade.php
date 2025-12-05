@@ -196,7 +196,52 @@
 
   <!-- Mobile Responsive Styles -->
   <style>
+    /* Pagination Styling */
+    .pagination {
+      margin: 0;
+    }
+
+    .pagination .page-link {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      line-height: 1.25;
+    }
+
+    .pagination .page-item:first-child .page-link,
+    .pagination .page-item:last-child .page-link {
+      font-size: 0.75rem;
+      padding: 0.5rem 0.65rem;
+    }
+
+    /* Make pagination icons smaller */
+    .pagination svg {
+      width: 12px !important;
+      height: 12px !important;
+      vertical-align: middle;
+    }
+
     @media (max-width: 768px) {
+      /* Pagination mobile */
+      .pagination {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+      }
+
+      .pagination .page-link {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+      }
+
+      .pagination .page-item:first-child .page-link,
+      .pagination .page-item:last-child .page-link {
+        padding: 0.4rem 0.5rem;
+      }
+
+      .pagination svg {
+        width: 10px !important;
+        height: 10px !important;
+      }
+
       .card-header {
         flex-direction: column;
         align-items: flex-start !important;
@@ -249,6 +294,15 @@
 
       .badge {
         font-size: 0.7rem;
+      }
+
+      /* Hide page numbers on very small screens, keep only prev/next */
+      .pagination .page-item:not(:first-child):not(:last-child) {
+        display: none;
+      }
+
+      .pagination .page-item.active {
+        display: inline-block !important;
       }
     }
   </style>
