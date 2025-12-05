@@ -15,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'webhooks/stripe',
             'payment/paypal/*',
         ]);
+        
+        // Add popup guide middleware to web routes
+        $middleware->web(append: [
+            \App\Http\Middleware\PopupGuideMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

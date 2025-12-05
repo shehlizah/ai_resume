@@ -209,6 +209,9 @@ public function generate(Request $request)
             'score' => $scoreData['score'],
         ]);
 
+        // Flash session to indicate resume module completed
+        session()->flash('module_completed', 'resume');
+
         // Redirect to print-preview page (browser print-to-PDF)
         return redirect()->route('user.resumes.print-preview', $resume->id)
             ->with('success', 'Resume ready! Click "Download PDF" to save.');

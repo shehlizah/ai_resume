@@ -118,6 +118,9 @@ class CoverLetterController extends Controller
 
     $coverLetter = auth()->user()->coverLetters()->create($data);
 
+    // Flash session to indicate cover letter module completed
+    session()->flash('module_completed', 'cover_letter');
+
     return redirect()
         ->route('user.cover-letters.index')
         ->with('success', 'Cover letter created successfully.');

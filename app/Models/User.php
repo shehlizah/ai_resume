@@ -68,6 +68,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relationship: User has many interview sessions
+     */
+    public function interviewSessions()
+    {
+        return $this->hasMany(InterviewSession::class);
+    }
+
+    /**
      * Check if user is admin
      */
     public function isAdmin()
@@ -274,5 +282,54 @@ public function hasActivePackage()
 //     return $this->package_id &&
 //           $this->package_expires_at?->isFuture();
 // }
+
+    /**
+     * Check if user has created at least one resume
+     */
+    public function hasCreatedResume(): bool
+    {
+        return $this->resumes()->exists();
+    }
+
+    /**
+     * Check if user has created at least one cover letter
+     */
+    public function hasCreatedCoverLetter(): bool
+    {
+        return $this->coverLetters()->exists();
+    }
+
+    /**
+     * Check if user has used interview prep feature
+     */
+    public function hasUsedInterviewPrep(): bool
+    {
+        return $this->interviewSessions()->exists();
+    }
+
+    /**
+     * Get the next step popup to show user based on their progress
+     * Returns null if user hasn't created resume yet or completed all steps
+     */
+    public function getNextStepPopup(): ?string
+    {
+        // Only show popups if user has created at least one resume
+        if (!$this->hasCreatedResume()) {
+            return null;
+        }
+
+        // Show cover letter prompt if they haven't created one yet
+        if (!$this->hasCreatedCoverLetter()) {
+            return 'cover_letter';
+        }
+
+        // Show interview prep prompt if they haven't used it yet
+        if (!$this->hasUsedInterviewPrep()) {
+            return 'interview_prep';
+        }
+
+        // User has completed all main steps
+        return null;
+    }
 
 }

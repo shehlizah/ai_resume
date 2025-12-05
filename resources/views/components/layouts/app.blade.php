@@ -41,5 +41,11 @@
     <!-- Include Scripts -->
     @include('partials.scripts')
     <!-- / Include Scripts -->
+
+    <!-- Next Step Popup Guide -->
+    @if(session('show_next_step_popup'))
+      <x-next-step-popup :nextStep="session('show_next_step_popup')" />
+    @endif
+    <!-- / Next Step Popup Guide -->
   </body>
 </html>

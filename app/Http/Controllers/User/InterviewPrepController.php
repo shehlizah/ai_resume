@@ -257,6 +257,9 @@ class InterviewPrepController extends Controller
             'status' => 'in_progress',
         ]);
 
+        // Flash session to indicate interview prep module started
+        session()->flash('module_completed', 'interview_prep');
+
         // Generate first question using OpenAI
         $questionData = $this->openAIService->generateInterviewQuestion(
             $request->job_title,
