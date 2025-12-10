@@ -77,45 +77,47 @@
                   @foreach($resumes as $resume)
                     <tr>
                       <td data-label="Resume Details">
-                        <div class="d-flex align-items-center gap-2 justify-content-between w-100">
-                          <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2 justify-content-between w-100 position-relative">
+                          <div class="d-flex align-items-center gap-2 flex-grow-1">
                             <i class="bx bx-file-blank me-2" style="font-size: 24px; color: #667eea;"></i>
                             <div>
                               <div class="fw-semibold">{{ $resume->name }}</div>
                               <small class="text-muted">{{ $resume->title }}</small>
                             </div>
                           </div>
-                          <div class="dropdown ms-auto">
-                            <button class="btn btn-sm btn-icon d-inline-flex align-items-center resume-actions-btn" data-bs-toggle="dropdown" aria-label="Actions" style="color: #6366f1; font-size: 1.3em; background: transparent; border: none; box-shadow: none;">
+                          <div class="dropdown" style="margin-left: auto;">
+                            <button class="btn btn-sm resume-actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions">
                               <i class="bx bx-dots-vertical-rounded"></i>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-end">
-                              <a href="{{ route('user.resumes.view', $resume->id) }}"
-                                 class="dropdown-item"
-                                 target="_blank">
-                                <i class="bx bx-show me-2"></i> View PDF
-                              </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                              <li>
+                                <a class="dropdown-item" href="{{ route('user.resumes.view', $resume->id) }}" target="_blank">
+                                  <i class="bx bx-show me-2"></i> View PDF
+                                </a>
+                              </li>
                               @if($hasActivePackage)
-                              <a href="{{ route('user.resumes.download', $resume->id) }}"
-                                 class="dropdown-item">
-                                <i class="bx bx-download me-2"></i> Download PDF
-                              </a>
+                              <li>
+                                <a class="dropdown-item" href="{{ route('user.resumes.download', $resume->id) }}">
+                                  <i class="bx bx-download me-2"></i> Download PDF
+                                </a>
+                              </li>
                               @endif
-                              <a href="{{ route('user.resumes.fill', $resume->template_id) }}"
-                                 class="dropdown-item">
-                                <i class="bx bx-copy me-2"></i> Create Similar
-                              </a>
-                              <div class="dropdown-divider"></div>
-                              <form action="{{ route('user.resumes.destroy', $resume->id) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('Are you sure you want to delete this resume?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="dropdown-item text-danger">
-                                  <i class="bx bx-trash me-2"></i> Delete
-                                </button>
-                              </form>
-                            </div>
+                              <li>
+                                <a class="dropdown-item" href="{{ route('user.resumes.fill', $resume->template_id) }}">
+                                  <i class="bx bx-copy me-2"></i> Create Similar
+                                </a>
+                              </li>
+                              <li><hr class="dropdown-divider"></li>
+                              <li>
+                                <form action="{{ route('user.resumes.destroy', $resume->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this resume?')" class="d-inline">
+                                  @csrf
+                                  @method('DELETE')
+                                  <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bx bx-trash me-2"></i> Delete
+                                  </button>
+                                </form>
+                              </li>
+                            </ul>
                           </div>
                         </div>
                       </td>
@@ -209,16 +211,26 @@
 
   <!-- Mobile Responsive Styles -->
   <style>
-        /* Resume actions button (3 dots) color and mobile style */
-        .resume-actions-btn i.bx-dots-vertical-rounded {
+        /* Resume actions button (3 dots) color and desktop style */
+        .resume-actions-btn {
           color: #6366f1 !important;
-          font-size: 1.3em !important;
-          vertical-align: middle;
+          font-size: 1.3em;
+          background: transparent;
+          border: none;
+          box-shadow: none;
+          padding: 0.25rem 0.5rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .resume-actions-btn:hover {
+          background-color: rgba(99, 102, 241, 0.1) !important;
         }
         
         .dropdown-menu {
-          right: 0 !important;
-          left: auto !important;
+          min-width: 200px;
         }
         
         @media (max-width: 768px) {
@@ -228,11 +240,9 @@
             border-radius: 50%;
             width: 2.2rem;
             height: 2.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+            padding: 0;
           }
+          
           .resume-actions-btn i.bx-dots-vertical-rounded {
             color: #fff !important;
             font-size: 1.4em !important;
