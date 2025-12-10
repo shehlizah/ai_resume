@@ -71,23 +71,51 @@
                     <th>Template</th>
                     <th>Status</th>
                     <th>Created</th>
-                    <th class="d-flex align-items-center" style="gap:0.25rem;">
-                      <span class="d-inline-flex align-items-center" style="color: #6366f1; font-size: 1.3em;">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </span>
-                      <span>Actions</span>
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   @foreach($resumes as $resume)
                     <tr>
                       <td data-label="Resume Details">
-                        <div class="d-flex align-items-center gap-2">
-                          <i class="bx bx-file-blank me-2" style="font-size: 24px; color: #667eea;"></i>
-                          <div>
-                            <div class="fw-semibold">{{ $resume->name }}</div>
-                            <small class="text-muted">{{ $resume->title }}</small>
+                        <div class="d-flex align-items-center gap-2 justify-content-between w-100">
+                          <div class="d-flex align-items-center gap-2">
+                            <i class="bx bx-file-blank me-2" style="font-size: 24px; color: #667eea;"></i>
+                            <div>
+                              <div class="fw-semibold">{{ $resume->name }}</div>
+                              <small class="text-muted">{{ $resume->title }}</small>
+                            </div>
+                          </div>
+                          <div class="dropdown ms-auto">
+                            <button class="btn btn-sm btn-icon d-inline-flex align-items-center resume-actions-btn" data-bs-toggle="dropdown" aria-label="Actions" style="color: #6366f1; font-size: 1.3em; background: transparent; border: none; box-shadow: none;">
+                              <i class="bx bx-dots-vertical-rounded"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                              <a href="{{ route('user.resumes.view', $resume->id) }}"
+                                 class="dropdown-item"
+                                 target="_blank">
+                                <i class="bx bx-show me-2"></i> View PDF
+                              </a>
+                              @if($hasActivePackage)
+                              <a href="{{ route('user.resumes.download', $resume->id) }}"
+                                 class="dropdown-item">
+                                <i class="bx bx-download me-2"></i> Download PDF
+                              </a>
+                              @endif
+                              <a href="{{ route('user.resumes.fill', $resume->template_id) }}"
+                                 class="dropdown-item">
+                                <i class="bx bx-copy me-2"></i> Create Similar
+                              </a>
+                              <div class="dropdown-divider"></div>
+                              <form action="{{ route('user.resumes.destroy', $resume->id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this resume?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="dropdown-item text-danger">
+                                  <i class="bx bx-trash me-2"></i> Delete
+                                </button>
+                              </form>
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -217,17 +245,29 @@
 
   <!-- Mobile Responsive Styles -->
   <style>
-            /* Ensure 3 dots icon in Actions header and rows is aligned and primary color */
-            th.d-flex.align-items-center span i.bx-dots-vertical-rounded {
-              color: #6366f1 !important;
-              font-size: 1.3em !important;
-              vertical-align: middle;
-            }
-            td[data-label="Actions"] .btn-icon i.bx-dots-vertical-rounded {
-              color: #6366f1 !important;
-              font-size: 1.3em !important;
-              vertical-align: middle;
-            }
+        /* Resume actions button (3 dots) color and mobile style */
+        .resume-actions-btn i.bx-dots-vertical-rounded {
+          color: #6366f1 !important;
+          font-size: 1.3em !important;
+          vertical-align: middle;
+        }
+        @media (max-width: 768px) {
+          .resume-actions-btn {
+            background: #6366f1 !important;
+            color: #fff !important;
+            border-radius: 50%;
+            width: 2.2rem;
+            height: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+          }
+          .resume-actions-btn i.bx-dots-vertical-rounded {
+            color: #fff !important;
+            font-size: 1.4em !important;
+          }
+        }
         /* Responsive alignment for 3 dots button in resume table */
         @media (max-width: 768px) {
           .table tbody td[data-label="Actions"] {

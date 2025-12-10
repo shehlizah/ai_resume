@@ -150,6 +150,49 @@
     </div>
 
     <style>
+                @media (max-width: 768px) {
+                    .row.g-4 > [class^="col-"] {
+                        flex: 0 0 100%;
+                        max-width: 100%;
+                    }
+                    .card.h-100 {
+                        min-height: unset;
+                        margin-bottom: 1.2rem;
+                    }
+                    .card-body, .card-footer {
+                        padding-left: 1rem;
+                        padding-right: 1rem;
+                    }
+                    .d-flex.justify-content-between.align-items-center.mb-4 {
+                        flex-direction: column;
+                        align-items: flex-start !important;
+                        gap: 0.5rem;
+                    }
+                    .btn-group, .btn {
+                        width: 100%;
+                    }
+                    .dropdown-menu {
+                        min-width: 150px;
+                        font-size: 0.95rem;
+                    }
+                    .card-footer .btn {
+                        font-size: 1rem;
+                    }
+                }
+                @media (max-width: 576px) {
+                    .card-body, .card-footer {
+                        padding-left: 0.7rem;
+                        padding-right: 0.7rem;
+                    }
+                    .card-footer .btn {
+                        font-size: 0.95rem;
+                    }
+                    .d-flex.justify-content-between.align-items-start.mb-3 {
+                        flex-direction: column;
+                        align-items: flex-start !important;
+                        gap: 0.5rem;
+                    }
+                }
         .hover-card {
             transition: all 0.3s ease;
         }
