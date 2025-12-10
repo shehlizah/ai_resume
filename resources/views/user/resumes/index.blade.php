@@ -263,51 +263,51 @@
           justify-content: center;
           white-space: nowrap;
         }
-        
+
         .resume-actions-btn:hover {
           background-color: rgba(99, 102, 241, 0.1) !important;
         }
-        
+
         /* Dropdown positioning */
         .dropdown.position-static {
           position: relative !important;
         }
-        
+
         /* Desktop dropdown - right aligned */
         .dropdown-menu-end {
           right: 0 !important;
           left: auto !important;
         }
-        
+
         .dropdown-menu {
           min-width: 200px;
           z-index: 1050;
         }
-        
+
         /* Desktop - show actions column, hide mobile dropdown */
         .desktop-actions-dropdown {
           display: block !important;
         }
-        
+
         .mobile-actions-dropdown {
           display: none !important;
         }
-        
+
         @media (max-width: 768px) {
           /* Mobile - hide actions column, show mobile dropdown */
           .desktop-actions-dropdown {
             display: none !important;
           }
-          
+
           .mobile-actions-dropdown {
             display: block !important;
           }
-          
+
           /* Hide td with data-label="Actions" on mobile */
           td[data-label="Actions"] {
             display: none !important;
           }
-          
+
           .resume-actions-btn {
             background: #6366f1 !important;
             color: #fff !important;
@@ -316,12 +316,12 @@
             height: 2.2rem;
             padding: 0 !important;
           }
-          
+
           .resume-actions-btn i.bx-dots-vertical-rounded {
             color: #fff !important;
             font-size: 1.4em !important;
           }
-          
+
           .dropdown-menu {
             min-width: 150px;
             position: absolute !important;
@@ -330,7 +330,7 @@
             z-index: 1050 !important;
           }
         }
-        
+
         @media (max-width: 576px) {
           .dropdown-menu {
             min-width: 140px;

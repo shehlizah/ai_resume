@@ -25,12 +25,10 @@
           <div class="card h-100 hover-shadow">
             @if($template->preview_image)
               <img src="{{ asset($template->preview_image) }}"
-                   class="card-img-top"
-                   alt="{{ $template->name }}"
-                   style="height: 300px; object-fit: cover;">
+                   class="card-img-top template-preview"
+                   alt="{{ $template->name }}">
             @else
-              <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
-                   style="height: 300px;">
+              <div class="card-img-top bg-light d-flex align-items-center justify-content-center template-placeholder">
                 <i class="bx bx-file" style="font-size: 64px; color: #ddd;"></i>
               </div>
             @endif
@@ -91,6 +89,20 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
     }
 
+    /* Template previews - show full image without cropping */
+    .template-preview {
+      width: 100%;
+      height: auto;
+      max-height: 480px;
+      object-fit: contain;
+      background-color: #f8f9fa;
+    }
+
+    .template-placeholder {
+      min-height: 320px;
+      background-color: #f8f9fa;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
       .col-md-6.col-lg-4 {
@@ -98,8 +110,12 @@
         padding-right: 10px;
       }
 
-      .card-img-top {
-        height: 200px !important;
+      .template-preview {
+        max-height: 320px;
+      }
+
+      .template-placeholder {
+        min-height: 240px;
       }
 
       .card-body {
@@ -125,8 +141,12 @@
         margin-bottom: 1.5rem;
       }
 
-      .card-img-top {
-        height: 180px !important;
+      .template-preview {
+        max-height: 260px;
+      }
+
+      .template-placeholder {
+        min-height: 200px;
       }
     }
   </style>

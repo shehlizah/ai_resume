@@ -62,8 +62,8 @@
     <!-- ✅ TRIAL ALERT - NEW -->
     @if($currentSubscription && $currentSubscription->isInTrial())
       <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
-        <i class="bx bx-info-circle me-2"></i> 
-        You're currently on a <strong>free trial</strong>. 
+        <i class="bx bx-info-circle me-2"></i>
+        You're currently on a <strong>free trial</strong>.
         <strong>{{ $currentSubscription->trialDaysRemaining() }} days</strong> remaining.
         @if($currentSubscription->status === 'canceled')
           Your trial will end on <strong>{{ $currentSubscription->trial_end_date->format('F j, Y') }}</strong> and you won't be charged.
@@ -233,7 +233,7 @@
               <div class="border-top pt-3">
                 @if($currentSubscription->status === 'active')
                   <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#cancelModal">
-                    <i class="bx bx-x-circle me-1"></i> 
+                    <i class="bx bx-x-circle me-1"></i>
                     {{ $currentSubscription->isInTrial() ? 'Cancel Trial' : 'Cancel Subscription' }}
                   </button>
                 @elseif($currentSubscription->status === 'canceled')
@@ -360,16 +360,16 @@
                   <strong>Trial Period:</strong> You have {{ $currentSubscription->trialDaysRemaining() }} days remaining
                 </div>
                 <p>
-                  Are you sure you want to cancel your trial? 
-                  You'll continue to have access until 
-                  <strong>{{ $currentSubscription->trial_end_date->format('F j, Y') }}</strong> 
+                  Are you sure you want to cancel your trial?
+                  You'll continue to have access until
+                  <strong>{{ $currentSubscription->trial_end_date->format('F j, Y') }}</strong>
                   and <strong>you won't be charged</strong>.
                 </p>
               @else
                 <!-- Paid Subscription Cancellation Message -->
                 <p>
-                  Are you sure you want to cancel your subscription? 
-                  You'll continue to have access until 
+                  Are you sure you want to cancel your subscription?
+                  You'll continue to have access until
                   <strong>{{ $currentSubscription->end_date->format('F j, Y') }}</strong>.
                 </p>
               @endif
@@ -408,44 +408,44 @@
       .card {
         margin-bottom: 1.5rem;
       }
-      
+
       .card-header {
         flex-direction: column;
         align-items: flex-start !important;
         gap: 0.5rem;
       }
-      
+
       .card-header .btn {
         width: 100%;
         justify-content: center;
       }
-      
+
       /* Responsive grid for subscription details */
       .row > [class^="col-"] {
         flex: 0 0 100%;
         max-width: 100%;
       }
-      
+
       .row.mb-4 > .col-md-6 {
         margin-bottom: 1rem;
       }
-      
+
       /* Make badge card responsive */
       .bg-primary.text-white.mb-4 .card-body {
         flex-direction: column;
         align-items: flex-start !important;
       }
-      
+
       .bg-primary.text-white.mb-4 .card-footer {
         flex-direction: column;
         align-items: flex-start !important;
         gap: 0.5rem;
       }
-      
+
       .text-end {
         text-align: left !important;
       }
-      
+
       /* Subscription history table - NO horizontal scroll */
       .subscription-history-wrapper {
         overflow-x: visible !important;
@@ -453,37 +453,37 @@
         max-height: 400px;
         -webkit-overflow-scrolling: touch;
       }
-      
+
       .subscription-history-wrapper table {
         width: 100%;
       }
-      
+
       .subscription-history-wrapper table thead {
         position: sticky;
         top: 0;
         z-index: 10;
         background-color: #f8f9fa;
       }
-      
+
       /* Hide Period and Duration columns on mobile */
       .period-column {
         display: none !important;
       }
-      
+
       .duration-column {
         display: none !important;
       }
     }
-    
+
     @media (max-width: 576px) {
       .subscription-history-wrapper {
         max-height: 350px;
       }
-      
+
       h3, h4, h5 {
         font-size: 1.1rem;
       }
-      
+
       .display-6 {
         font-size: 2rem !important;
       }
