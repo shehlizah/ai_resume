@@ -328,7 +328,7 @@
             align-items: center;
             justify-content: center;
             font-size: 2rem;
-            margin-bottom: 1.75rem;
+            margin: 0 auto 1.75rem auto;
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
             transition: all 0.3s ease;
         }
