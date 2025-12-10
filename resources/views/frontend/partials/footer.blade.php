@@ -46,13 +46,11 @@
             </div>
             <div class="footer-bottom">
                 <div class="footer-bottom-content">
-                    <p class="footer-copyright">© 2025 Jobsease. All rights reserved.</p>
-                    <div class="footer-links">
-                        <a href="#">Terms of Service</a>
-                        <a href="#">Privacy Policy</a>
-                        <a href="#">Support Policy</a>
+                    <p>© 2025 Jobsease. All rights reserved.</p>
+                    <div class="footer-badges">
+                        <span class="badge">🏛️ FDA Registered Facility</span>
+                        <span class="badge">🇺🇸 Made in USA</span>
                     </div>
-                    <p class="footer-credits">Designed and Developed by <a href="https://shehlizah.com" rel="nofollow">SZM</a></p>
                 </div>
             </div>
         </div>
@@ -118,7 +116,7 @@
         text-align: center;
     }
 
-    .footer-copyright {
+    .footer-bottom-content p {
         display: block;
         margin: 0;
         font-weight: 600;
@@ -126,41 +124,21 @@
         font-size: 14px;
     }
 
-    .footer-links {
+    .footer-badges {
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 1.5rem;
         flex-wrap: wrap;
-        margin: 0.5rem 0;
     }
 
-    .footer-links a {
+    .badge {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
         color: #fff;
-        text-decoration: none;
-        font-size: 14px;
-        transition: color 0.3s;
-    }
-
-    .footer-links a:hover {
-        color: #3b82f6;
-    }
-
-    .footer-credits {
-        display: block;
-        margin: 0;
-        color: #fff;
-        font-size: 14px;
-    }
-
-    .footer-credits a {
-        color: #fff;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .footer-credits a:hover {
-        color: #3b82f6;
+        font-size: 13px;
+        font-weight: 500;
     }
 
     /* ================= FOOTER MOBILE FIX ================= */

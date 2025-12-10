@@ -1664,6 +1664,9 @@
     .job-tags {
         width: 100% !important;
         gap: 0.5rem;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        margin-top: 1rem !important;
     }
 
     .tag {
