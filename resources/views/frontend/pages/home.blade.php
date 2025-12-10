@@ -1610,12 +1610,65 @@
         max-width: 100% !important;
         margin: 0 auto !important;
         box-sizing: border-box;
-        overflow: hidden;
+        overflow: visible !important;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.25rem 1rem !important;
+    }
+
+    .job-logo {
+        width: 48px !important;
+        height: 48px !important;
+        margin: 0 auto 0.5rem !important;
+    }
+
+    .job-time {
+        min-width: 0 !important;
+        width: 100% !important;
+        text-align: center !important;
     }
 
     .job-info {
-        width: 100%;
+        width: 100% !important;
         min-width: 0 !important;
+    }
+
+    .job-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .job-title {
+        font-size: 1rem !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+        width: 100% !important;
+    }
+
+    .job-company {
+        width: 100% !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+    }
+
+    .job-location {
+        width: 100% !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+    }
+
+    .job-tags {
+        width: 100% !important;
+        gap: 0.5rem;
+    }
+
+    .tag {
+        font-size: 11px !important;
+        padding: 0.25rem 0.625rem !important;
     }
 }
 

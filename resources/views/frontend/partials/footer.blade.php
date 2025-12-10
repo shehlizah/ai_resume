@@ -78,6 +78,36 @@
         width: auto;
     }
 
+    /* Footer Brand Section - Center Logo, Description, and Social Icons */
+    .footer-brand {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .footer-brand .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .footer-brand p {
+        text-align: center;
+        max-width: 400px;
+        margin: 0 auto 1rem;
+    }
+
+    .footer-brand .social-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
     /* Footer Bottom Styling */
     .footer-bottom-content {
         display: flex;
