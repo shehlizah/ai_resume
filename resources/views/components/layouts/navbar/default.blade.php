@@ -3,8 +3,8 @@
   class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme"
   id="layout-navbar">
 
-      <button id="menu-toggle" class="btn d-xl-none">
- {{-- SVG so we don’t depend on Boxicons --}}
+      <button id="menu-toggle" class="btn d-xl-none order-3 ms-auto">
+ {{-- SVG so we don't depend on Boxicons --}}
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <rect x="3" y="5" width="18" height="2" rx="1"></rect>
         <rect x="3" y="11" width="18" height="2" rx="1"></rect>
@@ -12,9 +12,14 @@
       </svg>
       </button>
     
-    
+      <!-- Logo for mobile centered -->
+      <div class="navbar-brand navbar-brand-autodark d-xl-none mx-auto" id="mobile-logo">
+        <a href="{{ route('dashboard') }}">
+          <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
+        </a>
+      </div>
 
-  <div class="navbar-nav-right d-flex align-items-center justify-content-end w-100" id="navbar-collapse">
+  <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
 
     {{-- SEARCH REMOVED. If you had a search include/component, delete it. --}}
 
@@ -76,4 +81,41 @@
       </li>
     </ul>
   </div>
+
+  <style>
+    @media (max-width: 1199px) {
+      .layout-navbar {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        position: relative !important;
+      }
+
+      #mobile-logo {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translateX(-50%) translateY(-50%) !important;
+        margin: 0 !important;
+      }
+
+      #menu-toggle {
+        order: 2 !important;
+        margin-left: auto !important;
+        flex-shrink: 0 !important;
+      }
+
+      .navbar-nav-right {
+        flex: 0 0 auto !important;
+        order: 1 !important;
+        width: auto !important;
+        margin-left: 0 !important;
+      }
+
+      .navbar-nav {
+        width: auto !important;
+      }
+    }
+  </style>
 </nav>
