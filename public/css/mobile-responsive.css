@@ -487,30 +487,21 @@ body {
 
 /* Alert Close Button - Mobile */
 @media (max-width: 768px) {
-    .alert .btn-close {
-        padding: 0.25rem !important;
-        width: 1.2rem !important;
-        height: 1.2rem !important;
-        background-size: 0.6rem !important;
-    }
-    
-    .alert .btn-close::after {
-        width: 0.6rem !important;
-        height: 0.6rem !important;
+    .btn-close {
+        width: 1rem !important;
+        height: 1rem !important;
+        padding: 0.15rem !important;
+        background-size: 0.5rem !important;
+        flex-shrink: 0;
     }
 }
 
 @media (max-width: 576px) {
-    .alert .btn-close {
-        padding: 0.2rem !important;
-        width: 1rem !important;
-        height: 1rem !important;
-        background-size: 0.5rem !important;
-    }
-    
-    .alert .btn-close::after {
-        width: 0.5rem !important;
-        height: 0.5rem !important;
+    .btn-close {
+        width: 0.9rem !important;
+        height: 0.9rem !important;
+        padding: 0.1rem !important;
+        background-size: 0.45rem !important;
     }
 }
 
