@@ -201,7 +201,7 @@
       <!-- 1. Resume Builder -->
       <li class="menu-item {{ request()->is('resumes*') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-file-doc"></i>
+          <i class="menu-icon tf-icons bx bx-file"></i>
           <div>{{ __('Resume Builder') }}</div>
         </a>
         <ul class="menu-sub">
@@ -359,6 +359,22 @@
 
 .menu-item.open > .menu-sub {
     max-height: 500px;
+}
+
+/* Remove dots/bullets from submenu items */
+.menu-sub .menu-item::before {
+    display: none !important;
+}
+
+.menu-sub .menu-link::before {
+    display: none !important;
+    content: none !important;
+}
+
+/* Remove any default list styling from submenus */
+.menu-sub {
+    list-style: none;
+    padding-left: 1rem;
 }
 
 /* Mobile Sidebar Behavior */

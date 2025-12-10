@@ -3,7 +3,7 @@
   class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme"
   id="layout-navbar">
 
-      <button id="menu-toggle" class="btn d-xl-none order-3 ms-auto">
+      <button id="menu-toggle" class="btn d-xl-none order-1 flex-shrink-0">
  {{-- SVG so we don't depend on Boxicons --}}
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <rect x="3" y="5" width="18" height="2" rx="1"></rect>
@@ -13,13 +13,13 @@
       </button>
     
       <!-- Logo for mobile centered -->
-      <div class="navbar-brand navbar-brand-autodark d-xl-none mx-auto" id="mobile-logo">
+      <div class="navbar-brand navbar-brand-autodark d-xl-none mx-auto flex-grow-1" id="mobile-logo">
         <a href="{{ Auth::user()?->isAdmin() ? route('admin.dashboard') : route('user.dashboard') }}">
           <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
         </a>
       </div>
 
-  <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+  <div class="navbar-nav-right d-flex align-items-center justify-content-end order-2 flex-shrink-0" id="navbar-collapse">
 
     {{-- SEARCH REMOVED. If you had a search include/component, delete it. --}}
 
@@ -90,25 +90,26 @@
         align-items: center !important;
         justify-content: space-between !important;
         position: relative !important;
-      }
-
-      #mobile-logo {
-        position: absolute !important;
-        left: 50% !important;
-        top: 50% !important;
-        transform: translateX(-50%) translateY(-50%) !important;
-        margin: 0 !important;
+        gap: 0.5rem !important;
       }
 
       #menu-toggle {
-        order: 2 !important;
-        margin-left: auto !important;
+        order: 1 !important;
         flex-shrink: 0 !important;
+        margin: 0 !important;
+      }
+
+      #mobile-logo {
+        flex-grow: 1 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 !important;
       }
 
       .navbar-nav-right {
         flex: 0 0 auto !important;
-        order: 1 !important;
+        order: 2 !important;
         width: auto !important;
         margin-left: 0 !important;
       }
