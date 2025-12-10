@@ -3,22 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Resume Builder | Create Your Perfect Resume</title>
-    <meta name="description" content="Create professional resumes in minutes with our easy-to-use resume builder. Choose from premium templates and land your dream job.">
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Boxicons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-     <style>
-        :root {
-            --primary-color: #6366f1;
-            --secondary-color: #8b5cf6;
-            --dark-color: #1e293b;
-            --light-color: #f8fafc;
-        }
-
+  <title>JobSease - The Global Home of Employment</title>
+  <style>
         * {
             margin: 0;
             padding: 0;
@@ -26,299 +13,508 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: var(--dark-color);
-            overflow-x: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #fff;
         }
 
-        /* Header/Navigation */
-        .navbar {
-            padding: 1.5rem 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
-        .navbar-brand {
-            font-size: 1.5rem;
+        /* Header */
+        header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
             font-weight: 700;
-            color: var(--primary-color);
+            color: #2563eb;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #2563eb;
+            border-radius: 6px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #475569;
             text-decoration: none;
-        }
-
-        .navbar-brand i {
-            font-size: 2rem;
-        }
-
-        .nav-link {
             font-weight: 500;
-            color: var(--primary-color) !important;
-            padding: 0.5rem 1rem;
-            transition: color 0.3s ease;
-            text-decoration: none;
-
+            font-size: 15px;
         }
 
-        .nav-link:hover {
-            color: var(--primary-color);
+        .nav-links a:hover {
+            color: #2563eb;
         }
 
-        .btn-outline-primary-custom {
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 0.5rem 1.5rem;
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .lang-selector {
+            color: #475569;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 10px 24px;
             border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-outline-primary-custom:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
             font-weight: 600;
+            transition: all 0.3s;
             border: none;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
+            cursor: pointer;
         }
 
-        .btn-primary-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        .btn-outline {
+            border: 2px solid #2563eb;
+            color: #2563eb;
+            background: transparent;
+        }
+
+        .btn-primary {
+            background: #2563eb;
             color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
         }
 
         /* Hero Section */
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: calc(100vh - 80px);
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.1;
+        .hero {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
         }
 
         .hero-content {
-            position: relative;
-            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
         }
 
-        .hero-section h1 {
-            font-size: 4rem;
+        .hero-text h1 {
+            font-size: 48px;
             font-weight: 800;
-            color: white;
-            margin-bottom: 1.5rem;
+            color: #1e293b;
+            margin-bottom: 20px;
             line-height: 1.2;
         }
 
-        .hero-section p {
-            font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.95);
-            margin-bottom: 3rem;
-            max-width: 700px;
+        .hero-text h1 span {
+            color: #2563eb;
         }
 
-        /* Main CTA Button */
-        .btn-cta {
-            background: white;
-            color: var(--primary-color);
-            padding: 1.5rem 4rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            border-radius: 16px;
-            border: none;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 1rem;
-            text-decoration: none;
+        .hero-text p {
+            color: #000;
+            font-size: 18px;
+            margin-bottom: 30px;
         }
 
-        .btn-cta:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            color: var(--primary-color);
-        }
-
-        .btn-cta i {
-            font-size: 2rem;
-        }
-
-        /* Features Pills */
-        .feature-pills {
-            display: flex;
-            gap: 1.5rem;
-            margin-top: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .feature-pill {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            color: white;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .feature-pill i {
-            font-size: 1.5rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: #1e293b;
-            color: white;
-            padding: 3rem 0;
+        .hero-image {
             text-align: center;
         }
 
-        .dropdown-toggle::after {
-            margin-left: 0.5rem;
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
         }
 
-        /* User Stats Badge */
-        .stats-badge {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            color: white;
-            font-weight: 600;
-            display: inline-flex;
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: #fff;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: #64748b;
+            font-size: 18px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: #eff6ff;
+            border-radius: 12px;
+            display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        /* Job Listings */
+        .jobs {
+            padding: 80px 0;
+            background: #f8fafc;
+        }
+
+        .jobs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .job-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .job-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .job-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .company-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .job-details h3 {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .job-meta {
+            display: flex;
+            gap: 15px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .job-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .tag.featured {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .job-salary {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 18px;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .cta p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .btn-white {
+            background: white;
+            color: #2563eb;
+        }
+
+        .btn-white:hover {
+            background: #f8fafc;
+        }
+
+        /* Footer */
+        footer {
+            background: #007BFF;
+            color: #fff;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.2fr 1.5fr;
+            gap: 50px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand {
+            max-width: 280px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-section a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: #333;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .social-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .newsletter-input {
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .newsletter-input::placeholder {
+            color: #fff;
+        }
+
+        .btn-subscribe {
+            padding: 12px 24px;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-subscribe:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .footer-bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-bottom-content p {
+            color: #fff;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .footer-badges {
+            display: flex;
+            gap: 15px;
+        }
+
+        .badge {
+            color: #fff;
+            font-size: 13px;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .hero-section h1 {
-                font-size: 2.5rem;
+            .hero-content {
+                grid-template-columns: 1fr;
             }
 
-            .hero-section p {
-                font-size: 1.125rem;
+            .features-grid {
+                grid-template-columns: 1fr;
             }
 
-            .btn-cta {
-                padding: 1.25rem 2.5rem;
-                font-size: 1.25rem;
+            .footer-content {
+                grid-template-columns: 1fr;
             }
 
-            .feature-pills {
-                justify-content: center;
+            .job-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .nav-links {
+                display: none;
             }
         }
     </style>
+    
   
 </head>
 <body>
-    
-      <!-- Navigation Header -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <!--<a class="navbar-brand" href="{{ route('home') }}">-->
-            <!--    <i class='bx bxs-file-doc'></i>-->
-            <!--    <span>JobsEase</span>-->
-            <!--</a>-->
+    <!-- Header -->
+    <header class="header">
+        <nav class="container">
+            <div class="logo">
             
-            <a class="navbar-brand" href="{{ url('/') }}">
-                <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="width: 70%;">
+            <a class="navbar-brand" href="https://www.jobsease.com">
+                <img src="https://www.jobsease.com/assets/img/logo.png" alt="Logo" style="width: 70%;">
         </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    @auth
-                        <!-- Logged-in User Navigation -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('user.dashboard') }}">
-                                <i class='bx bx-home-alt me-1'></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('user.resumes.index') }}">
-                                <i class='bx bx-file me-1'></i> My Resumes
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('user.cover-letters.index') }}">
-                                <i class='bx bx-envelope me-1'></i> Cover Letters
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown ms-3">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <div class="avatar avatar-sm bg-primary bg-opacity-10 rounded-circle me-2" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
-                                    <span class="text-primary fw-bold">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
-                                </div>
-                                <span>{{ auth()->user()->name }}</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{{ route('settings.profile') }}"><i class='bx bx-user me-2'></i>Profile</a></li>
-                                <li><a class="dropdown-item" href="{{ route('user.subscription.dashboard') }}"><i class='bx bx-credit-card me-2'></i>Subscription</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class='bx bx-log-out me-2'></i>Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                    @else
-                        <!-- Guest Navigation -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('packages') }}">Pricing</a>
-                        </li>
-                        <li class="nav-item ms-3">
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary-custom">
-                                Sign In
-                            </a>
-                        </li>
-                        <li class="nav-item ms-2">
-                            <a href="{{ route('register') }}" class="btn btn-primary-custom">
-                                Sign Up
-                            </a>
-                        </li>
-                    @endauth
-                </ul>
-            </div>
         </div>
-    </nav>
+            <ul class="nav-links">
+                <li><a href="https://jobsease.com">Home</a></li>
+                <li><a href="{{route('user.resumes') }}">Create CV</a></li>
+                <li><a href="{{route('user.jobs.recommended') }}">Upload CV</a></li>
+                <li><a href="{{route('user.interview.prep') }}">Prepare Interview</a></li>
+                <li><a href="#contact">Contact</a></li>
+
+            </ul>
+            <div class="nav-buttons">
+                <a href="{{ route('login') }}" class="btn btn-outline">Login</a>
+                <a href="{{ route('register') }}" class="btn btn-primary">Sign Up</a>
+            </div>
+        </nav>
+    </header>
