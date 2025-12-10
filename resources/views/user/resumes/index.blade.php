@@ -71,53 +71,23 @@
                     <th>Template</th>
                     <th>Status</th>
                     <th>Created</th>
+                    <th class="d-flex align-items-center" style="gap:0.25rem;">
+                      <span class="d-inline-flex align-items-center" style="color: #6366f1; font-size: 1.3em;">
+                        <i class="bx bx-dots-vertical-rounded"></i>
+                      </span>
+                      <span>Actions</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   @foreach($resumes as $resume)
                     <tr>
                       <td data-label="Resume Details">
-                        <div class="d-flex align-items-center gap-2 justify-content-between w-100 position-relative">
-                          <div class="d-flex align-items-center gap-2 flex-grow-1">
-                            <i class="bx bx-file-blank me-2" style="font-size: 24px; color: #667eea;"></i>
-                            <div>
-                              <div class="fw-semibold">{{ $resume->name }}</div>
-                              <small class="text-muted">{{ $resume->title }}</small>
-                            </div>
-                          </div>
-                          <div class="dropdown position-static">
-                            <button class="btn btn-sm resume-actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions" style="margin-left: auto;">
-                              <i class="bx bx-dots-vertical-rounded"></i>
-                            </button>
-                            <ul class="dropdown-menu" style="position: fixed; left: auto;">
-                              <li>
-                                <a class="dropdown-item" href="{{ route('user.resumes.view', $resume->id) }}" target="_blank">
-                                  <i class="bx bx-show me-2"></i> View PDF
-                                </a>
-                              </li>
-                              @if($hasActivePackage)
-                              <li>
-                                <a class="dropdown-item" href="{{ route('user.resumes.download', $resume->id) }}">
-                                  <i class="bx bx-download me-2"></i> Download PDF
-                                </a>
-                              </li>
-                              @endif
-                              <li>
-                                <a class="dropdown-item" href="{{ route('user.resumes.fill', $resume->template_id) }}">
-                                  <i class="bx bx-copy me-2"></i> Create Similar
-                                </a>
-                              </li>
-                              <li><hr class="dropdown-divider"></li>
-                              <li>
-                                <form action="{{ route('user.resumes.destroy', $resume->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this resume?')" class="d-inline">
-                                  @csrf
-                                  @method('DELETE')
-                                  <button type="submit" class="dropdown-item text-danger">
-                                    <i class="bx bx-trash me-2"></i> Delete
-                                  </button>
-                                </form>
-                              </li>
-                            </ul>
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="bx bx-file-blank me-2" style="font-size: 24px; color: #667eea;"></i>
+                          <div>
+                            <div class="fw-semibold">{{ $resume->name }}</div>
+                            <small class="text-muted">{{ $resume->title }}</small>
                           </div>
                         </div>
                       </td>
@@ -147,6 +117,43 @@
                           <span class="text-muted">{{ $resume->created_at->format('h:i A') }}</span>
                         </small>
                       </td>
+                      <td data-label="Actions">
+                        <div class="dropdown position-static">
+                          <button class="btn btn-sm resume-actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions">
+                            <i class="bx bx-dots-vertical-rounded"></i>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="{{ route('user.resumes.view', $resume->id) }}" target="_blank">
+                                <i class="bx bx-show me-2"></i> View PDF
+                              </a>
+                            </li>
+                            @if($hasActivePackage)
+                            <li>
+                              <a class="dropdown-item" href="{{ route('user.resumes.download', $resume->id) }}">
+                                <i class="bx bx-download me-2"></i> Download PDF
+                              </a>
+                            </li>
+                            @endif
+                            <li>
+                              <a class="dropdown-item" href="{{ route('user.resumes.fill', $resume->template_id) }}">
+                                <i class="bx bx-copy me-2"></i> Create Similar
+                              </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                              <form action="{{ route('user.resumes.destroy', $resume->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this resume?')" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="dropdown-item text-danger">
+                                  <i class="bx bx-trash me-2"></i> Delete
+                                </button>
+                              </form>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
                     </tr>
                   @endforeach
                 </tbody>
@@ -235,14 +242,39 @@
           position: relative !important;
         }
         
+        /* Desktop dropdown - right aligned */
+        .dropdown-menu-end {
+          right: 0 !important;
+          left: auto !important;
+        }
+        
         .dropdown-menu {
           min-width: 200px;
           z-index: 1050;
-          left: 0 !important;
-          right: auto !important;
         }
         
         @media (max-width: 768px) {
+          /* Hide Actions column header and data on mobile */
+          .table thead th:last-child {
+            display: none;
+          }
+          
+          .table tbody td[data-label="Actions"] {
+            display: none;
+          }
+          
+          /* Show dropdown inside resume details on mobile */
+          .table tbody td[data-label="Resume Details"] {
+            position: relative;
+          }
+          
+          .table tbody td[data-label="Resume Details"] .dropdown {
+            display: block;
+            position: absolute;
+            right: 0;
+            top: 0;
+          }
+          
           .resume-actions-btn {
             background: #6366f1 !important;
             color: #fff !important;
@@ -261,6 +293,17 @@
             min-width: 150px;
             position: absolute !important;
             left: -120px !important;
+            right: auto !important;
+            z-index: 1050 !important;
+          }
+        }
+        
+        @media (max-width: 576px) {
+          .dropdown-menu {
+            min-width: 140px;
+            left: -110px !important;
+          }
+        }
             right: auto !important;
             z-index: 1050 !important;
           }
