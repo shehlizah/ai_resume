@@ -747,5 +747,195 @@
             background-color: rgba(59, 130, 246, 0.1);
             color: #3b82f6;
         }
+
+        /* ===================================
+           ADMIN MOBILE RESPONSIVE STYLES
+           =================================== */
+        
+        @media (max-width: 768px) {
+            /* Welcome Banner - Stack content */
+            .card-body .row.align-items-center {
+                flex-direction: column !important;
+                text-align: center !important;
+            }
+            
+            .card-body .col-md-8,
+            .card-body .col-md-4 {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }
+            
+            .card-body .text-md-end {
+                text-align: center !important;
+                margin-top: 1rem;
+            }
+            
+            .card-body .d-flex.gap-2 {
+                flex-direction: column !important;
+                width: 100% !important;
+            }
+            
+            .card-body .btn-sm {
+                width: 100% !important;
+            }
+            
+            /* Statistics Cards - Reduce padding and text size */
+            .card-body {
+                padding: 0.75rem !important;
+            }
+            
+            .avatar-lg {
+                width: 40px !important;
+                height: 40px !important;
+                font-size: 1.25rem !important;
+            }
+            
+            .card-body h6.small {
+                font-size: 0.7rem !important;
+            }
+            
+            .card-body h3 {
+                font-size: 1.3rem !important;
+            }
+            
+            .badge {
+                font-size: 0.65rem !important;
+                padding: 0.15rem 0.35rem !important;
+            }
+            
+            .card-body small {
+                font-size: 0.7rem !important;
+            }
+            
+            /* Quick Actions - 2 columns on tablet, full width on phone */
+            .col-lg-2.col-md-4.col-6 {
+                flex: 0 0 50% !important;
+                max-width: 50% !important;
+            }
+            
+            /* Subscription Plans - Stack cards */
+            .col-lg-3.col-md-6 {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }
+            
+            /* Tables - Reduce padding and hide less critical columns */
+            .table th,
+            .table td {
+                padding: 0.5rem 0.75rem !important;
+                font-size: 0.8rem !important;
+            }
+            
+            .table th {
+                font-size: 0.75rem !important;
+            }
+            
+            /* Make tables scrollable horizontally */
+            .table-responsive {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table {
+                min-width: 600px;
+            }
+            
+            /* Card headers - Stack elements */
+            .card-header.d-flex {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 0.5rem;
+            }
+            
+            .card-header h6 {
+                font-size: 0.9rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .card-header .btn-sm {
+                width: 100%;
+            }
+            
+            /* Subscription plans grid - Reduce padding */
+            .col-lg-3.col-md-6 .p-4 {
+                padding: 1rem !important;
+            }
+            
+            .col-lg-3.col-md-6 h6 {
+                font-size: 0.85rem !important;
+            }
+            
+            .col-lg-3.col-md-6 h4 {
+                font-size: 1.25rem !important;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            /* Extra small devices - single column */
+            .col-lg-3.col-md-6,
+            .col-lg-6,
+            .col-lg-12 {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 1rem;
+            }
+            
+            /* Quick Actions - Full width buttons */
+            .col-lg-2.col-md-4.col-6 {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }
+            
+            .col-lg-2.col-md-4.col-6 .p-3 {
+                padding: 0.75rem !important;
+            }
+            
+            .col-lg-2.col-md-4.col-6 h6 {
+                font-size: 0.8rem !important;
+            }
+            
+            /* Further reduce statistics card sizes */
+            .card-body h3 {
+                font-size: 1.1rem !important;
+            }
+            
+            .card-body h6 {
+                font-size: 0.65rem !important;
+            }
+            
+            /* Table - Even more compact */
+            .table th,
+            .table td {
+                padding: 0.4rem 0.5rem !important;
+                font-size: 0.75rem !important;
+            }
+            
+            /* Hide email addresses in tables to save space */
+            .table td small.text-muted {
+                display: none;
+            }
+            
+            /* Reduce spacing */
+            .row.g-4 {
+                gap: 0.75rem !important;
+            }
+            
+            .mb-4 {
+                margin-bottom: 0.75rem !important;
+            }
+            
+            .p-4 {
+                padding: 0.75rem !important;
+            }
+            
+            /* Welcome banner text */
+            h4 {
+                font-size: 1.1rem !important;
+            }
+            
+            p {
+                font-size: 0.8rem !important;
+            }
+        }
     </style>
 </x-layouts.app>
