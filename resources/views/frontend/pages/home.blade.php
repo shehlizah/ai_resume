@@ -1013,6 +1013,8 @@
         .job-info {
             flex: 1;
             min-width: 0;
+            width: 100%;
+            overflow: visible;
         }
 
         .job-header {
@@ -1021,6 +1023,8 @@
             align-items: start;
             margin-bottom: 0.625rem;
             gap: 1rem;
+            width: 100%;
+            overflow: visible;
         }
 
         .job-title {
@@ -1029,12 +1033,17 @@
             color: #0F172A;
             margin-bottom: 0.25rem;
             line-height: 1.3;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
         }
 
         .job-company {
             color: #64748B;
             font-size: 14px;
             margin-bottom: 0.5rem;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .job-badge {
@@ -1044,7 +1053,7 @@
             border-radius: 6px;
             font-weight: 600;
             font-size: 12px;
-            white-space: nowrap;
+            white-space: normal;
             flex-shrink: 0;
         }
 
@@ -1055,6 +1064,10 @@
             color: #64748B;
             margin-bottom: 0.875rem;
             font-size: 13px;
+            flex-wrap: wrap;
+            width: 100%;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .job-tags {
@@ -1062,6 +1075,8 @@
             flex-wrap: wrap;
             gap: 0.5rem;
             align-items: center;
+            width: 100%;
+            overflow: visible;
         }
 
         .tag {
@@ -1589,37 +1604,42 @@
 @media (max-width: 768px) {
 
     .jobs-section {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
         overflow-x: hidden !important;
-        padding-left: 16px !important;
-        padding-right: 16px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
         box-sizing: border-box;
+        margin: 0 !important;
     }
 
     .jobs-grid {
         width: 100% !important;
         max-width: 100% !important;
         padding: 0 !important;
-        margin: 0 auto !important;
+        margin: 0 !important;
         box-sizing: border-box;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
     }
 
-    /* Job card layout - vertical stacking for mobile */
+    /* Job card - completely redesigned for mobile */
     .job-card {
         width: 100% !important;
         max-width: 100% !important;
-        margin: 0 auto !important;
-        box-sizing: border-box;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        padding: 12px !important;
+        display: block !important;
         overflow: visible !important;
-        display: flex !important;
-        flex-direction: row !important;
-        gap: 0.75rem !important;
-        padding: 1rem !important;
-        align-items: flex-start;
+        flex-direction: unset !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        background: white !important;
     }
 
-    /* Hide the job logo/icon on mobile */
+    /* Hide logo and time on mobile */
     .job-logo {
         display: none !important;
     }
@@ -1628,63 +1648,92 @@
         display: none !important;
     }
 
+    /* Job info takes full width */
     .job-info {
         width: 100% !important;
-        min-width: 0 !important;
+        min-width: unset !important;
+        flex: unset !important;
+        display: block !important;
     }
 
-    /* Header layout - Title on one line, location/time on next */
+    /* Job header - single column */
     .job-header {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 0.5rem !important;
+        display: block !important;
         width: 100% !important;
-        margin-bottom: 0 !important;
+        margin-bottom: 8px !important;
+        overflow: visible !important;
     }
 
+    /* Job title - full width, no truncation */
     .job-title {
-        font-size: 1rem !important;
-        word-wrap: break-word !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #0F172A !important;
+        margin: 0 0 4px 0 !important;
+        line-height: 1.4 !important;
+        word-break: break-word !important;
         overflow-wrap: break-word !important;
+        hyphens: auto !important;
         white-space: normal !important;
         width: 100% !important;
-        margin-bottom: 0.25rem !important;
+        max-width: 100% !important;
     }
 
+    /* Company name - full width */
     .job-company {
-        width: 100% !important;
-        word-wrap: break-word !important;
-        overflow-wrap: break-word !important;
-        white-space: normal !important;
-        font-size: 13px !important;
-        margin-bottom: 0.25rem !important;
-    }
-
-    /* Location and meta info on same line */
-    .job-location {
-        width: 100% !important;
-        word-wrap: break-word !important;
-        overflow-wrap: break-word !important;
-        white-space: normal !important;
-        margin-bottom: 0.75rem !important;
+        color: #64748B !important;
         font-size: 12px !important;
+        margin: 0 0 6px 0 !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 
-    /* Tags on their own line */
-    .job-tags {
+    /* Location - full width */
+    .job-location {
+        display: block !important;
         width: 100% !important;
-        gap: 0.5rem !important;
+        color: #64748B !important;
+        font-size: 11px !important;
+        margin: 0 0 8px 0 !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+    }
+
+    /* Badge/Pro indicator - inline */
+    .job-badge {
+        display: inline-block !important;
+        padding: 2px 6px !important;
+        font-size: 10px !important;
+        margin: 0 4px 0 0 !important;
+        white-space: normal !important;
+        flex-shrink: unset !important;
+    }
+
+    /* Tags - full width, wrapped */
+    .job-tags {
         display: flex !important;
         flex-wrap: wrap !important;
-        margin-top: 0.5rem !important;
-        margin-bottom: 0 !important;
+        gap: 4px !important;
+        width: 100% !important;
+        margin: 8px 0 0 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
     }
 
     .tag {
-        font-size: 11px !important;
-        padding: 0.25rem 0.625rem !important;
-        flex-wrap: wrap;
+        display: inline-block !important;
+        font-size: 10px !important;
+        padding: 3px 6px !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        flex: 0 1 auto !important;
+        max-width: 100% !important;
     }
+
 }
 
 </style>
