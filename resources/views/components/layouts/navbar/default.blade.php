@@ -14,7 +14,7 @@
     
       <!-- Logo for mobile centered -->
       <div class="navbar-brand navbar-brand-autodark d-xl-none mx-auto" id="mobile-logo">
-        <a href="{{ Auth::user()?->hasRole('admin') ? route('admin.dashboard') : route('user.dashboard') }}">
+        <a href="{{ Auth::user()?->isAdmin() ? route('admin.dashboard') : route('user.dashboard') }}">
           <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
         </a>
       </div>
