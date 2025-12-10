@@ -296,7 +296,7 @@
         <div class="card-header">
           <h5 class="mb-0">Subscription History</h5>
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive subscription-history-wrapper">
           <table class="table table-hover mb-0">
             <thead>
               <tr>
@@ -402,5 +402,51 @@
       </div>
     </div>
   @endif
+
+  <style>
+    /* Subscription history table - vertical scroll only on mobile */
+    @media (max-width: 768px) {
+      .subscription-history-wrapper {
+        overflow-x: visible !important;
+        overflow-y: auto !important;
+        max-height: 500px;
+      }
+      
+      .subscription-history-wrapper table {
+        width: 100%;
+      }
+      
+      .subscription-history-wrapper table thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #f8f9fa;
+      }
+      
+      /* Alert close button - smaller on mobile */
+      .alert .btn-close {
+        padding: 0.25rem;
+        width: 1.2rem;
+        height: 1.2rem;
+      }
+      
+      .alert .btn-close::after {
+        width: 0.6rem;
+        height: 0.6rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .subscription-history-wrapper {
+        max-height: 400px;
+      }
+      
+      .alert .btn-close {
+        padding: 0.2rem;
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+  </style>
 
 </x-layouts.app>
