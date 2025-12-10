@@ -85,11 +85,11 @@
                               <small class="text-muted">{{ $resume->title }}</small>
                             </div>
                           </div>
-                          <div class="dropdown" style="margin-left: auto;">
-                            <button class="btn btn-sm resume-actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions">
+                          <div class="dropdown position-static">
+                            <button class="btn btn-sm resume-actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions" style="margin-left: auto;">
                               <i class="bx bx-dots-vertical-rounded"></i>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end" style="position: fixed; right: auto;">
                               <li>
                                 <a class="dropdown-item" href="{{ route('user.resumes.view', $resume->id) }}" target="_blank">
                                   <i class="bx bx-show me-2"></i> View PDF
@@ -223,14 +223,27 @@
           display: flex;
           align-items: center;
           justify-content: center;
+          white-space: nowrap;
         }
         
         .resume-actions-btn:hover {
           background-color: rgba(99, 102, 241, 0.1) !important;
         }
         
+        /* Dropdown positioning */
+        .dropdown.position-static {
+          position: relative !important;
+        }
+        
         .dropdown-menu {
           min-width: 200px;
+          z-index: 1050;
+        }
+        
+        /* Keep dropdown aligned to button on the right */
+        .dropdown-menu-end {
+          right: 0 !important;
+          left: auto !important;
         }
         
         @media (max-width: 768px) {
@@ -240,12 +253,20 @@
             border-radius: 50%;
             width: 2.2rem;
             height: 2.2rem;
-            padding: 0;
+            padding: 0 !important;
           }
           
           .resume-actions-btn i.bx-dots-vertical-rounded {
             color: #fff !important;
             font-size: 1.4em !important;
+          }
+          
+          .dropdown-menu {
+            min-width: 150px;
+            position: absolute !important;
+            right: -120px !important;
+            left: auto !important;
+            z-index: 1050 !important;
           }
         }
     .pagination-sm .page-link {
