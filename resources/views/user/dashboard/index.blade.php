@@ -277,7 +277,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="px-4 py-3 border-0">Resume</th>
-                                <th class="px-4 py-3 border-0">Template</th>
+                                <th class="px-4 py-3 border-0 template-column">Template</th>
                                 <th class="px-4 py-3 border-0">Created</th>
                                 <th class="px-4 py-3 border-0 text-end">Actions</th>
                             </tr>
@@ -293,7 +293,7 @@
                                             <strong>{{ Str::limit($resume->title, 30) }}</strong>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 template-column">
                                         <span class="badge bg-light text-dark">
                                             {{ $resume->template->name ?? 'N/A' }}
                                         </span>

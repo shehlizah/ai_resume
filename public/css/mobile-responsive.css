@@ -516,6 +516,13 @@ body {
     }
 }
 
+/* Hide Template Column on Mobile */
+@media (max-width: 768px) {
+    .template-column {
+        display: none !important;
+    }
+}
+
 /* Loading States Mobile */
 @media (max-width: 576px) {
     .spinner-border {
