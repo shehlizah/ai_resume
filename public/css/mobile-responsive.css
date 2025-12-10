@@ -485,6 +485,33 @@ body {
     }
 }
 
+/* Alert Close Button - Mobile */
+@media (max-width: 768px) {
+    .alert .btn-close {
+        padding: 0.25rem;
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+    
+    .alert .btn-close::after {
+        width: 0.6rem;
+        height: 0.6rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .alert .btn-close {
+        padding: 0.2rem;
+        width: 1rem;
+        height: 1rem;
+    }
+    
+    .alert .btn-close::after {
+        width: 0.5rem;
+        height: 0.5rem;
+    }
+}
+
 /* Loading States Mobile */
 @media (max-width: 576px) {
     .spinner-border {

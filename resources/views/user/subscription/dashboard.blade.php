@@ -79,7 +79,7 @@
       <!-- Current Subscription Card -->
       <div class="col-lg-8 mb-4">
         <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
             <h5 class="mb-0">Current Plan</h5>
             <a href="{{ route('user.pricing') }}" class="btn btn-sm btn-primary">
               <i class="bx bx-rocket me-1"></i> Upgrade Plan
@@ -406,6 +406,49 @@
   <style>
     /* Subscription history table - vertical scroll only on mobile */
     @media (max-width: 768px) {
+      /* General mobile spacing improvements */
+      .card {
+        margin-bottom: 1.5rem;
+      }
+      
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+      }
+      
+      .card-header .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      /* Responsive grid for subscription details */
+      .row > [class^="col-"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+      
+      .row.mb-4 > .col-md-6 {
+        margin-bottom: 1rem;
+      }
+      
+      /* Make badge card responsive */
+      .bg-primary.text-white.mb-4 .card-body {
+        flex-direction: column;
+        align-items: flex-start !important;
+      }
+      
+      .bg-primary.text-white.mb-4 .card-footer {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+      }
+      
+      .text-end {
+        text-align: left !important;
+      }
+      
+      /* Subscription history table - vertical scroll only */
       .subscription-history-wrapper {
         overflow-x: visible !important;
         overflow-y: auto !important;
@@ -445,6 +488,19 @@
         padding: 0.2rem;
         width: 1rem;
         height: 1rem;
+      }
+      
+      .alert .btn-close::after {
+        width: 0.5rem;
+        height: 0.5rem;
+      }
+      
+      h3, h4, h5 {
+        font-size: 1.1rem;
+      }
+      
+      .display-6 {
+        font-size: 2rem !important;
       }
     }
   </style>
