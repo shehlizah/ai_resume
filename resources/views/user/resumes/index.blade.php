@@ -303,6 +303,11 @@
             display: block !important;
           }
           
+          /* Hide td with data-label="Actions" on mobile */
+          td[data-label="Actions"] {
+            display: none !important;
+          }
+          
           .resume-actions-btn {
             background: #6366f1 !important;
             color: #fff !important;
