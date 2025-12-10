@@ -71,7 +71,7 @@
                     <th>Template</th>
                     <th>Status</th>
                     <th>Created</th>
-                    <th>Actions</th>
+                    <th><span class="me-1"><i class="bx bx-dots-vertical-rounded"></i></span>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -115,7 +115,7 @@
                       <td data-label="Actions">
                         <div class="d-flex justify-content-end align-items-center w-100">
                           <div class="dropdown ms-auto">
-                            <button class="btn btn-sm btn-icon" data-bs-toggle="dropdown" style="float:right;">
+                            <button class="btn btn-sm btn-icon" data-bs-toggle="dropdown" aria-label="Actions" style="float:right;">
                               <i class="bx bx-dots-vertical-rounded"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
