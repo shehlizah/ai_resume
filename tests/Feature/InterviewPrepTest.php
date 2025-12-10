@@ -17,7 +17,7 @@ class InterviewPrepTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create test user directly without factory
         $this->user = User::create([
             'name' => 'Test User',
@@ -25,7 +25,7 @@ class InterviewPrepTest extends TestCase
             'password' => Hash::make('password123'),
             'email_verified_at' => now(),
         ]);
-        
+
         $this->jobMatchService = app(JobMatchService::class);
     }
 
@@ -36,7 +36,7 @@ class InterviewPrepTest extends TestCase
     {
         // Create a temporary test PDF file
         Storage::disk('local')->makeDirectory('private/uploads/temp/' . $this->user->id);
-        
+
         $testContent = '%PDF-1.4
 1 0 obj
 << /Type /Catalog /Pages 2 0 R >>
@@ -79,14 +79,14 @@ startxref
 
         // Verify file exists
         $this->assertTrue(Storage::disk('local')->exists($filePath));
-        
+
         // Test analyzeUploadedResume with relative path
         $result = $this->jobMatchService->analyzeUploadedResume('uploads/temp/' . $this->user->id . '/test_resume.pdf');
-        
+
         // Should return array with raw_text (even if empty from test PDF)
         $this->assertIsArray($result);
         $this->assertArrayHasKey('raw_text', $result);
-        
+
         // Cleanup
         Storage::disk('local')->delete($filePath);
     }
@@ -100,7 +100,7 @@ startxref
 
         // Create a temporary test file
         Storage::disk('local')->makeDirectory('private/uploads/temp/' . $this->user->id);
-        
+
         $filePath = 'private/uploads/temp/' . $this->user->id . '/test_resume.pdf';
         Storage::disk('local')->put($filePath, 'Test resume content with skills like PHP, Laravel, JavaScript');
 
@@ -210,11 +210,11 @@ startxref
         // Should succeed
         $response->assertStatus(200);
         $data = $response->json('data');
-        
+
         // Should have questions
         $this->assertArrayHasKey('questions', $data);
         $this->assertNotEmpty($data['questions']);
-        
+
         // For PRO users, might also have technical_topics and salary_tips (if OpenAI provides them)
         // But these are optional depending on OpenAI response
     }

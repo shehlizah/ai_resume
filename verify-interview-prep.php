@@ -3,10 +3,10 @@
 
 /**
  * Interview Prep File Path Verification Script
- * 
- * This script helps verify that uploaded resume files are being 
+ *
+ * This script helps verify that uploaded resume files are being
  * stored and retrieved correctly.
- * 
+ *
  * Usage: php artisan tinker
  * Then: require 'verify-interview-prep.php'
  */
@@ -61,7 +61,7 @@ $firstUser = User::first();
 if ($firstUser) {
     echo "Testing with real user:\n";
     echo "User ID: " . $firstUser->id . "\n";
-    
+
     $userTempDir = "private/uploads/temp/{$firstUser->id}";
     if (Storage::disk('local')->exists($userTempDir)) {
         $userFiles = Storage::disk('local')->files($userTempDir);
@@ -69,7 +69,7 @@ if ($firstUser) {
             echo "User has " . count($userFiles) . " temp files\n";
             $relPath = str_replace('private/', '', $userFiles[0]);
             echo "First file relative path: $relPath\n";
-            
+
             $result = $jobMatchService->analyzeUploadedResume($relPath);
             echo "Analysis result keys: " . implode(', ', array_keys($result)) . "\n";
             if (isset($result['raw_text'])) {

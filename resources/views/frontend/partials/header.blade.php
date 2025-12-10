@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
   <title>JobSease - The Global Home of Employment</title>
   <style>
         * {
@@ -522,15 +522,15 @@
             }
         }
     </style>
-    
-  
+
+
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <nav class="container">
             <div class="logo">
-            
+
             <a class="navbar-brand" href="https://www.jobsease.com">
                 <img src="https://www.jobsease.com/assets/img/logo.png" alt="Logo" style="width: 70%;">
         </a>

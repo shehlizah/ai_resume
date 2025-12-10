@@ -24,7 +24,7 @@ return new class extends Migration
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             $table->index('posted_at');
             $table->index('is_active');
         });

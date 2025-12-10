@@ -39,7 +39,7 @@
         a { text-decoration: none; color: inherit; }
         button { font-family: inherit; cursor: pointer; border: none; outline: none; }
 
-      
+
         /* ===== HERO SECTION ===== */
         .hero {
             /*min-height: 100vh;*/
@@ -51,7 +51,7 @@
             overflow: hidden;
             width: 100%;
         }
-        
+
         .hero {
             background-image: url('frontend/assets/images/jobsease.png'); /* ✅ change path */
             background-size: cover;
@@ -270,8 +270,8 @@
             transform: scale(1.08);
             box-shadow: 0 12px 30px rgba(59, 130, 246, 0.35);
         }
-        
-        
+
+
 
         .feature-card h3 {
             font-family: 'Poppins', sans-serif;
@@ -367,7 +367,7 @@
             font-size: 14px;
         }
 
-      
+
         /* ===== BOOK SESSION CTA ===== */
         .book-session {
             background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
@@ -431,7 +431,7 @@
             opacity: 0.95;
         }
 
-       
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
             .hero-content {
@@ -803,7 +803,7 @@
     </div>
 
     <!-- Feature Cards -->
-    
+
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">📄</div>
@@ -824,7 +824,7 @@
             </div>
         </div>
 
- 
+
 </section>
 
 
@@ -838,7 +838,7 @@
                 CV to gets results
                 <span class="underline"></span>
             </h1>
-            
+
             <svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg">
 <mask id="mask0_37_729" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="176" height="65">
 <path d="M175.67 0H0V64.2376H175.67V0Z" fill="white"/>
@@ -898,7 +898,7 @@
     <!--        </div>-->
     <!--    </div>-->
     <!--</section>-->
-    
+
 
 <!-- Jobs Section -->
     <style>
@@ -1128,7 +1128,7 @@
                 padding: 0.25rem 0.625rem;
             }
         }
-        
+
         /* ================= JOBS SECTION FIX ================= */
 
 .jobs-section {
@@ -1323,7 +1323,7 @@
 
     </style>
 
-    
+
     <section class="jobs-section" id="jobs">
         <div class="jobs-header">
             <div class="jobs-stats">
@@ -1350,11 +1350,11 @@
         </div>
     </section>
 
-    
+
 
     <!-- Book Session CTA -->
     <!--<section class="book-session">-->
-        
+
     <!--      <div class="top-block">-->
     <!--    <div class="left-content">-->
     <!--        <h1>-->
@@ -1366,7 +1366,7 @@
     <!--    </div>-->
     <!--    <a href="{{route('user.interview.prep')}}" class="btn-primary">Book Now</a>-->
     <!--</div>-->
-    
+
     <!--    <div id="contact" class="book-session-content">-->
     <!--        <h2>Let's talk about the idea that's been<br>sitting in your Mind for months</h2>-->
     <!--        <a href="{{route('user.interview.prep')}}" class="btn-large">BOOK SESSION</a>-->
@@ -1374,7 +1374,7 @@
     <!--    </div>-->
     <!--</section>-->
 
-  
+
      <section class="interview-section">
 
     <!-- Blur Background Layer -->
@@ -1393,8 +1393,8 @@
 
             <!--<span class="arrow">➜</span>-->
         </div>
-        
-                    
+
+
             <svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg">
 <mask id="mask0_37_729" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="176" height="65">
 <path d="M175.67 0H0V64.2376H175.67V0Z" fill="white"/>
@@ -1605,27 +1605,27 @@
         box-sizing: border-box;
     }
 
+    /* Job card layout - vertical stacking for mobile */
     .job-card {
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 auto !important;
         box-sizing: border-box;
         overflow: visible !important;
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1.25rem 1rem !important;
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 0.75rem !important;
+        padding: 1rem !important;
+        align-items: flex-start;
     }
 
+    /* Hide the job logo/icon on mobile */
     .job-logo {
-        width: 48px !important;
-        height: 48px !important;
-        margin: 0 auto 0.5rem !important;
+        display: none !important;
     }
 
     .job-time {
-        min-width: 0 !important;
-        width: 100% !important;
-        text-align: center !important;
+        display: none !important;
     }
 
     .job-info {
@@ -1633,10 +1633,13 @@
         min-width: 0 !important;
     }
 
+    /* Header layout - Title on one line, location/time on next */
     .job-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+        margin-bottom: 0 !important;
     }
 
     .job-title {
@@ -1645,6 +1648,7 @@
         overflow-wrap: break-word !important;
         white-space: normal !important;
         width: 100% !important;
+        margin-bottom: 0.25rem !important;
     }
 
     .job-company {
@@ -1652,26 +1656,34 @@
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         white-space: normal !important;
+        font-size: 13px !important;
+        margin-bottom: 0.25rem !important;
     }
 
+    /* Location and meta info on same line */
     .job-location {
         width: 100% !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         white-space: normal !important;
+        margin-bottom: 0.75rem !important;
+        font-size: 12px !important;
     }
 
+    /* Tags on their own line */
     .job-tags {
         width: 100% !important;
-        gap: 0.5rem;
+        gap: 0.5rem !important;
         display: flex !important;
         flex-wrap: wrap !important;
-        margin-top: 1rem !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0 !important;
     }
 
     .tag {
         font-size: 11px !important;
         padding: 0.25rem 0.625rem !important;
+        flex-wrap: wrap;
     }
 }
 
