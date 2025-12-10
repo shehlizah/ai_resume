@@ -71,12 +71,7 @@
                     <th>Template</th>
                     <th>Status</th>
                     <th>Created</th>
-                    <th class="d-flex align-items-center" style="gap:0.25rem;">
-                      <span class="d-inline-flex align-items-center" style="color: #6366f1; font-size: 1.3em;">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </span>
-                      <span>Actions</span>
-                    </th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -254,27 +249,6 @@
         }
         
         @media (max-width: 768px) {
-          /* Hide Actions column header and data on mobile */
-          .table thead th:last-child {
-            display: none;
-          }
-          
-          .table tbody td[data-label="Actions"] {
-            display: none;
-          }
-          
-          /* Show dropdown inside resume details on mobile */
-          .table tbody td[data-label="Resume Details"] {
-            position: relative;
-          }
-          
-          .table tbody td[data-label="Resume Details"] .dropdown {
-            display: block;
-            position: absolute;
-            right: 0;
-            top: 0;
-          }
-          
           .resume-actions-btn {
             background: #6366f1 !important;
             color: #fff !important;
