@@ -290,7 +290,7 @@
       </div>
     </div>
 
-    <!-- Subscription History -->
+      <!-- Subscription History -->
     @if($subscriptionHistory->count() > 0)
       <div class="card">
         <div class="card-header">
@@ -301,17 +301,17 @@
             <thead>
               <tr>
                 <th>Plan</th>
-                <th>Period</th>
+                <th class="period-column">Period</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Duration</th>
+                <th class="duration-column">Duration</th>
               </tr>
             </thead>
             <tbody>
               @foreach($subscriptionHistory as $subscription)
                 <tr>
                   <td><strong>{{ $subscription->plan->name }}</strong></td>
-                  <td>
+                  <td class="period-column">
                     <span class="badge bg-label-secondary">
                       {{ ucfirst($subscription->billing_period) }}
                     </span>
@@ -322,7 +322,7 @@
                       {{ ucfirst($subscription->status) }}
                     </span>
                   </td>
-                  <td>
+                  <td class="duration-column">
                     {{ $subscription->start_date->format('M d, Y') }} -
                     {{ $subscription->end_date->format('M d, Y') }}
                   </td>
@@ -337,9 +337,7 @@
           </div>
         @endif
       </div>
-    @endif
-
-  </div>
+    @endif  </div>
 
   <!-- ✅ UPDATED CANCEL SUBSCRIPTION MODAL WITH TRIAL SUPPORT -->
   @if($currentSubscription && $currentSubscription->status === 'active')
@@ -448,11 +446,12 @@
         text-align: left !important;
       }
       
-      /* Subscription history table - vertical scroll only */
+      /* Subscription history table - NO horizontal scroll */
       .subscription-history-wrapper {
         overflow-x: visible !important;
         overflow-y: auto !important;
-        max-height: 500px;
+        max-height: 400px;
+        -webkit-overflow-scrolling: touch;
       }
       
       .subscription-history-wrapper table {
@@ -466,33 +465,19 @@
         background-color: #f8f9fa;
       }
       
-      /* Alert close button - smaller on mobile */
-      .alert .btn-close {
-        padding: 0.25rem;
-        width: 1.2rem;
-        height: 1.2rem;
+      /* Hide Period and Duration columns on mobile */
+      .period-column {
+        display: none !important;
       }
       
-      .alert .btn-close::after {
-        width: 0.6rem;
-        height: 0.6rem;
+      .duration-column {
+        display: none !important;
       }
     }
     
     @media (max-width: 576px) {
       .subscription-history-wrapper {
-        max-height: 400px;
-      }
-      
-      .alert .btn-close {
-        padding: 0.2rem;
-        width: 1rem;
-        height: 1rem;
-      }
-      
-      .alert .btn-close::after {
-        width: 0.5rem;
-        height: 0.5rem;
+        max-height: 350px;
       }
       
       h3, h4, h5 {
