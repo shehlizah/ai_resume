@@ -141,6 +141,48 @@
         font-weight: 500;
     }
 
+    /* Footer content grid - 4 columns on desktop */
+    .footer-content {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
+        gap: 2rem;
+        width: 100%;
+    }
+
+    /* Footer section styling */
+    .footer-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .footer-section h3 {
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .footer-section ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 0.75rem;
+    }
+
+    .footer-section ul li a {
+        color: #94A3B8;
+        font-size: 14px;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .footer-section ul li a:hover {
+        color: #fff;
+    }
+
     /* ================= FOOTER MOBILE FIX ================= */
 
     @media (max-width: 768px) {
@@ -159,6 +201,44 @@
             box-sizing: border-box;
         }
 
+        /* Center footer content on mobile */
+        .footer-content {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 1.5rem !important;
+            align-items: center !important;
+        }
+
+        /* Center all footer sections on mobile */
+        .footer-section {
+            width: 100% !important;
+            margin-bottom: 1.5rem !important;
+            text-align: center !important;
+            align-items: center !important;
+        }
+
+        /* Ensure footer brand stays centered */
+        .footer-section.footer-brand {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            text-align: center !important;
+            width: 100% !important;
+        }
+
+        .footer-brand .logo {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+
+        .footer-brand p {
+            text-align: center !important;
+            margin: 0 auto 1rem auto !important;
+        }
+
         /* Center logo */
         footer img {
             display: block !important;
@@ -168,16 +248,17 @@
         /* Center social icons */
         footer .social-icons,
         footer .social-links,
-        footer .footer-socials {
+        footer .footer-socials,
+        .footer-brand .social-links {
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
-            gap: 15px;
-            width: 100%;
+            gap: 15px !important;
+            width: 100% !important;
             margin: 0 auto !important;
         }
 
-        /* Footer bottom layout - 3 lines on mobile */
+        /* Footer bottom layout */
         .footer-bottom-content {
             display: flex !important;
             flex-direction: column !important;
@@ -225,17 +306,6 @@
             text-align: center !important;
             margin-left: auto !important;
             margin-right: auto !important;
-        }
-
-        .footer-section {
-            width: 100% !important;
-            margin-bottom: 1.5rem !important;
-        }
-
-        .footer-content {
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 1.5rem !important;
         }
     }
 
