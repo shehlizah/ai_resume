@@ -145,42 +145,7 @@
                           <span class="text-muted">{{ $resume->created_at->format('h:i A') }}</span>
                         </small>
                       </td>
-                      <td data-label="Actions">
-                        <div class="d-flex justify-content-end align-items-center w-100">
-                          <div class="dropdown ms-auto">
-                            <button class="btn btn-sm btn-icon d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-label="Actions" style="color: #6366f1; font-size: 1.3em; background: transparent; border: none; box-shadow: none;">
-                              <i class="bx bx-dots-vertical-rounded"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end">
-                              <a href="{{ route('user.resumes.view', $resume->id) }}"
-                                 class="dropdown-item"
-                                 target="_blank">
-                                <i class="bx bx-show me-2"></i> View PDF
-                              </a>
-                              @if($hasActivePackage)
-                              <a href="{{ route('user.resumes.download', $resume->id) }}"
-                                 class="dropdown-item">
-                                <i class="bx bx-download me-2"></i> Download PDF
-                              </a>
-                              @endif
-                              <a href="{{ route('user.resumes.fill', $resume->template_id) }}"
-                                 class="dropdown-item">
-                                <i class="bx bx-copy me-2"></i> Create Similar
-                              </a>
-                              <div class="dropdown-divider"></div>
-                              <form action="{{ route('user.resumes.destroy', $resume->id) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('Are you sure you want to delete this resume?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="dropdown-item text-danger">
-                                  <i class="bx bx-trash me-2"></i> Delete
-                                </button>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
+                      // ...existing code...
                     </tr>
                   @endforeach
                 </tbody>
@@ -245,6 +210,13 @@
 
   <!-- Mobile Responsive Styles -->
   <style>
+                @media (max-width: 768px) {
+                  .dropdown-menu {
+                    right: 0 !important;
+                    left: auto !important;
+                    min-width: 150px;
+                  }
+                }
         /* Resume actions button (3 dots) color and mobile style */
         .resume-actions-btn i.bx-dots-vertical-rounded {
           color: #6366f1 !important;
