@@ -77,8 +77,8 @@
                 <tbody>
                   @foreach($resumes as $resume)
                     <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
+                      <td data-label="Resume Details">
+                        <div class="d-flex align-items-center gap-2">
                           <i class="bx bx-file-blank me-2" style="font-size: 24px; color: #667eea;"></i>
                           <div>
                             <div class="fw-semibold">{{ $resume->name }}</div>
@@ -86,12 +86,12 @@
                           </div>
                         </div>
                       </td>
-                     <td>
-                      <span class="badge {{ $resume->template ? 'bg-label-primary' : 'bg-label-warning' }}">
-                        {{ $resume->template?->name ?? 'Template Deleted' }}
-                      </span>
-                    </td>
-                      <td>
+                      <td data-label="Template">
+                        <span class="badge {{ $resume->template ? 'bg-label-primary' : 'bg-label-warning' }}">
+                          {{ $resume->template?->name ?? 'Template Deleted' }}
+                        </span>
+                      </td>
+                      <td data-label="Status">
                         @if($resume->status === 'completed')
                           <span class="badge bg-label-success">
                             <i class="bx bx-check-circle"></i> Completed
@@ -106,43 +106,45 @@
                           </span>
                         @endif
                       </td>
-                      <td>
+                      <td data-label="Created">
                         <small class="text-muted">
                           {{ $resume->created_at->format('M d, Y') }}<br>
                           <span class="text-muted">{{ $resume->created_at->format('h:i A') }}</span>
                         </small>
                       </td>
-                      <td>
-                        <div class="dropdown">
-                          <button class="btn btn-sm btn-icon" data-bs-toggle="dropdown">
-                            <i class="bx bx-dots-vertical-rounded"></i>
-                          </button>
-                          <div class="dropdown-menu dropdown-menu-end">
-                            <a href="{{ route('user.resumes.view', $resume->id) }}"
-                               class="dropdown-item"
-                               target="_blank">
-                              <i class="bx bx-show me-2"></i> View PDF
-                            </a>
-                            @if($hasActivePackage)
-                            <a href="{{ route('user.resumes.download', $resume->id) }}"
-                               class="dropdown-item">
-                              <i class="bx bx-download me-2"></i> Download PDF
-                            </a>
-                            @endif
-                            <a href="{{ route('user.resumes.fill', $resume->template_id) }}"
-                               class="dropdown-item">
-                              <i class="bx bx-copy me-2"></i> Create Similar
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <form action="{{ route('user.resumes.destroy', $resume->id) }}"
-                                  method="POST"
-                                  onsubmit="return confirm('Are you sure you want to delete this resume?')">
-                              @csrf
-                              @method('DELETE')
-                              <button type="submit" class="dropdown-item text-danger">
-                                <i class="bx bx-trash me-2"></i> Delete
-                              </button>
-                            </form>
+                      <td data-label="Actions">
+                        <div class="d-flex justify-content-end align-items-center w-100">
+                          <div class="dropdown ms-auto">
+                            <button class="btn btn-sm btn-icon" data-bs-toggle="dropdown" style="float:right;">
+                              <i class="bx bx-dots-vertical-rounded"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                              <a href="{{ route('user.resumes.view', $resume->id) }}"
+                                 class="dropdown-item"
+                                 target="_blank">
+                                <i class="bx bx-show me-2"></i> View PDF
+                              </a>
+                              @if($hasActivePackage)
+                              <a href="{{ route('user.resumes.download', $resume->id) }}"
+                                 class="dropdown-item">
+                                <i class="bx bx-download me-2"></i> Download PDF
+                              </a>
+                              @endif
+                              <a href="{{ route('user.resumes.fill', $resume->template_id) }}"
+                                 class="dropdown-item">
+                                <i class="bx bx-copy me-2"></i> Create Similar
+                              </a>
+                              <div class="dropdown-divider"></div>
+                              <form action="{{ route('user.resumes.destroy', $resume->id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this resume?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="dropdown-item text-danger">
+                                  <i class="bx bx-trash me-2"></i> Delete
+                                </button>
+                              </form>
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -210,6 +212,27 @@
 
   <!-- Mobile Responsive Styles -->
   <style>
+        /* Responsive alignment for 3 dots button in resume table */
+        @media (max-width: 768px) {
+          .table tbody td[data-label="Actions"] {
+            padding-top: 1rem;
+            padding-bottom: 0.5rem;
+          }
+          .table tbody td[data-label="Actions"] .d-flex {
+            justify-content: flex-end !important;
+          }
+          .table tbody td[data-label="Actions"] .dropdown {
+            margin-left: auto;
+          }
+          .table tbody td[data-label="Actions"] .btn-icon {
+            float: right;
+          }
+        }
+        @media (max-width: 576px) {
+          .table tbody td[data-label="Actions"] {
+            padding-top: 1.2rem;
+          }
+        }
     /* Clean Pagination Styling */
     .pagination-sm .page-link {
       padding: 0.4rem 0.7rem;
