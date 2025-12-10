@@ -11,7 +11,7 @@
         <rect x="3" y="17" width="18" height="2" rx="1"></rect>
       </svg>
       </button>
-    
+
       <!-- Logo for mobile centered -->
       <div class="navbar-brand navbar-brand-autodark d-xl-none mx-auto flex-grow-1" id="mobile-logo">
         <a href="{{ Auth::user()?->isAdmin() ? route('admin.dashboard') : route('user.dashboard') }}">

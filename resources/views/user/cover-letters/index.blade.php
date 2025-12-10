@@ -1,19 +1,19 @@
 @section('title', __('Cover Letters'))
 <x-layouts.app :title="'My Cover Letters'">
     <div class="container-xxl flex-grow-1 container-p-y">
-        
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold mb-1">📄 My Cover Letters</h4>
             <p class="text-muted mb-0">Manage and create professional cover letters</p>
         </div>
-        
+
            <div class="btn-group">
           <a href="{{ route('user.cover-letters.create') }}" class="btn btn-outline-primary">
                 <i class="bx bx-plus me-1"></i> Create Your Cover Letter
             </a>
             </div>
-        
+
         <!--<div class="btn-group">-->
         <!--    <a href="{{ route('user.cover-letters.select-template') }}" class="btn btn-primary">-->
         <!--        <i class="bx bx-palette me-1"></i> Use Template-->
@@ -51,7 +51,7 @@
                                     <i class="bx bx-file" style="font-size: 2.5rem; color: #6366f1;"></i>
                                 </div>
                                 <div class="dropdown">
-                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" 
+                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
                                             data-bs-toggle="dropdown">
                                         <i class="bx bx-dots-vertical-rounded"></i>
                                     </button>
@@ -78,8 +78,8 @@
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
-                                            <form action="{{ route('user.cover-letters.destroy', $letter) }}" 
-                                                  method="POST" 
+                                            <form action="{{ route('user.cover-letters.destroy', $letter) }}"
+                                                  method="POST"
                                                   onsubmit="return confirm('Delete this cover letter?')">
                                                 @csrf
                                                 @method('DELETE')
@@ -93,7 +93,7 @@
                             </div>
 
                             <h5 class="mb-2">{{ Str::limit($letter->title, 40) }}</h5>
-                            
+
                             <div class="mb-3">
                                 <small class="text-muted">
                                     <i class="bx bx-building me-1"></i>
@@ -115,7 +115,7 @@
                         </div>
                         <div class="card-footer bg-light">
                             <div class="d-grid gap-2">
-                                <a href="{{ route('user.cover-letters.view', $letter) }}" 
+                                <a href="{{ route('user.cover-letters.view', $letter) }}"
                                    class="btn btn-sm btn-primary">
                                     <i class="bx bx-show me-1"></i> View Details
                                 </a>

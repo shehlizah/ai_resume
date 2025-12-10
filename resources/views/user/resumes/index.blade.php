@@ -145,7 +145,6 @@
                           <span class="text-muted">{{ $resume->created_at->format('h:i A') }}</span>
                         </small>
                       </td>
-                      // ...existing code...
                     </tr>
                   @endforeach
                 </tbody>
@@ -239,29 +238,19 @@
             color: #fff !important;
             font-size: 1.4em !important;
           }
-        }
-        /* Responsive alignment for 3 dots button in resume table */
-        @media (max-width: 768px) {
-          .table tbody td[data-label="Actions"] {
-            padding-top: 1rem;
-            padding-bottom: 0.5rem;
-          }
-          .table tbody td[data-label="Actions"] .d-flex {
-            justify-content: flex-end !important;
-          }
-          .table tbody td[data-label="Actions"] .dropdown {
-            margin-left: auto;
-          }
-          .table tbody td[data-label="Actions"] .btn-icon {
-            float: right;
+          .dropdown-menu {
+            right: 0 !important;
+            left: auto !important;
+            min-width: 150px;
+            position: absolute !important;
           }
         }
         @media (max-width: 576px) {
-          .table tbody td[data-label="Actions"] {
-            padding-top: 1.2rem;
+          .dropdown-menu {
+            right: 0 !important;
+            left: auto !important;
           }
         }
-    /* Clean Pagination Styling */
     .pagination-sm .page-link {
       padding: 0.4rem 0.7rem;
       font-size: 0.875rem;

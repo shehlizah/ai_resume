@@ -6,7 +6,7 @@
         <!-- Credits removed -->
       </div>
       <div class="d-none d-lg-inline-block">
-      
+
       </div>
     </div>
   </div>
