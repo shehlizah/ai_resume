@@ -489,6 +489,37 @@
             .nav-links {
                 display: none;
             }
+
+            /* Header responsive fixes */
+            .header {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 1rem 0 !important;
+            }
+
+            .header nav {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 1rem !important;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+
+            .logo {
+                width: auto;
+                margin-right: 1rem;
+            }
+
+            .nav-buttons {
+                display: flex;
+                gap: 0.5rem;
+                margin-left: auto;
+            }
+
+            .nav-buttons .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
         }
     </style>
     

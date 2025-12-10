@@ -18,6 +18,8 @@
             scroll-behavior: smooth;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            overflow-x: hidden;
         }
 
         body {
@@ -26,7 +28,11 @@
             line-height: 1.6;
             color: #1E293B;
             background: #FFFFFF;
-            overflow-x: hidden;
+            overflow-x: hidden !important;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
         }
 
         img { max-width: 100%; height: auto; display: block; }
@@ -43,6 +49,7 @@
             position: relative;
             background: linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%);
             overflow: hidden;
+            width: 100%;
         }
         
         .hero {
@@ -74,6 +81,9 @@
             align-items: center;
             position: relative;
             z-index: 1;
+            width: 100%;
+            padding: 0 2rem;
+            box-sizing: border-box;
         }
 
         .hero-text h1 {
@@ -1241,6 +1251,72 @@
 @media (max-width: 480px) {
     .job-card {
         padding: 18px;
+    }
+}
+
+/* ================= COMPREHENSIVE MOBILE RESPONSIVE FIX ================= */
+@media (max-width: 768px) {
+    * {
+        box-sizing: border-box !important;
+    }
+
+    html,
+    body {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden !important;
+    }
+
+    .hero-content {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+        padding: 0 1rem !important;
+    }
+
+    .hero {
+        padding: 4rem 1rem 2rem !important;
+        width: 100% !important;
+    }
+
+    section {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        margin: 0 !important;
+    }
+
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    [class*="col-"] {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    main {
+        width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    .content {
+        width: 100% !important;
+        overflow-x: hidden !important;
     }
 }
 

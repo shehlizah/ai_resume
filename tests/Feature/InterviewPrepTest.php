@@ -5,11 +5,9 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\UserResume;
-use App\Models\UserSubscription;
 use App\Services\JobMatchService;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class InterviewPrepTest extends TestCase
 {
@@ -20,8 +18,14 @@ class InterviewPrepTest extends TestCase
     {
         parent::setUp();
         
-        // Create test user
-        $this->user = User::factory()->create();
+        // Create test user directly without factory
+        $this->user = User::create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => Hash::make('password123'),
+            'email_verified_at' => now(),
+        ]);
+        
         $this->jobMatchService = app(JobMatchService::class);
     }
 
@@ -130,8 +134,8 @@ startxref
     {
         $this->actingAs($this->user);
 
-        // Create a saved resume
-        $resume = UserResume::factory()->create([
+        // Create a saved resume directly
+        $resume = UserResume::create([
             'user_id' => $this->user->id,
             'data' => [
                 'fullname' => 'John Doe',
@@ -183,8 +187,8 @@ startxref
 
         $this->actingAs($this->user);
 
-        // Create a saved resume
-        $resume = UserResume::factory()->create([
+        // Create a saved resume directly
+        $resume = UserResume::create([
             'user_id' => $this->user->id,
             'data' => [
                 'fullname' => 'Jane Doe',

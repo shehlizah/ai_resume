@@ -208,7 +208,12 @@
   <div class="ud-footer-bottom">
     <div class="container">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-12">
+          <p class="ud-footer-copyright">
+            © {{ date('Y') }} Jobsease. All rights reserved.
+          </p>
+        </div>
+        <div class="col-md-12">
           <ul class="ud-footer-bottom-left">
             <li>
               <a href="javascript:void(0)">Privacy policy</a>
@@ -221,7 +226,7 @@
             </li>
           </ul>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-12">
           <p class="ud-footer-bottom-right">
             Designed and Developed by
             <a href="https://shehlizah.com" rel="nofollow">SZM</a>
@@ -238,3 +243,50 @@
   <i class="lni lni-chevron-up"> </i>
 </a>
 <!-- ====== Back To Top End ====== -->
+
+<style>
+  /* Footer copyright styling */
+  .ud-footer-copyright {
+    display: block;
+    text-align: center;
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+    color: #f3f4fe;
+    font-size: 15px;
+  }
+
+  /* Ensure footer bottom left is properly centered on mobile */
+  @media (max-width: 768px) {
+    .ud-footer-copyright {
+      display: block !important;
+      width: 100% !important;
+      margin-bottom: 1.5rem !important;
+    }
+
+    .ud-footer-bottom-left {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      justify-content: center !important;
+      gap: 0 !important;
+      margin-bottom: 1.5rem !important;
+      width: 100% !important;
+    }
+
+    .ud-footer-bottom-left li {
+      display: inline-block !important;
+      margin: 0 8px !important;
+    }
+
+    .ud-footer-bottom-left li a {
+      color: #f3f4fe;
+      font-size: 14px;
+    }
+
+    .ud-footer-bottom-right {
+      display: block !important;
+      text-align: center !important;
+      margin: 0 !important;
+      width: 100% !important;
+    }
+  }
+</style>
