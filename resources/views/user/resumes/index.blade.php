@@ -209,19 +209,18 @@
 
   <!-- Mobile Responsive Styles -->
   <style>
-                @media (max-width: 768px) {
-                  .dropdown-menu {
-                    right: 0 !important;
-                    left: auto !important;
-                    min-width: 150px;
-                  }
-                }
         /* Resume actions button (3 dots) color and mobile style */
         .resume-actions-btn i.bx-dots-vertical-rounded {
           color: #6366f1 !important;
           font-size: 1.3em !important;
           vertical-align: middle;
         }
+        
+        .dropdown-menu {
+          right: 0 !important;
+          left: auto !important;
+        }
+        
         @media (max-width: 768px) {
           .resume-actions-btn {
             background: #6366f1 !important;
@@ -237,18 +236,6 @@
           .resume-actions-btn i.bx-dots-vertical-rounded {
             color: #fff !important;
             font-size: 1.4em !important;
-          }
-          .dropdown-menu {
-            right: 0 !important;
-            left: auto !important;
-            min-width: 150px;
-            position: absolute !important;
-          }
-        }
-        @media (max-width: 576px) {
-          .dropdown-menu {
-            right: 0 !important;
-            left: auto !important;
           }
         }
     .pagination-sm .page-link {
