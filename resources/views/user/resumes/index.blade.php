@@ -71,7 +71,12 @@
                     <th>Template</th>
                     <th>Status</th>
                     <th>Created</th>
-                    <th><span class="me-1"><i class="bx bx-dots-vertical-rounded"></i></span>Actions</th>
+                    <th class="d-flex align-items-center" style="gap:0.25rem;">
+                      <span class="d-inline-flex align-items-center" style="color: #6366f1; font-size: 1.3em;">
+                        <i class="bx bx-dots-vertical-rounded"></i>
+                      </span>
+                      <span>Actions</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -115,7 +120,7 @@
                       <td data-label="Actions">
                         <div class="d-flex justify-content-end align-items-center w-100">
                           <div class="dropdown ms-auto">
-                            <button class="btn btn-sm btn-icon" data-bs-toggle="dropdown" aria-label="Actions" style="float:right;">
+                            <button class="btn btn-sm btn-icon d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-label="Actions" style="color: #6366f1; font-size: 1.3em; background: transparent; border: none; box-shadow: none;">
                               <i class="bx bx-dots-vertical-rounded"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
@@ -212,6 +217,17 @@
 
   <!-- Mobile Responsive Styles -->
   <style>
+            /* Ensure 3 dots icon in Actions header and rows is aligned and primary color */
+            th.d-flex.align-items-center span i.bx-dots-vertical-rounded {
+              color: #6366f1 !important;
+              font-size: 1.3em !important;
+              vertical-align: middle;
+            }
+            td[data-label="Actions"] .btn-icon i.bx-dots-vertical-rounded {
+              color: #6366f1 !important;
+              font-size: 1.3em !important;
+              vertical-align: middle;
+            }
         /* Responsive alignment for 3 dots button in resume table */
         @media (max-width: 768px) {
           .table tbody td[data-label="Actions"] {
