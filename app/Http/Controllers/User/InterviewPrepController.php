@@ -538,6 +538,10 @@ class InterviewPrepController extends Controller
     {
         $user = Auth::user();
 
+        // Mark expert session step as engaged for popup progression
+        session(['book_session_completed' => true]);
+        session()->flash('module_completed', 'book_session');
+
         return view('user.interview.expert', compact('user'));
     }
 }

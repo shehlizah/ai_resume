@@ -22,6 +22,15 @@ class PopupGuideMiddleware
             // If a module was just completed, immediately show the next step popup
             if (session()->has('module_completed')) {
                 $completedModule = session()->pull('module_completed');
+
+                // Persist lightweight progress markers in session for later checks
+                if ($completedModule === 'job_search') {
+                    session(['job_search_completed' => true]);
+                }
+
+                if ($completedModule === 'book_session') {
+                    session(['book_session_completed' => true]);
+                }
                 $nextStep = $user->getNextStepPopup();
 
                 if ($nextStep) {

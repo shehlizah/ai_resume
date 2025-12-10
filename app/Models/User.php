@@ -308,6 +308,22 @@ public function hasActivePackage()
     }
 
     /**
+     * Check if user has engaged with job search (session flag or views counter)
+     */
+    public function hasCompletedJobSearch(): bool
+    {
+        return session('job_search_completed', false) || session('jobs_viewed', 0) > 0;
+    }
+
+    /**
+     * Check if user has booked an expert session (session flag)
+     */
+    public function hasBookedExpertSession(): bool
+    {
+        return session('book_session_completed', false);
+    }
+
+    /**
      * Get the next step popup to show user based on their progress
      * Returns null if user hasn't created resume yet or completed all steps
      */
@@ -318,18 +334,33 @@ public function hasActivePackage()
             return null;
         }
 
-        // Show cover letter prompt if they haven't created one yet
-        if (!$this->hasCreatedCoverLetter()) {
-            return 'cover_letter';
+        // Determine highest completed step (order matters, later steps override earlier)
+        $progressLevel = 1; // Resume completed
+
+        if ($this->hasCreatedCoverLetter()) {
+            $progressLevel = 2;
         }
 
-        // Show interview prep prompt if they haven't used it yet
-        if (!$this->hasUsedInterviewPrep()) {
-            return 'interview_prep';
+        if ($this->hasUsedInterviewPrep()) {
+            $progressLevel = 3;
         }
 
-        // User has completed all main steps
-        return null;
+        if ($this->hasCompletedJobSearch()) {
+            $progressLevel = 4;
+        }
+
+        if ($this->hasBookedExpertSession()) {
+            $progressLevel = 5;
+        }
+
+        // Return the next step based on the highest completed level
+        return match ($progressLevel) {
+            1 => 'cover_letter',
+            2 => 'interview_prep',
+            3 => 'job_search',
+            4 => 'book_session',
+            default => null, // All steps completed
+        };
     }
 
 }

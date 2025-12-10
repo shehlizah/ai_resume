@@ -33,6 +33,10 @@ class JobFinderController extends Controller
         $jobsViewed = session('jobs_viewed', 0);
         $jobsApplied = session('jobs_applied', 0);
 
+        // Mark job search step as engaged for popup progression
+        session(['job_search_completed' => true]);
+        session()->flash('module_completed', 'job_search');
+
         // Get user's resumes
         $resumes = $user->resumes()->get();
 
