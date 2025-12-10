@@ -250,7 +250,13 @@ class JobMatchService
             return [];
         }
 
-        $fullPath = storage_path('app/' . ltrim($relativePath, '/'));
+        // Try private directory first (where temp uploads are stored)
+        $fullPath = storage_path('app/private/' . ltrim($relativePath, '/'));
+
+        if (!file_exists($fullPath)) {
+            // Fallback to public app directory
+            $fullPath = storage_path('app/' . ltrim($relativePath, '/'));
+        }
 
         if (!file_exists($fullPath)) {
             \Log::warning('Resume file not found at: ' . $fullPath);
