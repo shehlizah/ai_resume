@@ -78,11 +78,47 @@
                   @foreach($resumes as $resume)
                     <tr>
                       <td data-label="Resume Details">
-                        <div class="d-flex align-items-center gap-2">
-                          <i class="bx bx-file-blank me-2" style="font-size: 24px; color: #667eea;"></i>
-                          <div>
-                            <div class="fw-semibold">{{ $resume->name }}</div>
-                            <small class="text-muted">{{ $resume->title }}</small>
+                        <div class="d-flex align-items-center gap-2 justify-content-between w-100">
+                          <div class="d-flex align-items-center gap-2">
+                            <i class="bx bx-file-blank me-2" style="font-size: 24px; color: #667eea;"></i>
+                            <div>
+                              <div class="fw-semibold">{{ $resume->name }}</div>
+                              <small class="text-muted">{{ $resume->title }}</small>
+                            </div>
+                          </div>
+                          <div class="dropdown position-static mobile-actions-dropdown">
+                            <button class="btn btn-sm resume-actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions">
+                              <i class="bx bx-dots-vertical-rounded"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                              <li>
+                                <a class="dropdown-item" href="{{ route('user.resumes.view', $resume->id) }}" target="_blank">
+                                  <i class="bx bx-show me-2"></i> View PDF
+                                </a>
+                              </li>
+                              @if($hasActivePackage)
+                              <li>
+                                <a class="dropdown-item" href="{{ route('user.resumes.download', $resume->id) }}">
+                                  <i class="bx bx-download me-2"></i> Download PDF
+                                </a>
+                              </li>
+                              @endif
+                              <li>
+                                <a class="dropdown-item" href="{{ route('user.resumes.fill', $resume->template_id) }}">
+                                  <i class="bx bx-copy me-2"></i> Create Similar
+                                </a>
+                              </li>
+                              <li><hr class="dropdown-divider"></li>
+                              <li>
+                                <form action="{{ route('user.resumes.destroy', $resume->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this resume?')" class="d-inline">
+                                  @csrf
+                                  @method('DELETE')
+                                  <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bx bx-trash me-2"></i> Delete
+                                  </button>
+                                </form>
+                              </li>
+                            </ul>
                           </div>
                         </div>
                       </td>
@@ -113,7 +149,7 @@
                         </small>
                       </td>
                       <td data-label="Actions">
-                        <div class="dropdown position-static">
+                        <div class="dropdown position-static desktop-actions-dropdown">
                           <button class="btn btn-sm resume-actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions">
                             <i class="bx bx-dots-vertical-rounded"></i>
                           </button>
@@ -248,7 +284,25 @@
           z-index: 1050;
         }
         
+        /* Desktop - show actions column, hide mobile dropdown */
+        .desktop-actions-dropdown {
+          display: block !important;
+        }
+        
+        .mobile-actions-dropdown {
+          display: none !important;
+        }
+        
         @media (max-width: 768px) {
+          /* Mobile - hide actions column, show mobile dropdown */
+          .desktop-actions-dropdown {
+            display: none !important;
+          }
+          
+          .mobile-actions-dropdown {
+            display: block !important;
+          }
+          
           .resume-actions-btn {
             background: #6366f1 !important;
             color: #fff !important;
