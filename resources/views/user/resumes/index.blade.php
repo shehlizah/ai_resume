@@ -89,7 +89,7 @@
                             <button class="btn btn-sm resume-actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions" style="margin-left: auto;">
                               <i class="bx bx-dots-vertical-rounded"></i>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end" style="position: fixed; right: auto;">
+                            <ul class="dropdown-menu" style="position: fixed; left: auto;">
                               <li>
                                 <a class="dropdown-item" href="{{ route('user.resumes.view', $resume->id) }}" target="_blank">
                                   <i class="bx bx-show me-2"></i> View PDF
@@ -238,12 +238,8 @@
         .dropdown-menu {
           min-width: 200px;
           z-index: 1050;
-        }
-        
-        /* Keep dropdown aligned to button on the right */
-        .dropdown-menu-end {
-          right: 0 !important;
-          left: auto !important;
+          left: 0 !important;
+          right: auto !important;
         }
         
         @media (max-width: 768px) {
@@ -264,8 +260,8 @@
           .dropdown-menu {
             min-width: 150px;
             position: absolute !important;
-            right: -120px !important;
-            left: auto !important;
+            left: -120px !important;
+            right: auto !important;
             z-index: 1050 !important;
           }
         }
