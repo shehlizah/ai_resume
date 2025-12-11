@@ -31,20 +31,21 @@ class PopupGuideMiddleware
                 if ($completedModule === 'book_session') {
                     session(['book_session_completed' => true]);
                 }
+
                 $nextStep = $user->getNextStepPopup();
 
                 if ($nextStep) {
                     session(['show_next_step_popup' => $nextStep]);
-                    // Mark as checked so it doesn't show again this session
-                    session(['popup_checked_this_session' => true]);
+                    // Reset the checked flag so popup shows after redirect
+                    session()->forget('popup_checked_this_session');
                 }
             }
-            // Check on login (when session doesn't have checked flag and no popup is queued)
-            else if (!session()->has('popup_checked_this_session') && !session()->has('show_next_step_popup')) {
+            // Check on any page load if we haven't checked this session yet
+            else if (!session()->has('popup_checked_this_session')) {
                 $nextStep = $user->getNextStepPopup();
 
                 if ($nextStep) {
-                    // Store the next step popup to show on login
+                    // Store the next step popup to show
                     session(['show_next_step_popup' => $nextStep]);
                 }
 

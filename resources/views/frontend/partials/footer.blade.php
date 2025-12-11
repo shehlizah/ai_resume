@@ -47,10 +47,6 @@
             <div class="footer-bottom">
                 <div class="footer-bottom-content">
                     <p>© 2025 Jobsease. All rights reserved.</p>
-                    <div class="footer-badges">
-                        <span class="badge">🏛️ FDA Registered Facility</span>
-                        <span class="badge">🇺🇸 Made in USA</span>
-                    </div>
                 </div>
             </div>
         </div>

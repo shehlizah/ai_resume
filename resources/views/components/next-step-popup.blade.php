@@ -20,6 +20,24 @@ $popupConfig = [
         'buttonIcon' => 'bx-microphone',
         'route' => route('user.interview.prep'),
     ],
+    'job_search' => [
+        'icon' => 'bx-search-alt',
+        'iconColor' => 'text-info',
+        'title' => '💼 Time to Find Your Dream Job!',
+        'message' => 'You\'re interview-ready! Let\'s find the perfect job opportunities that match your skills and experience.',
+        'buttonText' => 'Search Jobs',
+        'buttonIcon' => 'bx-briefcase',
+        'route' => route('user.jobs.recommended'),
+    ],
+    'book_session' => [
+        'icon' => 'bx-calendar-check',
+        'iconColor' => 'text-danger',
+        'title' => '🎯 Take Your Career to the Next Level!',
+        'message' => 'Ready for personalized guidance? Book a 1-on-1 session with our career experts to refine your strategy.',
+        'buttonText' => 'Book Expert Session',
+        'buttonIcon' => 'bx-user-check',
+        'route' => route('user.interview.expert'),
+    ],
 ];
 
 $config = $popupConfig[$nextStep] ?? null;
