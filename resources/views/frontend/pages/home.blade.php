@@ -570,6 +570,13 @@
     border-radius: 10px;
 }
 
+.highlight-underline {
+    position: relative;
+    padding-bottom: 0.25rem;
+    border-bottom: 4px solid #10B981;
+    display: inline-block;
+}
+
 .arrow {
     position: absolute;
     right: -30px;
@@ -785,7 +792,7 @@
         <div class="left-content">
             <h1>
                 Create a CV<br>
-                that gets results
+                that <span class="highlight-underline">gets results</span>
                 <span class="underline"></span>
             </h1>
             <!--<span class="arrow">➜</span>-->
@@ -834,8 +841,8 @@
         <div class="bottom-block">
         <div class="left-content">
             <h1>
-                Find Jobs with<br>
-                CV to gets results
+                Find jobs with<br>
+                <span class="highlight-underline">CV to get results</span>
                 <span class="underline"></span>
             </h1>
 
@@ -1400,8 +1407,8 @@
     <div class="top-header">
         <div class="title-wrap">
             <h1>
-                Prepare Interview<br>
-                With Our Experts
+                Prepare interview<br>
+                <span class="highlight-underline">with our experts</span>
                 <span class="underline"></span>
             </h1>
 

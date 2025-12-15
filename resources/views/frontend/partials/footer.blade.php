@@ -5,7 +5,7 @@
                 <div class="footer-section footer-brand">
                     <div class="logo" style="color: white; margin-bottom: 20px;">
                        <div class="footer-logo-wrap">
-                            <img src="{{ asset('assets/img/logo.png') }}" alt="Jobsease Logo">
+                            <img src="https://www.jobsease.com/assets/img/logo.png" alt="Jobsease Logo">
                         </div>
                     </div>
                     <p style="color: #fff; line-height: 1.8; font-size: 14px;">Premium career solutions crafted by global experts with uncompromising quality standards to empower professionals worldwide.</p>
