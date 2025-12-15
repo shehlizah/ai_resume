@@ -46,9 +46,12 @@
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/lineicons.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/ud-styles.css') }}" />
+    
+    <!-- Global Consolidated Styles -->
+    <link rel="stylesheet" href="{{ asset('css/global-styles.css') }}" />
 
     <!-- Mobile Responsive Styles -->
-    <link rel="stylesheet" href="{{ asset('css/mobile-responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/mobile-responsive.css') }}">>
 
     @yield('styles')
   </head>
