@@ -32,8 +32,8 @@
             </div>
         </nav>
     </header>
-    
-    
+
+
 //     <script>
 // // Disable right click
 // document.addEventListener('contextmenu', event => event.preventDefault());
