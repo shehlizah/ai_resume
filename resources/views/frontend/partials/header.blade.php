@@ -371,7 +371,7 @@
         }
 
         .footer-section a {
-            color: #fff;
+            color: #fff !important;
             text-decoration: none;
             font-size: 14px;
             transition: color 0.3s;
@@ -551,30 +551,30 @@
     </header>
     
     
-    <script>
-// Disable right click
-document.addEventListener('contextmenu', event => event.preventDefault());
+//     <script>
+// // Disable right click
+// document.addEventListener('contextmenu', event => event.preventDefault());
 
-// Disable keys (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S)
-document.onkeydown = function(e) {
-    if (e.keyCode == 123) return false; // F12
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; // Ctrl+Shift+I
-    if (e.ctrlKey && e.keyCode == 85) return false; // Ctrl+U
-    if (e.ctrlKey && e.keyCode == 83) return false; // Ctrl+S
-};
+// // Disable keys (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S)
+// document.onkeydown = function(e) {
+//     if (e.keyCode == 123) return false; // F12
+//     if (e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; // Ctrl+Shift+I
+//     if (e.ctrlKey && e.keyCode == 85) return false; // Ctrl+U
+//     if (e.ctrlKey && e.keyCode == 83) return false; // Ctrl+S
+// };
 
-// Detect DevTools (advanced)
-(function() {
-    const threshold = 160;
-    const check = function() {
-        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+// // Detect DevTools (advanced)
+// (function() {
+//     const threshold = 160;
+//     const check = function() {
+//         const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+//         const heightThreshold = window.outerHeight - window.innerHeight > threshold;
 
-        if (widthThreshold || heightThreshold) {
-            document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>DevTools is not allowed</h2>";
-        }
-    };
-    setInterval(check, 500);
-})();
-</script>
+//         if (widthThreshold || heightThreshold) {
+//             document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>DevTools is not allowed</h2>";
+//         }
+//     };
+//     setInterval(check, 500);
+// })();
+// </script>
 

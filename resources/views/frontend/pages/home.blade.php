@@ -7,6 +7,17 @@
 
 
     <style>
+    
+    
+        .upload-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+
         /* ===== RESET & BASE ===== */
         * {
             margin: 0;
