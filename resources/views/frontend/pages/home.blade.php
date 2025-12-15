@@ -665,7 +665,7 @@
 }
 
 .left-content h1 {
-    font-size: 48px;
+    font-size: 56px;
     font-weight: 800;
     line-height: 1.1;
     color: #000;
@@ -834,8 +834,8 @@
         <div class="bottom-block">
         <div class="left-content">
             <h1>
-                Find Jobs with<br>
-                CV to gets results
+                Find jobs with<br>
+                CV to get results
                 <span class="underline"></span>
             </h1>
 
@@ -1400,8 +1400,8 @@
     <div class="top-header">
         <div class="title-wrap">
             <h1>
-                Prepare Interview<br>
-                With Our Experts
+                Prepare interview<br>
+                with our experts
                 <span class="underline"></span>
             </h1>
 

@@ -8,7 +8,7 @@
                             <img src="{{ asset('assets/img/logo.png') }}" alt="Jobsease Logo">
                         </div>
                     </div>
-                    <p style="color: #fff; line-height: 1.8; font-size: 14px;">Premium career solutions crafted by global experts with uncompromising quality standards to empower professionals worldwide.</p>
+                    <p style="color: #fff; line-height: 1.8; font-size: 15px; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">Premium career solutions crafted by global experts with uncompromising quality standards to empower professionals worldwide.</p>
                     <div class="social-links">
                         <a href="#" class="social-icon">in</a>
                         <a href="#" class="social-icon">🐦</a>
@@ -153,9 +153,10 @@
 
     .footer-section h3 {
         color: #fff;
-        font-size: 1rem;
+        font-size: 1.0625rem;
         font-weight: 600;
-        margin-bottom: 1rem;
+        margin-bottom: 1.25rem;
+        font-family: 'Poppins', sans-serif;
     }
 
     .footer-section ul {
@@ -165,14 +166,15 @@
     }
 
     .footer-section ul li {
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
     }
 
     .footer-section ul li a {
         color: #94A3B8;
-        font-size: 14px;
+        font-size: 15px;
         text-decoration: none;
         transition: color 0.2s;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
     .footer-section ul li a:hover {
