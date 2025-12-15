@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>JobSease - The Global Home of Employment</title>
-
+  
 
 </head>
 <body>
@@ -15,7 +15,7 @@
             <div class="logo">
 
             <a class="navbar-brand" href="https://www.jobsease.com">
-                <img src="https://www.jobsease.com/assets/img/logo.png" alt="Logo" style="width: 70%;">
+                <img src="https://www.jobsease.com/assets/img/logo.png" alt="Logo">
         </a>
         </div>
             <ul class="nav-links">
@@ -34,7 +34,7 @@
     </header>
 
 
-//     <script>
+     <script>
 // // Disable right click
 // document.addEventListener('contextmenu', event => event.preventDefault());
 
@@ -59,5 +59,5 @@
 //     };
 //     setInterval(check, 500);
 // })();
-// </script>
+</script>
 
