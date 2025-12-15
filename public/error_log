@@ -799,3 +799,7 @@ Stack trace:
 #20 /home/iosahrww/jobsease.com/public/index.php(20): Illuminate\Foundation\Application->handleRequest()
 #21 {main}
   thrown in /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 1163
+[11-Dec-2025 09:17:33 UTC] Stripe Notice: Undefined property of Stripe\Invoice instance: subscription
+[11-Dec-2025 09:31:06 UTC] Stripe Notice: Undefined property of Stripe\Invoice instance: subscription
+[12-Dec-2025 08:56:26 UTC] Stripe Notice: Undefined property of Stripe\Invoice instance: subscription
+[12-Dec-2025 11:33:45 UTC] Stripe Notice: Undefined property of Stripe\Invoice instance: subscription
