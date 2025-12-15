@@ -51,7 +51,7 @@
     <link rel="stylesheet" href="{{ asset('css/global-styles.css') }}" />
 
     <!-- Mobile Responsive Styles -->
-    <link rel="stylesheet" href="{{ asset('css/mobile-responsive.css') }}">>
+    <link rel="stylesheet" href="{{ asset('css/mobile-responsive.css') }}">
 
     @yield('styles')
   </head>
