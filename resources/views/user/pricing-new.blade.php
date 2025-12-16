@@ -291,6 +291,19 @@
 <div class="pricing-hero">
     <h1>Simple, Transparent Pricing</h1>
     <p>Choose the perfect plan to accelerate your career journey</p>
+    @auth
+        <p style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.9;">
+            @if($currentSubscription)
+                You're currently on the <strong>{{ $currentSubscription->plan ? $currentSubscription->plan->name : 'Unknown' }} Plan</strong>
+            @else
+                You're currently on the <strong>Free Plan</strong>
+            @endif
+        </p>
+    @else
+        <p style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.9;">
+            <a href="{{ route('register') }}" class="btn btn-light btn-sm">Create an account</a> to get started
+        </p>
+    @endauth
 </div>
 
 <div class="pricing-section">
@@ -302,94 +315,73 @@
         </button>
     </div>
 
-    <!-- Pricing Cards -->
-    <div class="pricing-cards">
-        <!-- Free Plan -->
-        <div class="pricing-card">
-            <div class="plan-name">Free</div>
-            <div class="plan-description">Perfect for trying out our platform</div>
-
-            <div class="plan-price">
-                <span class="price-currency">IDR</span>
-                <span class="price-amount">0</span>
-            </div>
-            <div class="price-period">Forever free</div>
-            <div class="price-note" style="opacity: 0;">.</div>
-
-            <button class="plan-cta plan-cta-outline" onclick="location.href='{{ route('register') }}'">
-                Get Started Free
-            </button>
-
-            <ul class="plan-features">
-                <li><span class="feature-icon">✓</span> 1 CV creation (basic template)</li>
-                <li><span class="feature-icon">✓</span> Basic CV sections</li>
-                <li><span class="feature-icon">✓</span> Basic interview questions (read only)</li>
-                <li><span class="feature-icon">✓</span> View 5 jobs</li>
-                <li><span class="feature-icon">✓</span> Apply to 1 job</li>
-                <li><span class="feature-icon">⚠</span> Ads shown</li>
-            </ul>
+    @if(empty($plans))
+        <!-- No Plans Available -->
+        <div class="alert alert-warning" role="alert">
+            <i class="bx bx-exclamation-circle me-2"></i>
+            <strong>Pricing plans are being set up.</strong> Please check back soon or contact our team for details.
         </div>
+    @else
+        <!-- Pricing Cards -->
+        <div class="pricing-cards">
+        @forelse($plans as $plan)
+            <div class="pricing-card @if($plan->slug === 'pro') recommended @endif">
+                @if($plan->slug === 'pro')
+                    <div class="recommended-badge">⭐ RECOMMENDED</div>
+                @endif
+                <div class="plan-name">{{ $plan->name }}</div>
+                <div class="plan-description">{{ $plan->description }}</div>
 
-        <!-- Pro Plan (Recommended) -->
-        <div class="pricing-card recommended">
-            <div class="recommended-badge">⭐ RECOMMENDED</div>
-            <div class="plan-name">Pro</div>
-            <div class="plan-description">Everything you need for career success</div>
+                <div class="plan-price">
+                    <span class="price-currency">IDR</span>
+                    <span class="price-amount" data-plan="{{ $plan->slug }}-monthly">{{ number_format($plan->monthly_price, 0) }}</span>
+                    <span class="price-period" data-plan="{{ $plan->slug }}-period">/month</span>
+                </div>
+                <div class="price-note" data-plan="{{ $plan->slug }}-note">
+                    @if($plan->monthly_price == 0)
+                        Forever free
+                    @else
+                        IDR {{ number_format($plan->yearly_price, 0) }} billed yearly
+                    @endif
+                </div>
 
-            <div class="plan-price">
-                <span class="price-currency">IDR</span>
-                <span class="price-amount" id="proPrice">49,000</span>
-                <span class="price-period" id="proPeriod">/month</span>
+                @if($plan->monthly_price == 0)
+                    <button class="plan-cta plan-cta-outline" onclick="location.href='{{ route('register') }}'">
+                        Get Started Free
+                    </button>
+                @else
+                    <button class="plan-cta @if($plan->slug === 'pro') plan-cta-primary @else plan-cta-outline @endif" onclick="subscribePlan('{{ $plan->slug }}')">
+                        @auth
+                            @if($currentSubscription && $currentSubscription->plan_id == $plan->id)
+                                ✓ Current Plan
+                            @else
+                                Upgrade to {{ $plan->name }}
+                            @endif
+                        @else
+                            Choose {{ $plan->name }}
+                        @endauth
+                    </button>
+                @endif
+
+                <ul class="plan-features">
+                    @if($plan->features && is_array($plan->features))
+                        @foreach($plan->features as $feature)
+                            <li><span class="feature-icon">✓</span> {{ $feature }}</li>
+                        @endforeach
+                    @else
+                        <li><span class="feature-icon">✓</span> Access to platform features</li>
+                    @endif
+                </ul>
             </div>
-            <div class="price-note" id="proNote">IDR 399,000 billed yearly</div>
-
-            <button class="plan-cta plan-cta-primary" onclick="subscribePlan('pro')">
-                Upgrade to Pro
-            </button>
-
-            <ul class="plan-features">
-                <li><span class="feature-icon">✓</span> Unlimited CVs</li>
-                <li><span class="feature-icon">✓</span> Premium templates</li>
-                <li><span class="feature-icon">✓</span> AI CV improvement</li>
-                <li><span class="feature-icon">✓</span> Resume score + suggestions</li>
-                <li><span class="feature-icon">✓</span> Unlimited job viewing</li>
-                <li><span class="feature-icon">✓</span> Unlimited job apply</li>
-                <li><span class="feature-icon">✓</span> AI interview practice</li>
-                <li><span class="feature-icon">✓</span> Interview score & feedback</li>
-                <li><span class="feature-icon">✓</span> No ads</li>
-            </ul>
-        </div>
-
-        <!-- Career Pro+ Plan -->
-        <div class="pricing-card">
-            <div class="plan-name">Career Pro+</div>
-            <div class="plan-description">Advanced features for serious professionals</div>
-
-            <div class="plan-price">
-                <span class="price-currency">IDR</span>
-                <span class="price-amount" id="proPlusPrice">99,000</span>
-                <span class="price-period" id="proPlusPeriod">/month</span>
+        @empty
+            <div class="col-12">
+                <p class="text-center">No plans available</p>
             </div>
-            <div class="price-note" id="proPlusNote">IDR 699,000 billed yearly</div>
-
-            <button class="plan-cta plan-cta-primary" onclick="subscribePlan('pro-plus')">
-                Upgrade to Pro+
-            </button>
-
-            <ul class="plan-features">
-                <li><span class="feature-icon">✓</span> Everything in Pro</li>
-                <li><span class="feature-icon">✓</span> Priority job matching</li>
-                <li><span class="feature-icon">✓</span> Advanced interview questions</li>
-                <li><span class="feature-icon">✓</span> Mock interview simulation</li>
-                <li><span class="feature-icon">✓</span> Discounts on interview sessions</li>
-                <li><span class="feature-icon">✓</span> Priority support</li>
-                <li><span class="feature-icon">✓</span> Custom branding</li>
-            </ul>
+        @endforelse
         </div>
-    </div>
 </div>
-
-<!-- Human Interview Add-ons Section -->
+    @endif
+</div>
 <div class="addons-section">
     <div class="addons-container">
         <h2 class="section-title">Interview with Expert</h2>
@@ -458,27 +450,31 @@
         document.getElementById('monthlyBtn').classList.toggle('active', period === 'monthly');
         document.getElementById('yearlyBtn').classList.toggle('active', period === 'yearly');
 
-        if (period === 'monthly') {
-            // Pro Plan
-            document.getElementById('proPrice').textContent = '49,000';
-            document.getElementById('proPeriod').textContent = '/month';
-            document.getElementById('proNote').textContent = 'Billed monthly';
-
-            // Pro+ Plan
-            document.getElementById('proPlusPrice').textContent = '99,000';
-            document.getElementById('proPlusPeriod').textContent = '/month';
-            document.getElementById('proPlusNote').textContent = 'Billed monthly';
-        } else {
-            // Pro Plan
-            document.getElementById('proPrice').textContent = '399,000';
-            document.getElementById('proPeriod').textContent = '/year';
-            document.getElementById('proNote').textContent = 'Save IDR 189,000 per year';
-
-            // Pro+ Plan
-            document.getElementById('proPlusPrice').textContent = '699,000';
-            document.getElementById('proPlusPeriod').textContent = '/year';
-            document.getElementById('proPlusNote').textContent = 'Save IDR 489,000 per year';
-        }
+        // Update all plan prices dynamically
+        @if(isset($plans))
+            @foreach($plans as $plan)
+                const {{ str_replace('-', '_', $plan->slug) }}Monthly = {{ $plan->monthly_price }};
+                const {{ str_replace('-', '_', $plan->slug) }}Yearly = {{ $plan->yearly_price }};
+                
+                const {{ str_replace('-', '_', $plan->slug) }}PriceEl = document.querySelector('[data-plan="{{ $plan->slug }}-monthly"]');
+                const {{ str_replace('-', '_', $plan->slug) }}PeriodEl = document.querySelector('[data-plan="{{ $plan->slug }}-period"]');
+                const {{ str_replace('-', '_', $plan->slug) }}NoteEl = document.querySelector('[data-plan="{{ $plan->slug }}-note"]');
+                
+                if ({{ str_replace('-', '_', $plan->slug) }}PriceEl) {
+                    if (period === 'monthly') {
+                        {{ str_replace('-', '_', $plan->slug) }}PriceEl.textContent = {{ $plan->monthly_price }} === 0 ? '0' : '{{ number_format($plan->monthly_price, 0) }}';
+                        {{ str_replace('-', '_', $plan->slug) }}PeriodEl.textContent = '/month';
+                        {{ str_replace('-', '_', $plan->slug) }}NoteEl.textContent = {{ $plan->monthly_price }} === 0 ? 'Forever free' : 'Billed monthly';
+                    } else {
+                        {{ str_replace('-', '_', $plan->slug) }}PriceEl.textContent = {{ $plan->yearly_price }} === 0 ? '0' : '{{ number_format($plan->yearly_price, 0) }}';
+                        {{ str_replace('-', '_', $plan->slug) }}PeriodEl.textContent = '/year';
+                        const monthlyTotal = {{ $plan->monthly_price }} * 12;
+                        const savings = monthlyTotal - {{ $plan->yearly_price }};
+                        {{ str_replace('-', '_', $plan->slug) }}NoteEl.textContent = savings > 0 ? 'Save IDR ' + new Intl.NumberFormat('id-ID').format(Math.round(savings)) + ' per year' : 'Billed yearly';
+                    }
+                }
+            @endforeach
+        @endif
     }
 
     function subscribePlan(planSlug) {
