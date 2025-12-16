@@ -86,7 +86,7 @@
             </a>
           </div>
           <div class="card-body">
-            @if($currentSubscription)
+            @if($currentSubscription && $currentSubscription->plan)
               <!-- Active Subscription -->
               <div class="d-flex justify-content-between align-items-start mb-4">
                 <div>
@@ -185,40 +185,40 @@
               <div class="mb-4">
                 <h6 class="mb-3">Your Plan Includes:</h6>
                 <ul class="list-unstyled">
-                  @if($currentSubscription->plan->template_limit)
+                  @if($currentSubscription->plan && $currentSubscription->plan->template_limit)
                     <li class="mb-2">
                       <i class="bx bx-check text-success me-2"></i>
                       <strong>{{ $currentSubscription->plan->template_limit }}</strong> resume limit
                     </li>
-                  @else
+                  @elseif($currentSubscription->plan)
                     <li class="mb-2">
                       <i class="bx bx-check text-success me-2"></i>
                       <strong>Unlimited</strong> resume creation
                     </li>
                   @endif
 
-                  @if($currentSubscription->plan->access_premium_templates)
+                  @if($currentSubscription->plan && $currentSubscription->plan->access_premium_templates)
                     <li class="mb-2">
                       <i class="bx bx-check text-success me-2"></i>
                       Access to premium templates
                     </li>
                   @endif
 
-                  @if($currentSubscription->plan->priority_support)
+                  @if($currentSubscription->plan && $currentSubscription->plan->priority_support)
                     <li class="mb-2">
                       <i class="bx bx-check text-success me-2"></i>
                       Priority 24/7 support
                     </li>
                   @endif
 
-                  @if($currentSubscription->plan->custom_branding)
+                  @if($currentSubscription->plan && $currentSubscription->plan->custom_branding)
                     <li class="mb-2">
                       <i class="bx bx-check text-success me-2"></i>
                       Custom branding
                     </li>
                   @endif
 
-                  @if($currentSubscription->plan->features && is_array($currentSubscription->plan->features))
+                  @if($currentSubscription->plan && $currentSubscription->plan->features && is_array($currentSubscription->plan->features))
                     @foreach($currentSubscription->plan->features as $feature)
                       <li class="mb-2">
                         <i class="bx bx-check text-success me-2"></i>
@@ -244,6 +244,13 @@
                     </button>
                   </form>
                 @endif
+              </div>
+
+            @elseif($currentSubscription && !$currentSubscription->plan)
+              <!-- Plan Deleted -->
+              <div class="alert alert-warning">
+                <i class="bx bx-exclamation-circle me-2"></i>
+                The plan associated with your subscription was not found. Please contact support for assistance.
               </div>
 
             @else
@@ -310,7 +317,7 @@
             <tbody>
               @foreach($subscriptionHistory as $subscription)
                 <tr>
-                  <td><strong>{{ $subscription->plan->name }}</strong></td>
+                  <td><strong>{{ $subscription->plan ? $subscription->plan->name : 'Unknown Plan' }}</strong></td>
                   <td class="period-column">
                     <span class="badge bg-label-secondary">
                       {{ ucfirst($subscription->billing_period) }}
