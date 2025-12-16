@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Company;
 use App\Http\Controllers\Controller;
 use App\Models\Job;
 use App\Models\JobApplication;
+use App\Models\CompanyPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -26,72 +27,16 @@ class CompanyDashboardController extends Controller
             'applications' => $jobs->sum('applications_count'),
         ];
 
-        $packages = [
-            [
-                'name' => 'Starter',
-                'jobs' => 5,
-                'price' => 2000000,
-                'slug' => 'jobs-5',
-            ],
-            [
-                'name' => 'Growth',
-                'jobs' => 10,
-                'price' => 3500000,
-                'slug' => 'jobs-10',
-            ],
-        ];
-
-        $addons = [
-            [
-                'name' => 'Featured job',
-                'description' => 'Highlight a job for more visibility',
-                'price' => 300000,
-                'slug' => 'featured',
-            ],
-            [
-                'name' => 'CV access pack',
-                'description' => 'Access candidate CVs for one month',
-                'price' => 1000000,
-                'period' => 'month',
-                'slug' => 'cv-access',
-            ],
-        ];
+        $packages = $this->getPackages();
+        $addons = $this->getAddons();
 
         return view('company.dashboard', compact('jobs', 'packages', 'addons', 'stats'));
     }
 
     public function create()
     {
-        $packages = [
-            [
-                'name' => 'Starter',
-                'jobs' => 5,
-                'price' => 2000000,
-                'slug' => 'jobs-5',
-            ],
-            [
-                'name' => 'Growth',
-                'jobs' => 10,
-                'price' => 3500000,
-                'slug' => 'jobs-10',
-            ],
-        ];
-
-        $addons = [
-            [
-                'name' => 'Featured job',
-                'description' => 'Highlight a job for more visibility',
-                'price' => 300000,
-                'slug' => 'featured',
-            ],
-            [
-                'name' => 'CV access pack',
-                'description' => 'Access candidate CVs for one month',
-                'price' => 1000000,
-                'period' => 'month',
-                'slug' => 'cv-access',
-            ],
-        ];
+        $packages = $this->getPackages();
+        $addons = $this->getAddons();
 
         return view('company.job-create', compact('packages', 'addons'));
     }
@@ -175,5 +120,132 @@ class CompanyDashboardController extends Controller
         return redirect()
             ->route('company.dashboard')
             ->with('success', 'Job posted successfully.');
+    }
+
+    public function packageCheckout($slug)
+    {
+        $packages = $this->getPackages();
+        $package = collect($packages)->firstWhere('slug', $slug);
+
+        if (!$package) {
+            abort(404, 'Package not found');
+        }
+
+        return view('company.checkout', [
+            'item' => $package,
+            'type' => 'package',
+        ]);
+    }
+
+    public function addonCheckout($slug)
+    {
+        $addons = $this->getAddons();
+        $addon = collect($addons)->firstWhere('slug', $slug);
+
+        if (!$addon) {
+            abort(404, 'Add-on not found');
+        }
+
+        return view('company.checkout', [
+            'item' => $addon,
+            'type' => 'addon',
+        ]);
+    }
+
+    public function submitManualPayment(Request $request)
+    {
+        $validated = $request->validate([
+            'item_type' => 'required|in:package,addon',
+            'item_slug' => 'required|string',
+            'payment_proof' => 'required|image|max:5120', // 5MB max
+            'bank_account_name' => 'required|string|max:255',
+            'transfer_date' => 'required|date',
+        ]);
+
+        // Get item details
+        $item = null;
+        $itemName = '';
+        $amount = 0;
+
+        if ($validated['item_type'] === 'package') {
+            $item = collect($this->getPackages())->firstWhere('slug', $validated['item_slug']);
+            $itemName = $item['name'] ?? 'Unknown Package';
+            $amount = $item['price'] ?? 0;
+        } else {
+            $item = collect($this->getAddons())->firstWhere('slug', $validated['item_slug']);
+            $itemName = $item['name'] ?? 'Unknown Add-on';
+            $amount = $item['price'] ?? 0;
+        }
+
+        // Store payment proof
+        $path = $request->file('payment_proof')->store('payment-proofs', 'public');
+
+        // Create payment record
+        CompanyPayment::create([
+            'user_id' => Auth::id(),
+            'item_type' => $validated['item_type'],
+            'item_slug' => $validated['item_slug'],
+            'item_name' => $itemName,
+            'amount' => $amount,
+            'payment_method' => 'manual',
+            'status' => 'pending',
+            'payment_proof' => $path,
+            'bank_account_name' => $validated['bank_account_name'],
+            'transfer_date' => $validated['transfer_date'],
+        ]);
+
+        return redirect()
+            ->route('company.dashboard')
+            ->with('success', 'Payment proof submitted successfully. Admin will review and approve within 24 hours.');
+    }
+
+    public function stripeCheckout(Request $request)
+    {
+        // TODO: Implement Stripe checkout session creation
+        $validated = $request->validate([
+            'item_type' => 'required|in:package,addon',
+            'item_slug' => 'required|string',
+        ]);
+
+        return redirect()
+            ->route('company.dashboard')
+            ->with('info', 'Stripe integration coming soon. Please use manual payment for now.');
+    }
+
+    private function getPackages()
+    {
+        return [
+            [
+                'name' => 'Starter',
+                'jobs' => 5,
+                'price' => 2000000,
+                'slug' => 'jobs-5',
+            ],
+            [
+                'name' => 'Growth',
+                'jobs' => 10,
+                'price' => 3500000,
+                'slug' => 'jobs-10',
+            ],
+        ];
+    }
+
+    private function getAddons()
+    {
+        return [
+            [
+                'name' => 'Featured job',
+                'description' => 'Highlight a job for more visibility',
+                'price' => 300000,
+                'slug' => 'featured',
+            ],
+            [
+                'name' => 'CV access pack',
+                'description' => 'Access candidate CVs for one month',
+                'price' => 1000000,
+                'period' => 'month',
+                'slug' => 'cv-access',
+            ],
+        ];
     }
 }

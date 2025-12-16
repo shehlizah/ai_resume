@@ -247,6 +247,12 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
     Route::get('/jobs', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'jobs'])->name('jobs.index');
     Route::get('/applications', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'applications'])->name('applications.index');
     Route::get('/jobs/{job}/applications', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'applicationsForJob'])->name('jobs.applications');
+    
+    // Package & Add-on Checkout
+    Route::get('/packages/{slug}/checkout', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'packageCheckout'])->name('packages.checkout');
+    Route::get('/addons/{slug}/checkout', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'addonCheckout'])->name('addons.checkout');
+    Route::post('/payment/manual', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'submitManualPayment'])->name('payment.manual');
+    Route::post('/payment/stripe', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'stripeCheckout'])->name('payment.stripe');
 });
 
 // Job applications (candidates)
