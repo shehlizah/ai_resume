@@ -402,7 +402,6 @@
             </div>
         @endforelse
         </div>
-</div>
     @endif
 </div>
 <div class="addons-section">
