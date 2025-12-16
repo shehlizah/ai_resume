@@ -126,7 +126,7 @@
                             <div>
                                 <small class="text-muted d-block mb-2">Payment Proof</small>
                                 <div class="mb-3">
-                                    <img src="{{ asset('storage/' . $payment->payment_proof) }}"
+                                    <img src="/storage/{{ $payment->payment_proof }}"
                                          alt="Payment Proof"
                                          class="img-fluid rounded border"
                                          style="max-height: 500px; cursor: pointer;"
@@ -134,7 +134,7 @@
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                     <div class="alert alert-warning" style="display: none;">
                                         <i class="bx bx-error"></i> Unable to load image.
-                                        <br><small>Path: {{ asset('storage/' . $payment->payment_proof) }}</small>
+                                        <br><small>Path: /storage/{{ $payment->payment_proof }}</small>
                                     </div>
                                 </div>
                                 <a href="{{ route('admin.company-payments.download-proof', $payment) }}"
