@@ -46,7 +46,7 @@ class CompanyPaymentController extends Controller
     public function show(CompanyPayment $payment)
     {
         $payment->load(['user', 'reviewer']);
-        
+
         return view('admin.company-payments.show', compact('payment'));
     }
 
@@ -92,7 +92,7 @@ class CompanyPaymentController extends Controller
         }
 
         $filePath = 'public/' . $payment->payment_proof;
-        
+
         if (!Storage::exists($filePath)) {
             abort(404, 'File not found');
         }
@@ -107,11 +107,17 @@ class CompanyPaymentController extends Controller
         }
 
         $filePath = 'public/' . $payment->payment_proof;
-        
+
         if (!Storage::exists($filePath)) {
             abort(404, 'File not found');
         }
 
-        return Storage::response($filePath);
+        $file = Storage::get($filePath);
+        $mimeType = Storage::mimeType($filePath);
+
+        return response($file, 200, [
+            'Content-Type' => $mimeType ?? 'image/png',
+            'Content-Disposition' => 'inline',
+        ]);
     }
 }
