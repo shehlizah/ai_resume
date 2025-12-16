@@ -16,7 +16,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public bool $terms = false;
 
     /**
-     * Handle an incoming registration request.
+     * Handle an incoming employer registration request.
      */
     public function register(): void
     {
@@ -28,16 +28,17 @@ new #[Layout('components.layouts.auth')] class extends Component {
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
+        $validated['role'] = 'employer'; // Set role as employer
 
         event(new Registered(($user = User::create($validated))));
 
         Auth::login($user);
 
-        $this->redirectIntended(route('user.dashboard', absolute: false), navigate: true);
+        $this->redirect(route('company.dashboard', absolute: false), navigate: true);
     }
 }; ?>
 
-@section('title', 'Register Page')
+@section('title', 'Employer Registration')
 
 @section('page-style')
 @vite([
@@ -46,8 +47,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
 @endsection
 
 <div>
-    <h4 class="mb-1">{{ __('Adventure starts here') }} 🚀</h4>
-    <p class="mb-6">{{ __('Make your app management easy and fun!') }}</p>
+    <h4 class="mb-1">{{ __('Register as Employer') }} 💼</h4>
+    <p class="mb-6">{{ __('Start posting jobs and find the best talent!') }}</p>
 
     <!-- Session Status -->
     @if (session('status'))
@@ -58,7 +59,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     <form wire:submit="register" class="mb-6">
         <div class="mb-6">
-            <label for="name" class="form-label">{{ __('Name') }}</label>
+            <label for="name" class="form-label">{{ __('Company Name') }}</label>
             <input
                 wire:model="name"
                 type="text"
@@ -67,7 +68,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 required
                 autofocus
                 autocomplete="name"
-                placeholder="{{ __('Enter your name') }}"
+                placeholder="{{ __('Enter your company name') }}"
             >
             @error('name')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -75,7 +76,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </div>
 
         <div class="mb-6">
-            <label for="email" class="form-label">{{ __('Email') }}</label>
+            <label for="email" class="form-label">{{ __('Company Email') }}</label>
             <input
                 wire:model="email"
                 type="email"
@@ -83,7 +84,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 id="email"
                 required
                 autocomplete="email"
-                placeholder="{{ __('Enter your email') }}"
+                placeholder="{{ __('Enter your company email') }}"
             >
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -142,20 +143,20 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </div>
 
         <button type="submit" class="btn btn-primary d-grid w-100 mb-6">
-            {{ __('Sign up') }}
+            {{ __('Register as Employer') }}
         </button>
     </form>
 
-    <p class="text-center mb-3">
-        <span>{{ __('Are you an employer?') }}</span>
-        <a href="{{ route('register.employer') }}" wire:navigate>
-            <span>{{ __('Register to post jobs') }}</span>
+    <p class="text-center">
+        <span>{{ __('Looking for a job?') }}</span>
+        <a href="{{ route('register') }}">
+            <span>{{ __('Register as Job Seeker') }}</span>
         </a>
     </p>
 
     <p class="text-center">
         <span>{{ __('Already have an account?') }}</span>
-        <a href="{{ route('login') }}" wire:navigate>
+        <a href="{{ route('login') }}">
             <span>{{ __('Sign in instead') }}</span>
         </a>
     </p>

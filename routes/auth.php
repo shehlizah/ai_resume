@@ -11,6 +11,9 @@ Route::middleware('guest')->group(function () {
     Volt::route('register', 'auth.register')
         ->name('register');
 
+    Volt::route('register/employer', 'auth.register-employer')
+        ->name('register.employer');
+
     Volt::route('forgot-password', 'auth.forgot-password')
         ->name('password.request');
 
