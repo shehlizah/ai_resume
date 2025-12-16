@@ -19,7 +19,7 @@
                             <p class="text-muted mb-1">Total Jobs</p>
                             <h4 class="mb-0">{{ $stats['total_jobs'] ?? 0 }}</h4>
                         </div>
-                        <span class="badge bg-primary-soft text-primary">Jobs</span>
+                        <span class="badge bg-primary-soft">Jobs</span>
                     </div>
                 </div>
             </div>
