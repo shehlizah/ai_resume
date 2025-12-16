@@ -339,6 +339,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('/{payment}/reject', [\App\Http\Controllers\Admin\CompanyPaymentController::class, 'reject'])->name('reject');
         Route::get('/{payment}/download-proof', [\App\Http\Controllers\Admin\CompanyPaymentController::class, 'downloadProof'])->name('download-proof');
         Route::get('/{payment}/view-proof', [\App\Http\Controllers\Admin\CompanyPaymentController::class, 'viewProof'])->name('view-proof');
+        Route::get('/{payment}/debug-proof', [\App\Http\Controllers\Admin\CompanyPaymentController::class, 'debugProof'])->name('debug-proof');
     });
 
     // ==========================================

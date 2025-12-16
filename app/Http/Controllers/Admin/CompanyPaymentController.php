@@ -91,13 +91,13 @@ class CompanyPaymentController extends Controller
             abort(404, 'Payment proof not found');
         }
 
-        $filePath = 'public/' . $payment->payment_proof;
+        $filePath = $payment->payment_proof;
 
-        if (!Storage::exists($filePath)) {
+        if (!Storage::disk('public')->exists($filePath)) {
             abort(404, 'File not found');
         }
 
-        return Storage::download($filePath);
+        return Storage::disk('public')->download($filePath);
     }
 
     public function viewProof(CompanyPayment $payment)
@@ -106,18 +106,42 @@ class CompanyPaymentController extends Controller
             abort(404, 'Payment proof not found');
         }
 
-        $filePath = 'public/' . $payment->payment_proof;
+        $filePath = $payment->payment_proof;
 
-        if (!Storage::exists($filePath)) {
+        if (!Storage::disk('public')->exists($filePath)) {
             abort(404, 'File not found');
         }
 
-        $file = Storage::get($filePath);
-        $mimeType = Storage::mimeType($filePath);
+        $file = Storage::disk('public')->get($filePath);
+        $mimeType = Storage::disk('public')->mimeType($filePath);
 
         return response($file, 200, [
             'Content-Type' => $mimeType ?? 'image/png',
             'Content-Disposition' => 'inline',
+        ]);
+    }
+
+    /**
+     * Temporary debug endpoint - remove when done
+     */
+    public function debugProof(CompanyPayment $payment)
+    {
+        $disk = Storage::disk('public');
+        $filePath = $payment->payment_proof;
+
+        $exists = $disk->exists($filePath);
+        $fullPath = $exists ? $disk->path($filePath) : null;
+        $isReadable = $fullPath ? is_readable($fullPath) : false;
+        $size = $fullPath && $isReadable ? filesize($fullPath) : null;
+
+        return response()->json([
+            'payment_id' => $payment->id,
+            'payment_proof' => $payment->payment_proof,
+            'disk' => 'public',
+            'exists' => $exists,
+            'full_path' => $fullPath,
+            'is_readable' => $isReadable,
+            'filesize' => $size,
         ]);
     }
 }
