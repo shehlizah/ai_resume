@@ -99,4 +99,19 @@ class CompanyPaymentController extends Controller
 
         return Storage::download($filePath);
     }
+
+    public function viewProof(CompanyPayment $payment)
+    {
+        if (!$payment->payment_proof) {
+            abort(404, 'Payment proof not found');
+        }
+
+        $filePath = 'public/' . $payment->payment_proof;
+        
+        if (!Storage::exists($filePath)) {
+            abort(404, 'File not found');
+        }
+
+        return Storage::response($filePath);
+    }
 }
