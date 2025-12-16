@@ -19,7 +19,16 @@ class SubscriptionController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        $currentSubscription = auth()->user()->activeSubscription()->first();
+        $currentSubscription = auth()->check() ? auth()->user()->activeSubscription()->first() : null;
+
+        // Check if using new pricing page
+        if (request()->has('v2') || view()->exists('user.pricing-new')) {
+            return view('user.pricing-new', [
+                'title' => 'Subscription Plans',
+                'plans' => $plans,
+                'currentSubscription' => $currentSubscription,
+            ]);
+        }
 
         return view('user.pricing', [
             'title' => 'Subscription Plans',
@@ -37,7 +46,7 @@ class SubscriptionController extends Controller
         $currentSubscription = $user->activeSubscription()->with('plan')->first();
         $subscriptionHistory = $user->subscriptions()->with('plan')->latest()->paginate(10);
         $recentPayments = $user->payments()->with('subscription')->latest()->take(5)->get();
-        
+
         return view('user.subscription.dashboard', [
             'title' => 'My Subscription',
             'user' => $user,
@@ -61,7 +70,7 @@ class SubscriptionController extends Controller
 
         // Check if user already has active subscription
         $currentSubscription = auth()->user()->activeSubscription()->first();
-        
+
         if ($currentSubscription && $currentSubscription->plan_id == $plan->id) {
             return redirect()->route('user.subscription.dashboard')
                 ->with('info', 'You already have this subscription plan.');
@@ -105,7 +114,7 @@ public function cancel(Request $request)
 
     // Get the cancellation type
     $immediately = $request->input('immediately', false);
-    
+
     // Check if in trial before canceling
     $isInTrial = $subscription->isInTrial();
 
@@ -113,7 +122,7 @@ public function cancel(Request $request)
     if ($subscription->cancel($immediately)) {
         // Refresh to get updated values
         $subscription->refresh();
-        
+
         // Optionally store cancellation reason
         if ($request->filled('reason')) {
             // Store in metadata or separate table
@@ -127,7 +136,7 @@ public function cancel(Request $request)
             } else {
                 $endDate = $subscription->trial_end_date ?? $subscription->end_date;
                 return redirect()->route('user.subscription.dashboard')
-                    ->with('success', 'Your trial has been canceled. You can continue using it until ' . 
+                    ->with('success', 'Your trial has been canceled. You can continue using it until ' .
                            $endDate->format('F j, Y') . '. You will not be charged.');
             }
         } else {
@@ -136,7 +145,7 @@ public function cancel(Request $request)
                     ->with('success', 'Your subscription has been canceled immediately.');
             } else {
                 return redirect()->route('user.subscription.dashboard')
-                    ->with('success', 'Your subscription has been canceled. You can continue using it until ' . 
+                    ->with('success', 'Your subscription has been canceled. You can continue using it until ' .
                            $subscription->end_date->format('F j, Y'));
             }
         }
@@ -174,7 +183,7 @@ public function cancel(Request $request)
         if ($subscription->cancel($immediately)) {
             // Refresh to get updated values
             $subscription->refresh();
-            
+
             // Optionally store cancellation reason
             if ($request->filled('reason')) {
                 // You could store this in a separate table or in metadata
@@ -185,7 +194,7 @@ public function cancel(Request $request)
                     ->with('success', 'Your subscription has been canceled immediately.');
             } else {
                 return redirect()->route('user.subscription.dashboard')
-                    ->with('success', 'Your subscription has been canceled. You can continue using it until ' . 
+                    ->with('success', 'Your subscription has been canceled. You can continue using it until ' .
                            $subscription->end_date->format('F j, Y'));
             }
         }

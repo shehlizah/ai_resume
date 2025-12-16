@@ -43,16 +43,20 @@ class PaymentController extends Controller
 
             \Log::info('Creating Stripe session...');
 
+            // Determine currency based on amount (IDR if > 1000, otherwise USD)
+            $currency = $amount >= 1000 ? 'idr' : 'usd';
+            $stripeAmount = $currency === 'idr' ? $amount : ($amount * 100); // IDR doesn't use decimals, USD uses cents
+
             $sessionData = [
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                     'price_data' => [
-                        'currency' => 'usd',
+                        'currency' => $currency,
                         'product_data' => [
                             'name' => $plan->name . ' Plan',
                             'description' => $plan->description,
                         ],
-                        'unit_amount' => $amount * 100, // Convert to cents
+                        'unit_amount' => $stripeAmount,
                         'recurring' => [
                             'interval' => $billingPeriod === 'yearly' ? 'year' : 'month',
                         ],
@@ -147,13 +151,17 @@ class PaymentController extends Controller
 
                 // Create payment record only if actually paid
                 if ($session->payment_status === 'paid') {
+                    // Handle currency conversion - IDR doesn't use decimal places like USD
+                    $currency = strtoupper($session->currency);
+                    $amount = $currency === 'IDR' ? $session->amount_total : ($session->amount_total / 100);
+
                     Payment::create([
                         'user_id' => auth()->id(),
                         'user_subscription_id' => $subscription->id,
                         'transaction_id' => $transactionId,
                         'payment_gateway' => 'stripe',
-                        'amount' => $session->amount_total / 100,
-                        'currency' => strtoupper($session->currency),
+                        'amount' => $amount,
+                        'currency' => $currency,
                         'status' => 'completed',
                         'payment_type' => 'subscription',
                         'description' => "Subscription to {$plan->name} plan",
