@@ -304,6 +304,52 @@
         </ul>
       </li>
 
+    {{-- 🔹 EMPLOYER MENU --}}
+    @elseif($user && $user->role === 'employer')
+
+      <li class="menu-item {{ request()->routeIs('company.dashboard') ? 'active' : '' }}">
+        <a class="menu-link" href="{{ route('company.dashboard') }}">
+          <i class="menu-icon tf-icons bx bx-home-circle"></i>
+          <div>{{ __('Dashboard') }}</div>
+        </a>
+      </li>
+
+      <li class="menu-item {{ request()->routeIs('company.dashboard') ? 'active' : '' }}">
+        <a class="menu-link" href="{{ route('company.dashboard') }}">
+          <i class="menu-icon tf-icons bx bx-plus-circle"></i>
+          <div>{{ __('Post Job') }}</div>
+        </a>
+      </li>
+
+      <li class="menu-item {{ request()->routeIs('company.jobs.*') ? 'active' : '' }}">
+        <a class="menu-link" href="{{ route('company.jobs.index') }}">
+          <i class="menu-icon tf-icons bx bx-briefcase"></i>
+          <div>{{ __('My Jobs') }}</div>
+        </a>
+      </li>
+
+      <li class="menu-item {{ request()->routeIs('company.applications.*') ? 'active' : '' }}">
+        <a class="menu-link" href="{{ route('company.applications.index') }}">
+          <i class="menu-icon tf-icons bx bx-user-pin"></i>
+          <div>{{ __('Applicants') }}</div>
+        </a>
+      </li>
+
+      <li class="menu-item {{ request()->is('settings*') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-cog"></i>
+          <div>{{ __('Settings') }}</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->routeIs('settings.profile') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('settings.profile') }}">{{ __('Profile') }}</a>
+          </li>
+          <li class="menu-item {{ request()->routeIs('settings.password') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('settings.password') }}">{{ __('Password') }}</a>
+          </li>
+        </ul>
+      </li>
+
     {{-- 🔹 Guest Menu --}}
     @else
       <li class="menu-item">

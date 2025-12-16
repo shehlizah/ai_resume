@@ -135,7 +135,9 @@
                                 <th>Location</th>
                                 <th>Type</th>
                                 <th>Featured</th>
+                                <th>Applicants</th>
                                 <th>Posted</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -145,7 +147,11 @@
                                     <td>{{ $job->location }}</td>
                                     <td>{{ $job->type }}</td>
                                     <td>{{ $job->is_featured ? 'Yes' : 'No' }}</td>
+                                    <td>{{ $job->applications_count ?? 0 }}</td>
                                     <td>{{ optional($job->created_at)->format('Y-m-d') }}</td>
+                                    <td class="text-end">
+                                        <a href="{{ route('company.jobs.applications', $job) }}" class="btn btn-sm btn-outline-primary">View Applicants</a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

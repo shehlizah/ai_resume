@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
 use App\Models\Job;
+use App\Models\JobApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -14,7 +15,8 @@ class CompanyDashboardController extends Controller
     {
         $user = Auth::user();
 
-        $jobs = Job::where('user_id', $user->id)
+        $jobs = Job::withCount('applications')
+            ->where('user_id', $user->id)
             ->orderByDesc('created_at')
             ->get();
 
@@ -50,6 +52,41 @@ class CompanyDashboardController extends Controller
         ];
 
         return view('company.dashboard', compact('jobs', 'packages', 'addons'));
+    }
+
+    public function jobs()
+    {
+        $user = Auth::user();
+
+        $jobs = Job::withCount('applications')
+            ->where('user_id', $user->id)
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        return view('company.jobs', compact('jobs'));
+    }
+
+    public function applications()
+    {
+        $user = Auth::user();
+
+        $applications = JobApplication::with('job')
+            ->whereHas('job', fn ($q) => $q->where('user_id', $user->id))
+            ->orderByDesc('created_at')
+            ->paginate(15);
+
+        return view('company.applications', compact('applications'));
+    }
+
+    public function applicationsForJob(Job $job)
+    {
+        $user = Auth::user();
+
+        abort_unless($job->user_id === $user->id, 403);
+
+        $applications = $job->applications()->latest()->paginate(15);
+
+        return view('company.applications', compact('applications', 'job'));
     }
 
     public function store(Request $request)

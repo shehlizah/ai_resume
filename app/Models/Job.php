@@ -57,4 +57,9 @@ class Job extends Model
     {
         return $query->orderBy('posted_at', 'desc');
     }
+
+    public function applications()
+    {
+        return $this->hasMany(JobApplication::class);
+    }
 }

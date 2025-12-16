@@ -243,6 +243,15 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'index'])->name('dashboard');
     Route::post('/jobs', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'store'])->name('jobs.store');
+    Route::get('/jobs', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'jobs'])->name('jobs.index');
+    Route::get('/applications', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'applications'])->name('applications.index');
+    Route::get('/jobs/{job}/applications', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'applicationsForJob'])->name('jobs.applications');
+});
+
+// Job applications (candidates)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/jobs/{job}/apply', [\App\Http\Controllers\JobApplicationController::class, 'show'])->name('jobs.apply.show');
+    Route::post('/jobs/{job}/apply', [\App\Http\Controllers\JobApplicationController::class, 'store'])->name('jobs.apply.store');
 });
 
 /*
