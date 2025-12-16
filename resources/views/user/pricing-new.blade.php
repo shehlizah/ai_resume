@@ -191,33 +191,34 @@
     }
 
     .plan-features {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        text-align: left;
-    }
+    margin-top: 1.5rem;
+}
 
-    .plan-features li {
-        padding: 0.4rem 0;
-        display: flex;
-        align-items: flex-start;
-        gap: 0.5rem;
-        border-bottom: 1px solid #F1F5F9;
-        line-height: 1.5;
-    }
+.plan-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    font-size: 0.95rem;
+    color: #334155;
+    line-height: 1.6;
+    border-bottom: 1px solid #EEF2F7;
+}
 
-    .plan-features li:last-child {
-        border-bottom: none;
-    }
+.plan-features li:last-child {
+    border-bottom: none;
+}
 
-    .feature-icon {
-        color: #10B981;
-        font-weight: bold;
-        font-size: 1.25rem;
-        line-height: 1;
-        display: inline-block;
-        margin-top: 2px;
-    }
+.feature-icon {
+    color: #10B981;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.6;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+
 
     /* Add-ons Section */
     .addons-section {
