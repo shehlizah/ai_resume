@@ -1,17 +1,15 @@
-@extends('frontend.layouts.app')
-
-@section('title', 'Company Dashboard - Post Jobs')
-
-@section('content')
-<div class="container py-5">
+<x-layouts.app :title="__('Company Dashboard')">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-1">Company Dashboard</h1>
-            <p class="text-muted mb-0">Post jobs and manage your packages.</p>
+            <h1 class="h4 mb-1">Company Dashboard</h1>
+            <p class="text-muted mb-0">Post jobs, manage packages, and track your listings.</p>
         </div>
         <div class="d-flex gap-2">
             <span class="badge bg-secondary align-self-center text-uppercase">Employer</span>
-            <a href="{{ route('logout') }}" class="btn btn-outline-secondary btn-sm">Logout</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Logout</button>
+            </form>
         </div>
     </div>
 
@@ -21,10 +19,14 @@
 
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
-            <div class="card shadow-sm">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-0">Post a Job</h5>
+                        <small class="text-muted">Featured jobs are highlighted (+ IDR 300,000).</small>
+                    </div>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Post a Job</h5>
-                    <p class="text-muted small">Fill out the details below to publish a job. Featured jobs are highlighted (+ IDR 300,000).</p>
                     <form method="POST" action="{{ route('company.jobs.store') }}">
                         @csrf
                         <div class="row g-3">
@@ -73,9 +75,11 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card shadow-sm mb-3">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="text-uppercase text-muted fw-semibold mb-0">Company Packages</h6>
+                </div>
                 <div class="card-body">
-                    <h6 class="text-uppercase text-muted fw-semibold mb-3">Company Packages</h6>
                     @foreach($packages as $package)
                         <div class="border rounded p-3 mb-3">
                             <div class="d-flex justify-content-between align-items-center">
@@ -93,9 +97,11 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="text-uppercase text-muted fw-semibold mb-0">Optional Add-ons</h6>
+                </div>
                 <div class="card-body">
-                    <h6 class="text-uppercase text-muted fw-semibold mb-3">Optional Add-ons</h6>
                     @foreach($addons as $addon)
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
@@ -113,11 +119,11 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Your Jobs</h5>
+        </div>
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="card-title mb-0">Your Jobs</h5>
-            </div>
             @if($jobs->isEmpty())
                 <p class="text-muted mb-0">No jobs posted yet.</p>
             @else
@@ -148,10 +154,9 @@
             @endif
         </div>
     </div>
-</div>
-@endsection
+</x-layouts.app>
 
-@push('scripts')
+@section('page-script')
 <script>
     function purchasePackage(slug) {
         // TODO: replace with real Stripe checkout route/price IDs
@@ -163,4 +168,4 @@
         window.location.href = `/company/addons/${slug}/checkout`;
     }
 </script>
-@endpush
+@endsection
