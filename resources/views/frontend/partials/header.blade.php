@@ -11,11 +11,20 @@
             <li><a href="{{route('user.resumes') }}">Create CV</a></li>
             <li><a href="{{route('user.jobs.recommended') }}">Upload CV</a></li>
             <li><a href="{{route('user.interview.prep') }}">Prepare Interview</a></li>
+            <li><a href="{{ route('register.employer') }}">For Employers</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
         <div class="nav-buttons">
-            <a href="{{ route('login') }}" class="btn btn-outline">Login</a>
-            <a href="{{ route('register') }}" class="btn btn-primary">Sign Up</a>
+            @auth
+                <a href="{{ auth()->user()->isEmployer() ? route('company.dashboard') : route('user.dashboard') }}" class="btn btn-outline">Dashboard</a>
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-primary">Logout</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-outline">Login</a>
+                <a href="{{ route('register') }}" class="btn btn-primary">Sign Up</a>
+            @endauth
         </div>
     </nav>
 </header>
