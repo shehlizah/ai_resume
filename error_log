@@ -167,3 +167,88 @@ Stack trace:
 [04-Nov-2025 07:40:56 UTC] PHP Warning:  Module "PDO" is already loaded in Unknown on line 0
 [04-Nov-2025 07:40:56 UTC] PHP Warning:  Module "dom" is already loaded in Unknown on line 0
 [04-Nov-2025 07:40:56 UTC] PHP Warning:  Module "dom" is already loaded in Unknown on line 0
+[16-Dec-2025 07:26:46 UTC] PHP Fatal error:  Declaration of Monolog\Logger::emergency(Stringable|string $message, array $context = []): void must be compatible with PsrExt\Log\LoggerInterface::emergency($message, array $context = []) in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Logger.php on line 683
+[16-Dec-2025 07:26:46 UTC] PHP Fatal error:  Uncaught Error: Class "Monolog\Logger" not found in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php:60
+Stack trace:
+#0 /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php(38): Monolog\Handler\AbstractHandler->setLevel()
+#1 /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/StreamHandler.php(52): Monolog\Handler\AbstractHandler->__construct()
+#2 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(197): Monolog\Handler\StreamHandler->__construct()
+#3 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(151): Illuminate\Log\LogManager->createEmergencyLogger()
+#4 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(125): Illuminate\Log\LogManager->get()
+#5 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(703): Illuminate\Log\LogManager->driver()
+#6 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(402): Illuminate\Log\LogManager->error()
+#7 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(365): Illuminate\Foundation\Exceptions\Handler->reportThrowable()
+#8 /home/iosahrww/jobsease.com/vendor/nunomaduro/collision/src/Adapters/Laravel/ExceptionHandler.php(46): Illuminate\Foundation\Exceptions\Handler->report()
+#9 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(186): NunoMaduro\Collision\Adapters\Laravel\ExceptionHandler->report()
+#10 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#11 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}()
+#12 {main}
+  thrown in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php on line 60
+[16-Dec-2025 07:41:35 UTC] PHP Fatal error:  Declaration of Monolog\Logger::emergency(Stringable|string $message, array $context = []): void must be compatible with PsrExt\Log\LoggerInterface::emergency($message, array $context = []) in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Logger.php on line 683
+[16-Dec-2025 07:41:35 UTC] PHP Fatal error:  Uncaught Error: Class "Monolog\Logger" not found in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php:60
+Stack trace:
+#0 /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php(38): Monolog\Handler\AbstractHandler->setLevel()
+#1 /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/StreamHandler.php(52): Monolog\Handler\AbstractHandler->__construct()
+#2 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(197): Monolog\Handler\StreamHandler->__construct()
+#3 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(151): Illuminate\Log\LogManager->createEmergencyLogger()
+#4 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(125): Illuminate\Log\LogManager->get()
+#5 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(703): Illuminate\Log\LogManager->driver()
+#6 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(402): Illuminate\Log\LogManager->error()
+#7 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(365): Illuminate\Foundation\Exceptions\Handler->reportThrowable()
+#8 /home/iosahrww/jobsease.com/vendor/nunomaduro/collision/src/Adapters/Laravel/ExceptionHandler.php(46): Illuminate\Foundation\Exceptions\Handler->report()
+#9 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(186): NunoMaduro\Collision\Adapters\Laravel\ExceptionHandler->report()
+#10 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#11 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}()
+#12 {main}
+  thrown in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php on line 60
+[16-Dec-2025 07:46:25 UTC] PHP Fatal error:  Declaration of Monolog\Logger::emergency(Stringable|string $message, array $context = []): void must be compatible with PsrExt\Log\LoggerInterface::emergency($message, array $context = []) in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Logger.php on line 683
+[16-Dec-2025 07:46:25 UTC] PHP Fatal error:  Uncaught Error: Class "Monolog\Logger" not found in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php:60
+Stack trace:
+#0 /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php(38): Monolog\Handler\AbstractHandler->setLevel()
+#1 /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/StreamHandler.php(52): Monolog\Handler\AbstractHandler->__construct()
+#2 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(197): Monolog\Handler\StreamHandler->__construct()
+#3 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(151): Illuminate\Log\LogManager->createEmergencyLogger()
+#4 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(125): Illuminate\Log\LogManager->get()
+#5 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(703): Illuminate\Log\LogManager->driver()
+#6 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(402): Illuminate\Log\LogManager->error()
+#7 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(365): Illuminate\Foundation\Exceptions\Handler->reportThrowable()
+#8 /home/iosahrww/jobsease.com/vendor/nunomaduro/collision/src/Adapters/Laravel/ExceptionHandler.php(46): Illuminate\Foundation\Exceptions\Handler->report()
+#9 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(186): NunoMaduro\Collision\Adapters\Laravel\ExceptionHandler->report()
+#10 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#11 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}()
+#12 {main}
+  thrown in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php on line 60
+[16-Dec-2025 08:02:00 UTC] PHP Fatal error:  Declaration of Monolog\Logger::emergency(Stringable|string $message, array $context = []): void must be compatible with PsrExt\Log\LoggerInterface::emergency($message, array $context = []) in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Logger.php on line 683
+[16-Dec-2025 08:02:00 UTC] PHP Fatal error:  Uncaught Error: Class "Monolog\Logger" not found in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php:60
+Stack trace:
+#0 /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php(38): Monolog\Handler\AbstractHandler->setLevel()
+#1 /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/StreamHandler.php(52): Monolog\Handler\AbstractHandler->__construct()
+#2 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(197): Monolog\Handler\StreamHandler->__construct()
+#3 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(151): Illuminate\Log\LogManager->createEmergencyLogger()
+#4 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(125): Illuminate\Log\LogManager->get()
+#5 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(703): Illuminate\Log\LogManager->driver()
+#6 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(402): Illuminate\Log\LogManager->error()
+#7 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(365): Illuminate\Foundation\Exceptions\Handler->reportThrowable()
+#8 /home/iosahrww/jobsease.com/vendor/nunomaduro/collision/src/Adapters/Laravel/ExceptionHandler.php(46): Illuminate\Foundation\Exceptions\Handler->report()
+#9 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(186): NunoMaduro\Collision\Adapters\Laravel\ExceptionHandler->report()
+#10 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#11 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}()
+#12 {main}
+  thrown in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php on line 60
+[16-Dec-2025 08:05:17 UTC] PHP Fatal error:  Declaration of Monolog\Logger::emergency(Stringable|string $message, array $context = []): void must be compatible with PsrExt\Log\LoggerInterface::emergency($message, array $context = []) in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Logger.php on line 683
+[16-Dec-2025 08:05:17 UTC] PHP Fatal error:  Uncaught Error: Class "Monolog\Logger" not found in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php:60
+Stack trace:
+#0 /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php(38): Monolog\Handler\AbstractHandler->setLevel()
+#1 /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/StreamHandler.php(52): Monolog\Handler\AbstractHandler->__construct()
+#2 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(197): Monolog\Handler\StreamHandler->__construct()
+#3 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(151): Illuminate\Log\LogManager->createEmergencyLogger()
+#4 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(125): Illuminate\Log\LogManager->get()
+#5 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(703): Illuminate\Log\LogManager->driver()
+#6 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(402): Illuminate\Log\LogManager->error()
+#7 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(365): Illuminate\Foundation\Exceptions\Handler->reportThrowable()
+#8 /home/iosahrww/jobsease.com/vendor/nunomaduro/collision/src/Adapters/Laravel/ExceptionHandler.php(46): Illuminate\Foundation\Exceptions\Handler->report()
+#9 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(186): NunoMaduro\Collision\Adapters\Laravel\ExceptionHandler->report()
+#10 /home/iosahrww/jobsease.com/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#11 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}()
+#12 {main}
+  thrown in /home/iosahrww/jobsease.com/vendor/monolog/monolog/src/Monolog/Handler/AbstractHandler.php on line 60
