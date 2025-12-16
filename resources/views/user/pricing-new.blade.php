@@ -190,18 +190,23 @@
         background: var(--light);
     }
 
-    .plan-features {
-    margin-top: 1.5rem;
+    /* ===== Feature List (Pricing + Add-ons) ===== */
+
+.plan-features {
+    margin-top: 2rem;
+    padding: 0;
+    list-style: none;
 }
 
 .plan-features li {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.6rem 0;
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    align-items: center;
+    column-gap: 12px;
+    padding: 0.75rem 0;
     font-size: 0.95rem;
     color: #334155;
-    line-height: 1.6;
+    line-height: 1.5;
     border-bottom: 1px solid #EEF2F7;
 }
 
@@ -210,13 +215,18 @@
 }
 
 .feature-icon {
+    width: 28px;
+    height: 28px;
+    background: #ECFDF5;
     color: #10B981;
-    font-size: 1.1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
     font-weight: 700;
-    line-height: 1.6;
-    flex-shrink: 0;
-    margin-top: 2px;
 }
+
 
 
 
