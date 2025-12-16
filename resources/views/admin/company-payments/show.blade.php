@@ -126,13 +126,18 @@
                             <div>
                                 <small class="text-muted d-block mb-2">Payment Proof</small>
                                 <div class="mb-3">
-                                    <img src="{{ Storage::url($payment->payment_proof) }}" 
-                                         alt="Payment Proof" 
+                                    <img src="{{ asset('storage/' . $payment->payment_proof) }}"
+                                         alt="Payment Proof"
                                          class="img-fluid rounded border"
                                          style="max-height: 500px; cursor: pointer;"
-                                         onclick="window.open(this.src, '_blank')">
+                                         onclick="window.open(this.src, '_blank')"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                    <div class="alert alert-warning" style="display: none;">
+                                        <i class="bx bx-error"></i> Unable to load image. Please ensure storage link is created: <code>php artisan storage:link</code>
+                                        <br><small>Path: {{ $payment->payment_proof }}</small>
+                                    </div>
                                 </div>
-                                <a href="{{ route('admin.company-payments.download-proof', $payment) }}" 
+                                <a href="{{ route('admin.company-payments.download-proof', $payment) }}"
                                    class="btn btn-sm btn-outline-primary">
                                     <i class="bx bx-download"></i> Download Screenshot
                                 </a>
@@ -193,7 +198,7 @@
                         </button>
                     @else
                         <div class="alert alert-{{ $payment->status === 'approved' ? 'success' : 'danger' }}">
-                            <i class="bx bx-{{ $payment->status === 'approved' ? 'check' : 'x' }}-circle"></i> 
+                            <i class="bx bx-{{ $payment->status === 'approved' ? 'check' : 'x' }}-circle"></i>
                             This payment has been {{ $payment->status }}
                         </div>
                     @endif
