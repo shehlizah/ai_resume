@@ -9,7 +9,8 @@
             <h1 class="h3 mb-1">Company Dashboard</h1>
             <p class="text-muted mb-0">Post jobs and manage your packages.</p>
         </div>
-        <div>
+        <div class="d-flex gap-2">
+            <span class="badge bg-secondary align-self-center text-uppercase">Employer</span>
             <a href="{{ route('logout') }}" class="btn btn-outline-secondary btn-sm">Logout</a>
         </div>
     </div>
@@ -84,7 +85,7 @@
                                 </div>
                                 <div class="text-end">
                                     <div class="fw-bold">IDR {{ number_format($package['price'], 0) }}</div>
-                                    <button class="btn btn-outline-primary btn-sm mt-2" type="button" disabled>Contact sales</button>
+                                    <button class="btn btn-outline-primary btn-sm mt-2" type="button" onclick="purchasePackage('{{ $package['slug'] }}')">Buy with Stripe</button>
                                 </div>
                             </div>
                         </div>
@@ -103,7 +104,7 @@
                             </div>
                             <div class="text-end">
                                 <div class="fw-bold">IDR {{ number_format($addon['price'], 0) }}{{ isset($addon['period']) ? ' / ' . $addon['period'] : '' }}</div>
-                                <button class="btn btn-outline-secondary btn-sm mt-1" type="button" disabled>Coming soon</button>
+                                <button class="btn btn-outline-primary btn-sm mt-1" type="button" onclick="purchaseAddon('{{ $addon['slug'] }}')">Buy with Stripe</button>
                             </div>
                         </div>
                     @endforeach
@@ -149,3 +150,17 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function purchasePackage(slug) {
+        // TODO: replace with real Stripe checkout route/price IDs
+        window.location.href = `/company/packages/${slug}/checkout`;
+    }
+
+    function purchaseAddon(slug) {
+        // TODO: replace with real Stripe checkout route/price IDs
+        window.location.href = `/company/addons/${slug}/checkout`;
+    }
+</script>
+@endpush

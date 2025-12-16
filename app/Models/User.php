@@ -84,6 +84,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is employer
+     */
+    public function isEmployer()
+    {
+        return $this->role === 'employer';
+    }
+
+    /**
      * Check if user is active
      */
     public function isActive()

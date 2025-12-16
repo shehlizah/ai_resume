@@ -240,7 +240,7 @@ Route::middleware(['auth'])->group(function () {
 // ==========================================
 // Company Dashboard (Job Posting)
 // ==========================================
-Route::middleware(['auth'])->prefix('company')->name('company.')->group(function () {
+Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'index'])->name('dashboard');
     Route::post('/jobs', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'store'])->name('jobs.store');
 });
