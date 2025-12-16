@@ -149,18 +149,16 @@
             @endif
         </div>
     </div>
+
+    <script>
+        function purchasePackage(slug) {
+            // TODO: replace with real Stripe checkout route/price IDs
+            window.location.href = `/company/packages/${slug}/checkout`;
+        }
+
+        function purchaseAddon(slug) {
+            // TODO: replace with real Stripe checkout route/price IDs
+            window.location.href = `/company/addons/${slug}/checkout`;
+        }
+    </script>
 </x-layouts.app>
-
-@section('page-script')
-<script>
-    function purchasePackage(slug) {
-        // TODO: replace with real Stripe checkout route/price IDs
-        window.location.href = `/company/packages/${slug}/checkout`;
-    }
-
-    function purchaseAddon(slug) {
-        // TODO: replace with real Stripe checkout route/price IDs
-        window.location.href = `/company/addons/${slug}/checkout`;
-    }
-</script>
-@endsection
