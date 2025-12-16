@@ -241,8 +241,8 @@ class CompanyDashboardController extends Controller
                         'currency' => $currency,
                         'product_data' => [
                             'name' => $itemName,
-                            'description' => $validated['item_type'] === 'package' 
-                                ? $item['jobs'] . ' job postings' 
+                            'description' => $validated['item_type'] === 'package'
+                                ? $item['jobs'] . ' job postings'
                                 : ($item['description'] ?? ''),
                         ],
                         'unit_amount' => $stripeAmount,

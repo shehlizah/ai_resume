@@ -247,7 +247,7 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
     Route::get('/jobs', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'jobs'])->name('jobs.index');
     Route::get('/applications', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'applications'])->name('applications.index');
     Route::get('/jobs/{job}/applications', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'applicationsForJob'])->name('jobs.applications');
-    
+
     // Package & Add-on Checkout
     Route::get('/packages/{slug}/checkout', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'packageCheckout'])->name('packages.checkout');
     Route::get('/addons/{slug}/checkout', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'addonCheckout'])->name('addons.checkout');
@@ -327,6 +327,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('/{payment}/approve', [AdminPaymentController::class, 'approve'])->name('approve');
         Route::post('/{payment}/reject', [AdminPaymentController::class, 'reject'])->name('reject');
         Route::get('/export/csv', [AdminPaymentController::class, 'export'])->name('export');
+    });
+
+    // ==========================================
+    // Company Payments Management
+    // ==========================================
+    Route::prefix('company-payments')->name('company-payments.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\CompanyPaymentController::class, 'index'])->name('index');
+        Route::get('/{payment}', [\App\Http\Controllers\Admin\CompanyPaymentController::class, 'show'])->name('show');
+        Route::post('/{payment}/approve', [\App\Http\Controllers\Admin\CompanyPaymentController::class, 'approve'])->name('approve');
+        Route::post('/{payment}/reject', [\App\Http\Controllers\Admin\CompanyPaymentController::class, 'reject'])->name('reject');
+        Route::get('/{payment}/download-proof', [\App\Http\Controllers\Admin\CompanyPaymentController::class, 'downloadProof'])->name('download-proof');
     });
 
     // ==========================================

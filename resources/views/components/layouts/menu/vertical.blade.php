@@ -170,6 +170,33 @@
         </ul>
       </li>
 
+      {{-- Company Payments --}}
+      <li class="menu-item {{ request()->is('admin/company-payments*') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-store"></i>
+          <div>{{ __('Company Payments') }}</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->is('admin/company-payments') && !request()->has('status') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('admin.company-payments.index') }}">{{ __('All Payments') }}</a>
+          </li>
+          <li class="menu-item {{ request()->is('admin/company-payments') && request('status') === 'pending' ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('admin.company-payments.index', ['status' => 'pending']) }}">
+              {{ __('Pending Approval') }}
+              @php
+                $pendingCount = \App\Models\CompanyPayment::where('status', 'pending')->count();
+              @endphp
+              @if($pendingCount > 0)
+                <span class="badge bg-warning ms-2">{{ $pendingCount }}</span>
+              @endif
+            </a>
+          </li>
+          <li class="menu-item {{ request()->is('admin/company-payments') && request('status') === 'approved' ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('admin.company-payments.index', ['status' => 'approved']) }}">{{ __('Approved') }}</a>
+          </li>
+        </ul>
+      </li>
+
 
 
       {{-- Settings --}}

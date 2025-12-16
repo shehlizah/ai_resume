@@ -20,21 +20,21 @@ return new class extends Migration
             $table->decimal('amount', 15, 2);
             $table->enum('payment_method', ['manual', 'stripe'])->default('manual');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            
+
             // Manual payment fields
             $table->string('payment_proof')->nullable();
             $table->string('bank_account_name')->nullable();
             $table->date('transfer_date')->nullable();
-            
+
             // Stripe payment fields
             $table->string('stripe_session_id')->nullable();
             $table->string('stripe_payment_intent')->nullable();
-            
+
             // Admin review
             $table->foreignId('reviewed_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('reviewed_at')->nullable();
             $table->text('admin_notes')->nullable();
-            
+
             $table->timestamps();
         });
     }
