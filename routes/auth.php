@@ -36,7 +36,7 @@ Route::middleware('auth')->group(function () {
 
 Route::post('logout', App\Livewire\Actions\Logout::class)
     ->name('logout');
-    
-    
-    
-    
+
+
+
+

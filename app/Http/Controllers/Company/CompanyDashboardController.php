@@ -60,6 +60,42 @@ class CompanyDashboardController extends Controller
         return view('company.dashboard', compact('jobs', 'packages', 'addons', 'stats'));
     }
 
+    public function create()
+    {
+        $packages = [
+            [
+                'name' => 'Starter',
+                'jobs' => 5,
+                'price' => 2000000,
+                'slug' => 'jobs-5',
+            ],
+            [
+                'name' => 'Growth',
+                'jobs' => 10,
+                'price' => 3500000,
+                'slug' => 'jobs-10',
+            ],
+        ];
+
+        $addons = [
+            [
+                'name' => 'Featured job',
+                'description' => 'Highlight a job for more visibility',
+                'price' => 300000,
+                'slug' => 'featured',
+            ],
+            [
+                'name' => 'CV access pack',
+                'description' => 'Access candidate CVs for one month',
+                'price' => 1000000,
+                'period' => 'month',
+                'slug' => 'cv-access',
+            ],
+        ];
+
+        return view('company.job-create', compact('packages', 'addons'));
+    }
+
     public function jobs()
     {
         $user = Auth::user();

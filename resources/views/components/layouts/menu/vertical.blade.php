@@ -314,8 +314,8 @@
         </a>
       </li>
 
-      <li class="menu-item {{ request()->routeIs('company.dashboard') ? 'active' : '' }}">
-        <a class="menu-link" href="{{ route('company.dashboard') }}">
+      <li class="menu-item {{ request()->routeIs('company.jobs.create') ? 'active' : '' }}">
+        <a class="menu-link" href="{{ route('company.jobs.create') }}">
           <i class="menu-icon tf-icons bx bx-plus-circle"></i>
           <div>{{ __('Post Job') }}</div>
         </a>

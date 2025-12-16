@@ -115,7 +115,7 @@ new #[Layout('components.layouts.auth')] class extends Component
             {{ session('status') }}
         </div>
     @endif
-    
+
     @if (session()->has('deactivated'))
     <div class="alert alert-danger mb-4">
         {{ session('deactivated') }}
@@ -191,8 +191,8 @@ new #[Layout('components.layouts.auth')] class extends Component
             </a>
         </p>
     @endif
-    
-  
+
+
 
 
 </div>

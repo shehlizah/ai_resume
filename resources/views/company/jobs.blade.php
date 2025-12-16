@@ -4,7 +4,7 @@
             <h1 class="h4 mb-1">My Jobs</h1>
             <p class="text-muted mb-0">Manage your posted jobs and view applicants.</p>
         </div>
-        <a href="{{ route('company.dashboard') }}" class="btn btn-primary">Post a Job</a>
+        <a href="{{ route('company.jobs.create') }}" class="btn btn-primary">Post a Job</a>
     </div>
 
     <div class="card">
