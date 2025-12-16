@@ -25,7 +25,7 @@
 <meta property="og:site_name" content="{{ config('variables.creatorName') ? config('variables.creatorName') : '' }}" />
 <link rel="canonical" href="{{ config('variables.productPage') ? config('variables.productPage') : '' }}">
 <!-- Favicon -->
-<link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+<link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.svg') }}" />
 
 
 <!-- Include Styles -->

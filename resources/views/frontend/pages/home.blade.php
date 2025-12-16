@@ -574,7 +574,7 @@
 
 .underline {
     display: block;
-    width: 180px;
+    width: 200px;
     height: 5px;
     background: #fff;
     margin-top: 6px;
@@ -686,12 +686,12 @@
 
 .underline {
     display: block;
-    width: 170px;
-    height: 6px;
+    width: 200px;
+    height: 3px;
     background: #4ade80;
     position: absolute;
     left: 0;
-    bottom: -5px;
+    /*bottom: -5px;*/
     border-radius: 10px;
 }
 
@@ -795,9 +795,9 @@
     <div class="top-block">
         <div class="left-content">
             <h1>
-                Create a CV<br>
-                that gets results
-                <span class="underline"></span>
+                Create a CV that &nbsp &nbsp<br>
+                 gets results
+                <span class="underline u1"></span>
             </h1>
             <!--<span class="arrow">➜</span>-->
 <svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -845,9 +845,9 @@
         <div class="bottom-block">
         <div class="left-content">
             <h1>
-                Find jobs with<br>
-                CV to get results
-                <span class="underline"></span>
+                Find jobs with CV to <br>
+                 get results
+                <span class="underline u2"></span>
             </h1>
 
             <svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1411,9 +1411,9 @@
     <div class="top-header">
         <div class="title-wrap">
             <h1>
-                Prepare interview<br>
-                with our experts
-                <span class="underline"></span>
+                Prepare interview with<br>
+                our experts
+                <span class="underline u3"></span>
             </h1>
 
 
@@ -1435,7 +1435,7 @@
 
     <!-- Bottom Content -->
     <div class="bottom-text">
-        <h6 style="color:#fff;font-style:italic;">Let's talk about the idea that's been<br>sitting in your mind for months</h6>
+        <h3 style="color:#fff;font-style:italic;">Let's talk about the idea that's been<br>sitting in your mind for months</h3>
 
         <a href="#" class="session-btn">BOOK SESSION</a>
 

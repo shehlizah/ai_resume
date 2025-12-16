@@ -413,7 +413,7 @@ header nav {
 
 .underline {
     display: block;
-    width: 170px;
+    width: 200px;
     height: 6px;
     background: #4ade80;
     margin-top: 8px;
@@ -1113,5 +1113,25 @@ footer {
     .nav-buttons .btn {
         padding: 0.5rem 1rem;
         font-size: 0.875rem;
+    }
+}
+
+svg{
+    vertical-align: top !important;
+}
+
+/* Desktop widths */
+@media (min-width: 1024px) {
+  .u1 { width: 365px !important; }
+  .u2 { width: 331px!important; }
+  .u3 { width: 265px !important; }
+}
+
+@media (max-width: 768px) {
+    .u3 {
+       margin-left:20%;
+    }
+    svg{
+        margin-top:30px;
     }
 }
