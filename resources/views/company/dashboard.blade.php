@@ -17,6 +17,48 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Total Jobs</p>
+                            <h4 class="mb-0">{{ $stats['total_jobs'] ?? 0 }}</h4>
+                        </div>
+                        <span class="badge bg-primary-soft text-primary">Jobs</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Featured Jobs</p>
+                            <h4 class="mb-0">{{ $stats['featured_jobs'] ?? 0 }}</h4>
+                        </div>
+                        <span class="badge bg-warning-soft text-warning">Featured</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Applications</p>
+                            <h4 class="mb-0">{{ $stats['applications'] ?? 0 }}</h4>
+                        </div>
+                        <span class="badge bg-success-soft text-success">Applicants</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
             <div class="card h-100">

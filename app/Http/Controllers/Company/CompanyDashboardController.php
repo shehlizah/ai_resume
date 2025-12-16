@@ -20,6 +20,12 @@ class CompanyDashboardController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
+        $stats = [
+            'total_jobs' => $jobs->count(),
+            'featured_jobs' => $jobs->where('is_featured', true)->count(),
+            'applications' => $jobs->sum('applications_count'),
+        ];
+
         $packages = [
             [
                 'name' => 'Starter',
@@ -51,7 +57,7 @@ class CompanyDashboardController extends Controller
             ],
         ];
 
-        return view('company.dashboard', compact('jobs', 'packages', 'addons'));
+        return view('company.dashboard', compact('jobs', 'packages', 'addons', 'stats'));
     }
 
     public function jobs()
