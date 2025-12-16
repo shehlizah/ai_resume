@@ -9,6 +9,8 @@ use App\Models\CompanyPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Stripe\Stripe;
+use Stripe\Checkout\Session as StripeSession;
 
 class CompanyDashboardController extends Controller
 {
@@ -201,15 +203,128 @@ class CompanyDashboardController extends Controller
 
     public function stripeCheckout(Request $request)
     {
-        // TODO: Implement Stripe checkout session creation
         $validated = $request->validate([
             'item_type' => 'required|in:package,addon',
             'item_slug' => 'required|string',
         ]);
 
+        // Get item details
+        $item = null;
+        $itemName = '';
+        $amount = 0;
+
+        if ($validated['item_type'] === 'package') {
+            $item = collect($this->getPackages())->firstWhere('slug', $validated['item_slug']);
+            $itemName = $item['name'] ?? 'Unknown Package';
+            $amount = $item['price'] ?? 0;
+        } else {
+            $item = collect($this->getAddons())->firstWhere('slug', $validated['item_slug']);
+            $itemName = $item['name'] ?? 'Unknown Add-on';
+            $amount = $item['price'] ?? 0;
+        }
+
+        if (!$item || $amount == 0) {
+            return back()->with('error', 'Invalid item selected.');
+        }
+
+        try {
+            Stripe::setApiKey(config('services.stripe.secret'));
+
+            // Determine currency based on amount (IDR if > 1000, otherwise USD)
+            $currency = $amount >= 1000 ? 'idr' : 'usd';
+            $stripeAmount = $currency === 'idr' ? $amount : ($amount * 100); // IDR doesn't use decimals, USD uses cents
+
+            $sessionData = [
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => $currency,
+                        'product_data' => [
+                            'name' => $itemName,
+                            'description' => $validated['item_type'] === 'package' 
+                                ? $item['jobs'] . ' job postings' 
+                                : ($item['description'] ?? ''),
+                        ],
+                        'unit_amount' => $stripeAmount,
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+                'success_url' => route('company.payment.stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('company.dashboard'),
+                'client_reference_id' => Auth::id(),
+                'metadata' => [
+                    'user_id' => Auth::id(),
+                    'item_type' => $validated['item_type'],
+                    'item_slug' => $validated['item_slug'],
+                    'item_name' => $itemName,
+                ],
+            ];
+
+            $session = StripeSession::create($sessionData);
+
+            return redirect($session->url);
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Payment processing failed: ' . $e->getMessage());
+        }
+    }
+
+    public function stripeSuccess(Request $request)
+    {
+        if (!$request->has('session_id')) {
+            return redirect()->route('company.dashboard')->with('error', 'Invalid session.');
+        }
+
+        try {
+            Stripe::setApiKey(config('services.stripe.secret'));
+            $session = StripeSession::retrieve($request->session_id);
+
+            if ($session->payment_status === 'paid') {
+                $metadata = $session->metadata;
+
+                // Get item details
+                $item = null;
+                $amount = 0;
+
+                if ($metadata['item_type'] === 'package') {
+                    $item = collect($this->getPackages())->firstWhere('slug', $metadata['item_slug']);
+                    $amount = $item['price'] ?? 0;
+                } else {
+                    $item = collect($this->getAddons())->firstWhere('slug', $metadata['item_slug']);
+                    $amount = $item['price'] ?? 0;
+                }
+
+                // Create payment record
+                CompanyPayment::create([
+                    'user_id' => $metadata['user_id'],
+                    'item_type' => $metadata['item_type'],
+                    'item_slug' => $metadata['item_slug'],
+                    'item_name' => $metadata['item_name'],
+                    'amount' => $amount,
+                    'payment_method' => 'stripe',
+                    'status' => 'approved', // Stripe payments are auto-approved
+                    'stripe_session_id' => $session->id,
+                    'stripe_payment_intent' => $session->payment_intent,
+                ]);
+
+                return redirect()
+                    ->route('company.dashboard')
+                    ->with('success', 'Payment successful! Your ' . $metadata['item_type'] . ' has been activated.');
+            }
+
+            return redirect()->route('company.dashboard')->with('error', 'Payment was not completed.');
+
+        } catch (\Exception $e) {
+            return redirect()->route('company.dashboard')->with('error', 'Payment verification failed: ' . $e->getMessage());
+        }
+    }
+
+    public function stripeCancel()
+    {
         return redirect()
             ->route('company.dashboard')
-            ->with('info', 'Stripe integration coming soon. Please use manual payment for now.');
+            ->with('info', 'Payment was cancelled.');
     }
 
     private function getPackages()

@@ -113,8 +113,9 @@
 
                             <!-- Stripe Payment -->
                             <div class="tab-pane fade" id="stripe" role="tabpanel">
-                                <div class="alert alert-warning">
-                                    <i class="bi bi-exclamation-triangle"></i> Stripe integration is coming soon. Please use Bank Transfer for now.
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-credit-card"></i> Pay Securely with Stripe</h6>
+                                    <p class="mb-0">You will be redirected to Stripe's secure payment page to complete your purchase using a credit or debit card.</p>
                                 </div>
 
                                 <form action="{{ route('company.payment.stripe') }}" method="POST">
@@ -122,13 +123,25 @@
                                     <input type="hidden" name="item_type" value="{{ $type }}">
                                     <input type="hidden" name="item_slug" value="{{ $item['slug'] }}">
 
-                                    <div class="text-center py-4">
-                                        <i class="bi bi-credit-card-2-front" style="font-size: 3rem; color: #ccc;"></i>
-                                        <p class="text-muted mt-3">Stripe payment gateway will be integrated soon.</p>
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="bi bi-shield-check text-success me-2" style="font-size: 1.5rem;"></i>
+                                                <div>
+                                                    <div class="fw-semibold">Secure Payment</div>
+                                                    <small class="text-muted">Your payment is processed securely through Stripe</small>
+                                                </div>
+                                            </div>
+                                            <ul class="list-unstyled mb-0">
+                                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i> Instant activation</li>
+                                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i> Secure card processing</li>
+                                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i> No manual approval needed</li>
+                                            </ul>
+                                        </div>
                                     </div>
 
-                                    <button type="submit" class="btn btn-secondary btn-lg w-100" disabled>
-                                        <i class="bi bi-lock"></i> Pay with Stripe (Coming Soon)
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                                        <i class="bi bi-credit-card"></i> Pay IDR {{ number_format($item['price'], 0) }} with Stripe
                                     </button>
                                 </form>
                             </div>

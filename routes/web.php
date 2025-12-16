@@ -253,6 +253,8 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
     Route::get('/addons/{slug}/checkout', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'addonCheckout'])->name('addons.checkout');
     Route::post('/payment/manual', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'submitManualPayment'])->name('payment.manual');
     Route::post('/payment/stripe', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'stripeCheckout'])->name('payment.stripe');
+    Route::get('/payment/stripe/success', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'stripeSuccess'])->name('payment.stripe.success');
+    Route::get('/payment/stripe/cancel', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'stripeCancel'])->name('payment.stripe.cancel');
 });
 
 // Job applications (candidates)
