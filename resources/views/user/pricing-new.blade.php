@@ -23,13 +23,17 @@
         font-size: 3rem;
         font-weight: 700;
         margin-bottom: 1rem;
+        color: #ffffff;
+        text-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     }
 
     .pricing-hero p {
         font-size: 1.25rem;
-        opacity: 0.95;
+        color: #ffffff;
+        opacity: 0.98;
         max-width: 600px;
         margin: 0 auto;
+        text-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
     }
 
     .pricing-section {
@@ -188,14 +192,16 @@
     .plan-features {
         list-style: none;
         padding: 0;
+        text-align: left;
     }
 
     .plan-features li {
-        padding: 0.75rem 0;
+        padding: 0.5rem 0;
         display: flex;
-        align-items: center;
-        gap: 0.75rem;
+        align-items: flex-start;
+        gap: 0.5rem;
         border-bottom: 1px solid #F1F5F9;
+        line-height: 1.5;
     }
 
     .plan-features li:last-child {
@@ -292,7 +298,7 @@
     <h1>Simple, Transparent Pricing</h1>
     <p>Choose the perfect plan to accelerate your career journey</p>
     @auth
-        <p style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.9;">
+        <p style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.98; color: #ffffff;">
             @if($currentSubscription)
                 You're currently on the <strong>{{ $currentSubscription->plan ? $currentSubscription->plan->name : 'Unknown' }} Plan</strong>
             @else
@@ -300,7 +306,7 @@
             @endif
         </p>
     @else
-        <p style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.9;">
+        <p style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.98; color: #ffffff;">
             <a href="{{ route('register') }}" class="btn btn-light btn-sm">Create an account</a> to get started
         </p>
     @endauth
@@ -455,11 +461,11 @@
             @foreach($plans as $plan)
                 const {{ str_replace('-', '_', $plan->slug) }}Monthly = {{ $plan->monthly_price }};
                 const {{ str_replace('-', '_', $plan->slug) }}Yearly = {{ $plan->yearly_price }};
-                
+
                 const {{ str_replace('-', '_', $plan->slug) }}PriceEl = document.querySelector('[data-plan="{{ $plan->slug }}-monthly"]');
                 const {{ str_replace('-', '_', $plan->slug) }}PeriodEl = document.querySelector('[data-plan="{{ $plan->slug }}-period"]');
                 const {{ str_replace('-', '_', $plan->slug) }}NoteEl = document.querySelector('[data-plan="{{ $plan->slug }}-note"]');
-                
+
                 if ({{ str_replace('-', '_', $plan->slug) }}PriceEl) {
                     if (period === 'monthly') {
                         {{ str_replace('-', '_', $plan->slug) }}PriceEl.textContent = {{ $plan->monthly_price }} === 0 ? '0' : '{{ number_format($plan->monthly_price, 0) }}';
