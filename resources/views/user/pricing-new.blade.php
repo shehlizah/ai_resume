@@ -90,6 +90,7 @@
         transition: transform 0.3s, box-shadow 0.3s;
         position: relative;
         border: 2px solid transparent;
+        text-align: left;
     }
 
     .pricing-card:hover {
@@ -192,11 +193,12 @@
     .plan-features {
         list-style: none;
         padding: 0;
+        margin: 0;
         text-align: left;
     }
 
     .plan-features li {
-        padding: 0.5rem 0;
+        padding: 0.4rem 0;
         display: flex;
         align-items: flex-start;
         gap: 0.5rem;
@@ -212,6 +214,9 @@
         color: #10B981;
         font-weight: bold;
         font-size: 1.25rem;
+        line-height: 1;
+        display: inline-block;
+        margin-top: 2px;
     }
 
     /* Add-ons Section */
@@ -238,6 +243,7 @@
         border-radius: 16px;
         padding: 2rem;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        text-align: left;
     }
 
     .addon-header {
