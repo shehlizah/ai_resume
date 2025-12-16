@@ -427,7 +427,7 @@
                     <li><span class="feature-icon">✓</span> Recording available</li>
                     <li><span class="feature-icon">✓</span> Written report</li>
                 </ul>
-                <button class="plan-cta plan-cta-outline" onclick="bookInterview('30-min')" style="margin-top: 1.5rem;">
+                <button class="plan-cta plan-cta-outline" onclick="bookInterview('30')" style="margin-top: 1.5rem;">
                     Book 30-Min Session
                 </button>
             </div>
@@ -448,7 +448,7 @@
                     <li><span class="feature-icon">✓</span> Detailed written report</li>
                     <li><span class="feature-icon">✓</span> Follow-up email support</li>
                 </ul>
-                <button class="plan-cta plan-cta-primary" onclick="bookInterview('60-min')" style="margin-top: 1.5rem;">
+                <button class="plan-cta plan-cta-primary" onclick="bookInterview('60')" style="margin-top: 1.5rem;">
                     Book 60-Min Session
                 </button>
             </div>
@@ -543,12 +543,11 @@
         @endauth
     }
 
-    function bookInterview(duration) {
+    function bookInterview(durationMinutes) {
+        const durationParam = durationMinutes ? `?duration=${durationMinutes}` : '';
         @auth
-            // User is logged in, redirect to interview booking
-            alert('Interview booking feature coming soon! We will redirect you to the booking page.');
-            // TODO: Implement interview booking flow
-            // window.location.href = `/user/interview/book/${duration}`;
+            // Redirect to expert booking page with optional duration hint
+            window.location.href = '{{ route('user.interview.expert') }}' + durationParam;
         @else
             // User not logged in, redirect to register
             window.location.href = '{{ route('register') }}';
