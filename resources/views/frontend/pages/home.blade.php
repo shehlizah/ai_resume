@@ -225,11 +225,12 @@
         }
 
         .features-grid {
-    max-width: 1280px;
+    max-width: 1400px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);  /* Changed this line */
-    gap: 2rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    padding: 0 1rem;
 }
 
         .feature-card {
@@ -307,17 +308,18 @@
         }
 
         .upload-options {
-            max-width: 1100px;
+            max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            padding: 0 1rem;
         }
 
         .upload-card {
             background: white;
-            padding: 3rem 2.5rem;
-            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            border-radius: 16px;
             border: 2px solid #E2E8F0;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
@@ -758,9 +760,25 @@
     }
 }
 
-@media (max-width: 768px) {
-    .features-grid {
+@media (max-width: 1024px) {
+    .features-grid,
+    .upload-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .trust-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .features-grid,
+    .upload-options {
         grid-template-columns: 1fr;
+    }
+    
+    .trust-grid {
+        grid-template-columns: 1fr !important;
     }
 }
 
@@ -1370,41 +1388,50 @@
 
 
     <!-- Pricing Preview Section -->
-    <section class="jobs-section" id="pricing">
-        <div class="jobs-header">
-            <div class="jobs-stats">
-                <h2>Simple Pricing for Everyone</h2>
-            </div>
-        </div>
-
-        <div class="jobs-grid" style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
-            <!-- Free Plan -->
-            <div style="background: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 16px; padding: 2rem; min-width: 280px; max-width: 320px;">
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🆓</div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">Free</h3>
-                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; color: #64748B;">
-                    <li style="padding: 0.5rem 0;">✓ 1 CV</li>
-                    <li style="padding: 0.5rem 0;">✓ 5 job views</li>
-                    <li style="padding: 0.5rem 0;">✓ Basic interview questions</li>
-                </ul>
+    <section style="padding: 5rem 2rem; background: #fff;" id="pricing">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: #0F172A; margin-bottom: 0.5rem;">Simple and Affordable Pricing</h2>
+                <p style="color: #64748B; font-size: 1.125rem;">Choose the plan that works best for you</p>
             </div>
 
-            <!-- Pro Plan -->
-            <div style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); border-radius: 16px; padding: 2rem; min-width: 280px; max-width: 320px; color: white;">
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">⭐</div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;">Pro</h3>
-                <span style="background: #FBBF24; color: #000; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Recommended</span>
-                <ul style="list-style: none; padding: 0; margin: 1rem 0 1.5rem 0;">
-                    <li style="padding: 0.5rem 0;">✓ Unlimited CVs</li>
-                    <li style="padding: 0.5rem 0;">✓ AI interview practice</li>
-                    <li style="padding: 0.5rem 0;">✓ Unlimited job apply</li>
-                    <li style="padding: 0.5rem 0;">✓ No ads</li>
-                </ul>
-            </div>
-        </div>
+            <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; align-items: stretch;">
+                <!-- Free Plan -->
+                <div style="background: #fff; border: 2px solid #E2E8F0; border-radius: 24px; padding: 2.5rem; min-width: 320px; max-width: 380px; flex: 1; position: relative; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #E0E7FF, #C7D2FE); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                        <span style="font-size: 1.5rem;">🆓</span>
+                    </div>
+                    <h3 style="font-size: 1.75rem; font-weight: 700; color: #0F172A; margin-bottom: 0.5rem;">Free Plan</h3>
+                    <p style="color: #64748B; margin-bottom: 1.5rem; font-size: 0.95rem;">Perfect to get started</p>
+                    <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0;">
+                        <li style="padding: 0.75rem 0; color: #334155; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid #F1F5F9;"><span style="color: #10B981;">✓</span> Create 1 CV</li>
+                        <li style="padding: 0.75rem 0; color: #334155; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid #F1F5F9;"><span style="color: #10B981;">✓</span> View 5 job listings</li>
+                        <li style="padding: 0.75rem 0; color: #334155; display: flex; align-items: center; gap: 0.75rem;"><span style="color: #10B981;">✓</span> Basic interview questions</li>
+                    </ul>
+                    <a href="{{route('register')}}" style="display: block; text-align: center; padding: 1rem; background: #F1F5F9; color: #334155; border-radius: 12px; font-weight: 600; text-decoration: none; transition: all 0.3s ease;" onmouseover="this.style.background='#E2E8F0';" onmouseout="this.style.background='#F1F5F9';">Get Started Free</a>
+                </div>
 
-        <div style="text-align: center; margin-top: 2rem;">
-            <a href="{{route('packages')}}" class="btn btn-primary" style="padding: 1rem 2rem;">View Full Pricing</a>
+                <!-- Pro Plan -->
+                <div style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); border-radius: 24px; padding: 2.5rem; min-width: 320px; max-width: 380px; flex: 1; color: white; position: relative; box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3); transform: scale(1.02);">
+                    <div style="position: absolute; top: -12px; right: 24px; background: linear-gradient(135deg, #FBBF24, #F59E0B); color: #000; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Recommended</div>
+                    <div style="width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                        <span style="font-size: 1.5rem;">⭐</span>
+                    </div>
+                    <h3 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem;">Pro Plan</h3>
+                    <p style="opacity: 0.9; margin-bottom: 1.5rem; font-size: 0.95rem;">Everything you need to succeed</p>
+                    <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0;">
+                        <li style="padding: 0.75rem 0; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.15);"><span>✓</span> Unlimited CVs</li>
+                        <li style="padding: 0.75rem 0; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.15);"><span>✓</span> AI interview practice</li>
+                        <li style="padding: 0.75rem 0; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.15);"><span>✓</span> Unlimited job applications</li>
+                        <li style="padding: 0.75rem 0; display: flex; align-items: center; gap: 0.75rem;"><span>✓</span> No ads</li>
+                    </ul>
+                    <a href="{{route('packages')}}" style="display: block; text-align: center; padding: 1rem; background: #fff; color: #1D4ED8; border-radius: 12px; font-weight: 700; text-decoration: none; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.02)';" onmouseout="this.style.transform='scale(1)';">Upgrade to Pro</a>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2.5rem;">
+                <a href="{{route('packages')}}" style="color: #3B82F6; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';">View Full Pricing <span>→</span></a>
+            </div>
         </div>
     </section>
 
@@ -1434,46 +1461,58 @@
 
 
     <!-- Trust Section -->
-    <section class="interview-section" style="padding: 4rem 2rem;">
-
-    <!-- Blur Background Layer -->
-    <div class="keyboard-bg"></div>
-    <div class="blur-overlay"></div>
-
-    <!-- Trust Content -->
-    <div class="top-header" style="flex-direction: column; text-align: center;">
-        <h2 style="color: #fff; font-size: 2rem; margin-bottom: 2rem;">Why Jobsease?</h2>
-
-        <div style="display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2rem;">
-            <div style="text-align: center; min-width: 200px;">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🇮🇩</div>
-                <p style="color: #fff; font-weight: 600;">Built for job seekers in Indonesia</p>
+    <section style="padding: 5rem 2rem; background: #F8FAFC;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: #0F172A; margin-bottom: 0.5rem;">Why Choose Jobsease?</h2>
+                <p style="color: #64748B; font-size: 1.125rem;">Trusted by thousands of job seekers</p>
             </div>
-            <div style="text-align: center; min-width: 200px;">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🤖</div>
-                <p style="color: #fff; font-weight: 600;">AI-powered & easy to use</p>
-            </div>
-            <div style="text-align: center; min-width: 200px;">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔒</div>
-                <p style="color: #fff; font-weight: 600;">Secure payments & privacy protected</p>
+
+            <div class="trust-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+                <div style="background: #fff; padding: 2rem; border-radius: 16px; text-align: center; border: 1px solid #E2E8F0; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.75rem;">🌏</div>
+                    <h4 style="font-weight: 600; color: #0F172A; margin-bottom: 0.5rem;">Indonesia & Pakistan</h4>
+                    <p style="color: #64748B; font-size: 0.9rem; line-height: 1.5;">Designed for job seekers in Indonesia and Pakistan</p>
+                </div>
+
+                <div style="background: #fff; padding: 2rem; border-radius: 16px; text-align: center; border: 1px solid #E2E8F0; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #DBEAFE, #BFDBFE); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.75rem;">🤖</div>
+                    <h4 style="font-weight: 600; color: #0F172A; margin-bottom: 0.5rem;">AI-Powered Tools</h4>
+                    <p style="color: #64748B; font-size: 0.9rem; line-height: 1.5;">AI-powered tools to help you succeed</p>
+                </div>
+
+                <div style="background: #fff; padding: 2rem; border-radius: 16px; text-align: center; border: 1px solid #E2E8F0; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #D1FAE5, #A7F3D0); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.75rem;">🔒</div>
+                    <h4 style="font-weight: 600; color: #0F172A; margin-bottom: 0.5rem;">Secure & Private</h4>
+                    <p style="color: #64748B; font-size: 0.9rem; line-height: 1.5;">Secure payments and data protection</p>
+                </div>
+
+                <div style="background: #fff; padding: 2rem; border-radius: 16px; text-align: center; border: 1px solid #E2E8F0; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #FCE7F3, #FBCFE8); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.75rem;">✨</div>
+                    <h4 style="font-weight: 600; color: #0F172A; margin-bottom: 0.5rem;">Easy to Use</h4>
+                    <p style="color: #64748B; font-size: 0.9rem; line-height: 1.5;">Easy to use for all professions</p>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Final CTA -->
-    <div class="bottom-text" style="margin-top: 3rem;">
-        <h2 style="color:#fff; font-size: 2rem; margin-bottom: 1rem;">Ready to Get Hired Faster?</h2>
-        <p style="color: #fff; opacity: 0.9; margin-bottom: 1.5rem;">Create your CV, practice interviews, and apply for jobs — all in one place.</p>
-
-        <a href="{{route('register')}}" class="session-btn">Start Free Now</a>
-
-        <p class="email-line">
-            or reach out to us at
-            <a href="mailto:hello@jobsease.com">hello@jobsease.com</a>
-        </p>
-    </div>
-
-</section>
+    <!-- Final CTA Section -->
+    <section class="interview-section" style="padding: 5rem 2rem;">
+        <div class="keyboard-bg"></div>
+        <div class="blur-overlay"></div>
+        
+        <div style="position: relative; z-index: 3; text-align: center; max-width: 800px; margin: 0 auto;">
+            <h2 style="color: #fff; font-size: 2.75rem; font-weight: 700; margin-bottom: 1rem;">Ready to Get Hired Faster?</h2>
+            <p style="color: rgba(255,255,255,0.9); font-size: 1.25rem; margin-bottom: 2rem;">Create your CV, practice interviews, and apply for jobs — all in one platform.</p>
+            
+            <a href="{{route('register')}}" style="display: inline-block; background: #fff; color: #1D4ED8; padding: 1rem 2.5rem; border-radius: 12px; font-weight: 700; font-size: 1.125rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,0,0,0.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)';">Start Free with Jobsease Today</a>
+            
+            <p style="color: rgba(255,255,255,0.8); margin-top: 1.5rem; font-size: 0.95rem;">
+                or reach out to us at 
+                <a href="mailto:hello@jobsease.com" style="color: #fff; text-decoration: underline;">hello@jobsease.com</a>
+            </p>
+        </div>
+    </section>
 
     <!-- Job Loader Script -->
     <script src="frontend/assets/js/jobs-loader.js"></script>
