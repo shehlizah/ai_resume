@@ -1,14 +1,15 @@
 
 @extends('frontend.layouts.app')
 
-@section('title', 'Jobsease - AI-Powered Career Platform')
+@section('title', 'Jobsease | Create CV, Practice Interview & Apply for Jobs Easily')
+@section('meta_description', 'Create a professional CV, practice interviews with AI, and apply for jobs faster. Jobsease helps you get job-ready in minutes. Start free today.')
 
 @section('content')
 
 
     <style>
-    
-    
+
+
         .upload-card {
         display: flex;
         flex-direction: column;
@@ -769,11 +770,11 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-text">
-                <h1>The global home<br>of employment</h1>
-                <p>At JobSease, we build innovative digital solutions designed around your career needs from creating a standout CV to finding the right job and preparing with expert interview coaching from our global high-tech team.</p>
+                <h1>Create Your CV. Practice Interviews.<br>Apply for Jobs — Faster.</h1>
+                <p>AI-powered platform to help you get job-ready in minutes.</p>
                 <div class="hero-buttons">
-                    <a href="{{route('register')}}" class="btn btn-primary">Apply Now</a>
-                    <!--<a href="#create-cv" class="btn btn-outline">Learn More</a>-->
+                    <a href="{{route('register')}}" class="btn btn-primary">Get Started Free</a>
+                    <a href="#how-it-works" class="btn btn-outline">See How It Works</a>
                 </div>
             </div>
             <!--<div class="hero-illustration">-->
@@ -790,15 +791,15 @@
     </section>
 
 
-<section class="cv-section">
-    <!-- Top Section -->
+<section class="cv-section" id="how-it-works">
+    <!-- How It Works Section -->
     <div class="top-block">
         <div class="left-content">
-            <h1>
-                Create a CV that &nbsp &nbsp<br>
-                 gets results
+            <h2>
+                How Jobsease Helps<br>
+                You Get Hired
                 <span class="underline u1"></span>
-            </h1>
+            </h2>
             <!--<span class="arrow">➜</span>-->
 <svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg">
 <mask id="mask0_37_729" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="176" height="65">
@@ -813,25 +814,31 @@
         <a href="{{route('user.resumes.create')}}" class="btn-primary">Create CV</a>
     </div>
 
-    <!-- Feature Cards -->
+    <!-- How It Works - 4 Steps -->
 
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">📄</div>
-                <h3>Recruiter-Approved Resume</h3>
-                <p>We work with recruiters to design resume templates that format automatically.</p>
+                <div class="feature-icon">1️⃣</div>
+                <h3>Create CV</h3>
+                <p>Easy CV builder with professional templates</p>
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Finish Your CV in 15 Minutes</h3>
-                <p>Resume Now helps you tackle your work experience by reminding you what you did at your job.</p>
+                <div class="feature-icon">2️⃣</div>
+                <h3>Find Jobs</h3>
+                <p>Jobs matched by your skills and location</p>
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>Land an Interview</h3>
-                <p>We suggest the skills you should add. It helped over a million people get interviews.</p>
+                <div class="feature-icon">3️⃣</div>
+                <h3>Practice Interview</h3>
+                <p>AI interview practice with instant feedback</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">4️⃣</div>
+                <h3>Get Hired</h3>
+                <p>Apply confidently and faster</p>
             </div>
         </div>
 
@@ -840,15 +847,15 @@
 
 
 
-    <!-- Upload Options Section -->
-    <section class="upload-section" id="upload-cv">
+    <!-- Core Features Section -->
+    <section class="upload-section" id="features">
         <div class="bottom-block">
         <div class="left-content">
-            <h1>
-                Find jobs with CV to <br>
-                 get results
+            <h2>
+                Everything You Need<br>
+                in One Platform
                 <span class="underline u2"></span>
-            </h1>
+            </h2>
 
             <svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg">
 <mask id="mask0_37_729" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="176" height="65">
@@ -866,21 +873,33 @@
 
         <div class="upload-options">
             <div class="upload-card">
-                <div class="upload-icon">📤</div>
-                <h3>Are you uploading an existing resume?</h3>
-                <p>We'll give you expert guidance to fill out your info and enhance your resume, from start to finish</p>
-                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Upload CV</a>
+                <div class="upload-icon">�</div>
+                <h3>Easy CV Builder</h3>
+                <p>Create professional CVs in minutes</p>
+                <a href="{{route('user.resumes.create')}}" class="btn btn-primary">Create CV</a>
             </div>
 
             <div class="upload-card">
-                <div class="upload-icon">✨</div>
-                <h3>No, start from scratch</h3>
-                <p>We'll guide you through the whole process so your skills can shine</p>
-                <a href="{{route('user.resumes')}}" class="btn btn-primary">Create CV</a>
+                <div class="upload-icon">🤖</div>
+                <h3>AI Interview Practice</h3>
+                <p>Practice real interview questions</p>
+                <a href="{{route('user.interview.prep')}}" class="btn btn-primary">Practice Now</a>
+            </div>
+
+            <div class="upload-card">
+                <div class="upload-icon">🔎</div>
+                <h3>Smart Job Matching</h3>
+                <p>Find jobs near you that fit your profile</p>
+                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Find Jobs</a>
+            </div>
+
+            <div class="upload-card">
+                <div class="upload-icon">⚡</div>
+                <h3>One-Click Apply</h3>
+                <p>Apply faster with your saved CV</p>
+                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Apply Now</a>
             </div>
         </div>
-
-        <!--<p class="upload-note">[File size: 2MB pdf, jpeg, png]</p>-->
     </section>
 
     <!-- Jobs Section -->
@@ -1350,29 +1369,42 @@
     </style>
 
 
-    <section class="jobs-section" id="jobs">
+    <!-- Pricing Preview Section -->
+    <section class="jobs-section" id="pricing">
         <div class="jobs-header">
             <div class="jobs-stats">
-                <h2>Jobs</h2>
-                <div class="jobs-count">
-                    <span style="font-size: 0.875rem;">...</span>
-                </div>
-            </div>
-
-            <div class="jobs-filter">
-                <div class="jobs-filter-info">
-                    <span>🔄</span>
-                    <span>Live from 3 job boards</span>
-                </div>
+                <h2>Simple Pricing for Everyone</h2>
             </div>
         </div>
 
-        <div class="jobs-grid">
-            <!-- Loading placeholder -->
-            <div style="text-align: center; padding: 4rem 2rem; color: #94A3B8; grid-column: 1 / -1;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
-                <p style="font-size: 1.125rem;">Loading fresh jobs from Remotive, RemoteOK & Arbeitnow...</p>
+        <div class="jobs-grid" style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+            <!-- Free Plan -->
+            <div style="background: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 16px; padding: 2rem; min-width: 280px; max-width: 320px;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🆓</div>
+                <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">Free</h3>
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; color: #64748B;">
+                    <li style="padding: 0.5rem 0;">✓ 1 CV</li>
+                    <li style="padding: 0.5rem 0;">✓ 5 job views</li>
+                    <li style="padding: 0.5rem 0;">✓ Basic interview questions</li>
+                </ul>
             </div>
+
+            <!-- Pro Plan -->
+            <div style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); border-radius: 16px; padding: 2rem; min-width: 280px; max-width: 320px; color: white;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">⭐</div>
+                <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;">Pro</h3>
+                <span style="background: #FBBF24; color: #000; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Recommended</span>
+                <ul style="list-style: none; padding: 0; margin: 1rem 0 1.5rem 0;">
+                    <li style="padding: 0.5rem 0;">✓ Unlimited CVs</li>
+                    <li style="padding: 0.5rem 0;">✓ AI interview practice</li>
+                    <li style="padding: 0.5rem 0;">✓ Unlimited job apply</li>
+                    <li style="padding: 0.5rem 0;">✓ No ads</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="{{route('packages')}}" class="btn btn-primary" style="padding: 1rem 2rem;">View Full Pricing</a>
         </div>
     </section>
 
@@ -1401,43 +1433,39 @@
     <!--</section>-->
 
 
-     <section class="interview-section">
+    <!-- Trust Section -->
+    <section class="interview-section" style="padding: 4rem 2rem;">
 
     <!-- Blur Background Layer -->
     <div class="keyboard-bg"></div>
     <div class="blur-overlay"></div>
 
-    <!-- Top Content -->
-    <div class="top-header">
-        <div class="title-wrap">
-            <h1>
-                Prepare interview with<br>
-                our experts
-                <span class="underline u3"></span>
-            </h1>
+    <!-- Trust Content -->
+    <div class="top-header" style="flex-direction: column; text-align: center;">
+        <h2 style="color: #fff; font-size: 2rem; margin-bottom: 2rem;">Why Jobsease?</h2>
 
-
-            <!--<span class="arrow">➜</span>-->
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2rem;">
+            <div style="text-align: center; min-width: 200px;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🇮🇩</div>
+                <p style="color: #fff; font-weight: 600;">Built for job seekers in Indonesia</p>
+            </div>
+            <div style="text-align: center; min-width: 200px;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🤖</div>
+                <p style="color: #fff; font-weight: 600;">AI-powered & easy to use</p>
+            </div>
+            <div style="text-align: center; min-width: 200px;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔒</div>
+                <p style="color: #fff; font-weight: 600;">Secure payments & privacy protected</p>
+            </div>
         </div>
-
-
-            <svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_37_729" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="176" height="65">
-<path d="M175.67 0H0V64.2376H175.67V0Z" fill="white"/>
-</mask>
-<g mask="url(#mask0_37_729)">
-<path d="M8.98926 53.0432C34.0655 35.568 47.4912 30.155 82.5832 35.6322C93.3922 37.3194 90.7545 45.6742 86.3732 48.8586C69.8419 60.871 65.812 52.3838 67.376 43.4561C71.5317 19.7367 128.003 12.2143 164.937 18.2907C166.45 18.5398 160.637 13.857 156.61 8.72846C155.225 6.96521 156.213 8.77697 165.156 18.1701C167.067 18.5162 155.549 25.3568 155.78 25.4093" stroke="black" stroke-width="2.62194" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-</svg>
-
-        <a href="{{route('user.interview.expert')}}" class="book-btn">Book Now</a>
     </div>
 
-    <!-- Bottom Content -->
-    <div class="bottom-text">
-        <h3 style="color:#fff;font-style:italic;">Let's talk about the idea that's been<br>sitting in your mind for months</h3>
+    <!-- Final CTA -->
+    <div class="bottom-text" style="margin-top: 3rem;">
+        <h2 style="color:#fff; font-size: 2rem; margin-bottom: 1rem;">Ready to Get Hired Faster?</h2>
+        <p style="color: #fff; opacity: 0.9; margin-bottom: 1.5rem;">Create your CV, practice interviews, and apply for jobs — all in one place.</p>
 
-        <a href="#" class="session-btn">BOOK SESSION</a>
+        <a href="{{route('register')}}" class="session-btn">Start Free Now</a>
 
         <p class="email-line">
             or reach out to us at
