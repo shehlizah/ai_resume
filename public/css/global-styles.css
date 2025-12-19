@@ -1122,8 +1122,9 @@ svg{
 
 /* Desktop widths */
 @media (min-width: 1024px) {
-  .u1 { width: 365px !important; }
-  .u2 { width: 331px!important; }
+  .u1 {  margin-left: 13%;
+        width: 265px !important; }
+  .u2 { margin-left: 9%; width: 300px!important; }
   .u3 { width: 265px !important; }
 }
 
@@ -1135,3 +1136,9 @@ svg{
         margin-top:30px;
     }
 }
+
+/*#pricing p{*/
+/*    color:#a1b1bf !important;*/
+/*}*/
+
+

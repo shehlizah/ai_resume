@@ -784,6 +784,60 @@
 
 </style>
 
+<style>
+    /* Center everything in the top rows */
+.top-block,
+.bottom-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;   /* 🔥 center horizontally */
+    gap: 24px;
+}
+
+/* Heading + svg group */
+.inline-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Heading */
+.inline-head h2 {
+    margin: 0;
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+/* SVG alignment */
+.inline-head svg {
+    flex-shrink: 0;
+    margin-top: 6px;
+}
+
+/* Button */
+.top-block .btn-primary,
+.bottom-block .btn-primary {
+    white-space: nowrap;
+}
+@media (max-width: 768px) {
+    .top-block,
+    .bottom-block {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .inline-head {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .inline-head h2 {
+        white-space: normal;
+    }
+}
+
+</style>
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
@@ -812,7 +866,7 @@
 <section class="cv-section" id="how-it-works">
     <!-- How It Works Section -->
     <div class="top-block">
-        <div class="left-content">
+<div class="left-content inline-head">
             <h2>
                 How Jobsease Helps<br>
                 You Get Hired
@@ -868,7 +922,7 @@
     <!-- Core Features Section -->
     <section class="upload-section" id="features">
         <div class="bottom-block">
-        <div class="left-content">
+<div class="left-content inline-head">
             <h2>
                 Everything You Need<br>
                 in One Platform
@@ -1418,7 +1472,7 @@
                         <span style="font-size: 1.5rem;">⭐</span>
                     </div>
                     <h3 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem;">Pro Plan</h3>
-                    <p style="opacity: 0.9; margin-bottom: 1.5rem; font-size: 0.95rem;">Everything you need to succeed</p>
+                    <p style="opacity: 0.9; margin-bottom: 1.5rem; font-size: 0.95rem;color:#a1b1bf !important;">Everything you need to succeed</p>
                     <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0;">
                         <li style="padding: 0.75rem 0; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.15);"><span>✓</span> Unlimited CVs</li>
                         <li style="padding: 0.75rem 0; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.15);"><span>✓</span> AI interview practice</li>
@@ -1497,7 +1551,7 @@
     </section>
 
     <!-- Final CTA Section -->
-    <section class="interview-section" style="padding: 5rem 2rem;">
+    <section id="contact" class="interview-section" style="padding: 5rem 2rem;">
         <div class="keyboard-bg"></div>
         <div class="blur-overlay"></div>
         
