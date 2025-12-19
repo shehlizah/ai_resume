@@ -147,14 +147,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </button>
     </form>
 
-    <!-- Why Join Section - Below Form -->
-    <div class="p-3 p-sm-4 bg-light border rounded-3 mb-4 mb-sm-6">
-        <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold mb-2 d-inline-block" style="font-size: clamp(0.8rem, 2vw, 0.85rem);">Why Join</span>
-        <h6 class="mb-2 text-dark" style="font-size: clamp(0.95rem, 2.5vw, 1.05rem);">Get job-ready faster with AI-powered CV, interview practice, and job matching</h6>
-        <p class="text-muted mb-2" style="font-size: clamp(0.85rem, 2vw, 0.95rem);">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
-        <ul class="text-muted small mb-0 ps-3" style="font-size: clamp(0.8rem, 2vw, 0.9rem);">
-            <li class="mb-1">Create a professional CV in minutes</li>
-            <li class="mb-1">Practice interviews with AI feedback</li>
+    <!-- Why Join Section - Below Form (compact) -->
+    <div class="why-join p-2 p-sm-3 bg-light border rounded-3 mb-3 lh-sm">
+        <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold mb-1 d-inline-block" style="font-size: clamp(0.78rem, 1.8vw, 0.82rem);">Why Join</span>
+        <h6 class="mb-1 text-dark fw-semibold" style="font-size: clamp(0.9rem, 2vw, 1rem);">Get job-ready faster with AI-powered CV, interview practice, and job matching</h6>
+        <p class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.8vw, 0.9rem);">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
+        <ul class="text-muted small mb-0 ps-3" style="font-size: clamp(0.78rem, 1.8vw, 0.88rem);">
+            <li class="mb-0">Create a professional CV in minutes</li>
+            <li class="mb-0">Practice interviews with AI feedback</li>
             <li class="mb-0">Find jobs matching your skills & location</li>
         </ul>
     </div>
@@ -174,6 +174,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
     </p>
 
   <style>
+        .why-join { line-height: 1.25; }
+        .why-join ul { margin-bottom: 0; }
+        .why-join .badge { margin-bottom: .25rem; }
+        @media (max-width: 575.98px) {
+            .why-join { padding: 0.75rem; }
+        }
     @media (max-width: 575.98px) {
       .form-label {
         font-size: 0.95rem;
