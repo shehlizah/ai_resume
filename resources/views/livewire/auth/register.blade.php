@@ -46,7 +46,10 @@ new #[Layout('components.layouts.auth')] class extends Component {
 @endsection
 
 <div>
-    <div class="d-flex justify-content-end mb-4">
+    <h4 class="mb-2">{{ __('Adventure starts here') }} 🚀</h4>
+    <p class="mb-4">{{ __('Make your app management easy and fun!') }}</p>
+
+    <div class="mb-4">
         <a href="{{ url('/') }}" class="navbar-brand">
             <img
                 src="{{ asset('assets/img/logo.png') }}"
@@ -54,6 +57,17 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 style="max-width: 120px;"
             >
         </a>
+    </div>
+
+    <div class="p-4 bg-light border rounded-4 shadow-sm mb-4">
+        <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold mb-2">Why join</span>
+        <h4 class="mb-2">Get job-ready faster with AI-powered CV, interview practice, and job matching</h4>
+        <p class="text-muted mb-3">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
+        <ul class="text-muted small mb-0 ps-3">
+            <li class="mb-1">Create a professional CV in minutes</li>
+            <li class="mb-1">Practice interviews with AI feedback</li>
+            <li class="mb-0">Find jobs matching your skills & location</li>
+        </ul>
     </div>
 
     <!-- Session Status -->
