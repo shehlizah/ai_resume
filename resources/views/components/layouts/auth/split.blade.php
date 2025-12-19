@@ -8,8 +8,8 @@
               <!-- Logo -->
               <div class="app-brand auth-cover-brand mb-4">
                 <a href="{{ url('/') }}" class="navbar-brand">
-                  <img 
-                    src="{{ asset('assets/img/logo.png') }}" 
+                  <img
+                    src="{{ asset('assets/img/logo.png') }}"
                     alt="Logo"
                     style="max-width: 180px;"
                   >
@@ -17,7 +17,7 @@
               </div>
 
               <!-- Illustration -->
-              <img 
+              <img
                 src="{{ asset('assets/img/illustrations/boy-with-rocket-light.png') }}"
                 class="img-fluid"
                 alt="Login image"

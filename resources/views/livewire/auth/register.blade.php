@@ -46,13 +46,16 @@ new #[Layout('components.layouts.auth')] class extends Component {
 @endsection
 
 <div>
-    <h4 class="mb-2">Get job-ready faster with AI-powered CV, interview practice, and job matching</h4>
-    <p class="text-muted mb-3">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
-    <ul class="text-muted small mb-4 ps-3">
-        <li class="mb-1">Create a professional CV in minutes</li>
-        <li class="mb-1">Practice interviews with AI feedback</li>
-        <li class="mb-0">Find jobs matching your skills & location</li>
-    </ul>
+    <div class="p-4 bg-light border rounded-4 shadow-sm mb-4">
+        <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold mb-2">Why join</span>
+        <h4 class="mb-2">Get job-ready faster with AI-powered CV, interview practice, and job matching</h4>
+        <p class="text-muted mb-3">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
+        <ul class="text-muted small mb-0 ps-3">
+            <li class="mb-1">Create a professional CV in minutes</li>
+            <li class="mb-1">Practice interviews with AI feedback</li>
+            <li class="mb-0">Find jobs matching your skills & location</li>
+        </ul>
+    </div>
 
     <!-- Session Status -->
     @if (session('status'))
@@ -90,7 +93,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 autocomplete="email"
                 placeholder="{{ __('Enter your email') }}"
             >
-            <small class="text-muted">We’ll never share your email.</small>
+            <div class="form-text text-muted">We’ll never share your email.</div>
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -113,7 +116,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
-            <small class="text-muted">Minimum 8 characters.</small>
+            <div class="form-text text-muted">Minimum 8 characters.</div>
         </div>
 
         <div class="mb-6 form-password-toggle">
@@ -148,7 +151,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary d-grid w-100 mb-6">
+        <button type="submit" class="btn btn-primary btn-lg d-grid w-100 mb-6 shadow-sm">
             {{ __('Create Free Account') }}
         </button>
     </form>
