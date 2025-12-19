@@ -46,17 +46,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
 @endsection
 
 <div>
-    <!-- Mobile Header with Logo -->
-    <div class="d-lg-none mb-4 pb-2 border-bottom">
-        <a href="{{ url('/') }}" class="navbar-brand d-block">
-            <img
-                src="{{ asset('assets/img/logo.png') }}"
-                alt="Logo"
-                style="max-width: 110px;"
-            >
-        </a>
-    </div>
-
     <h4 class="mb-2" style="font-size: clamp(1.5rem, 5vw, 1.75rem);">Welcome to JOBSEASE! 👋</h4>
 
     <!-- Session Status -->
