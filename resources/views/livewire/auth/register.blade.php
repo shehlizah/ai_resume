@@ -46,8 +46,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
 @endsection
 
 <div>
-    <h4 class="mb-1">{{ __('Adventure starts here') }} 🚀</h4>
-    <p class="mb-6">{{ __('Make your app management easy and fun!') }}</p>
+    <h4 class="mb-2">Get job-ready faster with AI-powered CV, interview practice, and job matching</h4>
+    <p class="text-muted mb-3">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
+    <ul class="text-muted small mb-4 ps-3">
+        <li class="mb-1">Create a professional CV in minutes</li>
+        <li class="mb-1">Practice interviews with AI feedback</li>
+        <li class="mb-0">Find jobs matching your skills & location</li>
+    </ul>
 
     <!-- Session Status -->
     @if (session('status'))
@@ -85,6 +90,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 autocomplete="email"
                 placeholder="{{ __('Enter your email') }}"
             >
+            <small class="text-muted">We’ll never share your email.</small>
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -107,6 +113,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
+            <small class="text-muted">Minimum 8 characters.</small>
         </div>
 
         <div class="mb-6 form-password-toggle">
@@ -133,7 +140,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 <input wire:model="terms" type="checkbox" class="form-check-input @error('terms') is-invalid @enderror" id="terms">
                 <label class="form-check-label" for="terms">
                     {{ __('I agree to') }}
-                    <a href="javascript:void(0);">{{ __('privacy policy & terms') }}</a>
+                    <a href="javascript:void(0);" class="fw-semibold text-primary text-decoration-underline">{{ __('privacy policy & terms') }}</a>
                 </label>
                 @error('terms')
                     <div class="invalid-feedback">{{ $message }}</div>
@@ -142,7 +149,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </div>
 
         <button type="submit" class="btn btn-primary d-grid w-100 mb-6">
-            {{ __('Sign up') }}
+            {{ __('Create Free Account') }}
         </button>
     </form>
 
