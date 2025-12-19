@@ -46,6 +46,16 @@ new #[Layout('components.layouts.auth')] class extends Component {
 @endsection
 
 <div>
+    <div class="d-flex justify-content-end mb-4">
+        <a href="{{ url('/') }}" class="navbar-brand">
+            <img
+                src="{{ asset('assets/img/logo.png') }}"
+                alt="Logo"
+                style="max-width: 120px;"
+            >
+        </a>
+    </div>
+
     <!-- Session Status -->
     @if (session('status'))
         <div class="alert alert-info mb-4">
