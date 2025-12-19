@@ -27,7 +27,7 @@
                             </div>
                         </div>
                         <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                            
+
                         </div>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                     <div class="flex-grow-1">
                         <strong>Unlock Premium Features!</strong> Get unlimited resumes and premium templates starting at $19.99/month.
                     </div>
-                    <a href="{{ route('user.pricing') }}" class="btn btn-sm btn-outline-dark bg-white">View Plans</a>
+                    <a href="{{ route('user.pricing') }}" class="btn btn-link text-dark p-0">View plans</a>
                 </div>
             </div>
         @endif
@@ -416,8 +416,8 @@
                         <div class="text-center py-3">
                             <i class="bx bx-package mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
                             <p class="text-muted mb-3 small">You're on the free plan</p>
-                            <a href="{{ route('user.pricing') }}" class="btn btn-outline-secondary btn-sm w-100">
-                                <i class="bx bx-crown me-1"></i> View Plans
+                            <a href="{{ route('user.pricing') }}" class="btn btn-link text-secondary p-0">
+                                <i class="bx bx-crown me-1"></i> View plans
                             </a>
                         </div>
                     @endif
@@ -439,8 +439,8 @@
                             <li class="mb-2">✓ Cover Letter Builder</li>
                             <li class="mb-2">✓ Priority Support</li>
                         </ul>
-                        <a href="{{ route('user.pricing') }}" class="btn btn-light btn-sm w-100">
-                            Get Started - $19.99/month
+                        <a href="{{ route('user.pricing') }}" class="btn btn-warning btn-lg w-100 shadow-sm">
+                            Upgrade Now
                         </a>
                     </div>
                 </div>
