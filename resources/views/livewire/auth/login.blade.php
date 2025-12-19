@@ -109,14 +109,6 @@ new #[Layout('components.layouts.auth')] class extends Component
 <div>
     <x-auth-header :title="__('Welcome to :app!', ['app' => config('app.name')])" :description="__('Enter your email and password below to log in')" />
 
-    <div class="text-center mb-5">
-        <img
-            src="https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=1000&q=80"
-            alt="Dashboard preview placeholder"
-            class="img-fluid rounded-4 shadow-sm"
-        >
-    </div>
-
     <!-- Session Status -->
     @if (session('status'))
         <div class="alert alert-info mb-4">
@@ -131,8 +123,8 @@ new #[Layout('components.layouts.auth')] class extends Component
 @endif
 
 
-    <form wire:submit="login" class="mb-5">
-        <div class="mb-5">
+    <form wire:submit="login" class="mb-6">
+        <div class="mb-6">
             <label for="email" class="form-label">{{ __('Email or Username') }}</label>
             <input
                 wire:model="email"
@@ -149,7 +141,7 @@ new #[Layout('components.layouts.auth')] class extends Component
             @enderror
         </div>
 
-        <div class="mb-5 form-password-toggle">
+        <div class="mb-6 form-password-toggle">
             <div class="d-flex justify-content-between">
                 <label for="password" class="form-label">{{ __('Password') }}</label>
                 @if (Route::has('password.request'))
@@ -175,8 +167,8 @@ new #[Layout('components.layouts.auth')] class extends Component
             </div>
         </div>
 
-        <div class="mb-6">
-            <div class="d-flex justify-content-between mt-6">
+        <div class="mb-8">
+            <div class="d-flex justify-content-between mt-8">
                 <div class="form-check mb-0 ms-2">
                     <input wire:model="remember" type="checkbox" class="form-check-input" id="remember">
                     <label class="form-check-label" for="remember">
@@ -186,8 +178,8 @@ new #[Layout('components.layouts.auth')] class extends Component
             </div>
         </div>
 
-        <div class="mb-5">
-            <button type="submit" class="btn btn-primary btn-lg d-grid w-100">{{ __('Login') }}</button>
+        <div class="mb-6">
+            <button type="submit" class="btn btn-primary d-grid w-100">{{ __('Login') }}</button>
         </div>
     </form>
 
@@ -200,27 +192,6 @@ new #[Layout('components.layouts.auth')] class extends Component
         </p>
     @endif
 
-    <div class="card border-0 shadow-sm mt-4" style="background: #f8fafc;">
-        <div class="card-body p-4">
-            <div class="d-flex align-items-start mb-3">
-                <div class="avatar avatar-lg bg-warning bg-opacity-25 rounded me-3" style="min-width: 50px;">
-                    <i class="bx bxs-crown text-warning" style="font-size: 1.75rem;"></i>
-                </div>
-                <div>
-                    <h6 class="mb-1 text-dark">Premium Features</h6>
-                    <p class="small text-muted mb-0">Get more value when you’re ready</p>
-                </div>
-            </div>
-            <ul class="text-muted small mb-3 ps-3">
-                <li class="mb-2">Unlimited resumes</li>
-                <li class="mb-2">Premium templates</li>
-                <li class="mb-0">Priority support</li>
-            </ul>
-            <a href="{{ route('user.pricing') }}" class="btn btn-outline-primary btn-lg w-100">
-                View Plans
-            </a>
-        </div>
-    </div>
 
 
 
