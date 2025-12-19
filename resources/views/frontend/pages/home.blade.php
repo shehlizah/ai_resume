@@ -162,17 +162,21 @@
             background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
             color: white;
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+            border: none;
         }
 
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 24px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 12px 28px rgba(59, 130, 246, 0.45);
         }
 
         .btn-outline {
             background: white;
             color: #0F172A;
             border: 2px solid #E2E8F0;
+            position: relative;
         }
 
         .btn-outline:hover {
@@ -220,6 +224,38 @@
         .mockup-bar.gray { background: #E2E8F0; width: 90%; }
         .mockup-bar.green { background: #10B981; width: 60%; }
         .mockup-bar.gray-2 { background: #E2E8F0; width: 80%; }
+
+        /* Section Title Consistency */
+        section h2 {
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        section h3 {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Enhanced Button Shadows */
+        .btn-primary {
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -334,23 +370,29 @@
 
         .feature-card h3 {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.375rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: #0F172A;
-            margin-bottom: 0.875rem;
+            margin-bottom: 0.75rem;
             line-height: 1.3;
         }
 
         .feature-card p {
             color: #64748B;
-            line-height: 1.7;
-            font-size: 15px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* ===== CV SECTION (HOW IT WORKS) ===== */
+        .cv-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
         }
 
         /* ===== UPLOAD OPTIONS SECTION ===== */
         .upload-section {
             padding: 6rem 2rem;
-            background: #F8FAFC;
+            background: #ffffff;
         }
 
         .upload-options {
