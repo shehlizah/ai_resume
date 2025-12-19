@@ -9,16 +9,25 @@
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <h4 class="text-white mb-2">
-                                👋 Welcome back, {{ $user->first_name ?? $user->name ?? 'User' }}!
+                                Welcome back, {{ $user->first_name ?? $user->name ?? 'User' }}
                             </h4>
                             <p class="text-white mb-0 opacity-90">
-                                Ready to create your next professional resume? Let's get started!
+                                Your career tools are ready. What would you like to do today?
                             </p>
+                            <div class="mt-3 d-flex flex-wrap gap-2">
+                                <a href="{{ url('resumes/create') }}" class="btn btn-light btn-lg shadow-sm">
+                                    <i class="bx bx-plus-circle me-1"></i> Create Resume
+                                </a>
+                                <a href="{{ route('user.interview.questions') }}" class="btn btn-outline-light btn-lg shadow-sm">
+                                    <i class="bx bx-chat me-1"></i> Practice Interview
+                                </a>
+                                <a href="{{ route('user.jobs.recommended') }}" class="btn btn-outline-light btn-lg shadow-sm">
+                                    <i class="bx bx-briefcase me-1"></i> Find Jobs
+                                </a>
+                            </div>
                         </div>
                         <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                            <a href="{{ route('user.resumes') }}" class="btn btn-light btn-lg shadow-sm">
-                                <i class="bx bx-plus-circle me-1"></i> Create Resume
-                            </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -52,7 +61,7 @@
                     <div class="flex-grow-1">
                         <strong>Unlock Premium Features!</strong> Get unlimited resumes and premium templates starting at $19.99/month.
                     </div>
-                    <a href="{{ route('user.pricing') }}" class="btn btn-sm btn-warning">Upgrade Now</a>
+                    <a href="{{ route('user.pricing') }}" class="btn btn-sm btn-outline-dark bg-white">View Plans</a>
                 </div>
             </div>
         @endif
@@ -176,8 +185,8 @@
                                     <div class="d-flex align-items-start">
                                         <div class="badge bg-primary rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">1</div>
                                         <div>
-                                            <h6 class="mb-1">Create Your Resume</h6>
-                                            <p class="text-muted small mb-0">Build a professional resume with AI-powered suggestions</p>
+                                            <h6 class="mb-1">Create CV <span class="text-muted">(5–10 minutes)</span></h6>
+                                            <p class="text-muted small mb-0">Start with a professional CV in minutes</p>
                                         </div>
                                     </div>
                                 </div>
@@ -191,8 +200,8 @@
                                     <div class="d-flex align-items-start">
                                         <div class="badge bg-success rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">2</div>
                                         <div>
-                                            <h6 class="mb-1">Write Cover Letter</h6>
-                                            <p class="text-muted small mb-0">Create tailored cover letters with AI assistance</p>
+                                            <h6 class="mb-1">Generate Cover Letter</h6>
+                                            <p class="text-muted small mb-0">Quickly generate tailored cover letters</p>
                                         </div>
                                     </div>
                                 </div>
@@ -206,8 +215,8 @@
                                     <div class="d-flex align-items-start">
                                         <div class="badge bg-info rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">3</div>
                                         <div>
-                                            <h6 class="mb-1">Find Jobs</h6>
-                                            <p class="text-muted small mb-0">Discover opportunities matched to your skills</p>
+                                            <h6 class="mb-1">Find Matching Jobs</h6>
+                                            <p class="text-muted small mb-0">Discover roles matched to your skills</p>
                                         </div>
                                     </div>
                                 </div>
@@ -221,7 +230,7 @@
                                     <div class="d-flex align-items-start">
                                         <div class="badge bg-warning rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">4</div>
                                         <div>
-                                            <h6 class="mb-1">Prepare Interview</h6>
+                                            <h6 class="mb-1">Practice Interview with AI</h6>
                                             <p class="text-muted small mb-0">Practice questions and AI mock interviews</p>
                                         </div>
                                     </div>
@@ -321,8 +330,8 @@
                                     <td colspan="4" class="px-4 py-5 text-center">
                                         <div class="text-muted">
                                             <i class="bx bxs-file-doc mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                                            <h6 class="mb-2">No resumes yet</h6>
-                                            <p class="small mb-3">Create your first professional resume now!</p>
+                                            <h6 class="mb-2">You haven’t created a resume yet.</h6>
+                                            <p class="small mb-3">Create your first AI-powered resume in under 10 minutes.</p>
                                             <a href="{{ route('user.resumes') }}" class="btn btn-sm btn-primary">
                                                 <i class="bx bx-plus-circle me-1"></i> Create Resume
                                             </a>
@@ -407,8 +416,8 @@
                         <div class="text-center py-3">
                             <i class="bx bx-package mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
                             <p class="text-muted mb-3 small">You're on the free plan</p>
-                            <a href="{{ route('user.pricing') }}" class="btn btn-primary btn-sm w-100">
-                                <i class="bx bx-crown me-1"></i> Upgrade Now
+                            <a href="{{ route('user.pricing') }}" class="btn btn-outline-secondary btn-sm w-100">
+                                <i class="bx bx-crown me-1"></i> View Plans
                             </a>
                         </div>
                     @endif
