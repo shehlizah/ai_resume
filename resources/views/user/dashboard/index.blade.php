@@ -27,11 +27,9 @@
                             </div>
                         </div>
                         <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                            @if(!$hasPremiumAccess)
-                                <a href="{{ route('user.pricing') }}" class="btn btn-warning btn-lg shadow-sm">
-                                    <i class="bx bx-crown me-1"></i> Upgrade Now
-                                </a>
-                            @endif
+                            <a href="{{ route('user.pricing') }}" class="btn btn-warning btn-lg shadow-sm">
+                                <i class="bx bx-crown me-1"></i> Upgrade Now
+                            </a>
                         </div>
                     </div>
                 </div>
