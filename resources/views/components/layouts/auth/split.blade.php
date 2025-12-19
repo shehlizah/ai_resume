@@ -14,28 +14,29 @@
               <img
                 src="{{ asset('assets/img/logo.png') }}"
                 alt="Logo"
-                style="max-width: 160px; filter: brightness(0) invert(1);"
+                style="max-width: 160px;"
               >
             </a>
           </div>
 
-          <!-- Modern Value Proposition -->
+          <!-- Value Proposition -->
           <div class="mt-5">
-            <h3 class="text-white fw-bold mb-3">Your Career Toolkit</h3>
-            <p class="text-white opacity-90 mb-4">Build, practice, and land the job you deserve</p>
+            <span class="badge bg-white bg-opacity-20 text-white fw-semibold mb-3 d-inline-block">Why join</span>
+            <h3 class="text-white fw-bold mb-3">Get job-ready faster with AI-powered CV, interview practice, and job matching</h3>
+            <p class="text-white opacity-90 mb-4">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
             
             <div class="d-flex flex-column gap-2 align-items-start ms-3">
               <div class="d-flex align-items-center gap-2">
                 <i class="bx bx-check-circle text-white" style="font-size: 1.3rem;"></i>
-                <span class="text-white">AI-powered resume builder</span>
+                <span class="text-white">Create a professional CV in minutes</span>
               </div>
               <div class="d-flex align-items-center gap-2">
                 <i class="bx bx-check-circle text-white" style="font-size: 1.3rem;"></i>
-                <span class="text-white">Smart interview preparation</span>
+                <span class="text-white">Practice interviews with AI feedback</span>
               </div>
               <div class="d-flex align-items-center gap-2">
                 <i class="bx bx-check-circle text-white" style="font-size: 1.3rem;"></i>
-                <span class="text-white">Personalized job matching</span>
+                <span class="text-white">Find jobs matching your skills & location</span>
               </div>
             </div>
           </div>
