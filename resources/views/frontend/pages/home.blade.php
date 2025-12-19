@@ -1,4 +1,4 @@
-
+﻿
 @extends('frontend.layouts.app')
 
 @section('title', 'Jobsease | Create CV, Practice Interview & Apply for Jobs Easily')
@@ -970,7 +970,7 @@
     .upload-options {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .trust-grid {
         grid-template-columns: repeat(2, 1fr) !important;
     }
@@ -981,7 +981,7 @@
     .upload-options {
         grid-template-columns: 1fr;
     }
-    
+
     .trust-grid {
         grid-template-columns: 1fr !important;
     }
@@ -1103,13 +1103,13 @@
 
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon" style="background: linear-gradient(135deg, #F97316, #EA580C);">📝</div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #F97316, #EA580C);">📄</div>
                 <h3>Build CV</h3>
                 <p>Pro templates + AI writing assist</p>
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">🔍</div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">🎯</div>
                 <h3>Find Jobs</h3>
                 <p>Matches by skills & location</p>
             </div>
@@ -1158,7 +1158,7 @@
 
         <div class="upload-options">
             <div class="upload-card">
-                <div class="upload-icon">�</div>
+                <div class="upload-icon"></div>
                 <h3>Build CV</h3>
                 <p>5 templates + AI writing assist</p>
                 <a href="{{route('user.resumes.create')}}" class="btn btn-primary">Create Now</a>
@@ -1172,7 +1172,7 @@
             </div>
 
             <div class="upload-card">
-                <div class="upload-icon">�</div>
+                <div class="upload-icon"></div>
                 <h3>Find Jobs</h3>
                 <p>Matches based on your skills</p>
                 <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Search Jobs</a>
@@ -1768,15 +1768,15 @@
     <section id="contact" class="interview-section" style="padding: 5rem 2rem;">
         <div class="keyboard-bg"></div>
         <div class="blur-overlay"></div>
-        
+
         <div style="position: relative; z-index: 3; text-align: center; max-width: 800px; margin: 0 auto;">
             <h2 style="color: #fff; font-size: 2.75rem; font-weight: 700; margin-bottom: 1rem;">Ready to Get Hired Faster?</h2>
             <p style="color: rgba(255,255,255,0.9); font-size: 1.25rem; margin-bottom: 2rem;">Create your CV, practice interviews, and apply for jobs — all in one platform.</p>
-            
+
             <a href="{{route('register')}}" style="display: inline-block; background: #fff; color: #1D4ED8; padding: 1rem 2.5rem; border-radius: 12px; font-weight: 700; font-size: 1.125rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,0,0,0.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)';">Try AI Interview Now</a>
-            
+
             <p style="color: rgba(255,255,255,0.8); margin-top: 1.5rem; font-size: 0.95rem;">
-                or reach out to us at 
+                or reach out to us at
                 <a href="mailto:hello@jobsease.com" style="color: #fff; text-decoration: underline;">hello@jobsease.com</a>
             </p>
         </div>
