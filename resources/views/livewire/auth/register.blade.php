@@ -46,7 +46,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 @endsection
 
 <div>
-    <h4 class="mb-2">Welcome to JOBSEASE! 👋</h4>
+    <h4 class="mb-2" style="font-size: clamp(1.5rem, 5vw, 1.75rem);">Welcome to JOBSEASE! 👋</h4>
 
     <!-- Session Status -->
     @if (session('status'))
@@ -56,7 +56,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     @endif
 
     <form wire:submit="register" class="mb-6">
-        <div class="mb-6">
+        <div class="mb-4 mb-sm-6">
             <label for="name" class="form-label">{{ __('Name') }}</label>
             <input
                 wire:model="name"
@@ -73,7 +73,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             @enderror
         </div>
 
-        <div class="mb-6">
+        <div class="mb-4 mb-sm-6">
             <label for="email" class="form-label">{{ __('Email') }}</label>
             <input
                 wire:model="email"
@@ -90,7 +90,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             @enderror
         </div>
 
-        <div class="mb-6 form-password-toggle">
+        <div class="mb-4 mb-sm-6 form-password-toggle">
             <label class="form-label" for="password">{{ __('Password') }}</label>
             <div class="input-group input-group-merge">
                 <input
@@ -110,7 +110,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             <div class="form-text text-muted">Minimum 8 characters.</div>
         </div>
 
-        <div class="mb-6 form-password-toggle">
+        <div class="mb-4 mb-sm-6 form-password-toggle">
             <label class="form-label" for="password_confirmation">{{ __('Confirm Password') }}</label>
             <div class="input-group input-group-merge">
                 <input
@@ -129,7 +129,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             </div>
         </div>
 
-        <div class="mb-8">
+        <div class="mb-4 mb-sm-8">
             <div class="form-check mb-0 ms-2">
                 <input wire:model="terms" type="checkbox" class="form-check-input @error('terms') is-invalid @enderror" id="terms">
                 <label class="form-check-label" for="terms">
@@ -142,22 +142,43 @@ new #[Layout('components.layouts.auth')] class extends Component {
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-lg d-grid w-100 mb-6 shadow-sm">
+        <button type="submit" class="btn btn-primary btn-lg d-grid w-100 mb-4 mb-sm-6 shadow-sm" style="font-size: clamp(0.95rem, 2.5vw, 1rem);">
             {{ __('Create Free Account') }}
         </button>
     </form>
 
-    <p class="text-center mb-3">
+    <p class="text-center mb-2 mb-sm-3" style="font-size: clamp(0.85rem, 2vw, 0.95rem);">
         <span>{{ __('Are you an employer?') }}</span>
         <a href="{{ route('register.employer') }}" wire:navigate>
             <span>{{ __('Register to post jobs') }}</span>
         </a>
     </p>
 
-    <p class="text-center">
+    <p class="text-center" style="font-size: clamp(0.85rem, 2vw, 0.95rem);">
         <span>{{ __('Already have an account?') }}</span>
         <a href="{{ route('login') }}" wire:navigate>
             <span>{{ __('Sign in instead') }}</span>
         </a>
     </p>
+
+  <style>
+    @media (max-width: 575.98px) {
+      .form-label {
+        font-size: 0.95rem;
+      }
+      .form-control, .input-group-text {
+        font-size: 0.95rem;
+        padding: 0.5rem 0.75rem;
+      }
+      .form-text {
+        font-size: 0.8rem;
+      }
+      .btn {
+        border-radius: 0.375rem;
+      }
+      h4 {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
 </div>

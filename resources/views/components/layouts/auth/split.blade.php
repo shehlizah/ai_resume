@@ -53,12 +53,20 @@
     </div>
 
     <!-- Right Panel - Form Card -->
-    <div class="card col-12 col-lg-5 col-xl-4">
-      <div class="d-flex align-items-center authentication-bg p-sm-12 p-6 h-100">
-        <div class="w-px-400 mx-auto mt-sm-12 mt-8">
+    <div class="card col-12 col-lg-5 col-xl-4" style="border-radius: 0; border: none;">
+      <div class="d-flex align-items-center authentication-bg p-sm-5 p-3 p-md-6 min-vh-100" style="min-height: auto; @media (max-width: 991.98px) { min-height: 100vh; }">
+        <div class="w-px-400 mx-auto mt-sm-8 mt-4 w-100">
           {{ $slot }}
         </div>
       </div>
     </div>
   </div>
+
+  <style>
+    @media (max-width: 991.98px) {
+      .authentication-wrapper .card {
+        border-radius: 0 !important;
+      }
+    }
+  </style>
 </div>
