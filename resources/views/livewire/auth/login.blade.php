@@ -111,8 +111,8 @@ new #[Layout('components.layouts.auth')] class extends Component
 
     <div class="text-center mb-5">
         <img
-            src="https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=1000&q=80"
-            alt="Dashboard preview placeholder"
+            src="{{ asset('assets/img/illustrations/laravel-livewire-sneat.png') }}"
+            alt="Dashboard preview"
             class="img-fluid rounded-4 shadow-sm"
         >
     </div>
