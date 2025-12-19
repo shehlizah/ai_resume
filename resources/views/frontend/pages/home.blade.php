@@ -1651,6 +1651,19 @@ Practice real interview questions and improve with feedback.</p>
     }
 }
 
+    /* ===== PRICING ICONS MOBILE CENTER ===== */
+    @media (max-width: 768px) {
+        /* Center pricing plan icons on mobile */
+        div[style*="width: 56px; height: 56px; background: linear-gradient"] {
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        div[style*="width: 56px; height: 56px; background: rgba"] {
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+    }
 
     </style>
 
