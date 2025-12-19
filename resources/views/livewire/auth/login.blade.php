@@ -107,7 +107,29 @@ new #[Layout('components.layouts.auth')] class extends Component
 @endsection
 
 <div>
+    <!-- Mobile Header with Logo -->
+    <div class="d-lg-none mb-4 pb-2 border-bottom">
+        <a href="{{ url('/') }}" class="navbar-brand d-block">
+            <img
+                src="{{ asset('assets/img/logo.png') }}"
+                alt="Logo"
+                style="max-width: 110px;"
+            >
+        </a>
+    </div>
+
     <x-auth-header :title="__('Welcome to :app!', ['app' => config('app.name')])" :description="__('Enter your email and password below to log in')" />
+
+    <!-- Mobile Value Proposition -->
+    <div class="d-lg-none mb-4 p-3 bg-light rounded-3 border">
+        <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold mb-2 d-inline-block" style="font-size: 0.85rem;">Why Join</span>
+        <h6 class="mb-2 text-dark" style="font-size: 0.95rem;">Get job-ready faster with AI-powered CV, interview practice, and job matching</h6>
+        <ul class="text-muted small mb-0 ps-3" style="font-size: 0.85rem;">
+            <li class="mb-1">Create a professional CV in minutes</li>
+            <li class="mb-1">Practice interviews with AI feedback</li>
+            <li class="mb-0">Find jobs matching your skills & location</li>
+        </ul>
+    </div>
 
     <!-- Session Status -->
     @if (session('status'))
