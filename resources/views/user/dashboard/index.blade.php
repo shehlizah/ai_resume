@@ -169,10 +169,10 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="col-lg-8">
+        <div class="col-lg-8" style="padding-top: 24px;">
 
             <!-- Career Journey Path - New Section -->
-            <div class="card border-0 shadow-sm mb-3">
+            <div class="card border-0 shadow-sm mb-2">
                 <div class="card-header bg-white border-0">
                     <h6 class="mb-0">
                         <i class="bx bx-trending-up me-1"></i> Your Career Journey
@@ -276,7 +276,7 @@
             </div>
 
             <!-- Recent Resumes -->
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm mb-2">
                 <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
                     <h6 class="mb-0">
                         <i class="bx bx-file me-1"></i> Recent Resumes
@@ -331,10 +331,10 @@
                                 <tr>
                                     <td colspan="4" class="px-4 py-4 text-center">
                                         <div class="text-muted">
-                                            <i class="bx bxs-file-doc mb-3" style="font-size: 3.5rem; opacity: 0.35;"></i>
+                                            <i class="bx bxs-file-doc mb-2" style="font-size: 4.5rem; opacity: 0.35;"></i>
                                             <h6 class="mb-2">You haven’t created a resume yet.</h6>
-                                            <p class="small mb-2">Create your first AI-powered resume in under 10 minutes.</p>
-                                            <a href="{{ route('user.resumes') }}" class="btn btn-sm btn-primary">
+                                            <p class="small mb-1">Create your first AI-powered resume in under 10 minutes.</p>
+                                            <a href="{{ route('user.resumes') }}" class="btn btn-sm btn-primary mt-1">
                                                 <i class="bx bx-plus-circle me-1"></i> Create Resume
                                             </a>
                                         </div>
@@ -348,10 +348,10 @@
         </div>
 
         <!-- Sidebar -->
-        <div class="col-lg-4">
+        <div class="col-lg-4" style="padding-top: 24px;">
 
             <!-- Subscription Details -->
-            <div class="card border-0 shadow-sm mb-4">
+            <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-0">
                     <h6 class="mb-0">
                         <i class="bx bxs-credit-card me-1"></i> Subscription
@@ -429,7 +429,7 @@
 
 
             <!-- Premium Features Card -->
-            <div class="card border-0 shadow-sm mt-3" style="background: #f8fafc;">
+            <div class="card border-0 shadow-sm mt-2" style="background: #f8fafc;">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-start mb-3">
                         <div class="avatar avatar-lg bg-warning bg-opacity-25 rounded me-3" style="min-width: 50px;">
@@ -456,6 +456,28 @@
     </div>
 
     <style>
+        /* Dashboard spacing improvements */
+        .card.mb-2, .card.mb-3 {
+            margin-bottom: 1.1rem !important;
+        }
+        .card.mb-2:last-child, .card.mb-3:last-child {
+            margin-bottom: 0 !important;
+        }
+        .col-lg-8, .col-lg-4 {
+            padding-bottom: 0 !important;
+        }
+        .card-header, .card-body {
+            padding-top: 1.1rem !important;
+            padding-bottom: 1.1rem !important;
+        }
+        .table-responsive {
+            margin-bottom: 0.5rem !important;
+        }
+        @media (max-width: 991.98px) {
+            .col-lg-8, .col-lg-4 {
+                padding-top: 12px !important;
+            }
+        }
         .hover-shadow {
             transition: all 0.3s ease;
         }
