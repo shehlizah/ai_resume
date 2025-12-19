@@ -27,7 +27,11 @@
                             </div>
                         </div>
                         <div class="col-md-4 text-md-end mt-3 mt-md-0">
-
+                            @if(!$hasPremiumAccess)
+                                <a href="{{ route('user.pricing') }}" class="btn btn-warning btn-lg shadow-sm">
+                                    <i class="bx bx-crown me-1"></i> Upgrade Now
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -439,8 +443,8 @@
                             <li class="mb-2">✓ Cover Letter Builder</li>
                             <li class="mb-2">✓ Priority Support</li>
                         </ul>
-                        <a href="{{ route('user.pricing') }}" class="btn btn-warning btn-lg w-100 shadow-sm">
-                            Upgrade Now
+                        <a href="{{ route('user.pricing') }}" class="btn btn-link text-white p-0">
+                            View plans
                         </a>
                     </div>
                 </div>
