@@ -51,8 +51,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     <div class="text-center mb-5">
         <img
-            src="{{ asset('assets/img/illustrations/boy-with-rocket-light.png') }}"
-            alt="Workspace illustration"
+            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=80"
+            alt="Workspace mockup placeholder"
             class="img-fluid rounded-4 shadow-sm"
         >
     </div>
