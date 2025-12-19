@@ -46,6 +46,17 @@ new #[Layout('components.layouts.auth')] class extends Component {
 @endsection
 
 <div>
+    <!-- Mobile Logo Header -->
+    <div class="d-lg-none mb-4 pb-3 border-bottom">
+        <a href="{{ url('/') }}" class="navbar-brand d-block">
+            <img
+                src="{{ asset('assets/img/logo.png') }}"
+                alt="Logo"
+                style="max-width: 110px;"
+            >
+        </a>
+    </div>
+
     <h4 class="mb-2" style="font-size: clamp(1.5rem, 5vw, 1.75rem);">Welcome to JOBSEASE! 👋</h4>
 
     <!-- Session Status -->
@@ -148,7 +159,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     </form>
 
     <!-- Why Join Section - Below Form (compact) -->
-    <div class="why-join p-2 p-sm-3 bg-light border rounded-3 mb-3 lh-sm">
+    <div class="why-join p-2 p-sm-3 bg-light border rounded-3 mb-3 lh-sm d-none d-md-block">
         <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold mb-1 d-inline-block" style="font-size: clamp(0.78rem, 1.8vw, 0.82rem);">Why Join</span>
         <h6 class="mb-1 text-dark fw-semibold" style="font-size: clamp(0.9rem, 2vw, 1rem);">Get job-ready faster with AI-powered CV, interview practice, and job matching</h6>
         <p class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.8vw, 0.9rem);">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
