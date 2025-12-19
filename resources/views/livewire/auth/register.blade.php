@@ -147,6 +147,18 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </button>
     </form>
 
+    <!-- Why Join Section - Below Form -->
+    <div class="p-3 p-sm-4 bg-light border rounded-3 mb-4 mb-sm-6">
+        <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold mb-2 d-inline-block" style="font-size: clamp(0.8rem, 2vw, 0.85rem);">Why Join</span>
+        <h6 class="mb-2 text-dark" style="font-size: clamp(0.95rem, 2.5vw, 1.05rem);">Get job-ready faster with AI-powered CV, interview practice, and job matching</h6>
+        <p class="text-muted mb-2" style="font-size: clamp(0.85rem, 2vw, 0.95rem);">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
+        <ul class="text-muted small mb-0 ps-3" style="font-size: clamp(0.8rem, 2vw, 0.9rem);">
+            <li class="mb-1">Create a professional CV in minutes</li>
+            <li class="mb-1">Practice interviews with AI feedback</li>
+            <li class="mb-0">Find jobs matching your skills & location</li>
+        </ul>
+    </div>
+
     <p class="text-center mb-2 mb-sm-3" style="font-size: clamp(0.85rem, 2vw, 0.95rem);">
         <span>{{ __('Are you an employer?') }}</span>
         <a href="{{ route('register.employer') }}" wire:navigate>

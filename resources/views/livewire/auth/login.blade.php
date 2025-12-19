@@ -107,6 +107,17 @@ new #[Layout('components.layouts.auth')] class extends Component
 @endsection
 
 <div>
+    <!-- Mobile Logo Header -->
+    <div class="d-lg-none mb-4 pb-3 border-bottom">
+        <a href="{{ url('/') }}" class="navbar-brand d-block">
+            <img
+                src="{{ asset('assets/img/logo.png') }}"
+                alt="Logo"
+                style="max-width: 110px;"
+            >
+        </a>
+    </div>
+
     <x-auth-header :title="__('Welcome to :app!', ['app' => config('app.name')])" :description="__('Enter your email and password below to log in')" />
 
     <!-- Session Status -->
