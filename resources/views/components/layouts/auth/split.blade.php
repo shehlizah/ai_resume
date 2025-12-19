@@ -5,28 +5,28 @@
       <!-- Decorative elements -->
       <div style="position: absolute; top: -50px; right: -100px; width: 300px; height: 300px; border-radius: 50%; background: rgba(255,255,255,0.1);"></div>
       <div style="position: absolute; bottom: -80px; left: -50px; width: 400px; height: 400px; border-radius: 50%; background: rgba(255,255,255,0.08);"></div>
-      
-      <div class="w-100" style="position: relative; z-index: 1; padding: 3rem 2rem;">
-        <div class="text-center text-white">
-          <!-- Logo at Top -->
-          <div class="app-brand auth-cover-brand mb-5">
-            <a href="{{ url('/') }}" class="navbar-brand">
-              <img
-                src="{{ asset('assets/img/logo.png') }}"
-                alt="Logo"
-                style="max-width: 140px;"
-              >
-            </a>
-          </div>
 
+      <!-- Logo absolute top-left -->
+      <div style="position: absolute; top: 0; left: 0; padding: 1rem 1.25rem; z-index: 2;">
+        <a href="{{ url('/') }}" class="navbar-brand">
+          <img
+            src="{{ asset('assets/img/logo.png') }}"
+            alt="Logo"
+            style="max-width: 130px;"
+          >
+        </a>
+      </div>
+
+      <div class="w-100" style="position: relative; z-index: 1; padding: 3.5rem 2.25rem;">
+        <div class="text-center text-white">
           <!-- Value Proposition with spacing -->
           <div class="mt-5 pt-3">
-            <span class="badge bg-white bg-opacity-25 text-white fw-semibold mb-3 d-inline-block px-3 py-2" style="font-size: 0.85rem; border-radius: 20px;">Why join</span>
-            
+            <span class="badge bg-white text-dark fw-bold mb-3 d-inline-block px-3 py-2" style="font-size: 0.95rem; border-radius: 20px;">Why Join</span>
+
             <h2 class="text-white fw-bold mb-4" style="font-size: 1.75rem; line-height: 1.4;">Get job-ready faster with AI-powered CV, interview practice, and job matching</h2>
-            
+
             <p class="text-white opacity-85 mb-5" style="font-size: 1.05rem; line-height: 1.6;">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
-            
+
             <div class="d-flex flex-column gap-3 align-items-start ms-2">
               <div class="d-flex align-items-center gap-3">
                 <div class="d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: rgba(255,255,255,0.25); border-radius: 50%; flex-shrink: 0;">
