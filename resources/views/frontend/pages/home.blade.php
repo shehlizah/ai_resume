@@ -185,6 +185,97 @@
             transform: translateY(-3px);
         }
 
+        /* Phone Mockup */
+        .phone-container {
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+
+        .phone-frame {
+            width: 280px;
+            height: 560px;
+            background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), 0 0 60px rgba(59, 130, 246, 0.2);
+            position: relative;
+            animation: phoneFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes phoneFloat {
+            0%, 100% { transform: translateY(0px) rotateZ(-5deg); }
+            50% { transform: translateY(-15px) rotateZ(-5deg); }
+        }
+
+        .phone-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 28px;
+            background: #000;
+            border-radius: 0 0 25px 25px;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+            border-radius: 35px;
+            padding: 40px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone-screen-content {
+            text-align: center;
+            color: white;
+        }
+
+        .phone-screen-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .phone-screen-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .phone-screen-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .phone-features {
+            display: grid;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .feature-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
         .hero-illustration {
             position: relative;
             display: flex;
@@ -964,16 +1055,24 @@
                     <a href="#how-it-works" class="btn btn-outline">↓ See How It Works</a>
                 </div>
             </div>
-            <!--<div class="hero-illustration">-->
-            <!--    <div class="device-mockup">-->
-            <!--        <div class="device-mockup-inner">-->
-            <!--            <div class="mockup-bar primary"></div>-->
-            <!--            <div class="mockup-bar gray"></div>-->
-            <!--            <div class="mockup-bar green"></div>-->
-            <!--            <div class="mockup-bar gray-2"></div>-->
-            <!--        </div>-->
-            <!--    </div>-->
-            <!--</div>-->
+            <div class="hero-illustration">
+                <div class="phone-container">
+                    <div class="phone-frame">
+                        <div class="phone-screen">
+                            <div class="phone-screen-content">
+                                <div class="phone-screen-icon">📄</div>
+                                <div class="phone-screen-title">Build Your CV</div>
+                                <div class="phone-screen-subtitle">Get job-ready fast</div>
+                            </div>
+                            <div class="phone-features">
+                                <div class="feature-item">✓ Pro Templates</div>
+                                <div class="feature-item">✓ AI Writing Help</div>
+                                <div class="feature-item">✓ Download & Share</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -1005,27 +1104,27 @@
 
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">📝</div>
-                <h3>Create CV</h3>
-                <p>Professional CV builder with AI assistance</p>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #F97316, #EA580C);">📝</div>
+                <h3>Build CV</h3>
+                <p>Pro templates + AI writing assist</p>
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon">🔍</div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">🔍</div>
                 <h3>Find Jobs</h3>
-                <p>Smart matching with personalized job recommendations</p>
+                <p>Matches by skills & location</p>
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <h3>Practice Interview</h3>
-                <p>AI-powered interview prep with instant feedback</p>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #06B6D4, #0891B2);">🤖</div>
+                <h3>Interview Prep</h3>
+                <p>AI coach with instant feedback</p>
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon">⚡</div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #10B981, #059669);">✓</div>
                 <h3>Get Hired</h3>
-                <p>One-click apply with enhanced success rates</p>
+                <p>Apply instantly with one click</p>
             </div>
         </div>
 
@@ -1061,30 +1160,30 @@
         <div class="upload-options">
             <div class="upload-card">
                 <div class="upload-icon">�</div>
-                <h3>CV Builder</h3>
-                <p>Professional templates &amp; AI assistance</p>
-                <a href="{{route('user.resumes.create')}}" class="btn btn-primary">Start Building</a>
+                <h3>Build CV</h3>
+                <p>5 templates + AI writing assist</p>
+                <a href="{{route('user.resumes.create')}}" class="btn btn-primary">Create Now</a>
             </div>
 
             <div class="upload-card">
                 <div class="upload-icon">🤖</div>
                 <h3>Interview Prep</h3>
-                <p>AI-powered practice with feedback</p>
-                <a href="{{route('user.interview.prep')}}" class="btn btn-primary">Try AI Interview</a>
+                <p>AI coach with instant feedback</p>
+                <a href="{{route('user.interview.prep')}}" class="btn btn-primary">Practice Now</a>
             </div>
 
             <div class="upload-card">
                 <div class="upload-icon">�</div>
-                <h3>Job Matching</h3>
-                <p>Personalized job recommendations</p>
-                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">See Job Matches</a>
+                <h3>Find Jobs</h3>
+                <p>Matches based on your skills</p>
+                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Search Jobs</a>
             </div>
 
             <div class="upload-card">
                 <div class="upload-icon">⚡</div>
                 <h3>Quick Apply</h3>
-                <p>Apply to jobs with one click</p>
-                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Start Applying</a>
+                <p>Apply in seconds, not minutes</p>
+                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Apply Today</a>
             </div>
         </div>
     </section>
@@ -1587,6 +1686,7 @@
                         <span style="font-size: 1.5rem;">⭐</span>
                     </div>
                     <h3 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem;">Pro Plan</h3>
+                    <div style="font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem; color: #FCD34D;">IDR 99,000<span style="font-size: 1rem; opacity: 0.8;">/mo</span></div>
                     <p style="opacity: 0.9; margin-bottom: 1.5rem; font-size: 0.95rem;color:#a1b1bf !important;">Everything you need to succeed</p>
                     <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0;">
                         <li style="padding: 0.75rem 0; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.15);"><span>✓</span> Unlimited CVs</li>
