@@ -17,10 +17,10 @@
         </a>
       </div>
 
-      <div class="w-100" style="position: relative; z-index: 1; padding: 3.5rem 2.25rem;">
+      <div class="w-100" style="position: relative; z-index: 1; padding: 3.5rem 2.25rem; display: flex; align-items: center; justify-content: center; min-height: 100vh;">
         <div class="text-center text-white">
           <!-- Value Proposition with spacing -->
-          <div class="mt-5 pt-3">
+          <div class="mt-0 pt-0">
             <span class="badge bg-white text-dark fw-bold mb-3 d-inline-block px-3 py-2" style="font-size: 0.95rem; border-radius: 20px;">Why Join</span>
 
             <h2 class="text-white fw-bold mb-4" style="font-size: 1.75rem; line-height: 1.4;">Get job-ready faster with AI-powered CV, interview practice, and job matching</h2>
