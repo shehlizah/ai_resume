@@ -485,6 +485,29 @@
 }
 </style>
 
+<!-- Sidebar submenu UX tweaks -->
+<style>
+  /* Indent and soften submenu items for clearer hierarchy */
+  #layout-menu .menu-sub .menu-link {
+    padding-left: 1.25rem;
+    font-size: 0.95rem;
+    color: #64748B; /* slate-500 */
+  }
+
+  /* Keep active submenu readable and emphasized */
+  #layout-menu .menu-sub .menu-item.active > .menu-link {
+    color: inherit;
+    font-weight: 600;
+  }
+
+  /* Slightly increase indent on smaller screens for clarity */
+  @media (max-width: 768px) {
+    #layout-menu .menu-sub .menu-link {
+      padding-left: 1.5rem;
+    }
+  }
+</style>
+
 
 <script>
 (function () {
