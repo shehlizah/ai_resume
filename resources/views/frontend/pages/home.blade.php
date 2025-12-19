@@ -1,4 +1,4 @@
-﻿
+
 @extends('frontend.layouts.app')
 
 @section('title', 'Jobsease | Create CV, Practice Interview & Apply for Jobs Easily')
@@ -1104,26 +1104,26 @@
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon" style="background: linear-gradient(135deg, #F97316, #EA580C);">📄</div>
-                <h3>Build CV</h3>
-                <p>Pro templates + AI writing assist</p>
+                <h3>Create CV</h3>
+                <p>Build a professional CV easily using ready-made templates.</p>
             </div>
 
             <div class="feature-card">
                 <div class="feature-icon" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">🎯</div>
                 <h3>Find Jobs</h3>
-                <p>Matches by skills & location</p>
+                <p>Discover job opportunities based on your skills and location.</p>
             </div>
 
             <div class="feature-card">
                 <div class="feature-icon" style="background: linear-gradient(135deg, #06B6D4, #0891B2);">🤖</div>
-                <h3>Interview Prep</h3>
-                <p>AI coach with instant feedback</p>
+                <h3>Practice Interview</h3>
+                <p>Prepare with AI interview questions and instant feedback.</p>
             </div>
 
             <div class="feature-card">
                 <div class="feature-icon" style="background: linear-gradient(135deg, #10B981, #059669);">✓</div>
                 <h3>Get Hired</h3>
-                <p>Apply instantly with one click</p>
+                <p>Apply confidently and increase your chances of getting hired.</p>
             </div>
         </div>
 
@@ -1158,30 +1158,31 @@
 
         <div class="upload-options">
             <div class="upload-card">
-                <div class="upload-icon"></div>
-                <h3>Build CV</h3>
-                <p>5 templates + AI writing assist</p>
+                <div class="upload-icon">📄</div>
+                <h3>Easy CV Builder</h3>
+                <p>Create and edit professional CVs in minutes.</p>
                 <a href="{{route('user.resumes.create')}}" class="btn btn-primary">Create Now</a>
             </div>
 
             <div class="upload-card">
                 <div class="upload-icon">🤖</div>
-                <h3>Interview Prep</h3>
-                <p>AI coach with instant feedback</p>
+                <h3>AI Interview Practice</h3>
+                <p>
+Practice real interview questions and improve with feedback.</p>
                 <a href="{{route('user.interview.prep')}}" class="btn btn-primary">Practice Now</a>
             </div>
 
             <div class="upload-card">
-                <div class="upload-icon"></div>
-                <h3>Find Jobs</h3>
-                <p>Matches based on your skills</p>
+                <div class="upload-icon">🎯</div>
+                <h3>Smart Job Matching</h3>
+                <p>Find jobs that fit your profile and location.</p>
                 <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Search Jobs</a>
             </div>
 
             <div class="upload-card">
                 <div class="upload-icon">⚡</div>
-                <h3>Quick Apply</h3>
-                <p>Apply in seconds, not minutes</p>
+                <h3>One-Click Job Apply</h3>
+                <p>Apply quickly using your saved CV.</p>
                 <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Apply Today</a>
             </div>
         </div>
