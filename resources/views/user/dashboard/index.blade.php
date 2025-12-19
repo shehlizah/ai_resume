@@ -329,11 +329,11 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-4 py-5 text-center">
+                                    <td colspan="4" class="px-4 py-4 text-center">
                                         <div class="text-muted">
-                                            <i class="bx bxs-file-doc mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                                            <i class="bx bxs-file-doc mb-3" style="font-size: 3.5rem; opacity: 0.35;"></i>
                                             <h6 class="mb-2">You haven’t created a resume yet.</h6>
-                                            <p class="small mb-3">Create your first AI-powered resume in under 10 minutes.</p>
+                                            <p class="small mb-2">Create your first AI-powered resume in under 10 minutes.</p>
                                             <a href="{{ route('user.resumes') }}" class="btn btn-sm btn-primary">
                                                 <i class="bx bx-plus-circle me-1"></i> Create Resume
                                             </a>
@@ -450,18 +450,18 @@
                     </a>
                 </div>
             </div>
-                                <tr>
-                                    <td colspan="4" class="px-4 py-4 text-center">
-                                        <div class="text-muted">
-                                            <i class="bx bxs-file-doc mb-3" style="font-size: 3.5rem; opacity: 0.35;"></i>
-                                            <h6 class="mb-2">You haven’t created a resume yet.</h6>
-                                            <p class="small mb-2">Create your first AI-powered resume in under 10 minutes.</p>
-                                            <a href="{{ route('user.resumes') }}" class="btn btn-sm btn-primary">
-                                                <i class="bx bx-plus-circle me-1"></i> Create Resume
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
+
+        </div>
+
+    </div>
+
+    <style>
+        .hover-shadow {
+            transition: all 0.3s ease;
+        }
+
+        .hover-shadow:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
             transform: translateY(-2px);
         }
 
