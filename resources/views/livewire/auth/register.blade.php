@@ -158,17 +158,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </button>
     </form>
 
-    <!-- Why Join Section - Below Form (compact) -->
-    <div class="why-join p-2 p-sm-3 bg-light border rounded-3 mb-3 lh-sm d-none d-md-block">
-        <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold mb-1 d-inline-block" style="font-size: clamp(0.78rem, 1.8vw, 0.82rem);">Why Join</span>
-        <h6 class="mb-1 text-dark fw-semibold" style="font-size: clamp(0.9rem, 2vw, 1rem);">Get job-ready faster with AI-powered CV, interview practice, and job matching</h6>
-        <p class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.8vw, 0.9rem);">Create your CV, practice interviews, and find matching jobs — all in one place.</p>
-        <ul class="text-muted small mb-0 ps-3" style="font-size: clamp(0.78rem, 1.8vw, 0.88rem);">
-            <li class="mb-0">Create a professional CV in minutes</li>
-            <li class="mb-0">Practice interviews with AI feedback</li>
-            <li class="mb-0">Find jobs matching your skills & location</li>
-        </ul>
-    </div>
+    <!-- Why Join block removed per desktop requirement -->
 
     <p class="text-center mb-2 mb-sm-3" style="font-size: clamp(0.85rem, 2vw, 0.95rem);">
         <span>{{ __('Are you an employer?') }}</span>

@@ -1,7 +1,7 @@
 <div class="authentication-wrapper authentication-cover">
   <div class="authentication-inner row m-0">
     <!-- Left Panel - Modern Gradient -->
-    <div class="col-12 col-lg-7 col-xl-8 d-flex align-items-center justify-content-center p-3 p-sm-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden; min-height: 100vh;">
+    <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-3 p-sm-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden; min-height: 100vh;">
       <!-- Decorative elements -->
       <div style="position: absolute; top: -50px; right: -100px; width: 300px; height: 300px; border-radius: 50%; background: rgba(255,255,255,0.1);"></div>
       <div style="position: absolute; bottom: -80px; left: -50px; width: 400px; height: 400px; border-radius: 50%; background: rgba(255,255,255,0.08);"></div>
@@ -54,8 +54,8 @@
 
     <!-- Right Panel - Form Card -->
     <div class="card col-12 col-lg-5 col-xl-4" style="border-radius: 0; border: none; min-height: 100vh;">
-      <div class="d-flex align-items-center authentication-bg p-3 p-sm-5 p-md-6 h-100">
-        <div class="w-100 mx-auto">
+      <div class="d-flex align-items-center authentication-bg p-3 p-sm-5 p-md-6 p-lg-6 p-xl-7 h-100">
+        <div class="w-100 mx-auto" style="max-width: 520px;">
           {{ $slot }}
         </div>
       </div>
