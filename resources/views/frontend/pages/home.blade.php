@@ -9,15 +9,24 @@
 
     <style>
 
+        /* ===== DESIGN SYSTEM & ANIMATIONS ===== */
+        @keyframes buttonHover {
+            0% { transform: translateY(0); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); }
+            100% { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(59, 130, 246, 0.35); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .upload-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
 
         /* ===== RESET & BASE ===== */
         * {
@@ -100,11 +109,11 @@
 
         .hero-text h1 {
             font-family: 'Poppins', sans-serif;
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 800;
-            line-height: 1.1;
+            line-height: 1.15;
             color: #0F172A;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             letter-spacing: -0.02em;
         }
 
@@ -118,9 +127,18 @@
         .hero-text p {
             font-size: 1.125rem;
             line-height: 1.7;
-            color: #000;
-            margin-bottom: 2.5rem;
+            color: #334155;
+            margin-bottom: 1.5rem;
             max-width: 540px;
+            font-weight: 500;
+        }
+
+        .hero-tagline {
+            font-size: 1.125rem;
+            color: #64748B;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+            font-weight: 500;
         }
 
         .hero-buttons {
@@ -131,8 +149,36 @@
 
         .hero-buttons .btn {
             padding: 1rem 2rem;
-            font-size: 16px;
+            font-size: 1rem;
             border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-outline {
+            background: white;
+            color: #0F172A;
+            border: 2px solid #E2E8F0;
+        }
+
+        .btn-outline:hover {
+            border-color: #3B82F6;
+            background: #F0F4FF;
+            transform: translateY(-3px);
         }
 
         .hero-illustration {
@@ -235,12 +281,13 @@
 
         .feature-card {
             padding: 2.5rem 2rem;
-            background: #F8FAFC;
+            background: #fff;
             border-radius: 16px;
             border: 1px solid #E2E8F0;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .feature-card::before {
@@ -249,15 +296,15 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #3B82F6, #10B981);
+            height: 4px;
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
 
         .feature-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 16px 40px rgba(59, 130, 246, 0.12);
             border-color: #3B82F6;
         }
 
@@ -266,22 +313,21 @@
         }
 
         .feature-icon {
-            width: 72px;
-            height: 72px;
+            width: 64px;
+            height: 64px;
             background: linear-gradient(135deg, #3B82F6, #2563EB);
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
-            transition: all 0.3s ease;
+            font-size: 1.75rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .feature-card:hover .feature-icon {
-            transform: scale(1.08);
-            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.35);
+            transform: scale(1.1) rotate(-5deg);
         }
 
 
@@ -321,35 +367,50 @@
             padding: 2rem 1.5rem;
             border-radius: 16px;
             border: 2px solid #E2E8F0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             position: relative;
+            overflow: hidden;
+        }
+
+        .upload-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transition: right 0.5s ease;
         }
 
         .upload-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 16px 32px rgba(59, 130, 246, 0.12);
             border-color: #3B82F6;
         }
 
+        .upload-card:hover::before {
+            right: 100%;
+        }
+
         .upload-icon {
-            width: 72px;
-            height: 72px;
+            width: 56px;
+            height: 56px;
             background: linear-gradient(135deg, #10B981, #34D399);
-            border-radius: 50%;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            margin: 0 auto 1.75rem auto;
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
-            transition: all 0.3s ease;
+            font-size: 1.75rem;
+            margin: 0 auto 1rem;
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.2);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .upload-card:hover .upload-icon {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.35);
+            transform: scale(1.12);
         }
 
         .upload-card h3 {
@@ -363,15 +424,26 @@
         .upload-card p {
             color: #64748B;
             line-height: 1.7;
-            margin-bottom: 2rem;
-            font-size: 15px;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
         }
 
         .upload-card .btn {
             width: 100%;
             padding: 0.875rem 1.5rem;
-            font-size: 15px;
+            font-size: 0.95rem;
             border-radius: 10px;
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .upload-card .btn:hover {
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
         }
 
         .upload-note {
@@ -844,9 +916,10 @@
             <div class="hero-text">
                 <h1>Create Your CV. Practice Interviews.<br>Apply for Jobs — Faster.</h1>
                 <p>AI-powered platform to help you get job-ready in minutes.</p>
+                <p class="hero-tagline">Get job-ready in minutes — CV, interview practice &amp; job apply all in one place.</p>
                 <div class="hero-buttons">
-                    <a href="{{route('register')}}" class="btn btn-primary">Get Started Free</a>
-                    <a href="#how-it-works" class="btn btn-outline">See How It Works</a>
+                    <a href="{{route('register')}}" class="btn btn-primary">⭐ Create Your First CV</a>
+                    <a href="#how-it-works" class="btn btn-outline">↓ See How It Works</a>
                 </div>
             </div>
             <!--<div class="hero-illustration">-->
@@ -890,27 +963,27 @@
 
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">1️⃣</div>
+                <div class="feature-icon">📝</div>
                 <h3>Create CV</h3>
-                <p>Easy CV builder with professional templates</p>
+                <p>Professional CV builder with AI assistance</p>
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon">2️⃣</div>
+                <div class="feature-icon">🔍</div>
                 <h3>Find Jobs</h3>
-                <p>Jobs matched by your skills and location</p>
+                <p>Smart matching with personalized job recommendations</p>
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon">3️⃣</div>
+                <div class="feature-icon">🤖</div>
                 <h3>Practice Interview</h3>
-                <p>AI interview practice with instant feedback</p>
+                <p>AI-powered interview prep with instant feedback</p>
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon">4️⃣</div>
+                <div class="feature-icon">⚡</div>
                 <h3>Get Hired</h3>
-                <p>Apply confidently and faster</p>
+                <p>One-click apply with enhanced success rates</p>
             </div>
         </div>
 
@@ -946,30 +1019,30 @@
         <div class="upload-options">
             <div class="upload-card">
                 <div class="upload-icon">�</div>
-                <h3>Easy CV Builder</h3>
-                <p>Create professional CVs in minutes</p>
-                <a href="{{route('user.resumes.create')}}" class="btn btn-primary">Create CV</a>
+                <h3>CV Builder</h3>
+                <p>Professional templates &amp; AI assistance</p>
+                <a href="{{route('user.resumes.create')}}" class="btn btn-primary">Start Building</a>
             </div>
 
             <div class="upload-card">
                 <div class="upload-icon">🤖</div>
-                <h3>AI Interview Practice</h3>
-                <p>Practice real interview questions</p>
-                <a href="{{route('user.interview.prep')}}" class="btn btn-primary">Practice Now</a>
+                <h3>Interview Prep</h3>
+                <p>AI-powered practice with feedback</p>
+                <a href="{{route('user.interview.prep')}}" class="btn btn-primary">Try AI Interview</a>
             </div>
 
             <div class="upload-card">
-                <div class="upload-icon">🔎</div>
-                <h3>Smart Job Matching</h3>
-                <p>Find jobs near you that fit your profile</p>
-                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Find Jobs</a>
+                <div class="upload-icon">�</div>
+                <h3>Job Matching</h3>
+                <p>Personalized job recommendations</p>
+                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">See Job Matches</a>
             </div>
 
             <div class="upload-card">
                 <div class="upload-icon">⚡</div>
-                <h3>One-Click Apply</h3>
-                <p>Apply faster with your saved CV</p>
-                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Apply Now</a>
+                <h3>Quick Apply</h3>
+                <p>Apply to jobs with one click</p>
+                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Start Applying</a>
             </div>
         </div>
     </section>
@@ -1445,8 +1518,8 @@
     <section style="padding: 5rem 2rem; background: #fff;" id="pricing">
         <div style="max-width: 1200px; margin: 0 auto;">
             <div style="text-align: center; margin-bottom: 3rem;">
-                <h2 style="font-size: 2.5rem; font-weight: 700; color: #0F172A; margin-bottom: 0.5rem;">Simple and Affordable Pricing</h2>
-                <p style="color: #64748B; font-size: 1.125rem;">Choose the plan that works best for you</p>
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: #0F172A; margin-bottom: 0.75rem; letter-spacing: -0.01em;">Simple and Affordable Pricing</h2>
+                <p style="color: #64748B; font-size: 1.125rem; font-weight: 500;">Choose the plan that works best for you</p>
             </div>
 
             <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; align-items: stretch;">
@@ -1462,7 +1535,7 @@
                         <li style="padding: 0.75rem 0; color: #334155; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid #F1F5F9;"><span style="color: #10B981;">✓</span> View 5 job listings</li>
                         <li style="padding: 0.75rem 0; color: #334155; display: flex; align-items: center; gap: 0.75rem;"><span style="color: #10B981;">✓</span> Basic interview questions</li>
                     </ul>
-                    <a href="{{route('register')}}" style="display: block; text-align: center; padding: 1rem; background: #F1F5F9; color: #334155; border-radius: 12px; font-weight: 600; text-decoration: none; transition: all 0.3s ease;" onmouseover="this.style.background='#E2E8F0';" onmouseout="this.style.background='#F1F5F9';">Get Started Free</a>
+                    <a href="{{route('register')}}" style="display: block; text-align: center; padding: 1rem 1.5rem; background: linear-gradient(135deg, #F1F5F9, #E2E8F0); color: #334155; border-radius: 12px; font-weight: 700; text-decoration: none; transition: all 0.3s ease; border: 2px solid transparent;" onmouseover="this.style.background='linear-gradient(135deg, #E2E8F0, #D4DAE4)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='linear-gradient(135deg, #F1F5F9, #E2E8F0)'; this.style.transform='translateY(0)';">Choose Free Plan</a>
                 </div>
 
                 <!-- Pro Plan -->
@@ -1479,12 +1552,12 @@
                         <li style="padding: 0.75rem 0; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.15);"><span>✓</span> Unlimited job applications</li>
                         <li style="padding: 0.75rem 0; display: flex; align-items: center; gap: 0.75rem;"><span>✓</span> No ads</li>
                     </ul>
-                    <a href="{{route('packages')}}" style="display: block; text-align: center; padding: 1rem; background: #fff; color: #1D4ED8; border-radius: 12px; font-weight: 700; text-decoration: none; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.02)';" onmouseout="this.style.transform='scale(1)';">Upgrade to Pro</a>
+                    <a href="{{route('packages')}}" style="display: block; text-align: center; padding: 1rem 1.5rem; background: #fff; color: #1D4ED8; border-radius: 12px; font-weight: 700; text-decoration: none; transition: all 0.3s ease; border: 2px solid white;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">Upgrade to Pro Now →</a>
                 </div>
             </div>
 
-            <div style="text-align: center; margin-top: 2.5rem;">
-                <a href="{{route('packages')}}" style="color: #3B82F6; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';">View Full Pricing <span>→</span></a>
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="{{route('packages')}}" style="color: #3B82F6; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.125rem; transition: all 0.3s ease;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">View Full Pricing &amp; All Features <span style="font-size: 1.25rem;">→</span></a>
             </div>
         </div>
     </section>
