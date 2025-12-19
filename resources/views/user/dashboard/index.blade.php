@@ -1,6 +1,6 @@
 @section('title', __('Dashboard'))
 <x-layouts.app :title="__('Dashboard')">
-    <div class="row g-4">
+    <div class="row g-3">
 
         <!-- Welcome Banner with CTA -->
         <div class="col-lg-12">
@@ -172,7 +172,7 @@
         <div class="col-lg-8">
 
             <!-- Career Journey Path - New Section -->
-            <div class="card border-0 shadow-sm mb-4">
+            <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-0">
                     <h6 class="mb-0">
                         <i class="bx bx-trending-up me-1"></i> Your Career Journey
@@ -428,37 +428,40 @@
 
 
 
-            <!-- Premium Upgrade Card -->
-            @if(!$hasPremiumAccess)
-                <div class="card border-0 shadow-sm mt-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <div class="card-body text-center text-white p-4">
-                        <i class="bx bxs-crown mb-3" style="font-size: 3rem;"></i>
-                        <h6 class="mb-2 text-white">Unlock Premium</h6>
-                        <p class="small mb-3 opacity-90">Get unlimited access to all features</p>
-                        <ul class="text-start small mb-3 ps-3">
-                            <li class="mb-2">✓ Unlimited Resumes</li>
-                            <li class="mb-2">✓ All Premium Templates</li>
-                            <li class="mb-2">✓ Cover Letter Builder</li>
-                            <li class="mb-2">✓ Priority Support</li>
-                        </ul>
-                        <a href="{{ route('user.pricing') }}" class="btn btn-link text-white p-0">
-                            View plans
-                        </a>
+            <!-- Premium Features Card -->
+            <div class="card border-0 shadow-sm mt-3" style="background: #f8fafc;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="avatar avatar-lg bg-warning bg-opacity-25 rounded me-3" style="min-width: 50px;">
+                            <i class="bx bxs-crown text-warning" style="font-size: 1.75rem;"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1 text-dark">Premium Features</h6>
+                            <p class="small text-muted mb-0">Get more value when you’re ready</p>
+                        </div>
                     </div>
+                    <ul class="text-muted small mb-3 ps-3">
+                        <li class="mb-2">Unlimited resumes</li>
+                        <li class="mb-2">Premium templates</li>
+                        <li class="mb-0">Priority support</li>
+                    </ul>
+                    <a href="{{ route('user.pricing') }}" class="btn btn-outline-primary btn-lg w-100">
+                        View Plans
+                    </a>
                 </div>
-            @endif
-
-        </div>
-
-    </div>
-
-    <style>
-        .hover-shadow {
-            transition: all 0.3s ease;
-        }
-
-        .hover-shadow:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            </div>
+                                <tr>
+                                    <td colspan="4" class="px-4 py-4 text-center">
+                                        <div class="text-muted">
+                                            <i class="bx bxs-file-doc mb-3" style="font-size: 3.5rem; opacity: 0.35;"></i>
+                                            <h6 class="mb-2">You haven’t created a resume yet.</h6>
+                                            <p class="small mb-2">Create your first AI-powered resume in under 10 minutes.</p>
+                                            <a href="{{ route('user.resumes') }}" class="btn btn-sm btn-primary">
+                                                <i class="bx bx-plus-circle me-1"></i> Create Resume
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
             transform: translateY(-2px);
         }
 
