@@ -1048,10 +1048,9 @@
         <div class="hero-content">
             <div class="hero-text">
                 <h1>Create Your CV. Practice Interviews.<br>Apply for Jobs — Faster.</h1>
-                <p>AI-powered platform to help you get job-ready in minutes.</p>
                 <p class="hero-tagline">Get job-ready in minutes — CV, interview practice &amp; job apply all in one place.</p>
                 <div class="hero-buttons">
-                    <a href="{{route('register')}}" class="btn btn-primary">⭐ Create Your First CV</a>
+                    <a href="{{route('register')}}" class="btn btn-primary">⭐ Start Free</a>
                     <a href="#how-it-works" class="btn btn-outline">↓ See How It Works</a>
                 </div>
             </div>
@@ -1774,7 +1773,7 @@
             <h2 style="color: #fff; font-size: 2.75rem; font-weight: 700; margin-bottom: 1rem;">Ready to Get Hired Faster?</h2>
             <p style="color: rgba(255,255,255,0.9); font-size: 1.25rem; margin-bottom: 2rem;">Create your CV, practice interviews, and apply for jobs — all in one platform.</p>
             
-            <a href="{{route('register')}}" style="display: inline-block; background: #fff; color: #1D4ED8; padding: 1rem 2.5rem; border-radius: 12px; font-weight: 700; font-size: 1.125rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,0,0,0.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)';">Start Free with Jobsease Today</a>
+            <a href="{{route('register')}}" style="display: inline-block; background: #fff; color: #1D4ED8; padding: 1rem 2.5rem; border-radius: 12px; font-weight: 700; font-size: 1.125rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,0,0,0.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)';">Try AI Interview Now</a>
             
             <p style="color: rgba(255,255,255,0.8); margin-top: 1.5rem; font-size: 0.95rem;">
                 or reach out to us at 
