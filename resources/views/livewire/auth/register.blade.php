@@ -59,6 +59,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     <h4 class="mb-2" style="font-size: clamp(1.5rem, 5vw, 1.75rem);">Welcome to JOBSEASE! 👋</h4>
 
+    <!-- Are you an employer? Section -->
+    <p class="text-center mb-4 mb-sm-6" style="font-size: clamp(0.85rem, 2vw, 0.95rem);">
+        <span>{{ __('Are you an employer?') }}</span>
+        <a href="{{ route('register.employer') }}" wire:navigate style="color: #2563EB; text-decoration: none;">
+            <span>{{ __('Register to post jobs') }}</span>
+        </a>
+    </p>
+
     <!-- Session Status -->
     @if (session('status'))
         <div class="alert alert-info mb-4">
@@ -160,16 +168,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     <!-- Why Join block removed per desktop requirement -->
 
-    <p class="text-center mb-2 mb-sm-3" style="font-size: clamp(0.85rem, 2vw, 0.95rem);">
-        <span>{{ __('Are you an employer?') }}</span>
-        <a href="{{ route('register.employer') }}" wire:navigate>
-            <span>{{ __('Register to post jobs') }}</span>
-        </a>
-    </p>
-
     <p class="text-center" style="font-size: clamp(0.85rem, 2vw, 0.95rem);">
         <span>{{ __('Already have an account?') }}</span>
-        <a href="{{ route('login') }}" wire:navigate>
+        <a href="{{ route('login') }}" wire:navigate style="color: #2563EB; text-decoration: none;">
             <span>{{ __('Sign in instead') }}</span>
         </a>
     </p>
