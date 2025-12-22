@@ -190,7 +190,7 @@ new #[Layout('components.layouts.auth')] class extends Component
         </div>
 
         <div class="mb-6">
-            <button type="submit" class="btn btn-primary d-grid w-100">{{ __('Login') }}</button>
+            <button type="submit" class="btn btn-primary d-grid w-100" style="background-color: #2563EB; border-color: #2563EB;">{{ __('Login') }}</button>
         </div>
     </form>
 

@@ -153,7 +153,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-lg d-grid w-100 mb-4 mb-sm-6 shadow-sm" style="font-size: clamp(0.95rem, 2.5vw, 1rem);">
+        <button type="submit" class="btn btn-primary btn-lg d-grid w-100 mb-4 mb-sm-6 shadow-sm" style="font-size: clamp(0.95rem, 2.5vw, 1rem); background-color: #2563EB; border-color: #2563EB;">
             {{ __('Create Free Account') }}
         </button>
     </form>

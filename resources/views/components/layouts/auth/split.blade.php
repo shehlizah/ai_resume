@@ -1,7 +1,7 @@
 <div class="authentication-wrapper authentication-cover">
   <div class="authentication-inner row m-0">
     <!-- Left Panel - Modern Gradient -->
-    <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-3 p-sm-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden; min-height: 100vh;">
+    <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-3 p-sm-5" style="background: linear-gradient(135deg, #2563EB 0%, #1e40af 100%); position: relative; overflow: hidden; min-height: 100vh;">
       <!-- Decorative elements -->
       <div style="position: absolute; top: -50px; right: -100px; width: 300px; height: 300px; border-radius: 50%; background: rgba(255,255,255,0.1);"></div>
       <div style="position: absolute; bottom: -80px; left: -50px; width: 400px; height: 400px; border-radius: 50%; background: rgba(255,255,255,0.08);"></div>
@@ -18,7 +18,7 @@
       </div>
 
       <div class="w-100" style="position: relative; z-index: 1; padding: 3.5rem 1.5rem; display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-        @if (request()->routeIs('login'))
+        @if (request()->routeIs('login') || request()->routeIs('register'))
           <div class="text-center">
             <div style="max-width: clamp(300px, 40vw, 520px); margin: 0 auto;">
               <img src="{{ asset('frontend/assets/images/internal_mockup.png') }}"
