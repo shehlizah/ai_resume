@@ -177,7 +177,7 @@
     </div>
     @endif
 
-    <div class="row g-4 mb-4">
+    <div class="row g-4 mb-4" id="packages">
         <div class="col-lg-6">
             <div class="card mb-3 h-100">
                 <div class="card-header">
@@ -202,7 +202,7 @@
             </div>
         </div>
 
-        <div class="col-lg-6">
+        <div class="col-lg-6" id="addons">
             <div class="card h-100">
                 <div class="card-header">
                     <h6 class="text-uppercase text-muted fw-semibold mb-0">Optional Add-ons</h6>
