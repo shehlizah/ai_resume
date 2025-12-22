@@ -86,6 +86,11 @@ class CompanyDashboardController extends Controller
 
     public function applicationsForJob(PostedJob $job)
     {
+        dd(
+            auth()->id(),
+            \App\Models\PostedJob::where('id', 5)->first()
+        );
+
         $user = Auth::user();
 
         \Log::info('Job owner check', [
