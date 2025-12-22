@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
-use App\Models\Job;
+use App\Models\PostedJob;
 use App\Models\JobApplication;
 use App\Models\JobCandidateMatch;
 use App\Models\CompanyPayment;
@@ -19,7 +19,7 @@ class CompanyDashboardController extends Controller
     {
         $user = Auth::user();
 
-        $jobs = Job::withCount('applications')
+        $jobs = PostedJob::withCount('applications')
             ->where('user_id', $user->id)
             ->orderByDesc('created_at')
             ->get();
@@ -64,7 +64,7 @@ class CompanyDashboardController extends Controller
     {
         $user = Auth::user();
 
-        $jobs = Job::withCount('applications')
+        $jobs = PostedJob::withCount('applications')
             ->where('user_id', $user->id)
             ->orderByDesc('created_at')
             ->paginate(10);
@@ -84,7 +84,7 @@ class CompanyDashboardController extends Controller
         return view('company.applications', compact('applications'));
     }
 
-    public function applicationsForJob(Job $job)
+    public function applicationsForJob(PostedJob $job)
     {
         $user = Auth::user();
 
@@ -110,7 +110,7 @@ class CompanyDashboardController extends Controller
         }
 
         // Get employer's jobs with match counts
-        $jobs = Job::where('user_id', $user->id)
+        $jobs = PostedJob::where('user_id', $user->id)
             ->where('source', 'company')
             ->withCount(['candidateMatches', 'candidateMatches as shortlisted_count' => function($q) {
                 $q->where('status', 'shortlisted');
@@ -119,7 +119,7 @@ class CompanyDashboardController extends Controller
             ->paginate(15);
 
         $stats = [
-            'total_jobs' => Job::where('user_id', $user->id)->where('source', 'company')->count(),
+            'total_jobs' => PostedJob::where('user_id', $user->id)->where('source', 'company')->count(),
             'total_matches' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->count(),
             'shortlisted' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->where('status', 'shortlisted')->count(),
         ];
@@ -127,7 +127,7 @@ class CompanyDashboardController extends Controller
         return view('company.ai-matching', compact('jobs', 'stats', 'hasAiMatching'));
     }
 
-    public function aiMatchingForJob(Job $job)
+    public function aiMatchingForJob(PostedJob $job)
     {
         $user = Auth::user();
 
@@ -202,7 +202,7 @@ class CompanyDashboardController extends Controller
                 ->all();
         }
 
-        Job::create([
+        PostedJob::create([
             'user_id' => $user->id,
             'external_id' => 'company-' . Str::uuid(),
             'title' => $data['title'],

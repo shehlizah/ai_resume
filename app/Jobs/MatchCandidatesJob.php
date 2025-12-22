@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Job;
+use App\Models\PostedJob;
 use App\Services\CandidateMatchService;
 use App\Notifications\CandidatesMatchedNotification;
 use Illuminate\Bus\Queueable;
@@ -20,7 +20,7 @@ class MatchCandidatesJob implements ShouldQueue
     public $tries = 3;
     public $timeout = 300; // 5 minutes
 
-    public function __construct(Job $job)
+    public function __construct(PostedJob $job)
     {
         $this->job = $job;
     }
