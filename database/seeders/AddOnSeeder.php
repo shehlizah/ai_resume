@@ -92,10 +92,66 @@ class AddOnSeeder extends Seeder
                 'sort_order' => 2,
                 'icon' => 'bx-user-voice',
             ],
+            [
+                'name' => 'AI Candidate Matching',
+                'slug' => 'ai-matching',
+                'description' => 'Automatically match qualified candidates to your jobs within 30 minutes',
+                'price' => 2500000,
+                'type' => 'employer',
+                'is_active' => true,
+                'features' => [
+                    'Auto-match candidates within 30 minutes',
+                    'Match score based on skills, experience & keywords',
+                    'AI-powered candidate summaries',
+                    'Shortlist & contact matched candidates',
+                ],
+                'content' => [
+                    'period' => 'month',
+                ],
+                'sort_order' => 10,
+                'icon' => 'bx-sparkles',
+            ],
+            [
+                'name' => 'Featured Job',
+                'slug' => 'featured',
+                'description' => 'Highlight a job for more visibility',
+                'price' => 300000,
+                'type' => 'employer',
+                'is_active' => true,
+                'features' => [
+                    'Job appears at the top of listings',
+                    'Badge highlight for visibility',
+                    'Attract more applicants',
+                ],
+                'content' => [],
+                'sort_order' => 11,
+                'icon' => 'bx-star',
+            ],
+            [
+                'name' => 'CV Access Pack',
+                'slug' => 'cv-access',
+                'description' => 'Access candidate CVs for one month',
+                'price' => 1000000,
+                'type' => 'employer',
+                'is_active' => true,
+                'features' => [
+                    'Download candidate resumes',
+                    'Full contact details access',
+                    '30-day unlimited access',
+                ],
+                'content' => [
+                    'period' => 'month',
+                ],
+                'sort_order' => 12,
+                'icon' => 'bx-file',
+            ],
         ];
 
         foreach ($addOns as $addOn) {
-            AddOn::create($addOn);
+            AddOn::updateOrCreate(
+                ['slug' => $addOn['slug']],
+                $addOn
+            );
         }
     }
 }

@@ -62,6 +62,30 @@ class CompanyPaymentController extends Controller
             'reviewed_at' => now(),
         ]);
 
+        // If it's an add-on purchase, grant access via EmployerAddOn
+        if ($payment->item_type === 'addon') {
+            // Find the AddOn by slug
+            $addOn = \App\Models\AddOn::where('slug', $payment->item_slug)->first();
+            
+            if ($addOn) {
+                // Create or update EmployerAddOn record
+                \App\Models\EmployerAddOn::updateOrCreate(
+                    [
+                        'employer_id' => $payment->user_id,
+                        'add_on_id' => $addOn->id,
+                    ],
+                    [
+                        'amount_paid' => $payment->amount,
+                        'payment_gateway' => $payment->payment_method,
+                        'payment_id' => $payment->id,
+                        'status' => 'active',
+                        'purchased_at' => now(),
+                        'expires_at' => null, // Lifetime access unless specified
+                    ]
+                );
+            }
+        }
+
         return back()->with('success', 'Payment has been approved successfully.');
     }
 

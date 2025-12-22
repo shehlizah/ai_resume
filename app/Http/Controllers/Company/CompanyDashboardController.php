@@ -408,6 +408,30 @@ class CompanyDashboardController extends Controller
                     'stripe_payment_intent' => $session->payment_intent,
                 ]);
 
+                // If it's an add-on purchase, grant access via EmployerAddOn
+                if ($metadata['item_type'] === 'addon') {
+                    // Find the AddOn by slug
+                    $addOn = \App\Models\AddOn::where('slug', $metadata['item_slug'])->first();
+                    
+                    if ($addOn) {
+                        // Create or update EmployerAddOn record
+                        \App\Models\EmployerAddOn::updateOrCreate(
+                            [
+                                'employer_id' => $metadata['user_id'],
+                                'add_on_id' => $addOn->id,
+                            ],
+                            [
+                                'amount_paid' => $amount,
+                                'payment_gateway' => 'stripe',
+                                'payment_id' => $session->payment_intent,
+                                'status' => 'active',
+                                'purchased_at' => now(),
+                                'expires_at' => null, // Lifetime access unless specified
+                            ]
+                        );
+                    }
+                }
+
                 return redirect()
                     ->route('company.dashboard')
                     ->with('success', 'Payment successful! Your ' . $metadata['item_type'] . ' has been activated.');
