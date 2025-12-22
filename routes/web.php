@@ -248,6 +248,11 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
     Route::get('/applications', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'applications'])->name('applications.index');
     Route::get('/jobs/{job}/applications', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'applicationsForJob'])->name('jobs.applications');
 
+    // AI Matching & Packages Pages
+    Route::get('/ai-matching', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'aiMatching'])->name('ai-matching');
+    Route::get('/packages', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'packages'])->name('packages');
+    Route::get('/addons', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'addons'])->name('addons');
+
     // Package & Add-on Checkout
     Route::get('/packages/{slug}/checkout', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'packageCheckout'])->name('packages.checkout');
     Route::get('/addons/{slug}/checkout', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'addonCheckout'])->name('addons.checkout');

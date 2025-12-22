@@ -95,6 +95,53 @@ class CompanyDashboardController extends Controller
         return view('company.applications', compact('applications', 'job'));
     }
 
+    public function aiMatching()
+    {
+        $user = Auth::user();
+
+        // Check if employer has AI matching access
+        $hasAiMatching = $user->activeEmployerAddOns()
+            ->whereHas('addOn', fn($q) => $q->where('type', 'ai_matching'))
+            ->exists();
+
+        if (!$hasAiMatching) {
+            return redirect()->route('company.addons')
+                ->with('info', 'Please purchase the AI Matching add-on to access this feature.');
+        }
+
+        // Get all AI-matched candidates for employer's jobs
+        $matches = JobCandidateMatch::with(['job', 'candidate', 'resume'])
+            ->whereHas('job', fn($q) => $q->where('user_id', $user->id))
+            ->orderByDesc('match_score')
+            ->orderByDesc('matched_at')
+            ->paginate(20);
+
+        $stats = [
+            'total_matches' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->count(),
+            'shortlisted' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->where('status', 'shortlisted')->count(),
+            'contacted' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->where('status', 'contacted')->count(),
+        ];
+
+        return view('company.ai-matching', compact('matches', 'stats', 'hasAiMatching'));
+    }
+
+    public function packages()
+    {
+        $packages = $this->getPackages();
+        return view('company.packages', compact('packages'));
+    }
+
+    public function addons()
+    {
+        $user = Auth::user();
+        $addons = $this->getAddons();
+        
+        // Get user's active addons
+        $activeAddons = $user->activeEmployerAddOns()->with('addOn')->get()->pluck('addOn.slug')->toArray();
+        
+        return view('company.addons', compact('addons', 'activeAddons'));
+    }
+
     public function store(Request $request)
     {
         $user = Auth::user();

@@ -362,19 +362,26 @@
         </a>
       </li>
 
-      <li class="menu-item {{ request()->is('company/addons*') || request()->is('company/packages*') ? 'active open' : '' }}">
+      <li class="menu-item {{ request()->routeIs('company.ai-matching') ? 'active' : '' }}">
+        <a class="menu-link" href="{{ route('company.ai-matching') }}">
+          <i class="menu-icon tf-icons bx bx-sparkles"></i>
+          <div>{{ __('AI Matching') }}</div>
+        </a>
+      </li>
+
+      <li class="menu-item {{ request()->routeIs('company.packages') || request()->routeIs('company.addons') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons bx bx-package"></i>
           <div>{{ __('Packages & Add-ons') }}</div>
         </a>
         <ul class="menu-sub">
-          <li class="menu-item">
-            <a class="menu-link" href="{{ route('company.dashboard') }}#packages">
+          <li class="menu-item {{ request()->routeIs('company.packages') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('company.packages') }}">
               <i class="bx bx-box me-2"></i>{{ __('Packages') }}
             </a>
           </li>
-          <li class="menu-item">
-            <a class="menu-link" href="{{ route('company.dashboard') }}#addons">
+          <li class="menu-item {{ request()->routeIs('company.addons') ? 'active' : '' }}">
+            <a class="menu-link" href="{{ route('company.addons') }}">
               <i class="bx bx-sparkles me-2"></i>{{ __('Add-ons') }}
             </a>
           </li>
