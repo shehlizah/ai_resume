@@ -93,7 +93,8 @@ class CompanyDashboardController extends Controller
             'job_user_id' => $job->user_id,
             'auth_id' => $user->id
         ]);
-        abort_unless($job->user_id === $user->id, 403);
+        // Cast to int to avoid strict type mismatch (DB returns string IDs)
+        abort_unless((int) $job->user_id === (int) $user->id, 403);
 
         $applications = $job->applications()->latest()->paginate(15);
 
