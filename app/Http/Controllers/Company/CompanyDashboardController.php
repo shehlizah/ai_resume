@@ -88,6 +88,11 @@ class CompanyDashboardController extends Controller
     {
         $user = Auth::user();
 
+        \Log::info('Job owner check', [
+            'job_id' => $job->id,
+            'job_user_id' => $job->user_id,
+            'auth_id' => $user->id
+        ]);
         abort_unless($job->user_id === $user->id, 403);
 
         $applications = $job->applications()->latest()->paginate(15);
