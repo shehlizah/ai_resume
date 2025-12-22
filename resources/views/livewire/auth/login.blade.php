@@ -156,7 +156,7 @@ new #[Layout('components.layouts.auth')] class extends Component
             <div class="d-flex justify-content-between">
                 <label for="password" class="form-label">{{ __('Password') }}</label>
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" wire:navigate>
+                    <a href="{{ route('password.request') }}" wire:navigate style="color: #2563EB; text-decoration: none;">
                         <span>{{ __('Forgot Password?') }}</span>
                     </a>
                 @endif
@@ -197,11 +197,28 @@ new #[Layout('components.layouts.auth')] class extends Component
     @if (Route::has('register'))
         <p class="text-center">
             <span>{{ __('New on our platform?') }}</span>
-            <a href="{{ route('register') }}" wire:navigate>
+            <a href="{{ route('register') }}" wire:navigate style="color: #2563EB; text-decoration: none;">
                 <span>{{ __('Create an account') }}</span>
             </a>
         </p>
     @endif
+
+    <style>
+        /* Override primary color to blue */
+        .text-primary, a.text-primary {
+            color: #2563EB !important;
+        }
+        
+        a.text-primary:hover,
+        a[style*="color: #2563EB"]:hover {
+            color: #1e40af !important;
+        }
+        
+        .form-check-input:checked {
+            background-color: #2563EB;
+            border-color: #2563EB;
+        }
+    </style>
 
 
 

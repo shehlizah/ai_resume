@@ -178,6 +178,16 @@ new #[Layout('components.layouts.auth')] class extends Component {
         .why-join { line-height: 1.25; }
         .why-join ul { margin-bottom: 0; }
         .why-join .badge { margin-bottom: .25rem; }
+        
+        /* Override primary color to blue */
+        .text-primary, a.text-primary {
+            color: #2563EB !important;
+        }
+        
+        a.text-primary:hover {
+            color: #1e40af !important;
+        }
+        
         @media (max-width: 575.98px) {
             .why-join { padding: 0.75rem; }
         }
