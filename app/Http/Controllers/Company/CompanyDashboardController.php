@@ -109,20 +109,56 @@ class CompanyDashboardController extends Controller
                 ->with('info', 'Please purchase the AI Matching add-on to access this feature.');
         }
 
-        // Get all AI-matched candidates for employer's jobs
-        $matches = JobCandidateMatch::with(['job', 'candidate', 'resume'])
-            ->whereHas('job', fn($q) => $q->where('user_id', $user->id))
+        // Get employer's jobs with match counts
+        $jobs = Job::where('user_id', $user->id)
+            ->where('source', 'company')
+            ->withCount(['candidateMatches', 'candidateMatches as shortlisted_count' => function($q) {
+                $q->where('status', 'shortlisted');
+            }])
+            ->orderByDesc('created_at')
+            ->paginate(15);
+
+        $stats = [
+            'total_jobs' => Job::where('user_id', $user->id)->where('source', 'company')->count(),
+            'total_matches' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->count(),
+            'shortlisted' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->where('status', 'shortlisted')->count(),
+        ];
+
+        return view('company.ai-matching', compact('jobs', 'stats', 'hasAiMatching'));
+    }
+
+    public function aiMatchingForJob(Job $job)
+    {
+        $user = Auth::user();
+
+        // Verify job belongs to employer
+        abort_unless($job->user_id === $user->id, 403);
+
+        // Check if employer has AI matching access
+        $hasAiMatching = $user->activeEmployerAddOns()
+            ->whereHas('addOn', fn($q) => $q->where('type', 'ai_matching'))
+            ->exists();
+
+        if (!$hasAiMatching) {
+            return redirect()->route('company.addons')
+                ->with('info', 'Please purchase the AI Matching add-on to access this feature.');
+        }
+
+        // Get matches for this specific job
+        $matches = JobCandidateMatch::with(['candidate', 'resume'])
+            ->where('job_id', $job->id)
             ->orderByDesc('match_score')
             ->orderByDesc('matched_at')
             ->paginate(20);
 
         $stats = [
-            'total_matches' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->count(),
-            'shortlisted' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->where('status', 'shortlisted')->count(),
-            'contacted' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->where('status', 'contacted')->count(),
+            'total_matches' => $matches->total(),
+            'shortlisted' => JobCandidateMatch::where('job_id', $job->id)->where('status', 'shortlisted')->count(),
+            'contacted' => JobCandidateMatch::where('job_id', $job->id)->where('status', 'contacted')->count(),
+            'pending' => JobCandidateMatch::where('job_id', $job->id)->where('status', 'pending')->count(),
         ];
 
-        return view('company.ai-matching', compact('matches', 'stats', 'hasAiMatching'));
+        return view('company.ai-matching-job', compact('job', 'matches', 'stats', 'hasAiMatching'));
     }
 
     public function packages()
