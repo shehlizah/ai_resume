@@ -48,6 +48,24 @@ class AddOn extends Model
     }
 
     /**
+     * Get employers who purchased this add-on
+     */
+    public function employers()
+    {
+        return $this->belongsToMany(User::class, 'employer_add_ons', 'add_on_id', 'employer_id')
+            ->withPivot(['amount_paid', 'payment_gateway', 'payment_id', 'status', 'purchased_at', 'expires_at'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get employer add-on purchases
+     */
+    public function employerAddOns()
+    {
+        return $this->hasMany(EmployerAddOn::class);
+    }
+
+    /**
      * Get active add-on purchases count
      */
     public function activePurchases()

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Company;
 use App\Http\Controllers\Controller;
 use App\Models\Job;
 use App\Models\JobApplication;
+use App\Models\JobCandidateMatch;
 use App\Models\CompanyPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,10 +30,26 @@ class CompanyDashboardController extends Controller
             'applications' => $jobs->sum('applications_count'),
         ];
 
+        // Check if employer has AI matching access
+        $hasAiMatching = $user->activeEmployerAddOns()
+            ->whereHas('addOn', fn($q) => $q->where('type', 'ai_matching'))
+            ->exists();
+
+        // Get AI-matched candidates for employer's jobs (top matches)
+        $aiMatches = collect();
+        if ($hasAiMatching) {
+            $aiMatches = JobCandidateMatch::with(['job', 'candidate', 'resume'])
+                ->whereHas('job', fn($q) => $q->where('user_id', $user->id))
+                ->where('status', 'shortlisted')
+                ->orderByDesc('match_score')
+                ->limit(10)
+                ->get();
+        }
+
         $packages = $this->getPackages();
         $addons = $this->getAddons();
 
-        return view('company.dashboard', compact('jobs', 'packages', 'addons', 'stats'));
+        return view('company.dashboard', compact('jobs', 'packages', 'addons', 'stats', 'aiMatches', 'hasAiMatching'));
     }
 
     public function create()
@@ -348,6 +365,13 @@ class CompanyDashboardController extends Controller
     private function getAddons()
     {
         return [
+            [
+                'name' => 'AI Candidate Matching',
+                'description' => 'Automatically match qualified candidates to your jobs within 30 minutes',
+                'price' => 2500000,
+                'period' => 'month',
+                'slug' => 'ai-matching',
+            ],
             [
                 'name' => 'Featured job',
                 'description' => 'Highlight a job for more visibility',

@@ -237,6 +237,33 @@ public function userAddOns()
     return $this->hasMany(UserAddOn::class);
 }
 
+    /**
+     * Get employer add-on purchases (for employer users)
+     */
+    public function employerAddOns()
+    {
+        return $this->hasMany(EmployerAddOn::class, 'employer_id');
+    }
+
+    /**
+     * Get employer active add-ons
+     */
+    public function activeEmployerAddOns()
+    {
+        return $this->employerAddOns()->where('status', 'active');
+    }
+
+    /**
+     * Check if employer has purchased a specific add-on
+     */
+    public function hasPurchasedEmployerAddOn($addOnId)
+    {
+        return $this->employerAddOns()
+            ->where('add_on_id', $addOnId)
+            ->where('status', 'active')
+            ->exists();
+    }
+
 /**
  * Check if user has purchased a specific add-on
  */

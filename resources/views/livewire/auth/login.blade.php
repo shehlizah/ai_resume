@@ -208,12 +208,12 @@ new #[Layout('components.layouts.auth')] class extends Component
         .text-primary, a.text-primary {
             color: #2563EB !important;
         }
-        
+
         a.text-primary:hover,
         a[style*="color: #2563EB"]:hover {
             color: #1e40af !important;
         }
-        
+
         .form-check-input:checked {
             background-color: #2563EB;
             border-color: #2563EB;
