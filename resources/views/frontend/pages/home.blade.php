@@ -1056,8 +1056,8 @@
             </div>
             <div class="hero-illustration">
                 <picture>
-                    <source media="(max-width: 575.98px)" srcset="{{ asset('frontend/assets/images/mockup_mob.png') }}">
-                    <img src="{{ asset('frontend/assets/images/mockup_mob.png') }}" alt="Mobile app mockup" loading="lazy" style="width:100%;height:100%;object-fit:contain;">
+                    <source media="(max-width: 575.98px)" srcset="{{ asset('frontend/assets/images/mockup_mob_zoom.png') }}">
+                    <img src="{{ asset('frontend/assets/images/mockup_mob_zoom.png') }}" alt="Mobile app mockup" loading="lazy" style="width:100%;height:100%;object-fit:contain;">
                 </picture>
             </div>
         </div>
