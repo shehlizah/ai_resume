@@ -21,14 +21,11 @@
         @if (request()->routeIs('login'))
           <div class="text-center">
             <div style="max-width: clamp(300px, 40vw, 520px); margin: 0 auto;">
-              <picture>
-                <source media="(max-width: 575.98px)" srcset="{{ asset('assets/img/illustrations/internal_mockup.png') }}">
-                <img src="{{ asset('assets/img/illustrations/internal_mockup.png') }}"
-                     alt="App mockup"
-                     loading="lazy"
-                     style="width:100%; height:auto; display:block; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);"
-                     onerror="this.onerror=null;this.src='{{ asset('assets/img/illustrations/boy-with-rocket-light.png') }}'">
-              </picture>
+              <img src="{{ asset('assets/img/illustrations/internal_mockup.png') }}"
+                   alt="App mockup"
+                   loading="lazy"
+                   style="width:100%; height:auto; display:block; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);"
+                   onerror="this.src='{{ asset('assets/img/illustrations/boy-with-rocket-light.png') }}'">
             </div>
           </div>
         @else
