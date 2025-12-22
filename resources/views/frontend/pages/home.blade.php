@@ -1055,22 +1055,10 @@
                 </div>
             </div>
             <div class="hero-illustration">
-                <div class="phone-container">
-                    <div class="phone-frame">
-                        <div class="phone-screen">
-                            <div class="phone-screen-content">
-                                <div class="phone-screen-icon">📄</div>
-                                <div class="phone-screen-title">Build Your CV</div>
-                                <div class="phone-screen-subtitle">Get job-ready fast</div>
-                            </div>
-                            <div class="phone-features">
-                                <div class="feature-item">✓ Pro Templates</div>
-                                <div class="feature-item">✓ AI Writing Help</div>
-                                <div class="feature-item">✓ Download & Share</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <picture>
+                    <source media="(max-width: 575.98px)" srcset="{{ asset('frontend/assets/images/mockup_mob.png') }}">
+                    <img src="{{ asset('frontend/assets/images/mockup_mob.png') }}" alt="Mobile app mockup" loading="lazy" style="width:100%;max-width:520px;border-radius:24px;box-shadow: 0 25px 50px rgba(0,0,0,0.15);">
+                </picture>
             </div>
         </div>
     </section>
@@ -1085,16 +1073,6 @@
                 You Get Hired
                 <span class="underline u1"></span>
             </h2>
-            <!--<span class="arrow">➜</span>-->
-<svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_37_729" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="176" height="65">
-<path d="M175.67 0H0V64.2376H175.67V0Z" fill="white"/>
-</mask>
-<g mask="url(#mask0_37_729)">
-<path d="M8.98926 53.0432C34.0655 35.568 47.4912 30.155 82.5832 35.6322C93.3922 37.3194 90.7545 45.6742 86.3732 48.8586C69.8419 60.871 65.812 52.3838 67.376 43.4561C71.5317 19.7367 128.003 12.2143 164.937 18.2907C166.45 18.5398 160.637 13.857 156.61 8.72846C155.225 6.96521 156.213 8.77697 165.156 18.1701C167.067 18.5162 155.549 25.3568 155.78 25.4093" stroke="black" stroke-width="2.62194" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-</svg>
-
         </div>
         <a href="{{route('user.resumes.create')}}" class="btn-primary">Create CV</a>
     </div>
