@@ -108,11 +108,11 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="progress" style="width: 100px; height: 12px;">
-                                            <div class="progress-bar bg-{{ $match->score_color }}" 
-                                                 role="progressbar" 
+                                            <div class="progress-bar bg-{{ $match->score_color }}"
+                                                 role="progressbar"
                                                  style="width: {{ $match->match_score }}%"
-                                                 aria-valuenow="{{ $match->match_score }}" 
-                                                 aria-valuemin="0" 
+                                                 aria-valuenow="{{ $match->match_score }}"
+                                                 aria-valuemin="0"
                                                  aria-valuemax="100">
                                             </div>
                                         </div>
@@ -136,7 +136,7 @@
                                 <td>
                                     @if($match->match_details && isset($match->match_details['total_experience_entries']))
                                         <span class="badge bg-light text-dark">
-                                            {{ $match->match_details['total_experience_entries'] }} 
+                                            {{ $match->match_details['total_experience_entries'] }}
                                             {{ Str::plural('role', $match->match_details['total_experience_entries']) }}
                                         </span>
                                     @else
@@ -155,14 +155,14 @@
                                 <td>
                                     <div class="btn-group btn-group-sm">
                                         @if($match->resume && $match->resume->generated_pdf_path)
-                                            <a href="{{ Storage::url($match->resume->generated_pdf_path) }}" 
-                                               target="_blank" 
+                                            <a href="{{ Storage::url($match->resume->generated_pdf_path) }}"
+                                               target="_blank"
                                                class="btn btn-outline-primary"
                                                title="View Resume">
                                                 <i class="bx bx-file me-1"></i>Resume
                                             </a>
                                         @endif
-                                        <a href="mailto:{{ $match->candidate->email }}?subject=Regarding {{ $job->title }} position" 
+                                        <a href="mailto:{{ $match->candidate->email }}?subject=Regarding {{ $job->title }} position"
                                            class="btn btn-success"
                                            title="Contact Candidate">
                                             <i class="bx bx-envelope me-1"></i>Contact

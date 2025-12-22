@@ -66,7 +66,7 @@ class CompanyPaymentController extends Controller
         if ($payment->item_type === 'addon') {
             // Find the AddOn by slug
             $addOn = \App\Models\AddOn::where('slug', $payment->item_slug)->first();
-            
+
             if ($addOn) {
                 // Create or update EmployerAddOn record
                 \App\Models\EmployerAddOn::updateOrCreate(

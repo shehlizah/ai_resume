@@ -171,10 +171,10 @@ class CompanyDashboardController extends Controller
     {
         $user = Auth::user();
         $addons = $this->getAddons();
-        
+
         // Get user's active addons
         $activeAddons = $user->activeEmployerAddOns()->with('addOn')->get()->pluck('addOn.slug')->toArray();
-        
+
         return view('company.addons', compact('addons', 'activeAddons'));
     }
 
@@ -412,7 +412,7 @@ class CompanyDashboardController extends Controller
                 if ($metadata['item_type'] === 'addon') {
                     // Find the AddOn by slug
                     $addOn = \App\Models\AddOn::where('slug', $metadata['item_slug'])->first();
-                    
+
                     if ($addOn) {
                         // Create or update EmployerAddOn record
                         \App\Models\EmployerAddOn::updateOrCreate(

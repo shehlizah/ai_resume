@@ -32,7 +32,7 @@
                                 <span class="badge bg-success">Active</span>
                             @endif
                         </div>
-                        
+
                         <div class="d-flex justify-content-between align-items-center mt-4">
                             <div>
                                 <h4 class="mb-0 text-primary">IDR {{ number_format($addon['price'], 0) }}</h4>
@@ -56,7 +56,7 @@
                                 </button>
                             @endif
                         </div>
-                        
+
                         @if($addon['slug'] === 'ai-matching' && !$isActive)
                             <div class="alert alert-info mt-3 mb-0">
                                 <small>
