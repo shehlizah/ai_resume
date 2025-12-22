@@ -196,48 +196,19 @@
             min-height: 400px;
         }
 
-        .device-mockup {
-            position: relative;
+        .hero-image {
             width: 100%;
             max-width: 500px;
-            aspect-ratio: 4/3;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
             animation: float 6s ease-in-out infinite;
         }
 
-        .device-screen {
-            position: absolute;
-            top: 10%;
-            left: 5%;
-            right: 5%;
-            bottom: 10%;
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            overflow: hidden;
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
         }
-
-        .screen-content {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .screen-bar {
-            height: 8px;
-            background: var(--grey-200);
-            border-radius: 4px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .screen-bar:nth-child(1) { width: 80%; background: var(--primary-color); }
-        .screen-bar:nth-child(2) { width: 95%; animation-delay: 0.2s; }
-        .screen-bar:nth-child(3) { width: 60%; background: var(--secondary-color); animation-delay: 0.4s; }
-        .screen-bar:nth-child(4) { width: 85%; animation-delay: 0.6s; }
-        .screen-bar:nth-child(5) { width: 70%; background: var(--accent-green); animation-delay: 0.8s; }
 
         /* ===== FLOATING ICONS ===== */
         .floating-icon {
@@ -418,16 +389,13 @@
 
             <!-- Illustration -->
             <div class="illustration">
-                <div class="device-mockup">
-                    <div class="device-screen">
-                        <div class="screen-content">
-                            <div class="screen-bar"></div>
-                            <div class="screen-bar"></div>
-                            <div class="screen-bar"></div>
-                            <div class="screen-bar"></div>
-                            <div class="screen-bar"></div>
-                        </div>
-                    </div>
+                <div class="hero-image">
+                    <picture>
+                        <!-- Mobile mockup image -->
+                        <source media="(max-width: 575.98px)" srcset="assets/img/illustrations/mockup_mob.png">
+                        <!-- Default / desktop fallback -->
+                        <img src="assets/img/illustrations/mockup_mob.png" alt="Mobile app mockup" loading="lazy">
+                    </picture>
                 </div>
 
                 <!-- Floating Icons -->
