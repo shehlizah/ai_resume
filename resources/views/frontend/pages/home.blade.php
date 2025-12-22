@@ -1057,7 +1057,7 @@
             <div class="hero-illustration">
                 <picture>
                     <source media="(max-width: 575.98px)" srcset="{{ asset('frontend/assets/images/mockup_mob.png') }}">
-                    <img src="{{ asset('frontend/assets/images/mockup_mob.png') }}" alt="Mobile app mockup" loading="lazy" style="width:100%;max-width:520px;border-radius:24px;box-shadow: 0 25px 50px rgba(0,0,0,0.15);">
+                    <img src="{{ asset('frontend/assets/images/mockup_mob.png') }}" alt="Mobile app mockup" loading="lazy" style="width:100%;height:100%;object-fit:contain;">
                 </picture>
             </div>
         </div>
