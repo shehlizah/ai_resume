@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\UserResumeController;
@@ -241,7 +242,12 @@ Route::middleware(['auth'])->group(function () {
 // Company Dashboard (Job Posting)
 // ==========================================
 Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.')->group(function () {
-    Route::model('job', \App\Models\PostedJob::class);
+    // Bind job parameter to PostedJob owned by the authenticated employer; return 404 if not owned
+    Route::bind('job', function ($value) {
+        return \App\Models\PostedJob::where('id', $value)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+    });
 
     Route::get('/dashboard', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'index'])->name('dashboard');
     Route::get('/jobs/create', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'create'])->name('jobs.create');
