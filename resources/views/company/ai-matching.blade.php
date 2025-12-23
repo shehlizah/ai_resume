@@ -137,9 +137,12 @@
                                             <i class="bx bx-search me-1"></i>View Matches
                                         </a>
                                     @else
-                                        <button class="btn btn-sm btn-outline-secondary" disabled>
-                                            <i class="bx bx-time me-1"></i>Processing...
-                                        </button>
+                                        <form action="{{ route('company.ai-matching.trigger', $job) }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                <i class="bx bx-play me-1"></i>Start Matching
+                                            </button>
+                                        </form>
                                     @endif
                                 </td>
                             </tr>

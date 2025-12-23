@@ -258,6 +258,7 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
     Route::get('/ai-matching/candidates', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'viewAllMatches'])->name('ai-matching.candidates');
     Route::get('/ai-matching/{job}', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'aiMatchingForJob'])->name('ai-matching.job');
     Route::get('/ai-matching/{job}/candidate/{match}/resume', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'downloadMatchResume'])->name('ai-matching.candidate.resume');
+    Route::post('/ai-matching/{job}/trigger-match', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'triggerManualMatching'])->name('ai-matching.trigger');
     Route::get('/packages', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'packages'])->name('packages');
     Route::get('/addons', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'addons'])->name('addons');
 

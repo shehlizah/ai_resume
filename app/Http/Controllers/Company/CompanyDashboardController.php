@@ -228,6 +228,36 @@ class CompanyDashboardController extends Controller
         abort(404, 'Resume file not found');
     }
 
+    /**
+     * Manually trigger AI matching for a job (instant, no queue delay)
+     */
+    public function triggerManualMatching(PostedJob $job)
+    {
+        $user = Auth::user();
+
+        // Verify job belongs to employer
+        abort_unless((int) $job->user_id === (int) $user->id, 403);
+
+        // Check if employer has AI matching access
+        if (!$user->hasAiMatchingAddOn()) {
+            return back()->with('error', 'Please purchase the AI Matching add-on to use this feature.');
+        }
+
+        try {
+            // Delete existing matches for this job
+            JobCandidateMatch::where('job_id', $job->id)->delete();
+
+            // Trigger matching job immediately (synchronous, not queued)
+            $matchService = app(\App\Services\CandidateMatchService::class);
+            $matchCount = $matchService->matchCandidatesForJob($job, 50);
+
+            return back()->with('success', "AI matching completed! Found $matchCount candidates.");
+        } catch (\Exception $e) {
+            \Log::error("Manual matching failed: " . $e->getMessage());
+            return back()->with('error', 'Matching failed: ' . $e->getMessage());
+        }
+    }
+
     public function packages()
     {
         $packages = $this->getPackages();
