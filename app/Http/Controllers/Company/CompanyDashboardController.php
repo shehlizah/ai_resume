@@ -256,13 +256,12 @@ class CompanyDashboardController extends Controller
                 return back()->with('info', 'Matches already exist for this job. Click "View Matches" to see them.');
             }
 
-            // Trigger matching job immediately (synchronous)
-            $matchService = app(\App\Services\CandidateMatchService::class);
-            $matchCount = $matchService->matchCandidatesForJob($job, 50);
+            // Dispatch async job with timeout
+            \App\Jobs\MatchCandidatesJob::dispatch($job)->timeout(300); // 5 minute timeout
 
-            return back()->with('success', "AI matching completed! Found $matchCount candidates.");
+            return back()->with('success', "AI matching started! You'll see results shortly. Refresh the page in a moment.");
         } catch (\Exception $e) {
-            \Log::error("Manual matching failed: " . $e->getMessage());
+            \Log::error("Manual matching dispatch failed: " . $e->getMessage());
             return back()->with('error', 'Matching failed: ' . $e->getMessage());
         }
     }
