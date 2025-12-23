@@ -18,14 +18,12 @@ class CandidateMatchService
     }
 
     /**
-     * Find and score candidates for a job
+     * AI-powered candidate matching for a job
+     * Uses OpenAI to understand job requirements and resume content
      */
     public function matchCandidatesForJob(Job $job, int $limit = 50)
     {
-        $jobKeywords = $this->extractJobKeywords($job);
-        $jobSkills = $this->extractJobSkills($job);
-
-        // Get candidates with completed resumes who are available
+        // Get candidates with completed resumes
         $candidates = User::where('role', 'user')
             ->where('is_active', true)
             ->whereHas('resumes', function ($q) {
@@ -34,7 +32,7 @@ class CandidateMatchService
             ->with(['resumes' => function ($q) {
                 $q->where('status', 'completed')->latest();
             }])
-            ->limit(200) // Pre-filter to avoid processing too many
+            ->limit(200)
             ->get();
 
         $matches = [];
@@ -43,31 +41,39 @@ class CandidateMatchService
             $resume = $candidate->resumes->first();
             if (!$resume) continue;
 
-            $score = $this->calculateMatchScore($job, $jobKeywords, $jobSkills, $candidate, $resume);
+            // Skip resumes with no data or empty data
+            if (!$resume->data || (is_array($resume->data) && empty($resume->data)) || 
+                (is_string($resume->data) && trim($resume->data) === '{}')) {
+                continue;
+            }
 
-            if ($score >= 50) { // Only store matches above 50%
-                $matches[] = [
-                    'job_id' => $job->id,
-                    'user_id' => $candidate->id,
-                    'user_resume_id' => $resume->id,
-                    'match_score' => $score,
-                    'match_details' => $this->buildMatchDetails($job, $jobKeywords, $jobSkills, $resume),
-                    'status' => $score >= 75 ? 'shortlisted' : 'pending',
-                    'matched_at' => now(),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+            // Use AI to score this candidate against the job
+            try {
+                $matchResult = $this->aiScoreCandidate($job, $candidate, $resume);
+                
+                if ($matchResult['score'] >= 50) {
+                    $matches[] = [
+                        'job_id' => $job->id,
+                        'user_id' => $candidate->id,
+                        'user_resume_id' => $resume->id,
+                        'match_score' => $matchResult['score'],
+                        'match_details' => $matchResult['details'],
+                        'ai_summary' => $matchResult['summary'],
+                        'status' => $matchResult['score'] >= 75 ? 'shortlisted' : 'pending',
+                        'matched_at' => now(),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            } catch (\Exception $e) {
+                Log::warning("AI matching failed for candidate {$candidate->id}: {$e->getMessage()}");
+                continue;
             }
         }
 
         // Sort by score and take top matches
         usort($matches, fn($a, $b) => $b['match_score'] <=> $a['match_score']);
         $matches = array_slice($matches, 0, $limit);
-
-        // Optionally enhance with AI summaries for top matches
-        if ($this->openAIService && count($matches) > 0) {
-            $matches = $this->enhanceWithAISummaries($job, $matches, 10);
-        }
 
         // Bulk insert
         if (!empty($matches)) {
@@ -78,13 +84,163 @@ class CandidateMatchService
     }
 
     /**
+     * Use AI to score candidate against job
+     * This does REAL semantic understanding, not keyword matching
+     */
+    protected function aiScoreCandidate(Job $job, User $candidate, UserResume $resume): array
+    {
+        if (!$this->openAIService) {
+            // Fallback to basic matching if no AI service
+            return $this->basicScoreCandidate($job, $candidate, $resume);
+        }
+
+        // Build job context
+        $jobPrompt = "Job Position: {$job->title}\n";
+        $jobPrompt .= "Company: {$job->company}\n";
+        $jobPrompt .= "Location: {$job->location}\n";
+        $jobPrompt .= "Description: " . substr($job->description, 0, 2000) . "\n";
+        $jobPrompt .= "Tags: " . (is_array($job->tags) ? implode(', ', $job->tags) : $job->tags) . "\n";
+
+        // Build resume context
+        $resumeData = $resume->data;
+        $resumeText = "Name: " . ($resumeData['name'] ?? 'N/A') . "\n";
+        $resumeText .= "Title: " . ($resumeData['title'] ?? 'N/A') . "\n";
+        $resumeText .= "Summary: " . substr($resumeData['summary'] ?? '', 0, 500) . "\n";
+        
+        if (isset($resumeData['skills']) && is_array($resumeData['skills'])) {
+            $resumeText .= "Skills: " . implode(', ', array_slice($resumeData['skills'], 0, 20)) . "\n";
+        }
+        
+        if (isset($resumeData['job_title']) && is_array($resumeData['job_title'])) {
+            $resumeText .= "Experience: " . implode('; ', array_slice($resumeData['job_title'], 0, 5)) . "\n";
+        }
+
+        // AI scoring prompt
+        $scorePrompt = <<<PROMPT
+You are an expert HR recruiter. Score how well this candidate matches the job on a scale of 0-100.
+
+{$jobPrompt}
+
+CANDIDATE RESUME:
+{$resumeText}
+
+Provide your response in JSON format with these fields:
+{
+  "score": <0-100>,
+  "matched_skills": ["skill1", "skill2", ...],
+  "missing_skills": ["skill1", "skill2", ...],
+  "experience_match": "junior/mid/senior/executive",
+  "location_match": true/false,
+  "summary": "2-3 sentence explanation of why they match (or don't match)"
+}
+
+Focus on semantic understanding, not just keyword matching. Consider:
+- Years of relevant experience
+- Transferable skills
+- Cultural fit potential
+- Growth trajectory
+- Exact skill requirements vs nice-to-haves
+PROMPT;
+
+        try {
+            $response = $this->openAIService->generateContent($scorePrompt, 500);
+            
+            // Parse JSON response
+            $result = json_decode($response, true);
+            
+            if (!$result || !isset($result['score'])) {
+                Log::warning("Invalid AI response for candidate matching: $response");
+                return $this->basicScoreCandidate($job, $candidate, $resume);
+            }
+
+            return [
+                'score' => max(0, min(100, (int)$result['score'])),
+                'details' => [
+                    'matched_skills' => $result['matched_skills'] ?? [],
+                    'missing_skills' => $result['missing_skills'] ?? [],
+                    'experience_match' => $result['experience_match'] ?? 'unknown',
+                    'location_match' => $result['location_match'] ?? false,
+                    'total_experience_entries' => count($resumeData['job_title'] ?? []),
+                ],
+                'summary' => $result['summary'] ?? 'No summary available',
+            ];
+        } catch (\Exception $e) {
+            Log::error("AI scoring error: {$e->getMessage()}");
+            return $this->basicScoreCandidate($job, $candidate, $resume);
+        }
+    }
+
+    /**
+     * Fallback: basic keyword-based scoring (when AI unavailable)
+     */
+    protected function basicScoreCandidate(Job $job, User $candidate, UserResume $resume): array
+    {
+        $jobKeywords = $this->extractJobKeywords($job);
+        $jobSkills = $this->extractJobSkills($job);
+        $resumeData = $resume->data ?? [];
+
+        $score = 0;
+        $resumeText = strtolower(json_encode($resumeData));
+
+        // Skills match (40% weight)
+        $skillsMatch = 0;
+        $matchedSkills = [];
+        if (!empty($jobSkills)) {
+            foreach ($jobSkills as $skill) {
+                if (str_contains($resumeText, strtolower($skill))) {
+                    $skillsMatch++;
+                    $matchedSkills[] = $skill;
+                }
+            }
+            $skillsScore = (count($jobSkills) > 0) ? ($skillsMatch / count($jobSkills)) * 40 : 0;
+            $score += $skillsScore;
+        }
+
+        // Keywords match (30% weight)
+        $keywordMatch = 0;
+        $matchedKeywords = [];
+        $sampleKeywords = array_slice($jobKeywords, 0, 20);
+        if (!empty($sampleKeywords)) {
+            foreach ($sampleKeywords as $keyword) {
+                if (str_contains($resumeText, $keyword)) {
+                    $keywordMatch++;
+                    $matchedKeywords[] = $keyword;
+                }
+            }
+            $keywordScore = (count($sampleKeywords) > 0) ? ($keywordMatch / count($sampleKeywords)) * 30 : 0;
+            $score += $keywordScore;
+        }
+
+        // Experience level (20% weight)
+        $experienceScore = $this->scoreExperience($job, $resumeData);
+        $score += $experienceScore * 20;
+
+        // Location match (10% weight)
+        $locationScore = 0;
+        $jobLocation = strtolower($job->location ?? '');
+        if (str_contains($jobLocation, 'remote') || str_contains($resumeText, strtolower($job->location))) {
+            $locationScore = 1;
+        }
+        $score += $locationScore * 10;
+
+        return [
+            'score' => (int) min(100, max(0, $score)),
+            'details' => [
+                'matched_skills' => array_values($matchedSkills),
+                'missing_skills' => array_values(array_diff($jobSkills, $matchedSkills)),
+                'total_experience_entries' => count($resumeData['job_title'] ?? []),
+            ],
+            'summary' => "Matched " . count($matchedSkills) . " skills and " . count($matchedKeywords) . " keywords",
+        ];
+    }
+
+    /**
      * Extract keywords from job description and title
      */
     protected function extractJobKeywords(Job $job): array
     {
         $text = strtolower($job->title . ' ' . $job->description);
 
-        // Remove common words
         $stopWords = ['the', 'and', 'for', 'with', 'you', 'are', 'this', 'that', 'from', 'will', 'can', 'our', 'your', 'have', 'has'];
 
         $words = preg_split('/\W+/', $text);
@@ -100,12 +256,10 @@ class CandidateMatchService
     {
         $skills = [];
 
-        // From tags
         if ($job->tags && is_array($job->tags)) {
             $skills = array_merge($skills, array_map('strtolower', $job->tags));
         }
 
-        // Common tech skills from description
         $techSkills = ['php', 'laravel', 'javascript', 'react', 'vue', 'python', 'java', 'node', 'sql',
                        'mysql', 'postgresql', 'mongodb', 'aws', 'docker', 'kubernetes', 'git', 'api',
                        'html', 'css', 'typescript', 'angular', 'django', 'flask', 'spring'];
@@ -121,70 +275,17 @@ class CandidateMatchService
     }
 
     /**
-     * Calculate match score between job and candidate
-     */
-    protected function calculateMatchScore(Job $job, array $jobKeywords, array $jobSkills, User $candidate, UserResume $resume): int
-    {
-        $score = 0;
-        $resumeData = $resume->data ?? [];
-
-        // Extract resume text
-        $resumeText = strtolower(json_encode($resumeData));
-
-        // Skills match (40% weight)
-        $skillsMatch = 0;
-        if (!empty($jobSkills)) {
-            foreach ($jobSkills as $skill) {
-                if (str_contains($resumeText, strtolower($skill))) {
-                    $skillsMatch++;
-                }
-            }
-            $skillsScore = (count($jobSkills) > 0) ? ($skillsMatch / count($jobSkills)) * 40 : 0;
-            $score += $skillsScore;
-        }
-
-        // Keywords match (30% weight)
-        $keywordMatch = 0;
-        $sampleKeywords = array_slice($jobKeywords, 0, 20); // Check top 20 keywords
-        if (!empty($sampleKeywords)) {
-            foreach ($sampleKeywords as $keyword) {
-                if (str_contains($resumeText, $keyword)) {
-                    $keywordMatch++;
-                }
-            }
-            $keywordScore = (count($sampleKeywords) > 0) ? ($keywordMatch / count($sampleKeywords)) * 30 : 0;
-            $score += $keywordScore;
-        }
-
-        // Experience level (20% weight)
-        $experienceScore = $this->scoreExperience($job, $resumeData);
-        $score += $experienceScore * 20;
-
-        // Location match (10% weight) - simple check
-        $locationScore = 0;
-        $jobLocation = strtolower($job->location ?? '');
-        if (str_contains($jobLocation, 'remote') || str_contains($resumeText, strtolower($job->location))) {
-            $locationScore = 1;
-        }
-        $score += $locationScore * 10;
-
-        return (int) min(100, max(0, $score));
-    }
-
-    /**
      * Score experience level match
      */
     protected function scoreExperience(Job $job, array $resumeData): float
     {
-        // Count years of experience from resume
         $experiences = $resumeData['job_title'] ?? [];
         if (empty($experiences) || !is_array($experiences)) {
-            return 0.3; // Some baseline score
+            return 0.3;
         }
 
         $yearCount = count($experiences);
 
-        // Simple heuristic based on job title
         $jobTitle = strtolower($job->title);
         if (str_contains($jobTitle, 'senior') || str_contains($jobTitle, 'lead')) {
             return $yearCount >= 4 ? 1 : ($yearCount >= 2 ? 0.6 : 0.3);
@@ -192,51 +293,6 @@ class CandidateMatchService
             return $yearCount <= 2 ? 1 : 0.7;
         }
 
-        // Mid-level
         return $yearCount >= 2 ? 1 : 0.6;
-    }
-
-    /**
-     * Build detailed match breakdown
-     */
-    protected function buildMatchDetails(Job $job, array $jobKeywords, array $jobSkills, UserResume $resume): array
-    {
-        $resumeText = strtolower(json_encode($resume->data ?? []));
-
-        $matchedSkills = array_filter($jobSkills, fn($skill) => str_contains($resumeText, strtolower($skill)));
-        $matchedKeywords = array_filter(
-            array_slice($jobKeywords, 0, 10),
-            fn($kw) => str_contains($resumeText, $kw)
-        );
-
-        return [
-            'matched_skills' => array_values($matchedSkills),
-            'matched_keywords' => array_values($matchedKeywords),
-            'total_experience_entries' => count($resume->data['job_title'] ?? []),
-        ];
-    }
-
-    /**
-     * Enhance top matches with AI-generated summaries
-     */
-    protected function enhanceWithAISummaries(Job $job, array $matches, int $topN = 10): array
-    {
-        try {
-            foreach (array_slice($matches, 0, $topN) as $index => $match) {
-                $resume = UserResume::find($match['user_resume_id']);
-                if (!$resume) continue;
-
-                $prompt = "Job: {$job->title} at {$job->company}\n\n" .
-                         "Candidate Resume Summary: " . substr(json_encode($resume->data), 0, 1000) . "\n\n" .
-                         "In 2-3 sentences, explain why this candidate is a good match for this job.";
-
-                $summary = $this->openAIService->generateContent($prompt, 100);
-                $matches[$index]['ai_summary'] = $summary;
-            }
-        } catch (\Exception $e) {
-            Log::warning('AI summary generation failed: ' . $e->getMessage());
-        }
-
-        return $matches;
     }
 }
