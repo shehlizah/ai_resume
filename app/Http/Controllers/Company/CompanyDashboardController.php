@@ -337,6 +337,62 @@ class CompanyDashboardController extends Controller
             ->with('success', 'Job posted successfully.');
     }
 
+    public function edit(PostedJob $job)
+    {
+        $user = Auth::user();
+
+        // Ensure employer owns the job
+        abort_unless((int) $job->user_id === (int) $user->id, 403);
+
+        $packages = $this->getPackages();
+        $addons = $this->getAddons();
+
+        return view('company.job-edit', compact('job', 'packages', 'addons'));
+    }
+
+    public function update(Request $request, PostedJob $job)
+    {
+        $user = Auth::user();
+
+        // Ensure employer owns the job
+        abort_unless((int) $job->user_id === (int) $user->id, 403);
+
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'company' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'type' => 'nullable|string|max:100',
+            'salary' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'tags' => 'nullable|string',
+            'is_featured' => 'sometimes|boolean',
+        ]);
+
+        $tags = [];
+        if (!empty($data['tags'])) {
+            $tags = collect(explode(',', $data['tags']))
+                ->map(fn ($tag) => trim($tag))
+                ->filter()
+                ->values()
+                ->all();
+        }
+
+        $job->update([
+            'title' => $data['title'],
+            'company' => $data['company'],
+            'location' => $data['location'],
+            'type' => $data['type'] ?? 'Full Time',
+            'description' => $data['description'] ?? null,
+            'salary' => $data['salary'] ?? null,
+            'tags' => $tags ?: null,
+            'is_featured' => $request->boolean('is_featured'),
+        ]);
+
+        return redirect()
+            ->route('company.jobs.show', $job)
+            ->with('success', 'Job updated successfully.');
+    }
+
     public function packageCheckout($slug)
     {
         $packages = $this->getPackages();

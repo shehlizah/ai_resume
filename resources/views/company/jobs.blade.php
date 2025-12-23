@@ -36,7 +36,14 @@
                                     <td>{{ $job->is_featured ? 'Yes' : 'No' }}</td>
                                     <td>{{ optional($job->created_at)->format('Y-m-d') }}</td>
                                     <td class="text-end">
-                                        <a href="{{ route('company.jobs.show', $job) }}" class="btn btn-sm btn-outline-primary">View Job</a>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ route('company.jobs.show', $job) }}" class="btn btn-sm btn-outline-info" title="View Job">
+                                                <i class="bx bx-eye"></i>
+                                            </a>
+                                            <a href="{{ route('company.jobs.edit', $job) }}" class="btn btn-sm btn-outline-primary" title="Edit Job">
+                                                <i class="bx bx-pencil"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

@@ -250,6 +250,8 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
     Route::post('/jobs', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'store'])->name('jobs.store');
     Route::get('/jobs', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'jobs'])->name('jobs.index');
     Route::get('/jobs/{job}', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'show'])->name('jobs.show');
+    Route::get('/jobs/{job}/edit', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'edit'])->name('jobs.edit');
+    Route::put('/jobs/{job}', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'update'])->name('jobs.update');
     Route::get('/applications', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'applications'])->name('applications.index');
     Route::get('/jobs/{job}/applications', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'applicationsForJob'])->name('jobs.applications');
 
