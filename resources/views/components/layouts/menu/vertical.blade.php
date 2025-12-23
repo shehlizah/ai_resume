@@ -355,12 +355,7 @@
         </a>
       </li>
 
-      <li class="menu-item {{ request()->routeIs('company.applications.*') ? 'active' : '' }}">
-        <a class="menu-link" href="{{ route('company.applications.index') }}">
-          <i class="menu-icon tf-icons bx bx-user-pin"></i>
-          <div>{{ __('Applicants') }}</div>
-        </a>
-      </li>
+      {{-- Applicants menu removed per UX request --}}
 
       @php
         $aiMatchesCount = 0;
