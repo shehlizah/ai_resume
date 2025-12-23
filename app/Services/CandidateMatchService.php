@@ -103,8 +103,8 @@ class CandidateMatchService
         $jobPrompt .= "Description: " . substr($job->description, 0, 2000) . "\n";
         $jobPrompt .= "Tags: " . (is_array($job->tags) ? implode(', ', $job->tags) : $job->tags) . "\n";
 
-        // Build resume context
-        $resumeData = $resume->data;
+        // Build resume context - ensure data is array
+        $resumeData = is_array($resume->data) ? $resume->data : json_decode($resume->data ?? '{}', true);
         $resumeText = "Name: " . ($resumeData['name'] ?? 'N/A') . "\n";
         $resumeText .= "Title: " . ($resumeData['title'] ?? 'N/A') . "\n";
         $resumeText .= "Summary: " . substr($resumeData['summary'] ?? '', 0, 500) . "\n";
@@ -179,7 +179,12 @@ PROMPT;
     {
         $jobKeywords = $this->extractJobKeywords($job);
         $jobSkills = $this->extractJobSkills($job);
-        $resumeData = $resume->data ?? [];
+        
+        // Ensure resumeData is always an array
+        $resumeData = is_array($resume->data) ? $resume->data : json_decode($resume->data ?? '{}', true);
+        if (!is_array($resumeData)) {
+            $resumeData = [];
+        }
 
         $score = 0;
         $resumeText = strtolower(json_encode($resumeData));
