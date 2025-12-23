@@ -38,7 +38,7 @@
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
                                             <a href="{{ route('company.jobs.show', $job) }}" class="btn btn-sm btn-outline-primary" title="View">
-                                                <i class="bx bx-eye"></i>
+                                                <i class="bx bx-show"></i>
                                             </a>
                                             <a href="{{ route('company.jobs.edit', $job) }}" class="btn btn-sm btn-outline-warning" title="Edit">
                                                 <i class="bx bx-pencil"></i>
