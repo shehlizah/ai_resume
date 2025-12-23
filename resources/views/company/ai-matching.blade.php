@@ -1,4 +1,28 @@
 <x-layouts.app :title="__('AI-Matched Candidates')">
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bx bx-check-circle me-2"></i>
+            <strong>Success!</strong> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bx bx-error-circle me-2"></i>
+            <strong>Error!</strong> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('info'))
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <i class="bx bx-info-circle me-2"></i>
+            {{ session('info') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h4 mb-1">
@@ -146,9 +170,9 @@
                                                 <i class="bx bx-time me-1"></i>{{ $minutesRemaining }}m remaining
                                             </button>
                                         @else
-                                            <form action="{{ route('company.ai-matching.trigger', $job) }}" method="POST" style="display: inline;" onsubmit="var btn = this.querySelector('button'); btn.disabled=true; btn.innerHTML='<i class=&quot;bx bx-loader-alt bx-spin me-1&quot;></i>Processing...';">
+                                            <form action="{{ route('company.ai-matching.trigger', $job) }}" method="POST" style="display: inline;">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                <button type="submit" class="btn btn-sm btn-outline-primary" onclick="this.disabled=true; this.innerHTML='<i class=&quot;bx bx-loader-alt bx-spin me-1&quot;></i>Processing...'; this.form.submit();">
                                                     <i class="bx bx-play me-1"></i>Start Matching
                                                 </button>
                                             </form>
