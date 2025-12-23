@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Job;
+use App\Models\PostedJob;
 use App\Models\User;
 use App\Models\UserResume;
 use App\Models\JobCandidateMatch;
@@ -20,8 +21,9 @@ class CandidateMatchService
     /**
      * AI-powered candidate matching for a job
      * Uses OpenAI to understand job requirements and resume content
+     * Accepts both Job (scraped) and PostedJob (employer-posted) models
      */
-    public function matchCandidatesForJob(Job $job, int $limit = 50)
+    public function matchCandidatesForJob($job, int $limit = 50)
     {
         // Get candidates with completed resumes
         $candidates = User::where('role', 'user')
@@ -87,7 +89,7 @@ class CandidateMatchService
      * Use AI to score candidate against job
      * This does REAL semantic understanding, not keyword matching
      */
-    protected function aiScoreCandidate(Job $job, User $candidate, UserResume $resume): array
+    protected function aiScoreCandidate($job, User $candidate, UserResume $resume): array
     {
         if (!$this->openAIService) {
             // Fallback to basic matching if no AI service
@@ -173,7 +175,7 @@ PROMPT;
     /**
      * Fallback: basic keyword-based scoring (when AI unavailable)
      */
-    protected function basicScoreCandidate(Job $job, User $candidate, UserResume $resume): array
+    protected function basicScoreCandidate($job, User $candidate, UserResume $resume): array
     {
         $jobKeywords = $this->extractJobKeywords($job);
         $jobSkills = $this->extractJobSkills($job);
@@ -237,7 +239,7 @@ PROMPT;
     /**
      * Extract keywords from job description and title
      */
-    protected function extractJobKeywords(Job $job): array
+    protected function extractJobKeywords($job): array
     {
         $text = strtolower($job->title . ' ' . $job->description);
 
@@ -252,7 +254,7 @@ PROMPT;
     /**
      * Extract skills from job tags and description
      */
-    protected function extractJobSkills(Job $job): array
+    protected function extractJobSkills($job): array
     {
         $skills = [];
 
@@ -277,7 +279,7 @@ PROMPT;
     /**
      * Score experience level match
      */
-    protected function scoreExperience(Job $job, array $resumeData): float
+    protected function scoreExperience($job, array $resumeData): float
     {
         $experiences = $resumeData['job_title'] ?? [];
         if (empty($experiences) || !is_array($experiences)) {
