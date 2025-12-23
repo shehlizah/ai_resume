@@ -138,6 +138,38 @@ class CompanyDashboardController extends Controller
         return view('company.ai-matching', compact('jobs', 'stats', 'hasAiMatching'));
     }
 
+    public function viewAllMatches()
+    {
+        $user = Auth::user();
+
+        // Check if employer has AI matching access
+        $hasAiMatching = $user->activeEmployerAddOns()
+            ->whereHas('addOn', fn($q) => $q->where('slug', 'ai-matching'))
+            ->exists();
+
+        if (!$hasAiMatching) {
+            return redirect()->route('company.addons')
+                ->with('info', 'Please purchase the AI Matching add-on to view matches.');
+        }
+
+        // Get all shortlisted matches for employer's jobs
+        $matches = JobCandidateMatch::with(['candidate', 'resume', 'job'])
+            ->whereHas('job', fn($q) => $q->where('user_id', $user->id))
+            ->where('status', 'shortlisted')
+            ->orderByDesc('match_score')
+            ->orderByDesc('matched_at')
+            ->paginate(20);
+
+        $stats = [
+            'total_matches' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->count(),
+            'shortlisted' => $matches->total(),
+            'contacted' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->where('status', 'contacted')->count(),
+            'pending' => JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->where('status', 'pending')->count(),
+        ];
+
+        return view('company.ai-matching-all', compact('matches', 'stats', 'hasAiMatching'));
+    }
+
     public function aiMatchingForJob(PostedJob $job)
     {
         $user = Auth::user();

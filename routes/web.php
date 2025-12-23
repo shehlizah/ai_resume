@@ -255,6 +255,7 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
 
     // AI Matching & Packages Pages
     Route::get('/ai-matching', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'aiMatching'])->name('ai-matching');
+    Route::get('/ai-matching/candidates', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'viewAllMatches'])->name('ai-matching.candidates');
     Route::get('/ai-matching/{job}', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'aiMatchingForJob'])->name('ai-matching.job');
     Route::get('/packages', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'packages'])->name('packages');
     Route::get('/addons', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'addons'])->name('addons');

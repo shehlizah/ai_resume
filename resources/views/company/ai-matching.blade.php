@@ -133,7 +133,7 @@
                                             <i class="bx bx-lock-alt me-1"></i>Requires AI Matching
                                         </button>
                                     @elseif($job->candidate_matches_count > 0)
-                                        <a href="{{ route('company.ai-matching.job', $job) }}" class="btn btn-sm btn-primary">
+                                        <a href="{{ route('company.ai-matching.candidates') }}" class="btn btn-sm btn-primary">
                                             <i class="bx bx-search me-1"></i>View Matches
                                         </a>
                                     @else
