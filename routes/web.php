@@ -333,8 +333,6 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
         ]);
     })->name('cleanup-empty-matches');
 });
-    })->name('cleanup-empty-matches');
-});
 
 // Job applications (candidates)
 Route::middleware(['auth'])->group(function () {
