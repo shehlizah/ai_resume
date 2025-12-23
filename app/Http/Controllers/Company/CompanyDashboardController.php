@@ -32,7 +32,7 @@ class CompanyDashboardController extends Controller
 
         // Check if employer has AI matching access
         $hasAiMatching = $user->activeEmployerAddOns()
-            ->whereHas('addOn', fn($q) => $q->where('type', 'ai_matching'))
+            ->whereHas('addOn', fn($q) => $q->where('slug', 'ai-matching'))
             ->exists();
 
         // Get AI-matched candidates for employer's jobs (top matches)
@@ -117,7 +117,7 @@ class CompanyDashboardController extends Controller
 
         // Check if employer has AI matching access
         $hasAiMatching = $user->activeEmployerAddOns()
-            ->whereHas('addOn', fn($q) => $q->where('type', 'ai_matching'))
+            ->whereHas('addOn', fn($q) => $q->where('slug', 'ai-matching'))
             ->exists();
 
         // Get employer's jobs with match counts
@@ -147,7 +147,7 @@ class CompanyDashboardController extends Controller
 
         // Check if employer has AI matching access
         $hasAiMatching = $user->activeEmployerAddOns()
-            ->whereHas('addOn', fn($q) => $q->where('type', 'ai_matching'))
+            ->whereHas('addOn', fn($q) => $q->where('slug', 'ai-matching'))
             ->exists();
 
         if (!$hasAiMatching) {

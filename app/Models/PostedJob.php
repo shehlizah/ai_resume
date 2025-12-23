@@ -45,7 +45,7 @@ class PostedJob extends Model
                 $employer = $job->user;
                 if ($employer && $employer->isEmployer()) {
                     $hasAccess = $employer->activeEmployerAddOns()
-                        ->whereHas('addOn', fn($q) => $q->where('type', 'ai_matching'))
+                        ->whereHas('addOn', fn($q) => $q->where('slug', 'ai-matching'))
                         ->exists();
 
                     if ($hasAccess) {
