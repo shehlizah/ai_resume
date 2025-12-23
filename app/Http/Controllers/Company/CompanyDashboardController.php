@@ -208,14 +208,24 @@ class CompanyDashboardController extends Controller
         // Verify match belongs to this job
         abort_unless((int) $match->job_id === (int) $job->id, 403);
 
-        // Check if resume exists
+        // Check if resume path exists on the model
         abort_unless($match->resume && $match->resume->generated_pdf_path, 404);
 
-        // Stream the PDF file
-        return response()->file(
-            storage_path('app/' . $match->resume->generated_pdf_path),
-            ['Content-Type' => 'application/pdf']
-        );
+        // Prefer the public disk path (resumes are stored under storage/app/public)
+        $relativePath = $match->resume->generated_pdf_path; // e.g. "resumes/filename.pdf"
+        $absolutePath = storage_path('app/public/' . $relativePath);
+
+        if (file_exists($absolutePath)) {
+            return response()->file($absolutePath, ['Content-Type' => 'application/pdf']);
+        }
+
+        // Fallback: if using storage symlink, redirect to public URL
+        if (method_exists($match->resume, 'getUrlAttribute')) {
+            return redirect($match->resume->url);
+        }
+
+        // If file still not found, 404
+        abort(404, 'Resume file not found');
     }
 
     public function packages()
