@@ -320,19 +320,19 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
         
         // Find all matches for this employer's jobs where the resume has no data
         $deleted = \App\Models\JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))
-            ->whereHas('resume', fn($q) => {
-                $q->where(function($sub) {
-                    $sub->whereNull('data')
-                        ->orWhere('data', '{}')
-                        ->orWhere('data', '');
-                });
-            })
+            ->whereHas('resume', fn($q) => $q->where(function($sub) {
+                $sub->whereNull('data')
+                    ->orWhere('data', '{}')
+                    ->orWhere('data', '');
+            }))
             ->delete();
         
         return response()->json([
             'message' => "Removed $deleted matches with empty resumes",
             'matches_removed' => $deleted,
         ]);
+    })->name('cleanup-empty-matches');
+});
     })->name('cleanup-empty-matches');
 });
 
