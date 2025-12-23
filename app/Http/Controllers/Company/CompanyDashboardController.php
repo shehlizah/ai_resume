@@ -229,7 +229,7 @@ class CompanyDashboardController extends Controller
     }
 
     /**
-     * Manually trigger AI matching for a job (instant, no queue delay)
+     * Manually trigger AI matching for a job (after 30 min SLA)
      */
     public function triggerManualMatching(PostedJob $job)
     {
@@ -243,11 +243,20 @@ class CompanyDashboardController extends Controller
             return back()->with('error', 'Please purchase the AI Matching add-on to use this feature.');
         }
 
-        try {
-            // Delete existing matches for this job
-            JobCandidateMatch::where('job_id', $job->id)->delete();
+        // Check if 30 minutes have passed since job creation
+        $minutesElapsed = $job->created_at->diffInMinutes(now());
+        if ($minutesElapsed < 30) {
+            $minutesRemaining = 30 - $minutesElapsed;
+            return back()->with('info', "Please wait {$minutesRemaining} more minutes before accessing matches.");
+        }
 
-            // Trigger matching job immediately (synchronous, not queued)
+        try {
+            // Only run if no matches exist yet
+            if ($job->candidateMatches()->count() > 0) {
+                return back()->with('info', 'Matches already exist for this job. Click "View Matches" to see them.');
+            }
+
+            // Trigger matching job immediately (synchronous)
             $matchService = app(\App\Services\CandidateMatchService::class);
             $matchCount = $matchService->matchCandidatesForJob($job, 50);
 

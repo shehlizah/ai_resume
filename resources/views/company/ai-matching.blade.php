@@ -137,12 +137,22 @@
                                             <i class="bx bx-search me-1"></i>View Matches
                                         </a>
                                     @else
-                                        <form action="{{ route('company.ai-matching.trigger', $job) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-outline-primary">
-                                                <i class="bx bx-play me-1"></i>Start Matching
+                                        @php
+                                            $minutesElapsed = $job->created_at->diffInMinutes(now());
+                                            $minutesRemaining = max(0, 30 - $minutesElapsed);
+                                        @endphp
+                                        @if($minutesRemaining > 0)
+                                            <button class="btn btn-sm btn-outline-warning" disabled title="Matching in progress">
+                                                <i class="bx bx-time me-1"></i>{{ $minutesRemaining }}m remaining
                                             </button>
-                                        </form>
+                                        @else
+                                            <form action="{{ route('company.ai-matching.trigger', $job) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bx bx-play me-1"></i>Start Matching
+                                                </button>
+                                            </form>
+                                        @endif
                                     @endif
                                 </td>
                             </tr>
