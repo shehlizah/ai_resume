@@ -431,8 +431,17 @@ class CompanyDashboardController extends Controller
 
                 // If it's an add-on purchase, grant access via EmployerAddOn
                 if ($metadata['item_type'] === 'addon') {
-                    // Find the AddOn by slug
-                    $addOn = \App\Models\AddOn::where('slug', $metadata['item_slug'])->first();
+                    // Find the AddOn by slug or create it if it doesn't exist
+                    $addOn = \App\Models\AddOn::firstOrCreate(
+                        ['slug' => $metadata['item_slug']],
+                        [
+                            'name' => $metadata['item_name'],
+                            'description' => 'Employer add-on',
+                            'price' => $amount,
+                            'type' => 'employer',
+                            'is_active' => true,
+                        ]
+                    );
 
                     if ($addOn) {
                         // Create or update EmployerAddOn record
@@ -448,6 +457,9 @@ class CompanyDashboardController extends Controller
                                 'status' => 'active',
                                 'purchased_at' => now(),
                                 'expires_at' => null, // Lifetime access unless specified
+                            ]
+                        );
+                    }
                             ]
                         );
                     }
