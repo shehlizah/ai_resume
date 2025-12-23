@@ -362,10 +362,21 @@
         </a>
       </li>
 
-      <li class="menu-item {{ request()->routeIs('company.ai-matching') ? 'active' : '' }}">
+      @php
+        $aiMatchesCount = 0;
+        try {
+            $aiMatchesCount = \App\Models\JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))->count();
+        } catch (\Exception $e) {
+            $aiMatchesCount = 0;
+        }
+      @endphp
+      <li class="menu-item {{ request()->routeIs('company.ai-matching*') ? 'active' : '' }}">
         <a class="menu-link" href="{{ route('company.ai-matching') }}">
           <i class="menu-icon tf-icons bx bx-sparkles"></i>
           <div>{{ __('AI Matching') }}</div>
+          @if($aiMatchesCount > 0)
+            <span class="badge bg-info ms-2">{{ $aiMatchesCount }}</span>
+          @endif
         </a>
       </li>
 
