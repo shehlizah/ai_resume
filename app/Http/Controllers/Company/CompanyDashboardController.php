@@ -177,16 +177,6 @@ class CompanyDashboardController extends Controller
         $hasAiMatching = $user->hasAiMatchingAddOn();
 
         if (!$hasAiMatching) {
-            return redirect()->route('company.ai-matching')
-                ->with('info', 'Please purchase the AI Matching add-on to view matches.');
-        }
-
-        // Check if employer has AI matching access
-        $hasAiMatching = $user->activeEmployerAddOns()
-            ->whereHas('addOn', fn($q) => $q->where('type', 'ai_matching'))
-            ->exists();
-
-        if (!$hasAiMatching) {
             return redirect()->route('company.addons')
                 ->with('info', 'Please purchase the AI Matching add-on to access this feature.');
         }

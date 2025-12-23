@@ -292,6 +292,26 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
             'has_ai_matching' => $user->hasAiMatchingAddOn(),
         ]);
     })->name('debug-addons');
+    
+    // Temp route: Trigger matching for old jobs
+    Route::get('/trigger-old-job-matching', function() {
+        $user = Auth::user();
+        $jobs = \App\Models\PostedJob::where('user_id', $user->id)
+            ->where('source', 'company')
+            ->whereDoesntHave('candidateMatches')
+            ->get();
+        
+        $count = 0;
+        foreach ($jobs as $job) {
+            \App\Jobs\MatchCandidatesJob::dispatch($job)->delay(now()->addMinutes(1));
+            $count++;
+        }
+        
+        return response()->json([
+            'message' => "Queued matching for $count old jobs",
+            'jobs_processed' => $count,
+        ]);
+    })->name('trigger-old-job-matching');
 });
 
 // Job applications (candidates)
