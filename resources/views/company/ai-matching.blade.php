@@ -146,7 +146,7 @@
                                                 <i class="bx bx-time me-1"></i>{{ $minutesRemaining }}m remaining
                                             </button>
                                         @else
-                                            <form action="{{ route('company.ai-matching.trigger', $job) }}" method="POST" style="display: inline;" onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerHTML='<i class=\"bx bx-loader-alt bx-spin me-1\"></i>Processing...';">
+                                            <form action="{{ route('company.ai-matching.trigger', $job) }}" method="POST" style="display: inline;" onsubmit="var btn = this.querySelector('button'); btn.disabled=true; btn.innerHTML='<i class=&quot;bx bx-loader-alt bx-spin me-1&quot;></i>Processing...';">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-outline-primary">
                                                     <i class="bx bx-play me-1"></i>Start Matching

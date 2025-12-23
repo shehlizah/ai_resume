@@ -256,8 +256,8 @@ class CompanyDashboardController extends Controller
                 return back()->with('info', 'Matches already exist for this job. Click "View Matches" to see them.');
             }
 
-            // Dispatch async job with timeout
-            \App\Jobs\MatchCandidatesJob::dispatch($job)->timeout(300); // 5 minute timeout
+            // Dispatch async job (timeout is configured in the job class itself)
+            \App\Jobs\MatchCandidatesJob::dispatch($job);
 
             return back()->with('success', "AI matching started! You'll see results shortly. Refresh the page in a moment.");
         } catch (\Exception $e) {
