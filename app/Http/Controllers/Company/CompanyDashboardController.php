@@ -492,9 +492,6 @@ class CompanyDashboardController extends Controller
                             ]
                         );
                     }
-                            ]
-                        );
-                    }
                 }
 
                 return redirect()
