@@ -37,10 +37,10 @@
                                     <td>{{ optional($job->created_at)->format('Y-m-d') }}</td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('company.jobs.show', $job) }}" class="btn btn-sm btn-outline-info" title="View Job">
+                                            <a href="{{ route('company.jobs.show', $job) }}" class="btn btn-sm btn-outline-primary" title="View">
                                                 <i class="bx bx-eye"></i>
                                             </a>
-                                            <a href="{{ route('company.jobs.edit', $job) }}" class="btn btn-sm btn-outline-primary" title="Edit Job">
+                                            <a href="{{ route('company.jobs.edit', $job) }}" class="btn btn-sm btn-outline-warning" title="Edit">
                                                 <i class="bx bx-pencil"></i>
                                             </a>
                                         </div>
