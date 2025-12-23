@@ -198,6 +198,26 @@ class CompanyDashboardController extends Controller
         return view('company.ai-matching-job', compact('job', 'matches', 'stats', 'hasAiMatching'));
     }
 
+    public function downloadMatchResume(PostedJob $job, JobCandidateMatch $match)
+    {
+        $user = Auth::user();
+
+        // Verify job belongs to employer
+        abort_unless((int) $job->user_id === (int) $user->id, 403);
+
+        // Verify match belongs to this job
+        abort_unless((int) $match->job_id === (int) $job->id, 403);
+
+        // Check if resume exists
+        abort_unless($match->resume && $match->resume->generated_pdf_path, 404);
+
+        // Stream the PDF file
+        return response()->file(
+            storage_path('app/' . $match->resume->generated_pdf_path),
+            ['Content-Type' => 'application/pdf']
+        );
+    }
+
     public function packages()
     {
         $packages = $this->getPackages();
