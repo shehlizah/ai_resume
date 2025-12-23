@@ -11,6 +11,16 @@
         </a>
     </div>
 
+    @if(!$hasAiMatching)
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+            <i class="bx bx-info-circle me-2"></i>
+            <div>
+                AI Matching is not active for your account. Purchase the add-on to view matches.
+                <a href="{{ route('company.addons') }}" class="alert-link">Go to Add-ons</a>.
+            </div>
+        </div>
+    @endif
+
     <div class="row g-3 mb-4">
         <div class="col-md-4">
             <div class="card h-100">
@@ -118,7 +128,11 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($job->candidate_matches_count > 0)
+                                    @if(!$hasAiMatching)
+                                        <button class="btn btn-sm btn-outline-secondary" disabled>
+                                            <i class="bx bx-lock-alt me-1"></i>Requires AI Matching
+                                        </button>
+                                    @elseif($job->candidate_matches_count > 0)
                                         <a href="{{ route('company.ai-matching.job', $job) }}" class="btn btn-sm btn-primary">
                                             <i class="bx bx-search me-1"></i>View Matches
                                         </a>
