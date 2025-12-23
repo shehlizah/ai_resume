@@ -38,8 +38,7 @@
                                     <td>{{ $job->applications_count }}</td>
                                     <td>{{ optional($job->created_at)->format('Y-m-d') }}</td>
                                     <td class="text-end">
-                                        <a href="{{ route('company.jobs.applications', $job) }}" class="btn btn-sm btn-outline-primary">View Applicants</a>
-                                        <a href="{{ route('company.jobs.show', $job) }}" class="btn btn-sm btn-outline-secondary ms-2">View Job</a>
+                                        <a href="{{ route('company.jobs.show', $job) }}" class="btn btn-sm btn-outline-primary">View Job</a>
                                     </td>
                                 </tr>
                             @endforeach
