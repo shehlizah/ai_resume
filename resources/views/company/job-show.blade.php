@@ -5,7 +5,6 @@
             <p class="text-muted mb-0">{{ $job->company }} — {{ $job->location }}</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('company.jobs.applications', $job) }}" class="btn btn-primary">View Applicants</a>
             <a href="{{ route('company.jobs.index') }}" class="btn btn-light">Back to Jobs</a>
         </div>
     </div>
