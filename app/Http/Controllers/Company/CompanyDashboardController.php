@@ -86,11 +86,6 @@ class CompanyDashboardController extends Controller
 
     public function applicationsForJob(PostedJob $job)
     {
-        dd(
-            auth()->id(),
-            \App\Models\PostedJob::where('id', 5)->first()
-        );
-
         $user = Auth::user();
 
         \Log::info('Job owner check', [
@@ -104,6 +99,16 @@ class CompanyDashboardController extends Controller
         $applications = $job->applications()->latest()->paginate(15);
 
         return view('company.applications', compact('applications', 'job'));
+    }
+
+    public function show(PostedJob $job)
+    {
+        $user = Auth::user();
+
+        // Ensure employer owns the job
+        abort_unless((int) $job->user_id === (int) $user->id, 403);
+
+        return view('company.job-show', compact('job'));
     }
 
     public function aiMatching()
