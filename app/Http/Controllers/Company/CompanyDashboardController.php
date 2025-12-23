@@ -116,9 +116,7 @@ class CompanyDashboardController extends Controller
         $user = Auth::user();
 
         // Check if employer has AI matching access
-        $hasAiMatching = $user->activeEmployerAddOns()
-            ->whereHas('addOn', fn($q) => $q->where('slug', 'ai-matching'))
-            ->exists();
+        $hasAiMatching = $user->hasAiMatchingAddOn();
 
         // Get employer's jobs with match counts
         $jobs = PostedJob::where('user_id', $user->id)
@@ -143,9 +141,7 @@ class CompanyDashboardController extends Controller
         $user = Auth::user();
 
         // Check if employer has AI matching access
-        $hasAiMatching = $user->activeEmployerAddOns()
-            ->whereHas('addOn', fn($q) => $q->where('slug', 'ai-matching'))
-            ->exists();
+        $hasAiMatching = $user->hasAiMatchingAddOn();
 
         if (!$hasAiMatching) {
             return redirect()->route('company.addons')
@@ -178,9 +174,7 @@ class CompanyDashboardController extends Controller
         abort_unless((int) $job->user_id === (int) $user->id, 403);
 
         // Check if employer has AI matching access
-        $hasAiMatching = $user->activeEmployerAddOns()
-            ->whereHas('addOn', fn($q) => $q->where('slug', 'ai-matching'))
-            ->exists();
+        $hasAiMatching = $user->hasAiMatchingAddOn();
 
         if (!$hasAiMatching) {
             return redirect()->route('company.ai-matching')

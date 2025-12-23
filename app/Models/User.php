@@ -250,7 +250,12 @@ public function userAddOns()
      */
     public function activeEmployerAddOns()
     {
-        return $this->employerAddOns()->where('status', 'active');
+        return $this->employerAddOns()
+            ->where('employer_add_ons.status', 'active')
+            ->where(function($query) {
+                $query->whereNull('employer_add_ons.expires_at')
+                      ->orWhere('employer_add_ons.expires_at', '>', now());
+            });
     }
 
     /**
@@ -260,7 +265,21 @@ public function userAddOns()
     {
         return $this->employerAddOns()
             ->where('add_on_id', $addOnId)
-            ->where('status', 'active')
+            ->where('employer_add_ons.status', 'active')
+            ->where(function($query) {
+                $query->whereNull('employer_add_ons.expires_at')
+                      ->orWhere('employer_add_ons.expires_at', '>', now());
+            })
+            ->exists();
+    }
+    
+    /**
+     * Check if employer has AI matching add-on
+     */
+    public function hasAiMatchingAddOn()
+    {
+        return $this->activeEmployerAddOns()
+            ->whereHas('addOn', fn($q) => $q->where('slug', 'ai-matching'))
             ->exists();
     }
 

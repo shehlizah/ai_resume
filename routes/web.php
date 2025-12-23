@@ -267,6 +267,31 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
     Route::post('/payment/stripe', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'stripeCheckout'])->name('payment.stripe');
     Route::get('/payment/stripe/success', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'stripeSuccess'])->name('payment.stripe.success');
     Route::get('/payment/stripe/cancel', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'stripeCancel'])->name('payment.stripe.cancel');
+    
+    // Debug route - remove after testing
+    Route::get('/debug-addons', function() {
+        $user = Auth::user();
+        $allAddOns = \App\Models\EmployerAddOn::where('employer_id', $user->id)->with('addOn')->get();
+        $activeAddOns = $user->activeEmployerAddOns()->with('addOn')->get();
+        
+        return response()->json([
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'all_employer_addons' => $allAddOns->map(fn($ea) => [
+                'id' => $ea->id,
+                'add_on_id' => $ea->add_on_id,
+                'status' => $ea->status,
+                'expires_at' => $ea->expires_at?->toDateTimeString(),
+                'addon_name' => $ea->addOn?->name,
+                'addon_slug' => $ea->addOn?->slug,
+            ]),
+            'active_addons' => $activeAddOns->map(fn($ea) => [
+                'addon_name' => $ea->addOn?->name,
+                'addon_slug' => $ea->addOn?->slug,
+            ]),
+            'has_ai_matching' => $user->hasAiMatchingAddOn(),
+        ]);
+    })->name('debug-addons');
 });
 
 // Job applications (candidates)
