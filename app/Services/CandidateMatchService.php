@@ -53,7 +53,7 @@ class CandidateMatchService
             try {
                 $matchResult = $this->aiScoreCandidate($job, $candidate, $resume);
                 
-                if ($matchResult['score'] >= 50) {
+                if ($matchResult['score'] >= 30) {
                     $matches[] = [
                         'job_id' => $job->id,
                         'user_id' => $candidate->id,
