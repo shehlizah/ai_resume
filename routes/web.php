@@ -123,11 +123,11 @@ Route::get('/pricing', [SubscriptionController::class, 'pricing'])->name('packag
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated User Routes
+| Authenticated User Routes (Non-Employers)
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:user'])->group(function () {
 
     // ==========================================
     // User Dashboard

@@ -24,44 +24,55 @@ class AutoTranslateResponse
         $response = $next($request);
 
         $locale = app()->getLocale();
-        \Log::info('AutoTranslateResponse.handle called', ['locale' => $locale, 'path' => $request->path()]);
-
+        
+        // Only translate when locale is English
         if ($locale !== 'en') {
-            \Log::info('AutoTranslateResponse skipped - not English', ['locale' => $locale]);
-            return $response;
-        }
-
-        \Log::info('AutoTranslateResponse processing English locale');
-
-        // Only process normal HTML responses
-        $contentType = $response->headers->get('Content-Type');
-        $isHtml = $contentType && stripos($contentType, 'text/html') !== false;
-
-        $html = $response->getContent();
-        if (!is_string($html) || trim($html) === '') {
-            \Log::info('AutoTranslateResponse skipped - not string or empty');
-            return $response;
-        }
-
-        if (!$isHtml) {
-            // Heuristic: if content contains HTML tags, treat as HTML
-            if (strpos($html, '<') === false || strpos($html, '>') === false) {
-                \Log::info('AutoTranslateResponse skipped - no HTML tags');
-                return $response;
-            }
+            return $response->header('X-Translation-Skipped', 'not-english-locale-' . $locale);
         }
 
         try {
-            \Log::info('AutoTranslateResponse attempting translation', ['html_length' => strlen($html), 'content_type' => $contentType]);
+            // Get the content
+            $html = $response->getContent();
+            
+            // Must be a string and have content
+            if (!is_string($html) || trim($html) === '') {
+                return $response->header('X-Translation-Skipped', 'empty-or-not-string');
+            }
+
+            // Must contain HTML
+            if (strpos($html, '<') === false || strpos($html, '>') === false) {
+                return $response->header('X-Translation-Skipped', 'no-html-tags');
+            }
+
+            // Check content type - but don't skip if it looks like HTML anyway
+            $contentType = $response->headers->get('Content-Type');
+            $isHtml = ($contentType && stripos($contentType, 'text/html') !== false) ||
+                     (strpos($html, '<!DOCTYPE') !== false) ||
+                     (strpos($html, '<html') !== false);
+
+            if (!$isHtml) {
+                return $response->header('X-Translation-Skipped', 'not-html-content-type');
+            }
+
+            // Translate the HTML
+            \Log::info('AutoTranslate START', ['locale' => $locale, 'length' => strlen($html)]);
             $translatedHtml = $this->translateTextInHtml($html, 'en');
-            if ($translatedHtml !== null) {
+            
+            if ($translatedHtml !== null && $translatedHtml !== $html) {
                 $response->setContent($translatedHtml);
-                $response->headers->set('X-Translated', 'yes');
-                $response->headers->set('X-Target-Locale', 'en');
-                \Log::info('AutoTranslateResponse completed', ['result_length' => strlen($translatedHtml)]);
+                $response->header('X-Translated', 'yes');
+                \Log::info('AutoTranslate COMPLETED');
+            } else {
+                $response->header('X-Translated', 'no-changes');
+                \Log::info('AutoTranslate completed but no changes');
             }
         } catch (\Throwable $e) {
-            \Log::error('AutoTranslateResponse error', ['message' => $e->getMessage(), 'file' => $e->getFile(), 'line' => $e->getLine()]);
+            \Log::error('AutoTranslate ERROR', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            $response->header('X-Translate-Error', substr($e->getMessage(), 0, 100));
         }
 
         return $response;
@@ -69,70 +80,74 @@ class AutoTranslateResponse
 
     protected function translateTextInHtml(string $html, string $target): ?string
     {
-        \Log::info('AutoTranslateResponse START', ['target' => $target, 'html_length' => strlen($html)]);
+        \Log::info('translateTextInHtml START', ['html_length' => strlen($html), 'target' => $target]);
 
-        // Step 1: Protect protected blocks (script, style, code, etc)
+        // Step 1: Protect code blocks
         $protected = [];
         $pid = 0;
+        
         foreach (['script', 'style', 'pre', 'code', 'textarea', 'noscript'] as $tag) {
-            $html = preg_replace_callback(
-                '/<' . preg_quote($tag) . '[^>]*>.*?<\/' . preg_quote($tag) . '>/is',
-                function ($m) use (&$protected, &$pid) {
-                    $key = "___PROT{$pid}___";
-                    $protected[$key] = $m[0];
-                    $pid++;
-                    return $key;
-                },
-                $html
-            );
+            $pattern = '/<' . preg_quote($tag) . '[^>]*>.*?<\/' . preg_quote($tag) . '>/is';
+            $html = preg_replace_callback($pattern, function ($m) use (&$protected, &$pid) {
+                $key = "___PROT{$pid}___";
+                $protected[$key] = $m[0];
+                \Log::debug("Protected block $pid: " . strlen($m[0]) . ' bytes');
+                $pid++;
+                return $key;
+            }, $html);
         }
-        \Log::info('AutoTranslateResponse PROTECTED', ['blocks' => count($protected)]);
+        
+        \Log::info('Protections applied', ['count' => count($protected)]);
 
-        // Step 2: Split by < and > using the delimiters as separators
-        // This creates: [text, <, tag_content, >, text, <, tag_content, >, text, ...]
-        // Odd indices (1,3,5...) are delimiters: < and >
-        // Even indices (0,2,4...) are content between delimiters
+        // Step 2: Split HTML into text and tag parts
         $parts = preg_split('/(>|<)/', $html, -1, PREG_SPLIT_DELIM_CAPTURE);
-        \Log::info('AutoTranslateResponse SPLIT', ['total_parts' => count($parts)]);
+        if (!is_array($parts)) {
+            \Log::warning('preg_split failed');
+            return null;
+        }
+
+        \Log::info('HTML split', ['parts' => count($parts)]);
 
         $output = [];
-        $inTag = false;  // Tracks if we're currently inside < ... >
-        $textCount = 0;
+        $inTag = false;
+        $translatedCount = 0;
 
         for ($i = 0; $i < count($parts); $i++) {
             $part = $parts[$i];
-            
-            // Delimiters appear at odd indices
+
+            // Odd indices are delimiters
             if ($i % 2 === 1) {
-                // This is a delimiter: < or >
                 $output[] = $part;
                 if ($part === '<') {
                     $inTag = true;
-                } else {
+                } elseif ($part === '>') {
                     $inTag = false;
                 }
             } else {
-                // This is content between delimiters
+                // Even indices are content
                 if ($inTag) {
-                    // This is tag content, don't translate
+                    // Tag content - don't translate
                     $output[] = $part;
                 } else {
-                    // This is text outside tags
-                    if (trim($part) === '' || strpos($part, '___PROT') !== false) {
-                        // Empty or protected, pass through
+                    // Text content
+                    $trimmed = trim($part);
+                    
+                    // Skip empty or protected
+                    if ($trimmed === '' || strpos($part, '___PROT') !== false) {
                         $output[] = $part;
                     } else {
-                        // Translate this text segment
-                        $textCount++;
+                        // Translate this text
+                        $translatedCount++;
                         preg_match('/^(\s*)(.*?)(\s*)$/s', $part, $m);
                         $lead = $m[1] ?? '';
-                        $text = $m[2] ?? '';
+                        $text = $m[2] ?? $trimmed;
                         $trail = $m[3] ?? '';
+
                         if (trim($text)) {
-                            \Log::debug('AutoTranslateResponse TRANSLATE', ['text' => substr($text, 0, 50), 'length' => strlen($text)]);
+                            \Log::debug("Translating segment $translatedCount", ['text' => substr($text, 0, 40)]);
                             $translated = $this->translator->translate($text, $target);
-                            \Log::debug('AutoTranslateResponse RESULT', ['original' => substr($text, 0, 50), 'translated' => substr($translated, 0, 50), 'same' => $text === $translated]);
                             $output[] = $lead . $translated . $trail;
+                            \Log::debug("Translated result", ['result' => substr($translated, 0, 40)]);
                         } else {
                             $output[] = $part;
                         }
@@ -141,8 +156,6 @@ class AutoTranslateResponse
             }
         }
 
-        \Log::info('AutoTranslateResponse TRANSLATED', ['text_chunks' => $textCount]);
-
         $result = implode('', $output);
 
         // Step 3: Restore protected blocks
@@ -150,7 +163,7 @@ class AutoTranslateResponse
             $result = str_replace($key, $val, $result);
         }
 
-        \Log::info('AutoTranslateResponse END', ['result_length' => strlen($result)]);
+        \Log::info('translateTextInHtml COMPLETE', ['translated_segments' => $translatedCount, 'result_length' => strlen($result)]);
         return $result;
     }
 }
