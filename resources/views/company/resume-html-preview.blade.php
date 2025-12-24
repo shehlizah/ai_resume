@@ -81,11 +81,18 @@
         }
         
         /* Skills - Grid Layout */
+        .skill-category-heading {
+            font-size: 10.5pt;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 6px;
+            margin-top: 8px;
+        }
         .skills-grid { 
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 4px 12px;
-            margin-top: 8px;
+            margin-top: 4px;
         }
         .skill-item { 
             font-size: 10pt; 
@@ -99,29 +106,32 @@
         
         /* Experience */
         .experience-item { 
-            margin-bottom: 14px; 
+            margin-bottom: 20px; 
             page-break-inside: avoid;
-        }
-        .job-header { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 3px;
         }
         .job-title { 
             font-size: 11pt; 
             font-weight: bold; 
-            color: #000; 
+            color: #000;
+            margin-bottom: 4px;
         }
         .job-date { 
             font-size: 10pt; 
             color: #555; 
             font-style: italic;
+            margin-bottom: 4px;
         }
         .company-name { 
             font-size: 10pt; 
             color: #444; 
-            margin-bottom: 4px;
+            margin-bottom: 8px;
             font-weight: 600;
+        }
+        .responsibilities-heading {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 4px;
         }
         .job-description { 
             font-size: 10pt; 
@@ -130,7 +140,7 @@
             text-align: justify;
         }
         .job-description ul {
-            margin: 4px 0 0 20px;
+            margin: 0 0 0 20px;
             padding: 0;
         }
         .job-description li {
@@ -229,7 +239,39 @@
     $phone = $data['phone'] ?? null;
     $summary = $cleanHtml($data['summary'] ?? $data['objective'] ?? '');
 
-    $skills = $toArray($data['skills'] ?? []);
+    // Parse skills - detect category headings
+    $rawSkills = $data['skills'] ?? [];
+    $skillsData = [];
+    if (is_string($rawSkills)) {
+        // Parse string that might contain categories
+        $rawSkills = $cleanHtml($rawSkills);
+        $lines = preg_split('/[\n\r]+/', $rawSkills);
+        $currentCategory = null;
+        foreach($lines as $line) {
+            $line = trim($line);
+            if (!$line) continue;
+            // Check if it's a category heading (ends with colon or contains "Skills")
+            if (preg_match('/(Skills|Competencies):?$/i', $line) || (strlen($line) < 30 && !str_contains($line, ','))) {
+                $currentCategory = $line;
+                $skillsData[$currentCategory] = [];
+            } else {
+                // It's a skill item
+                $items = preg_split('/[,;]+/', $line);
+                foreach($items as $item) {
+                    $item = trim($item);
+                    if ($item) {
+                        if ($currentCategory) {
+                            $skillsData[$currentCategory][] = $item;
+                        } else {
+                            $skillsData[''][] = $item;
+                        }
+                    }
+                }
+            }
+        }
+    } elseif (is_array($rawSkills)) {
+        $skillsData[''] = array_values(array_filter(array_map($cleanHtml, $rawSkills), fn($v) => $v !== ''));
+    }
     
     // Handle experience
     $rawExperience = $data['experience'] ?? $data['job_title'] ?? [];
@@ -271,16 +313,23 @@
     @endif
 
     <!-- Skills -->
-    @if(!empty($skills))
+    @if(!empty($skillsData))
         <div class="section">
             <div class="section-title">Core Competencies</div>
-            <div class="skills-grid">
-                @foreach($skills as $skill)
-                    @if($skill)
-                        <div class="skill-item">{{ $skill }}</div>
+            @foreach($skillsData as $category => $skillsList)
+                @if(!empty($skillsList))
+                    @if($category)
+                        <div class="skill-category-heading">{{ $category }}</div>
                     @endif
-                @endforeach
-            </div>
+                    <div class="skills-grid">
+                        @foreach($skillsList as $skill)
+                            @if($skill)
+                                <div class="skill-item">{{ $skill }}</div>
+                            @endif
+                        @endforeach
+                    </div>
+                @endif
+            @endforeach
         </div>
     @endif
 
@@ -291,12 +340,10 @@
             @foreach($experiences as $exp)
                 <div class="experience-item">
                     @if(is_array($exp))
-                        <div class="job-header">
-                            <div class="job-title">{{ $cleanHtml($exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Position') }}</div>
-                            @if(!empty($exp['from']) || !empty($exp['to']))
-                                <div class="job-date">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div>
-                            @endif
-                        </div>
+                        <div class="job-title">{{ $cleanHtml($exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Position') }}</div>
+                        @if(!empty($exp['from']) || !empty($exp['to']))
+                            <div class="job-date">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div>
+                        @endif
                         @if(!empty($exp['company']))
                             <div class="company-name">{{ $cleanHtml($exp['company']) }}</div>
                         @endif
@@ -305,6 +352,7 @@
                                 $responsibilities = $parseResponsibilities($exp['description']);
                             @endphp
                             @if(!empty($responsibilities))
+                                <div class="responsibilities-heading">Key Responsibilities:</div>
                                 <div class="job-description">
                                     <ul>
                                         @foreach($responsibilities as $resp)
@@ -313,6 +361,7 @@
                                     </ul>
                                 </div>
                             @else
+                                <div class="responsibilities-heading">Key Responsibilities:</div>
                                 <div class="job-description">{{ $cleanHtml($exp['description']) }}</div>
                             @endif
                         @endif
