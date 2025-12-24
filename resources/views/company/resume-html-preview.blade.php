@@ -377,7 +377,19 @@
                         @endif
                         @if(!empty($exp['description']))
                             @php
-                                $respstyle="font-weight: 600; color: #2c3e50; margin-top: 4px; clear: both;">Key Responsibilities:</div>
+                                $responsibilities = $parseResponsibilities($exp['description']);
+                            @endphp
+                            @if(!empty($responsibilities))
+                                <div style="font-weight: 600; color: #2c3e50; margin-top: 4px; clear: both;">Key Responsibilities:</div>
+                                <ul style="margin: 6px 0; padding-left: 20px; clear: both;">
+                                    @foreach($responsibilities as $resp)
+                                        <li style="margin-bottom: 3px;">{{ $resp }}</li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <div class="responsibilities-heading">Key Responsibilities:</div>
+                                <div class="job-description">{{ $cleanHtml($exp['description']) }}</div>
+                            @endif
                                 <ul style="margin: 6px 0; padding-left: 20px; clear: both;">
                                     @foreach($responsibilities as $resp)
                                         <li style="margin-bottom: 3px;">{{ $resp }}</li>
