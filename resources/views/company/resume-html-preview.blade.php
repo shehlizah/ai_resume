@@ -65,7 +65,6 @@ body {
     font-size: 10pt;
     margin-bottom: 4px;
 }
-
 .skill-item::before {
     content: "• ";
 }
@@ -74,35 +73,29 @@ body {
 .experience-item {
     margin-bottom: 20px;
 }
-
 .job-title {
     font-size: 11pt;
     font-weight: bold;
 }
-
 .company-name {
     font-size: 10pt;
     font-weight: 600;
     margin-top: 2px;
 }
-
 .job-date {
     font-size: 9.5pt;
     font-style: italic;
     margin-bottom: 6px;
 }
-
 .responsibilities-heading {
     font-size: 10pt;
     font-weight: bold;
     margin-top: 6px;
 }
-
 .job-description ul {
     padding-left: 18px;
     margin-top: 4px;
 }
-
 .job-description li {
     margin-bottom: 4px;
     font-size: 10pt;
@@ -127,8 +120,29 @@ $raw = $resume->data ?? [];
 $data = is_string($raw) ? json_decode($raw, true) : $raw;
 
 $clean = fn($v) => trim(preg_replace('/\s+/', ' ', strip_tags($v ?? '')));
-$toArray = fn($v) => is_array($v) ? array_filter($v) : array_filter(explode(',', $v ?? ''));
 
+/* ---------- SKILLS FIX ---------- */
+$skills = [];
+if (!empty($data['skills'])) {
+    $rawSkills = $clean($data['skills']);
+
+    // Remove heading text
+    $rawSkills = preg_replace('/^(technical skills|core competencies|skills)\s*/i', '', $rawSkills);
+
+    // Protect multi-word skills
+    $rawSkills = str_replace(
+        ['REST APIs', 'Web Development'],
+        ['REST_APIs', 'Web_Development'],
+        $rawSkills
+    );
+
+    foreach (preg_split('/\s+/', $rawSkills) as $skill) {
+        $skill = str_replace('_', ' ', trim($skill));
+        if ($skill) $skills[] = $skill;
+    }
+}
+
+/* ---------- BASIC FIELDS ---------- */
 $name = $clean($data['name'] ?? 'Candidate');
 $title = $clean($data['title'] ?? '');
 $email = $clean($data['email'] ?? '');
@@ -136,18 +150,18 @@ $phone = $clean($data['phone'] ?? '');
 $address = $clean($data['address'] ?? '');
 $summary = $clean($data['summary'] ?? '');
 
-$skills = $toArray($data['skills'] ?? []);
+/* ---------- EXPERIENCE ---------- */
+$jobTitles = $data['job_title'] ?? [];
+$companies = $data['company'] ?? [];
+$startDates = $data['start_date'] ?? [];
+$endDates = $data['end_date'] ?? [];
+$responsibilities = $data['responsibilities'] ?? [];
 
-$jobTitles = $toArray($data['job_title'] ?? []);
-$companies = $toArray($data['company'] ?? []);
-$startDates = $toArray($data['start_date'] ?? []);
-$endDates = $toArray($data['end_date'] ?? []);
-$responsibilities = $toArray($data['responsibilities'] ?? []);
-
-$degrees = $toArray($data['degree'] ?? []);
-$fields = $toArray($data['field_of_study'] ?? []);
-$universities = $toArray($data['university'] ?? []);
-$years = $toArray($data['graduation_year'] ?? []);
+/* ---------- EDUCATION ---------- */
+$degrees = $data['degree'] ?? [];
+$fields = $data['field_of_study'] ?? [];
+$universities = $data['university'] ?? [];
+$years = $data['graduation_year'] ?? [];
 @endphp
 
 <div class="resume-container">
@@ -174,13 +188,13 @@ $years = $toArray($data['graduation_year'] ?? []);
 <div class="section">
     <div class="section-title">Core Competencies</div>
     @foreach($skills as $skill)
-        <div class="skill-item">{{ $clean($skill) }}</div>
+        <div class="skill-item">{{ $skill }}</div>
     @endforeach
 </div>
 @endif
 
 <!-- EXPERIENCE -->
-@if($jobTitles)
+@if(!empty($jobTitles))
 <div class="section">
     <div class="section-title">Professional Experience</div>
 
@@ -196,7 +210,7 @@ $years = $toArray($data['graduation_year'] ?? []);
             {{ isset($endDates[$i]) ? \Carbon\Carbon::parse($endDates[$i])->format('M Y') : 'Present' }}
         </div>
 
-        @if($responsibilities)
+        @if(!empty($responsibilities))
         <div class="responsibilities-heading">Key Responsibilities</div>
         <div class="job-description">
             <ul>
@@ -213,7 +227,7 @@ $years = $toArray($data['graduation_year'] ?? []);
 @endif
 
 <!-- EDUCATION -->
-@if($degrees)
+@if(!empty($degrees))
 <div class="section">
     <div class="section-title">Education</div>
 
