@@ -58,7 +58,7 @@
   <body>
     @php
       $isEn = app()->getLocale() === 'en';
-      $switchUrl = request()->fullUrlWithQuery(['lang' => $isEn ? 'id' : 'en']);
+      $switchUrl = route('language.switch', $isEn ? 'id' : 'en');
     @endphp
     <div style="position:fixed; bottom:18px; right:18px; z-index:9999;">
       <a href="{{ $switchUrl }}"
