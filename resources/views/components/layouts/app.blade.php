@@ -51,7 +51,5 @@
     @endif
     <!-- / Next Step Popup Guide -->
 
-    {{-- Client-side translation component --}}
-    @include('components.client-translator')
   </body>
 </html>

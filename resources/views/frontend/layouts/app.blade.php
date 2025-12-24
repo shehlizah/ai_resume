@@ -56,16 +56,6 @@
     @yield('styles')
   </head>
   <body>
-    @php
-      $isEn = app()->getLocale() === 'en';
-      $switchUrl = route('language.switch', $isEn ? 'id' : 'en');
-    @endphp
-    <div style="position:fixed; bottom:18px; right:18px; z-index:9999;">
-      <a href="{{ $switchUrl }}"
-         style="display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:12px; background:#2563eb; color:#fff; text-decoration:none; box-shadow:0 12px 30px rgba(37,99,235,0.35); font-size:18px;">
-        <span aria-label="Switch language">{{ $isEn ? '🇮🇩' : '🇺🇸' }}</span>
-      </a>
-    </div>
     @include('frontend.partials.header')
 
     @yield('content')
