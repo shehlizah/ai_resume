@@ -23,12 +23,12 @@ class TranslationHelper
     public static function trans($text)
     {
         $translator = self::getInstance();
-        
+
         // If current locale is English, translate from Indonesian to English
         if (app()->getLocale() === 'en') {
             return $translator->translate($text, 'en');
         }
-        
+
         // Otherwise return as is (Indonesian is default)
         return $text;
     }

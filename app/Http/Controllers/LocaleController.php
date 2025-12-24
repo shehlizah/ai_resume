@@ -16,7 +16,7 @@ class LocaleController extends Controller
 
         // Set locale in session
         session(['locale' => $locale]);
-        
+
         // Also set in cookie for persistence
         cookie()->queue('locale', $locale, 60 * 24 * 365); // 1 year
 

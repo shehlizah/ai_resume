@@ -18,8 +18,8 @@ class SetLocale
             session(['locale' => $locale]);
         } else {
             // Fall back to session -> cookie -> default
-            $locale = session('locale') ?? 
-                      $request->cookie('locale') ?? 
+            $locale = session('locale') ??
+                      $request->cookie('locale') ??
                       config('app.locale', 'id');
         }
 

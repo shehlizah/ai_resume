@@ -21,20 +21,20 @@
     </ul>
 </div>
 <style>
-.language-switcher .dropdown-menu { 
-    min-width: 180px; 
+.language-switcher .dropdown-menu {
+    min-width: 180px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-.language-switcher .dropdown-item.active { 
-    background-color: #f5f5f5; 
+.language-switcher .dropdown-item.active {
+    background-color: #f5f5f5;
     color: #2563EB;
 }
 .language-switcher .dropdown-item:hover {
     background-color: #f9fafb;
 }
 @media (max-width: 576px) {
-    .language-switcher .dropdown-toggle span { 
-        display: none !important; 
+    .language-switcher .dropdown-toggle span {
+        display: none !important;
     }
     .language-switcher .dropdown-toggle {
         padding: 0.35rem 0.5rem !important;

@@ -31,7 +31,7 @@ class GoogleTranslateService
 
         // Cache the translation for performance
         $cacheKey = 'google_translate_' . md5($text . $targetLang);
-        
+
         if (Cache::has($cacheKey)) {
             return Cache::get($cacheKey);
         }
@@ -49,7 +49,7 @@ class GoogleTranslateService
             ]);
 
             $result = json_decode($response->getBody(), true);
-            
+
             if ($result && isset($result[0][0][0])) {
                 $translated = $result[0][0][0];
                 // Cache for 30 days

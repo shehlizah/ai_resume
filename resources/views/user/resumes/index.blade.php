@@ -1,11 +1,11 @@
-<x-layouts.app :title="'My Resumes'">
+<x-layouts.app :title="'Resume Saya'">
   <div class="row">
     <div class="col-12">
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">📄 My Resumes ({{ $resumes->total() }})</h5>
+          <h5 class="mb-0">📄 @t('Resume Saya') ({{ $resumes->total() }})</h5>
           <a href="{{ route('user.resumes.choose') }}" class="btn btn-primary">
-            <i class="bx bx-plus me-1"></i> Create New Resume
+            <i class="bx bx-plus me-1"></i> @t('Buat Resume Baru')
           </a>
         </div>
 
@@ -18,28 +18,25 @@
           <!-- Filter and Sort Controls -->
           <div class="row g-3 mb-4">
             <div class="col-md-4">
-              <label class="form-label small text-muted">Search</label>
-              <input type="text"
-                     class="form-control"
-                     id="searchInput"
-                     placeholder="Search by name or title..."
+              <label class="form-label small text-muted">@t('Cari')</label>
+              <input type="text" class="form-control" id="searchInput" placeholder="@t('Cari berdasarkan nama atau judul...')"
                      value="{{ request('search') }}">
             </div>
             <div class="col-md-4">
-              <label class="form-label small text-muted">Status</label>
+              <label class="form-label small text-muted">@t('Status')</label>
               <select class="form-select" id="statusFilter" onchange="applyFilters()">
-                <option value="all" {{ request('status') == 'all' || !request('status') ? 'selected' : '' }}>All Status</option>
-                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                <option value="all" {{ request('status') == 'all' || !request('status') ? 'selected' : '' }}>@t('Semua Status')</option>
+                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>@t('Selesai')</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>@t('Tertunda')</option>
+                <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>@t('Draf')</option>
               </select>
             </div>
             <div class="col-md-4">
-              <label class="form-label small text-muted">Sort By</label>
+              <label class="form-label small text-muted">@t('Sortir Berdasarkan')</label>
               <select class="form-select" id="sortFilter" onchange="applyFilters()">
-                <option value="latest" {{ request('sort_by') == 'latest' || !request('sort_by') ? 'selected' : '' }}>Latest First</option>
-                <option value="oldest" {{ request('sort_by') == 'oldest' ? 'selected' : '' }}>Oldest First</option>
-                <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>Name (A-Z)</option>
+                <option value="latest" {{ request('sort_by') == 'latest' || !request('sort_by') ? 'selected' : '' }}>@t('Terbaru Dulu')</option>
+                <option value="oldest" {{ request('sort_by') == 'oldest' ? 'selected' : '' }}>@t('Terlama Dulu')</option>
+                <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>@t('Nama (A-Z)')</option>
               </select>
             </div>
           </div>
