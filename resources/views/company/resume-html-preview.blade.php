@@ -343,16 +343,13 @@
             @foreach($skillsData as $category => $skillsList)
                 @if(!empty($skillsList))
                     @if($category)
-                        <div style="font-weight: 600; margin-top: 12px; margin-bottom: 8px; color: #2c3e50; font-size: 10.5pt; clear: both;">{{ $category }}</div>
+                        <div style="font-weight: 600; margin-top: 12px; margin-bottom: 8px; color: #2c3e50; font-size: 10.5pt;">{{ $category }}</div>
                     @endif
-                    <div style="display: block; margin-bottom: 12px; clear: both;">
-                        @foreach($skillsList as $skill)
-                            @if($skill)
-                                <div style="float: left; width: 33.33%; font-size: 9.5pt; padding: 2px 0; box-sizing: border-box;">• {{ $skill }}</div>
-                            @endif
-                        @endforeach
-                        <div style="clear: both;"></div>
-                    </div>
+                    @foreach($skillsList as $skill)
+                        @if($skill)
+                            <div style="font-size: 9.5pt; margin-bottom: 2px;">• {{ $skill }}</div>
+                        @endif
+                    @endforeach
                 @endif
             @endforeach
         </div>
@@ -363,25 +360,20 @@
         <div class="section">
             <div class="section-title">Professional Experience</div>
             @foreach($experiences as $exp)
-                <div style="border-left: 3px solid #e0e0e0; padding-left: 12px; margin-bottom: 24px; clear: both; page-break-inside: avoid;">
+                <div style="border-left: 3px solid #e0e0e0; padding-left: 12px; margin-bottom: 24px;">
                     @if(is_array($exp))
-                        <div style="font-weight: 600; color: #2c3e50; font-size: 11pt; clear: both;">{{ $cleanHtml($exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Position') }}</div>
-                        <br>
+                        <div style="font-weight: 600; color: #2c3e50; font-size: 11pt;">{{ $cleanHtml($exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Position') }}</div><br>
                         @if(!empty($exp['from']) || !empty($exp['to']))
-                            <div style="color: #7f8c8d; font-size: 9.5pt; clear: both;">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div>
-                            <br>
+                            <div style="color: #7f8c8d; font-size: 9.5pt;">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div><br>
                         @endif
                         @if(!empty($exp['company']))
-                            <div style="color: #34495e; font-style: italic; clear: both;">{{ $cleanHtml($exp['company']) }}</div>
-                            <br>
+                            <div style="color: #34495e; font-style: italic;">{{ $cleanHtml($exp['company']) }}</div><br>
                         @endif
                         @if(!empty($exp['description']))
-                            @php
-                                $responsibilities = $parseResponsibilities($exp['description']);
-                            @endphp
+                            @php $responsibilities = $parseResponsibilities($exp['description']); @endphp
                             @if(!empty($responsibilities))
-                                <div style="font-weight: 600; color: #2c3e50; margin-top: 4px; clear: both;">Key Responsibilities:</div>
-                                <ul style="margin: 6px 0; padding-left: 20px; clear: both;">
+                                <div style="font-weight: 600; color: #2c3e50; margin-top: 4px;">Key Responsibilities:</div>
+                                <ul style="margin: 6px 0; padding-left: 20px;">
                                     @foreach($responsibilities as $resp)
                                         <li style="margin-bottom: 3px;">{{ $resp }}</li>
                                     @endforeach
