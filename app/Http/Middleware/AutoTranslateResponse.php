@@ -61,19 +61,34 @@ class AutoTranslateResponse
 
     protected function translateTextInHtml(string $html, string $target): ?string
     {
+        // Only translate inside <body> to avoid affecting head/meta/style assets
+        $prefix = '';
+        $bodyOpen = '';
+        $bodyContent = $html;
+        $bodyClose = '';
+        $suffix = '';
+
+        if (preg_match('/^(.*?)(<body[^>]*>)(.*)(<\/body>)(.*)$/is', $html, $m)) {
+            $prefix = $m[1] ?? '';
+            $bodyOpen = $m[2] ?? '';
+            $bodyContent = $m[3] ?? '';
+            $bodyClose = $m[4] ?? '';
+            $suffix = $m[5] ?? '';
+        }
+
         // Mask blocks we should not translate (script/style/pre/code/noscript)
         $placeholders = [];
         $maskTags = ['script', 'style', 'pre', 'code', 'noscript'];
         foreach ($maskTags as $tag) {
             $i = 0;
-            $html = preg_replace_callback('/<' . $tag . '[^>]*>.*?<\/' . $tag . '>/is', function ($m) use (&$placeholders, $tag, &$i) {
+            $bodyContent = preg_replace_callback('/<' . $tag . '[^>]*>.*?<\/' . $tag . '>/is', function ($m) use (&$placeholders, $tag, &$i) {
                 $key = "__MASK_" . strtoupper($tag) . "_" . ($i++);
                 $placeholders[$key] = $m[0];
                 return $key;
-            }, $html);
+            }, $bodyContent);
         }
 
-        $parts = preg_split('/<(.*?)>/s', $html, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $parts = preg_split('/<(.*?)>/s', $bodyContent, -1, PREG_SPLIT_DELIM_CAPTURE);
         if (!is_array($parts)) {
             return null;
         }
@@ -95,7 +110,8 @@ class AutoTranslateResponse
             $out = str_replace($key, $value, $out);
         }
 
-        return $out;
+        // Reassemble
+        return $prefix . $bodyOpen . $out . $bodyClose . $suffix;
     }
 
     protected function translateTextSegment(string $text, string $target): string

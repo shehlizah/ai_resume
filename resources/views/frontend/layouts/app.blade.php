@@ -56,6 +56,16 @@
     @yield('styles')
   </head>
   <body>
+    @php
+      $isEn = app()->getLocale() === 'en';
+      $switchUrl = request()->fullUrlWithQuery(['lang' => $isEn ? 'id' : 'en']);
+    @endphp
+    <div style="position:fixed; bottom:18px; right:18px; z-index:9999;">
+      <a href="{{ $switchUrl }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; background:#111827; color:#fff; text-decoration:none; box-shadow:0 10px 30px rgba(0,0,0,0.18); font-size:14px;">
+        <span>{{ $isEn ? '🇮🇩' : '🇺🇸' }}</span>
+        <span>{{ $isEn ? 'Bahasa Indonesia' : 'English' }}</span>
+      </a>
+    </div>
     @include('frontend.partials.header')
 
     @yield('content')
@@ -112,8 +122,5 @@
 
       window.document.addEventListener("scroll", onScroll);
     </script>
-
-    {{-- Client-side translation component --}}
-    @include('components.client-translator')
   </body>
 </html>

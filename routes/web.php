@@ -25,25 +25,6 @@ use App\Http\Middleware\CheckActivePackage;
 | Debug Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/test-translate', function () {
-    $service = app(\App\Services\GoogleTranslateService::class);
-    $testText = 'Selamat datang';
-    $result = [];
-    try {
-        $translated = $service->translate($testText, 'en');
-        $result['success'] = true;
-        $result['input'] = $testText;
-        $result['output'] = $translated;
-        $result['locale'] = app()->getLocale();
-    } catch (\Throwable $e) {
-        $result['success'] = false;
-        $result['error'] = $e->getMessage();
-        $result['trace'] = $e->getTraceAsString();
-        $result['locale'] = app()->getLocale();
-    }
-    return response()->json($result);
-})->name('test.translate');
-
 Route::get('/debug/locale', function () {
     $service = app('\App\Services\GoogleTranslateService');
     $testText = 'Selamat datang';
@@ -58,41 +39,12 @@ Route::get('/debug/locale', function () {
         ->header('Content-Type', 'text/html; charset=utf-8');
 })->name('debug.locale');
 
-Route::get('/test-html-translate', function () {
-    // This route should trigger the AutoTranslateResponse middleware
-    // when accessed with ?lang=en
-    return response(<<<'HTML'
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Test Translate</title>
-    <script>console.log('test');</script>
-</head>
-<body>
-    <h1>Selamat datang</h1>
-    <p>Ini adalah halaman uji terjemahan otomatis.</p>
-    <div>
-        <span>Terima kasih telah mengunjungi situs kami.</span>
-    </div>
-</body>
-</html>
-HTML
-    )->header('Content-Type', 'text/html; charset=UTF-8');
-})->name('test.html.translate');
-
 /*
 |--------------------------------------------------------------------------
 | Language Switching Routes (No middleware needed)
 |--------------------------------------------------------------------------
 */
 Route::get('/lang/{locale}', [LocaleController::class, 'setLocale'])->name('language.switch');
-
-/*
-|--------------------------------------------------------------------------
-| Translation API Routes
-|--------------------------------------------------------------------------
-*/
-Route::post('/api/translate', [\App\Http\Controllers\TranslationController::class, 'translate'])->name('api.translate');
 
 /*
 |--------------------------------------------------------------------------
@@ -130,11 +82,11 @@ Route::get('/pricing', [SubscriptionController::class, 'pricing'])->name('packag
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated User Routes (Non-Employers)
+| Authenticated User Routes
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'role:user'])->group(function () {
+Route::middleware(['auth', 'role:user,admin'])->group(function () {
 
     // ==========================================
     // User Dashboard

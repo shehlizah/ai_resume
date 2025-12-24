@@ -13,7 +13,19 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (!in_array($request->user()->role, $roles)) {
+        $user = $request->user();
+
+        // Not authenticated
+        if (!$user) {
+            abort(401, 'Unauthorized.');
+        }
+
+        // No role on user record
+        if (!$user->role) {
+            abort(403, 'Unauthorized.');
+        }
+
+        if (!empty($roles) && !in_array($user->role, $roles)) {
             abort(403, 'Unauthorized.');
         }
 
