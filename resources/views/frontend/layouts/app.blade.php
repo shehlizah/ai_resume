@@ -61,9 +61,9 @@
       $switchUrl = request()->fullUrlWithQuery(['lang' => $isEn ? 'id' : 'en']);
     @endphp
     <div style="position:fixed; bottom:18px; right:18px; z-index:9999;">
-      <a href="{{ $switchUrl }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; background:#111827; color:#fff; text-decoration:none; box-shadow:0 10px 30px rgba(0,0,0,0.18); font-size:14px;">
-        <span>{{ $isEn ? '🇮🇩' : '🇺🇸' }}</span>
-        <span>{{ $isEn ? 'Bahasa Indonesia' : 'English' }}</span>
+      <a href="{{ $switchUrl }}"
+         style="display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:12px; background:#2563eb; color:#fff; text-decoration:none; box-shadow:0 12px 30px rgba(37,99,235,0.35); font-size:18px;">
+        <span aria-label="Switch language">{{ $isEn ? '🇮🇩' : '🇺🇸' }}</span>
       </a>
     </div>
     @include('frontend.partials.header')
