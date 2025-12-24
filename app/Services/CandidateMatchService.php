@@ -59,7 +59,7 @@ class CandidateMatchService
                         'user_id' => $candidate->id,
                         'user_resume_id' => $resume->id,
                         'match_score' => $matchResult['score'],
-                        'match_details' => $matchResult['details'],
+                        'match_details' => json_encode($matchResult['details']),
                         'ai_summary' => $matchResult['summary'],
                         'status' => $matchResult['score'] >= 75 ? 'shortlisted' : 'pending',
                         'matched_at' => now(),
