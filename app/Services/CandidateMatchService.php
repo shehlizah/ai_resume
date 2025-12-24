@@ -43,9 +43,9 @@ class CandidateMatchService
             $resume = $candidate->resumes->first();
             if (!$resume) continue;
 
-            // Skip resumes with no data or empty data
-            if (!$resume->data || (is_array($resume->data) && empty($resume->data)) || 
-                (is_string($resume->data) && trim($resume->data) === '{}')) {
+            // Normalize resume data and skip if meaningfully empty
+            $normalized = $this->normalizeResumeData($resume->data);
+            if ($this->isMeaningfullyEmpty($normalized)) {
                 continue;
             }
 
@@ -103,8 +103,8 @@ class CandidateMatchService
         $jobPrompt .= "Description: " . substr($job->description, 0, 2000) . "\n";
         $jobPrompt .= "Tags: " . (is_array($job->tags) ? implode(', ', $job->tags) : $job->tags) . "\n";
 
-        // Build resume context - ensure data is array
-        $resumeData = is_array($resume->data) ? $resume->data : json_decode($resume->data ?? '{}', true);
+        // Build resume context - normalized data
+        $resumeData = $this->normalizeResumeData($resume->data);
         $resumeText = "Name: " . ($resumeData['name'] ?? 'N/A') . "\n";
         $resumeText .= "Title: " . ($resumeData['title'] ?? 'N/A') . "\n";
         $resumeText .= "Summary: " . substr($resumeData['summary'] ?? '', 0, 500) . "\n";
@@ -180,11 +180,8 @@ PROMPT;
         $jobKeywords = $this->extractJobKeywords($job);
         $jobSkills = $this->extractJobSkills($job);
         
-        // Ensure resumeData is always an array
-        $resumeData = is_array($resume->data) ? $resume->data : json_decode($resume->data ?? '{}', true);
-        if (!is_array($resumeData)) {
-            $resumeData = [];
-        }
+        // Use normalized resume data
+        $resumeData = $this->normalizeResumeData($resume->data);
 
         $score = 0;
         $resumeText = strtolower(json_encode($resumeData));
@@ -301,5 +298,62 @@ PROMPT;
         }
 
         return $yearCount >= 2 ? 1 : 0.6;
+    }
+
+    /**
+     * Normalize resume data coming from DB. Handles strings, nulls, arrays.
+     */
+    protected function normalizeResumeData($raw): array
+    {
+        $data = is_array($raw) ? $raw : (is_string($raw) ? json_decode($raw, true) : []);
+        if (!is_array($data)) {
+            $data = [];
+        }
+
+        // Ensure string fields are strings
+        foreach (['name','title','email','phone','address','summary','experience','education'] as $k) {
+            $v = $data[$k] ?? '';
+            $data[$k] = is_string($v) ? $v : '';
+        }
+
+        // Normalize skills
+        $skills = $data['skills'] ?? [];
+        if (is_string($skills)) {
+            $skills = array_values(array_filter(array_map(fn($s) => trim($s), explode(',', $skills))));
+        } elseif (!is_array($skills)) {
+            $skills = [];
+        } else {
+            $skills = array_values(array_filter($skills, fn($s) => is_string($s) && trim($s) !== ''));
+        }
+        $data['skills'] = $skills;
+
+        // Normalize array fields (remove nulls/empties)
+        $arrayKeys = ['job_title','company','start_date','end_date','responsibilities','degree','field_of_study','university','graduation_year','education_details'];
+        foreach ($arrayKeys as $k) {
+            $v = $data[$k] ?? [];
+            if (is_string($v) && trim($v) !== '') {
+                $data[$k] = [$v];
+            } elseif (!is_array($v)) {
+                $data[$k] = [];
+            } else {
+                $data[$k] = array_values(array_filter($v, fn($x) => !(is_null($x) || (is_string($x) && trim($x) === ''))));
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Determine if resume data is meaningfully empty (no skills, no experience, no summary).
+     */
+    protected function isMeaningfullyEmpty(array $data): bool
+    {
+        $hasSkills = isset($data['skills']) && is_array($data['skills']) && count($data['skills']) > 0;
+        $hasExpEntries = isset($data['job_title']) && is_array($data['job_title']) && count($data['job_title']) > 0;
+        $hasSummary = isset($data['summary']) && is_string($data['summary']) && trim($data['summary']) !== '';
+        $hasExperienceText = isset($data['experience']) && is_string($data['experience']) && trim($data['experience']) !== '';
+        $hasEducationText = isset($data['education']) && is_string($data['education']) && trim($data['education']) !== '';
+
+        return !($hasSkills || $hasExpEntries || $hasSummary || $hasExperienceText || $hasEducationText);
     }
 }

@@ -243,12 +243,7 @@ class CompanyDashboardController extends Controller
             return back()->with('error', 'Please purchase the AI Matching add-on to use this feature.');
         }
 
-        // Check if 30 minutes have passed since job creation
-        $minutesElapsed = $job->created_at->diffInMinutes(now());
-        if ($minutesElapsed < 30) {
-            $minutesRemaining = 30 - $minutesElapsed;
-            return back()->with('info', "Please wait {$minutesRemaining} more minutes before accessing matches.");
-        }
+        // No waiting period required; allow immediate matching
 
         try {
             // Only run if no matches exist yet
@@ -256,8 +251,8 @@ class CompanyDashboardController extends Controller
                 return back()->with('info', 'Matches already exist for this job. Click "View Matches" to see them.');
             }
 
-            // Increase execution time limit for AI matching
-            set_time_limit(300); // 5 minutes
+            // Allow sufficient time for AI matching
+            set_time_limit(300);
 
             // Run matching synchronously (immediate results)
             $matchService = app(\App\Services\CandidateMatchService::class);

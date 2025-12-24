@@ -161,22 +161,12 @@
                                             <i class="bx bx-search me-1"></i>View Matches
                                         </a>
                                     @else
-                                        @php
-                                            $minutesElapsed = $job->created_at->diffInMinutes(now());
-                                            $minutesRemaining = max(0, 30 - $minutesElapsed);
-                                        @endphp
-                                        @if($minutesRemaining > 0)
-                                            <button class="btn btn-sm btn-outline-warning" disabled title="Matching in progress">
-                                                <i class="bx bx-time me-1"></i>{{ $minutesRemaining }}m remaining
+                                        <form action="{{ route('company.ai-matching.trigger', $job) }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-primary" onclick="this.disabled=true; this.innerHTML='<i class=&quot;bx bx-loader-alt bx-spin me-1&quot;></i>Processing...'; this.form.submit();">
+                                                <i class="bx bx-play me-1"></i>Start Matching
                                             </button>
-                                        @else
-                                            <form action="{{ route('company.ai-matching.trigger', $job) }}" method="POST" style="display: inline;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-primary" onclick="this.disabled=true; this.innerHTML='<i class=&quot;bx bx-loader-alt bx-spin me-1&quot;></i>Processing...'; this.form.submit();">
-                                                    <i class="bx bx-play me-1"></i>Start Matching
-                                                </button>
-                                            </form>
-                                        @endif
+                                        </form>
                                     @endif
                                 </td>
                             </tr>
@@ -193,7 +183,7 @@
 
         <div class="alert alert-info mt-4">
             <i class="bx bx-info-circle me-2"></i>
-            <strong>How it works:</strong> Candidates are automatically matched within 30 minutes after you post a job. Click "View Matches" to see detailed match scores and candidate profiles.
+            <strong>How it works:</strong> Click "Start Matching" to generate AI candidate matches instantly and then "View Matches" to see scores and profiles.
         </div>
     @endif
 </x-layouts.app>
