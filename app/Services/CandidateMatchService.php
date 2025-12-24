@@ -66,7 +66,7 @@ class CandidateMatchService
             // Use AI to score this candidate against the job
             try {
                 $matchResult = $this->aiScoreCandidate($job, $candidate, $resume);
-                
+
                 \Log::info("AI score for candidate {$candidate->id} ({$normalized['name']}): {$matchResult['score']}", [
                     'matched_skills' => $matchResult['details']['matched_skills'] ?? [],
                     'summary' => substr($matchResult['summary'], 0, 100)
@@ -158,6 +158,9 @@ class CandidateMatchService
             $resumeText .= "Experience: " . implode('; ', array_slice($resumeData['job_title'], 0, 5)) . "\n";
         }
 
+        // Pre-compute for heredoc
+        $candidateTitle = $resumeData['title'] ?? 'Not specified';
+
         // AI scoring prompt with title and keyword matching emphasis
         $scorePrompt = <<<PROMPT
 You are an expert HR recruiter. Score how well this candidate matches the job on a scale of 0-100.
@@ -178,19 +181,19 @@ Provide your response in JSON format with these fields:
 }
 
 CRITICAL SCORING CRITERIA:
-1. Job Title Match: The candidate's title is "{$resumeData['title'] ?? 'unknown'}" and the job is for "{$job->title}". 
+1. Job Title Match: The candidate's title is "{$candidateTitle}" and the job is for "{$job->title}".
    - If titles align (e.g., both PHP Developer): score 70-100
    - If partially aligned (e.g., Developer vs Engineer): score 50-70
    - If unrelated (e.g., Manager for Developer role): score 0-40
-   
+
 2. Keyword Coverage: Must have at least 50% of key job keywords/technologies
    - Each missing key technology reduces score by 10-15 points
-   
-3. Experience Level: 
+
+3. Experience Level:
    - Senior roles: Must have 5+ years relevant experience
    - Mid-level: Must have 2-5 years relevant experience
    - Junior: Less than 2 years acceptable
-   
+
 4. Required Skills: Must possess the core required skills mentioned in job description
 
 Focus on semantic understanding and exact role fit. Penalty if title doesn't match the role type.
