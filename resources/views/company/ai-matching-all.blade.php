@@ -151,8 +151,8 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        @if($match->resume)
-                                            <a href="{{ route('company.ai-matching.candidate.resume', [$match->job, $match]) }}"
+                                        @if($match->resume && $match->resume->generated_pdf_path)
+                                            <a href="{{ Storage::url($match->resume->generated_pdf_path) }}"
                                                target="_blank"
                                                class="btn btn-outline-primary"
                                                title="View Resume">
