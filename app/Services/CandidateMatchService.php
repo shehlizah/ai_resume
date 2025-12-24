@@ -110,7 +110,7 @@ class CandidateMatchService
         // Bulk insert
         if (!empty($matches)) {
             JobCandidateMatch::insert($matches);
-            \Log::info("Inserted {$matchCount} job candidate matches");
+            \Log::info("Inserted " . count($matches) . " job candidate matches");
         } else {
             \Log::warning("No matches inserted for job {$job->id}");
         }
