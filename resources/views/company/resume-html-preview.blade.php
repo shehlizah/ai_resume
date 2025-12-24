@@ -20,61 +20,124 @@
     </style>
 </head>
 <body>
+@php
+    // Normalize resume data (handles stringified JSON or arrays)
+    $raw = $resume->data ?? [];
+    $data = is_string($raw) ? (json_decode($raw, true) ?: []) : ($raw ?? []);
+
+    // Helper: convert string list to array
+    $toArray = function ($value) {
+        if (is_array($value)) return array_values(array_filter($value, fn($v) => $v !== null && $v !== ''));
+        if (is_string($value)) return array_values(array_filter(preg_split('/[,;\n]+/', $value)));
+        return [];
+    };
+
+    $name = $data['name'] ?? 'Candidate';
+    $title = $data['title'] ?? $data['headline'] ?? 'Resume';
+    $location = $data['location'] ?? $data['city'] ?? null;
+    $email = $data['email'] ?? null;
+    $phone = $data['phone'] ?? null;
+    $summary = $data['summary'] ?? $data['objective'] ?? null;
+
+    $skills = $toArray($data['skills'] ?? []);
+    $experiences = $data['experience'] ?? $data['job_title'] ?? [];
+    if (is_string($experiences)) {
+        $experiences = $toArray($experiences);
+    }
+    $education = $data['education'] ?? [];
+    $projects = $data['projects'] ?? [];
+@endphp
+
 <div class="container">
     <header>
-        <h1>{{ $resume->data['name'] ?? 'Candidate' }}</h1>
-        <div class="subtitle">{{ $resume->data['title'] ?? $resume->data['headline'] ?? 'Resume' }}</div>
+        <h1>{{ $name }}</h1>
+        <div class="subtitle">{{ $title }}</div>
+        @if($location || $email || $phone)
+            <div class="muted">
+                @if($location)<span>{{ $location }}</span>@endif
+                @if($email)<span> • {{ $email }}</span>@endif
+                @if($phone)<span> • {{ $phone }}</span>@endif
+            </div>
+        @endif
         @if(!empty($resume->score))
             <div class="badge"><i class="bx bx-star"></i> Score: {{ $resume->score }}%</div>
         @endif
     </header>
 
-    @if(!empty($resume->data['summary']))
+    @if($summary)
         <section class="section">
             <h2>Summary</h2>
-            <div class="muted">{{ $resume->data['summary'] }}</div>
+            <div class="muted">{!! nl2br(e($summary)) !!}</div>
         </section>
     @endif
 
-    @if(!empty($resume->data['skills']) && is_array($resume->data['skills']))
+    @if(!empty($skills))
         <section class="section">
             <h2>Skills</h2>
             <div>
-                @foreach($resume->data['skills'] as $skill)
+                @foreach($skills as $skill)
                     <span class="chip"><i class="bx bx-check"></i> {{ $skill }}</span>
                 @endforeach
             </div>
         </section>
     @endif
 
-    @if(!empty($resume->data['job_title']) && is_array($resume->data['job_title']))
+    @if(!empty($experiences))
         <section class="section">
             <h2>Experience</h2>
             <ul>
-                @foreach($resume->data['job_title'] as $jobTitle)
-                    <li>{{ $jobTitle }}</li>
+                @foreach($experiences as $exp)
+                    @if(is_array($exp))
+                        <li>
+                            <strong>{{ $exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Experience' }}</strong>
+                            @if(!empty($exp['company']))<span class="muted"> • {{ $exp['company'] }}</span>@endif
+                            @if(!empty($exp['from']) || !empty($exp['to']))
+                                <div class="muted">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div>
+                            @endif
+                            @if(!empty($exp['description']))
+                                <div class="muted">{!! nl2br(e($exp['description'])) !!}</div>
+                            @endif
+                        </li>
+                    @else
+                        <li>{{ $exp }}</li>
+                    @endif
                 @endforeach
             </ul>
         </section>
     @endif
 
-    @if(!empty($resume->data['education']) && is_array($resume->data['education']))
+    @if(!empty($education))
         <section class="section">
             <h2>Education</h2>
             <ul>
-                @foreach($resume->data['education'] as $edu)
-                    <li>{{ is_array($edu) ? ($edu['degree'] ?? $edu['institution'] ?? json_encode($edu)) : $edu }}</li>
+                @foreach($education as $edu)
+                    <li>
+                        @if(is_array($edu))
+                            <strong>{{ $edu['degree'] ?? $edu['qualification'] ?? 'Education' }}</strong>
+                            @if(!empty($edu['institution']))<span class="muted"> • {{ $edu['institution'] }}</span>@endif
+                            @if(!empty($edu['year']))<div class="muted">{{ $edu['year'] }}</div>@endif
+                        @else
+                            {{ $edu }}
+                        @endif
+                    </li>
                 @endforeach
             </ul>
         </section>
     @endif
 
-    @if(!empty($resume->data['projects']) && is_array($resume->data['projects']))
+    @if(!empty($projects))
         <section class="section">
             <h2>Projects</h2>
             <ul>
-                @foreach($resume->data['projects'] as $project)
-                    <li>{{ is_array($project) ? ($project['title'] ?? json_encode($project)) : $project }}</li>
+                @foreach($projects as $project)
+                    <li>
+                        @if(is_array($project))
+                            <strong>{{ $project['title'] ?? 'Project' }}</strong>
+                            @if(!empty($project['description']))<div class="muted">{!! nl2br(e($project['description'])) !!}</div>@endif
+                        @else
+                            {{ $project }}
+                        @endif
+                    </li>
                 @endforeach
             </ul>
         </section>
