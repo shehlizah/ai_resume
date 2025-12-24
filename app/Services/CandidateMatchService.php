@@ -25,6 +25,11 @@ class CandidateMatchService
      */
     public function matchCandidatesForJob($job, int $limit = 50)
     {
+        \Log::info("=== Starting AI Matching for Job {$job->id} ===", [
+            'job_title' => $job->title,
+            'job_tags' => $job->tags
+        ]);
+
         // Get candidates with completed resumes
         $candidates = User::where('role', 'user')
             ->where('is_active', true)
@@ -37,23 +42,38 @@ class CandidateMatchService
             ->limit(200)
             ->get();
 
+        \Log::info("Found {$candidates->count()} candidates with completed resumes");
+
         $matches = [];
+        $skippedCount = 0;
 
         foreach ($candidates as $candidate) {
             $resume = $candidate->resumes->first();
-            if (!$resume) continue;
+            if (!$resume) {
+                \Log::info("Skipped candidate {$candidate->id}: No resume");
+                $skippedCount++;
+                continue;
+            }
 
             // Normalize resume data and skip if meaningfully empty
             $normalized = $this->normalizeResumeData($resume->data);
             if ($this->isMeaningfullyEmpty($normalized)) {
+                \Log::info("Skipped candidate {$candidate->id} ({$normalized['name']}): Resume is meaningfully empty (no skills/experience/summary)");
+                $skippedCount++;
                 continue;
             }
 
             // Use AI to score this candidate against the job
             try {
                 $matchResult = $this->aiScoreCandidate($job, $candidate, $resume);
+                
+                \Log::info("AI score for candidate {$candidate->id} ({$normalized['name']}): {$matchResult['score']}", [
+                    'matched_skills' => $matchResult['details']['matched_skills'] ?? [],
+                    'summary' => substr($matchResult['summary'], 0, 100)
+                ]);
 
-                if ($matchResult['score'] >= 30) {
+                if ($matchResult['score'] >= 20) {
+                    \Log::info("✓ Candidate {$candidate->id} MATCHED with score {$matchResult['score']}");
                     $matches[] = [
                         'job_id' => $job->id,
                         'user_id' => $candidate->id,
@@ -66,12 +86,22 @@ class CandidateMatchService
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
+                } else {
+                    \Log::info("✗ Candidate {$candidate->id} REJECTED: Score {$matchResult['score']} below 20% threshold");
                 }
             } catch (\Exception $e) {
-                Log::warning("AI matching failed for candidate {$candidate->id}: {$e->getMessage()}");
+                \Log::warning("AI matching failed for candidate {$candidate->id}: {$e->getMessage()}");
                 continue;
             }
         }
+
+        \Log::info("=== Matching Summary ===", [
+            'total_candidates_checked' => $candidates->count(),
+            'skipped' => $skippedCount,
+            'processed' => $candidates->count() - $skippedCount,
+            'matches_found' => count($matches),
+            'top_scores' => array_slice(array_column($matches, 'match_score'), 0, 5)
+        ]);
 
         // Sort by score and take top matches
         usort($matches, fn($a, $b) => $b['match_score'] <=> $a['match_score']);
@@ -80,6 +110,9 @@ class CandidateMatchService
         // Bulk insert
         if (!empty($matches)) {
             JobCandidateMatch::insert($matches);
+            \Log::info("Inserted {$matchCount} job candidate matches");
+        } else {
+            \Log::warning("No matches inserted for job {$job->id}");
         }
 
         return count($matches);
@@ -105,7 +138,7 @@ class CandidateMatchService
 
         // Build resume context - normalized data
         $resumeData = $this->normalizeResumeData($resume->data);
-        
+
         \Log::info("AI Matching - Resume data for candidate {$candidate->id}", [
             'name' => $resumeData['name'] ?? 'N/A',
             'title' => $resumeData['title'] ?? 'N/A',
@@ -113,7 +146,7 @@ class CandidateMatchService
             'skills' => $resumeData['skills'] ?? [],
             'job_titles' => $resumeData['job_title'] ?? []
         ]);
-        
+
         $resumeText .= "Summary: " . substr($resumeData['summary'] ?? '', 0, 500) . "\n";
 
         if (isset($resumeData['skills']) && is_array($resumeData['skills'])) {
