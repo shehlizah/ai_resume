@@ -245,25 +245,49 @@
     if (is_string($rawSkills)) {
         // Parse string that might contain categories
         $rawSkills = $cleanHtml($rawSkills);
-        $lines = preg_split('/[\n\r]+/', $rawSkills);
-        $currentCategory = null;
-        foreach($lines as $line) {
-            $line = trim($line);
-            if (!$line) continue;
-            // Check if it's a category heading (ends with colon or contains "Skills")
-            if (preg_match('/(Skills|Competencies):?$/i', $line) || (strlen($line) < 30 && !str_contains($line, ','))) {
-                $currentCategory = $line;
-                $skillsData[$currentCategory] = [];
-            } else {
-                // It's a skill item
-                $items = preg_split('/[,;]+/', $line);
-                foreach($items as $item) {
-                    $item = trim($item);
-                    if ($item) {
-                        if ($currentCategory) {
+        // First check if there's a category prefix like "Technical Skills: PHP, WordPress..."
+        if (preg_match('/^([^:]+Skills[^:]*):(.+)$/i', $rawSkills, $matches)) {
+            $category = trim($matches[1]);
+            $skillsList = $matches[2];
+            $items = preg_split('/[,;]+/', $skillsList);
+            foreach($items as $item) {
+                $item = trim($item);
+                if ($item) {
+                    $skillsData[$category][] = $item;
+                }
+            }
+        } else {
+            // Try line-by-line parsing
+            $lines = preg_split('/[\n\r]+/', $rawSkills);
+            $currentCategory = null;
+            foreach($lines as $line) {
+                $line = trim($line);
+                if (!$line) continue;
+                // Check if line has category prefix
+                if (preg_match('/^([^:]+Skills[^:]*):(.+)$/i', $line, $matches)) {
+                    $currentCategory = trim($matches[1]);
+                    $skillsList = $matches[2];
+                    $items = preg_split('/[,;]+/', $skillsList);
+                    foreach($items as $item) {
+                        $item = trim($item);
+                        if ($item) {
                             $skillsData[$currentCategory][] = $item;
-                        } else {
-                            $skillsData[''][] = $item;
+                        }
+                    }
+                } elseif (preg_match('/(Skills|Competencies):?$/i', $line)) {
+                    $currentCategory = $line;
+                    $skillsData[$currentCategory] = [];
+                } else {
+                    // It's a skill item
+                    $items = preg_split('/[,;]+/', $line);
+                    foreach($items as $item) {
+                        $item = trim($item);
+                        if ($item) {
+                            if ($currentCategory) {
+                                $skillsData[$currentCategory][] = $item;
+                            } else {
+                                $skillsData[''][] = $item;
+                            }
                         }
                     }
                 }
@@ -338,25 +362,25 @@
         <div class="section">
             <div class="section-title">Professional Experience</div>
             @foreach($experiences as $exp)
-                <div class="experience-item" style="border-left: 3px solid #e0e0e0; padding-left: 12px;">
+                <div class="experience-item" style="border-left: 3px solid #e0e0e0; padding-left: 12px; margin-bottom: 20px;">
                     @if(is_array($exp))
-                        <div class="job-title" style="font-weight: 600; margin-bottom: 4px; color: #2c3e50;">{{ $cleanHtml($exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Position') }}</div>
+                        <div class="job-title" style="display: block; font-weight: 600; margin-bottom: 4px; color: #2c3e50;">{{ $cleanHtml($exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Position') }}</div>
                         @if(!empty($exp['from']) || !empty($exp['to']))
-                            <div class="job-date" style="color: #7f8c8d; margin-bottom: 4px; font-size: 9.5pt;">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div>
+                            <div class="job-date" style="display: block; color: #7f8c8d; margin-bottom: 4px; font-size: 9.5pt;">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div>
                         @endif
                         @if(!empty($exp['company']))
-                            <div class="company-name" style="color: #34495e; margin-bottom: 8px; font-style: italic;">{{ $cleanHtml($exp['company']) }}</div>
+                            <div class="company-name" style="display: block; color: #34495e; margin-bottom: 8px; font-style: italic;">{{ $cleanHtml($exp['company']) }}</div>
                         @endif
                         @if(!empty($exp['description']))
                             @php
                                 $responsibilities = $parseResponsibilities($exp['description']);
                             @endphp
                             @if(!empty($responsibilities))
-                                <div class="responsibilities-heading" style="font-weight: 600; margin-bottom: 4px; margin-top: 8px; color: #2c3e50;">Key Responsibilities:</div>
-                                <div class="job-description">
-                                    <ul style="margin-top: 4px;">
+                                <div class="responsibilities-heading" style="display: block; font-weight: 600; margin-bottom: 4px; margin-top: 8px; color: #2c3e50;">Key Responsibilities:</div>
+                                <div class="job-description" style="display: block;">
+                                    <ul style="margin-top: 4px; padding-left: 20px;">
                                         @foreach($responsibilities as $resp)
-                                            <li style="margin-bottom: 2px;">{{ $resp }}</li>
+                                            <li style="display: list-item; margin-bottom: 2px;">{{ $resp }}</li>
                                         @endforeach
                                     </ul>
                                 </div>
