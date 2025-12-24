@@ -9,6 +9,13 @@ use Illuminate\Http\Response;
 
 class AutoTranslateResponse
 {
+    protected GoogleTranslateService $translator;
+
+    public function __construct(GoogleTranslateService $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * Translate HTML text nodes to English when locale is 'en'.
      */
@@ -33,97 +40,55 @@ class AutoTranslateResponse
             return $response;
         }
 
-        // Load HTML into DOM and walk text nodes
-        $translatedHtml = $this->translateHtml($html);
-        if ($translatedHtml) {
-            $response->setContent($translatedHtml);
+        try {
+            $translatedHtml = $this->translateTextInHtml($html);
+            if ($translatedHtml !== null) {
+                $response->setContent($translatedHtml);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('AutoTranslateResponse: ' . $e->getMessage());
         }
 
         return $response;
     }
 
-    protected function translateHtml(string $html): ?string
+    protected function translateTextInHtml(string $html): ?string
     {
-        try {
-            // Ensure proper UTF-8 handling
-            $doc = new \DOMDocument('1.0', 'UTF-8');
-            libxml_use_internal_errors(true);
-            $doc->loadHTML('<?xml encoding="utf-8" ?>' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-            libxml_clear_errors();
-
-            $xpath = new \DOMXPath($doc);
-
-            // Collect text nodes excluding certain tags
-            $nodes = [];
-            $this->collectTextNodes($doc->documentElement, $nodes);
-
-            if (empty($nodes)) {
-                return $html;
-            }
-
-            // Build unique list of texts to translate
-            $texts = [];
-            foreach ($nodes as $node) {
-                $text = trim($node->nodeValue);
-                if ($text !== '') {
-                    $texts[$text] = true; // unique set
-                }
-            }
-
-            if (empty($texts)) {
-                return $html;
-            }
-
-            $uniqueTexts = array_keys($texts);
-
-            /** @var GoogleTranslateService $translator */
-            $translator = app(GoogleTranslateService::class);
-
-            // Translate each unique text (cached for 30 days in the service)
-            $map = [];
-            foreach ($uniqueTexts as $original) {
-                $map[$original] = $translator->translate($original, 'en');
-            }
-
-            // Replace node values using map
-            foreach ($nodes as $node) {
-                $orig = trim($node->nodeValue);
-                if ($orig !== '' && isset($map[$orig])) {
-                    // Preserve leading/trailing whitespace around the trimmed core
-                    $leading = '';
-                    $trailing = '';
-                    if (preg_match('/^(\s*)/u', $node->nodeValue, $m1)) { $leading = $m1[1] ?? ''; }
-                    if (preg_match('/(\s*)$/u', $node->nodeValue, $m2)) { $trailing = $m2[1] ?? ''; }
-                    $node->nodeValue = $leading . $map[$orig] . $trailing;
-                }
-            }
-
-            return $doc->saveHTML();
-        } catch (\Throwable $e) {
-            // On any failure, return original content without breaking the page
-            return $html;
+        $parts = preg_split('/<(.*?)>/s', $html, -1, PREG_SPLIT_DELIM_CAPTURE);
+        if (!is_array($parts)) {
+            return null;
         }
+
+        $result = [];
+        foreach ($parts as $i => $part) {
+            if ($i % 2 === 0) {
+                // Even indexes: text between tags
+                $result[$i] = $this->translateTextSegment($part);
+            } else {
+                // Odd indexes: tags themselves
+                $result[$i] = '<' . $part . '>';
+            }
+        }
+
+        return implode('', $result);
     }
 
-    protected function collectTextNodes(\DOMNode $node, array &$nodes): void
+    protected function translateTextSegment(string $text): string
     {
-        // Skip certain containers entirely
-        if ($node->nodeType === XML_ELEMENT_NODE) {
-            $tag = strtolower($node->nodeName);
-            if (in_array($tag, ['script', 'style', 'code', 'pre', 'noscript'])) {
-                return;
-            }
+        if (empty(trim($text))) {
+            return $text;
         }
 
-        foreach (iterator_to_array($node->childNodes ?? []) as $child) {
-            if ($child->nodeType === XML_TEXT_NODE) {
-                // Keep non-empty text nodes
-                if (trim($child->nodeValue) !== '') {
-                    $nodes[] = $child;
-                }
-            } else {
-                $this->collectTextNodes($child, $nodes);
-            }
+        preg_match('/^(\s*)(.*?)(\s*)$/s', $text, $m);
+        $leading = $m[1] ?? '';
+        $core = $m[2] ?? $text;
+        $trailing = $m[3] ?? '';
+
+        if (empty(trim($core))) {
+            return $text;
         }
+
+        $translated = $this->translator->translate($core, 'en');
+        return $leading . $translated . $trailing;
     }
 }

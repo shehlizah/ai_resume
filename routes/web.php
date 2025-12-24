@@ -22,6 +22,25 @@ use App\Http\Middleware\CheckActivePackage;
 
 /*
 |--------------------------------------------------------------------------
+| Debug Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/debug/locale', function () {
+    $service = app('\App\Services\GoogleTranslateService');
+    $testText = 'Selamat datang';
+    $translation = $service->translate($testText, 'en');
+    return response()
+        ->view('debug.locale', [
+            'currentLocale' => app()->getLocale(),
+            'testText' => $testText,
+            'translation' => $translation,
+            'acceptLanguage' => request()->header('Accept-Language'),
+        ])
+        ->header('Content-Type', 'text/html; charset=utf-8');
+})->name('debug.locale');
+
+/*
+|--------------------------------------------------------------------------
 | Language Switching Routes (No middleware needed)
 |--------------------------------------------------------------------------
 */
