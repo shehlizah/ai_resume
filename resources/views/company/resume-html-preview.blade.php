@@ -319,12 +319,12 @@
             @foreach($skillsData as $category => $skillsList)
                 @if(!empty($skillsList))
                     @if($category)
-                        <div class="skill-category-heading">{{ $category }}</div>
+                        <div class="skill-category-heading" style="font-weight: 600; margin-top: 8px; margin-bottom: 6px; color: #2c3e50; font-size: 10.5pt;">{{ $category }}</div>
                     @endif
-                    <div class="skills-grid">
+                    <div class="skills-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px;">
                         @foreach($skillsList as $skill)
                             @if($skill)
-                                <div class="skill-item">{{ $skill }}</div>
+                                <div class="skill-item" style="font-size: 9.5pt;">• {{ $skill }}</div>
                             @endif
                         @endforeach
                     </div>
@@ -338,25 +338,25 @@
         <div class="section">
             <div class="section-title">Professional Experience</div>
             @foreach($experiences as $exp)
-                <div class="experience-item">
+                <div class="experience-item" style="border-left: 3px solid #e0e0e0; padding-left: 12px;">
                     @if(is_array($exp))
-                        <div class="job-title">{{ $cleanHtml($exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Position') }}</div>
+                        <div class="job-title" style="font-weight: 600; margin-bottom: 4px; color: #2c3e50;">{{ $cleanHtml($exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Position') }}</div>
                         @if(!empty($exp['from']) || !empty($exp['to']))
-                            <div class="job-date">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div>
+                            <div class="job-date" style="color: #7f8c8d; margin-bottom: 4px; font-size: 9.5pt;">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div>
                         @endif
                         @if(!empty($exp['company']))
-                            <div class="company-name">{{ $cleanHtml($exp['company']) }}</div>
+                            <div class="company-name" style="color: #34495e; margin-bottom: 8px; font-style: italic;">{{ $cleanHtml($exp['company']) }}</div>
                         @endif
                         @if(!empty($exp['description']))
                             @php
                                 $responsibilities = $parseResponsibilities($exp['description']);
                             @endphp
                             @if(!empty($responsibilities))
-                                <div class="responsibilities-heading">Key Responsibilities:</div>
+                                <div class="responsibilities-heading" style="font-weight: 600; margin-bottom: 4px; margin-top: 8px; color: #2c3e50;">Key Responsibilities:</div>
                                 <div class="job-description">
-                                    <ul>
+                                    <ul style="margin-top: 4px;">
                                         @foreach($responsibilities as $resp)
-                                            <li>{{ $resp }}</li>
+                                            <li style="margin-bottom: 2px;">{{ $resp }}</li>
                                         @endforeach
                                     </ul>
                                 </div>
