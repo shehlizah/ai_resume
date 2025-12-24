@@ -343,14 +343,15 @@
             @foreach($skillsData as $category => $skillsList)
                 @if(!empty($skillsList))
                     @if($category)
-                        <div class="skill-category-heading" style="font-weight: 600; margin-top: 8px; margin-bottom: 6px; color: #2c3e50; font-size: 10.5pt;">{{ $category }}</div>
+                        <div style="font-weight: 600; margin-top: 12px; margin-bottom: 8px; color: #2c3e50; font-size: 10.5pt; clear: both;">{{ $category }}</div>
                     @endif
-                    <div class="skills-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px;">
+                    <div style="display: block; margin-bottom: 12px; clear: both;">
                         @foreach($skillsList as $skill)
                             @if($skill)
-                                <div class="skill-item" style="font-size: 9.5pt;">• {{ $skill }}</div>
+                                <div style="float: left; width: 33.33%; font-size: 9.5pt; padding: 2px 0; box-sizing: border-box;">• {{ $skill }}</div>
                             @endif
                         @endforeach
+                        <div style="clear: both;"></div>
                     </div>
                 @endif
             @endforeach
@@ -362,23 +363,25 @@
         <div class="section">
             <div class="section-title">Professional Experience</div>
             @foreach($experiences as $exp)
-                <div class="experience-item" style="border-left: 3px solid #e0e0e0; padding-left: 12px; margin-bottom: 20px;">
+                <div style="border-left: 3px solid #e0e0e0; padding-left: 12px; margin-bottom: 24px; clear: both; page-break-inside: avoid;">
                     @if(is_array($exp))
-                        <div class="job-title" style="display: block; font-weight: 600; margin-bottom: 4px; color: #2c3e50;">{{ $cleanHtml($exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Position') }}</div>
+                        <div style="font-weight: 600; color: #2c3e50; font-size: 11pt; clear: both;">{{ $cleanHtml($exp['title'] ?? $exp['role'] ?? $exp['position'] ?? 'Position') }}</div>
+                        <br>
                         @if(!empty($exp['from']) || !empty($exp['to']))
-                            <div class="job-date" style="display: block; color: #7f8c8d; margin-bottom: 4px; font-size: 9.5pt;">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div>
+                            <div style="color: #7f8c8d; font-size: 9.5pt; clear: both;">{{ ($exp['from'] ?? '') }} - {{ ($exp['to'] ?? 'Present') }}</div>
+                            <br>
                         @endif
                         @if(!empty($exp['company']))
-                            <div class="company-name" style="display: block; color: #34495e; margin-bottom: 8px; font-style: italic;">{{ $cleanHtml($exp['company']) }}</div>
+                            <div style="color: #34495e; font-style: italic; clear: both;">{{ $cleanHtml($exp['company']) }}</div>
+                            <br>
                         @endif
                         @if(!empty($exp['description']))
                             @php
-                                $responsibilities = $parseResponsibilities($exp['description']);
-                            @endphp
-                            @if(!empty($responsibilities))
-                                <div class="responsibilities-heading" style="display: block; font-weight: 600; margin-bottom: 4px; margin-top: 8px; color: #2c3e50;">Key Responsibilities:</div>
-                                <div class="job-description" style="display: block;">
-                                    <ul style="margin-top: 4px; padding-left: 20px;">
+                                $respstyle="font-weight: 600; color: #2c3e50; margin-top: 4px; clear: both;">Key Responsibilities:</div>
+                                <ul style="margin: 6px 0; padding-left: 20px; clear: both;">
+                                    @foreach($responsibilities as $resp)
+                                        <li style="margin-bottom: 3px;">{{ $resp }}</li>
+                                <ul style="margin-top: 4px; padding-left: 20px;">
                                         @foreach($responsibilities as $resp)
                                             <li style="display: list-item; margin-bottom: 2px;">{{ $resp }}</li>
                                         @endforeach
