@@ -145,16 +145,19 @@ Focus on semantic understanding, not just keyword matching. Consider:
 PROMPT;
 
         try {
+            \Log::info("AI Matching - Candidate {$candidate->id}, Job {$job->id}: Calling OpenAI...");
             $response = $this->openAIService->generateContent($scorePrompt, 500);
+            \Log::info("AI Matching - OpenAI Response: " . substr($response, 0, 200));
             
             // Parse JSON response
             $result = json_decode($response, true);
             
             if (!$result || !isset($result['score'])) {
-                Log::warning("Invalid AI response for candidate matching: $response");
+                \Log::warning("Invalid AI response for candidate matching: $response. Falling back to basic scoring.");
                 return $this->basicScoreCandidate($job, $candidate, $resume);
             }
 
+            \Log::info("AI Matching - Score for candidate {$candidate->id}: {$result['score']}");
             return [
                 'score' => max(0, min(100, (int)$result['score'])),
                 'details' => [
@@ -167,7 +170,7 @@ PROMPT;
                 'summary' => $result['summary'] ?? 'No summary available',
             ];
         } catch (\Exception $e) {
-            Log::error("AI scoring error: {$e->getMessage()}");
+            \Log::error("AI scoring error for candidate {$candidate->id}: {$e->getMessage()}. Using basic scoring.");
             return $this->basicScoreCandidate($job, $candidate, $resume);
         }
     }
