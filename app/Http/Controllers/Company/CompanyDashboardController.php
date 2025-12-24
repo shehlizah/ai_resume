@@ -208,23 +208,29 @@ class CompanyDashboardController extends Controller
         // Verify match belongs to this job
         abort_unless((int) $match->job_id === (int) $job->id, 403);
 
-        // Check if resume path exists on the model
-        abort_unless($match->resume && $match->resume->generated_pdf_path, 404);
+        $resume = $match->resume;
 
-        // Prefer the public disk path (resumes are stored under storage/app/public)
-        $relativePath = $match->resume->generated_pdf_path; // e.g. "resumes/filename.pdf"
-        $absolutePath = storage_path('app/public/' . $relativePath);
+        // If there's a generated PDF path, try to serve it first
+        if ($resume && $resume->generated_pdf_path) {
+            $relativePath = $resume->generated_pdf_path; // e.g. "resumes/filename.pdf"
+            $absolutePath = storage_path('app/public/' . $relativePath);
 
-        if (file_exists($absolutePath)) {
-            return response()->file($absolutePath, ['Content-Type' => 'application/pdf']);
+            if (file_exists($absolutePath)) {
+                return response()->file($absolutePath, ['Content-Type' => 'application/pdf']);
+            }
+
+            // Fallback: if using storage symlink, redirect to public URL
+            if (method_exists($resume, 'getUrlAttribute')) {
+                return redirect($resume->url);
+            }
         }
 
-        // Fallback: if using storage symlink, redirect to public URL
-        if (method_exists($match->resume, 'getUrlAttribute')) {
-            return redirect($match->resume->url);
+        // If no PDF available (e.g., free users), but resume data exists, render HTML preview
+        if ($resume && $resume->data) {
+            return response()->view('company.resume-html-preview', ['resume' => $resume]);
         }
 
-        // If file still not found, 404
+        // If file still not found and no data, 404
         abort(404, 'Resume file not found');
     }
 
