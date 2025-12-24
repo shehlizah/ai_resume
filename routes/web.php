@@ -25,6 +25,25 @@ use App\Http\Middleware\CheckActivePackage;
 | Debug Routes
 |--------------------------------------------------------------------------
 */
+Route::get('/test-translate', function () {
+    $service = app(\App\Services\GoogleTranslateService::class);
+    $testText = 'Selamat datang';
+    $result = [];
+    try {
+        $translated = $service->translate($testText, 'en');
+        $result['success'] = true;
+        $result['input'] = $testText;
+        $result['output'] = $translated;
+        $result['locale'] = app()->getLocale();
+    } catch (\Throwable $e) {
+        $result['success'] = false;
+        $result['error'] = $e->getMessage();
+        $result['trace'] = $e->getTraceAsString();
+        $result['locale'] = app()->getLocale();
+    }
+    return response()->json($result);
+})->name('test.translate');
+
 Route::get('/debug/locale', function () {
     $service = app('\App\Services\GoogleTranslateService');
     $testText = 'Selamat datang';
