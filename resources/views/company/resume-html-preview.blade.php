@@ -390,19 +390,6 @@
                                 <div class="responsibilities-heading">Key Responsibilities:</div>
                                 <div class="job-description">{{ $cleanHtml($exp['description']) }}</div>
                             @endif
-                                <ul style="margin: 6px 0; padding-left: 20px; clear: both;">
-                                    @foreach($responsibilities as $resp)
-                                        <li style="margin-bottom: 3px;">{{ $resp }}</li>
-                                <ul style="margin-top: 4px; padding-left: 20px;">
-                                        @foreach($responsibilities as $resp)
-                                            <li style="display: list-item; margin-bottom: 2px;">{{ $resp }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @else
-                                <div class="responsibilities-heading">Key Responsibilities:</div>
-                                <div class="job-description">{{ $cleanHtml($exp['description']) }}</div>
-                            @endif
                         @endif
                     @else
                         <div class="job-description">{{ $cleanHtml($exp) }}</div>
