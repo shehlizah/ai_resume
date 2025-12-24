@@ -1136,4 +1136,44 @@ PROMPT;
             ];
         }
     }
+
+    /**
+     * Generic content generation for AI matching and other uses
+     */
+    public function generateContent(string $prompt, int $maxTokens = 500): string
+    {
+        try {
+            \Log::info('OpenAI generateContent called', [
+                'prompt_length' => strlen($prompt),
+                'max_tokens' => $maxTokens
+            ]);
+
+            $response = $this->client->chat()->create([
+                'model' => $this->model,
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'You are an expert HR recruiter and career advisor. Provide accurate, structured responses.'
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => $prompt
+                    ]
+                ],
+                'temperature' => 0.3,
+                'max_tokens' => $maxTokens,
+            ]);
+
+            $content = $response->choices[0]->message->content;
+            \Log::info('OpenAI generateContent response received', [
+                'content_length' => strlen($content)
+            ]);
+
+            return $content;
+
+        } catch (\Exception $e) {
+            \Log::error('OpenAI generateContent Error: ' . $e->getMessage());
+            throw $e;
+        }
+    }
 }
