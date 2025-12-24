@@ -24,6 +24,11 @@
     {{-- SEARCH REMOVED. If you had a search include/component, delete it. --}}
 
     <ul class="navbar-nav flex-row align-items-center ms-auto">
+      {{-- Language Switcher --}}
+      <li class="nav-item me-2">
+        @include('partials.language-switcher')
+      </li>
+
       {{-- User dropdown (unchanged) --}}
       <li class="nav-item navbar-dropdown dropdown-user dropdown">
         @if (Auth::check())

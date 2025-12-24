@@ -12,8 +12,10 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next)
     {
-        // Get locale from session or use default
-        $locale = session('locale', config('app.locale', 'en'));
+        // Get locale from session first, then cookie, then default
+        $locale = session('locale') ?? 
+                  $request->cookie('locale') ?? 
+                  config('app.locale', 'en');
 
         // Validate locale
         $supportedLocales = ['en', 'id'];

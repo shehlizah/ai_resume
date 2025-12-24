@@ -77,6 +77,15 @@ return [
     'set_new_password' => 'Tetapkan Kata Sandi Baru',
     'back_to_login' => 'Kembali ke login',
 
+    // Frontend
+    'home' => 'Beranda',
+    'create_cv' => 'Buat CV',
+    'upload_cv' => 'Unggah CV',
+    'prepare_interview' => 'Persiapan Wawancara',
+    'for_employers' => 'Untuk Pemberi Kerja',
+    'contact' => 'Hubungi Kami',
+    'dashboard' => 'Dasbor',
+
     // Common
     'language' => 'Bahasa',
     'english' => 'English',

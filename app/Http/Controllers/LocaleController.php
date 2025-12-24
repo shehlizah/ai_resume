@@ -16,9 +16,14 @@ class LocaleController extends Controller
 
         // Set locale in session
         session(['locale' => $locale]);
+        
+        // Also set in cookie for persistence
+        cookie()->queue('locale', $locale, 60 * 24 * 365); // 1 year
+
+        // Set locale immediately
         app()->setLocale($locale);
 
         // Redirect back to referrer or home
-        return redirect()->back()->with('locale_changed', __('messages.language') . ' changed to ' . ucfirst($locale));
+        return redirect()->back();
     }
 }

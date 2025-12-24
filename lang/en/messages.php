@@ -77,6 +77,15 @@ return [
     'set_new_password' => 'Set New Password',
     'back_to_login' => 'Back to login',
 
+    // Frontend
+    'home' => 'Home',
+    'create_cv' => 'Create CV',
+    'upload_cv' => 'Upload CV',
+    'prepare_interview' => 'Prepare Interview',
+    'for_employers' => 'For Employers',
+    'contact' => 'Contact',
+    'dashboard' => 'Dashboard',
+
     // Common
     'language' => 'Language',
     'english' => 'English',
