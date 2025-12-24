@@ -272,7 +272,7 @@ public function userAddOns()
             })
             ->exists();
     }
-    
+
     /**
      * Check if employer has AI matching add-on
      */

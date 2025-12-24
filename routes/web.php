@@ -271,13 +271,13 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
     Route::post('/payment/stripe', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'stripeCheckout'])->name('payment.stripe');
     Route::get('/payment/stripe/success', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'stripeSuccess'])->name('payment.stripe.success');
     Route::get('/payment/stripe/cancel', [\App\Http\Controllers\Company\CompanyDashboardController::class, 'stripeCancel'])->name('payment.stripe.cancel');
-    
+
     // Debug route - remove after testing
     Route::get('/debug-addons', function() {
         $user = Auth::user();
         $allAddOns = \App\Models\EmployerAddOn::where('employer_id', $user->id)->with('addOn')->get();
         $activeAddOns = $user->activeEmployerAddOns()->with('addOn')->get();
-        
+
         return response()->json([
             'user_id' => $user->id,
             'user_email' => $user->email,
@@ -296,7 +296,7 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
             'has_ai_matching' => $user->hasAiMatchingAddOn(),
         ]);
     })->name('debug-addons');
-    
+
     // Temp route: Trigger matching for old jobs
     Route::get('/trigger-old-job-matching', function() {
         $user = Auth::user();
@@ -304,23 +304,23 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
             ->where('source', 'company')
             ->whereDoesntHave('candidateMatches')
             ->get();
-        
+
         $count = 0;
         foreach ($jobs as $job) {
             \App\Jobs\MatchCandidatesJob::dispatch($job)->delay(now()->addMinutes(1));
             $count++;
         }
-        
+
         return response()->json([
             'message' => "Queued matching for $count old jobs",
             'jobs_processed' => $count,
         ]);
     })->name('trigger-old-job-matching');
-    
+
     // Cleanup route: Remove matches with empty resumes
     Route::get('/cleanup-empty-resume-matches', function() {
         $user = Auth::user();
-        
+
         // Find all matches for this employer's jobs where the resume has no data
         $deleted = \App\Models\JobCandidateMatch::whereHas('job', fn($q) => $q->where('user_id', $user->id))
             ->whereHas('resume', fn($q) => $q->where(function($sub) {
@@ -329,7 +329,7 @@ Route::middleware(['auth', 'role:employer'])->prefix('company')->name('company.'
                     ->orWhere('data', '');
             }))
             ->delete();
-        
+
         return response()->json([
             'message' => "Removed $deleted matches with empty resumes",
             'matches_removed' => $deleted,

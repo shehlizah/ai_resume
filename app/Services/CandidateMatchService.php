@@ -52,7 +52,7 @@ class CandidateMatchService
             // Use AI to score this candidate against the job
             try {
                 $matchResult = $this->aiScoreCandidate($job, $candidate, $resume);
-                
+
                 if ($matchResult['score'] >= 30) {
                     $matches[] = [
                         'job_id' => $job->id,
@@ -105,14 +105,21 @@ class CandidateMatchService
 
         // Build resume context - normalized data
         $resumeData = $this->normalizeResumeData($resume->data);
-        $resumeText = "Name: " . ($resumeData['name'] ?? 'N/A') . "\n";
-        $resumeText .= "Title: " . ($resumeData['title'] ?? 'N/A') . "\n";
-        $resumeText .= "Summary: " . substr($resumeData['summary'] ?? '', 0, 500) . "\n";
         
+        \Log::info("AI Matching - Resume data for candidate {$candidate->id}", [
+            'name' => $resumeData['name'] ?? 'N/A',
+            'title' => $resumeData['title'] ?? 'N/A',
+            'skills_count' => count($resumeData['skills'] ?? []),
+            'skills' => $resumeData['skills'] ?? [],
+            'job_titles' => $resumeData['job_title'] ?? []
+        ]);
+        
+        $resumeText .= "Summary: " . substr($resumeData['summary'] ?? '', 0, 500) . "\n";
+
         if (isset($resumeData['skills']) && is_array($resumeData['skills'])) {
             $resumeText .= "Skills: " . implode(', ', array_slice($resumeData['skills'], 0, 20)) . "\n";
         }
-        
+
         if (isset($resumeData['job_title']) && is_array($resumeData['job_title'])) {
             $resumeText .= "Experience: " . implode('; ', array_slice($resumeData['job_title'], 0, 5)) . "\n";
         }
@@ -148,10 +155,10 @@ PROMPT;
             \Log::info("AI Matching - Candidate {$candidate->id}, Job {$job->id}: Calling OpenAI...");
             $response = $this->openAIService->generateContent($scorePrompt, 500);
             \Log::info("AI Matching - OpenAI Response: " . substr($response, 0, 200));
-            
+
             // Parse JSON response
             $result = json_decode($response, true);
-            
+
             if (!$result || !isset($result['score'])) {
                 \Log::warning("Invalid AI response for candidate matching: $response. Falling back to basic scoring.");
                 return $this->basicScoreCandidate($job, $candidate, $resume);
@@ -182,7 +189,7 @@ PROMPT;
     {
         $jobKeywords = $this->extractJobKeywords($job);
         $jobSkills = $this->extractJobSkills($job);
-        
+
         // Use normalized resume data
         $resumeData = $this->normalizeResumeData($resume->data);
 
