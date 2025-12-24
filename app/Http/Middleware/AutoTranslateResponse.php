@@ -24,9 +24,9 @@ class AutoTranslateResponse
         /** @var Response $response */
         $response = $next($request);
 
-        // Only process when locale is one of our supported languages
+        // Only translate when target locale is English to avoid design changes
         $target = app()->getLocale();
-        if (!in_array($target, ['en', 'id'])) {
+        if ($target !== 'en') {
             return $response;
         }
 
@@ -61,17 +61,28 @@ class AutoTranslateResponse
 
     protected function translateTextInHtml(string $html, string $target): ?string
     {
-        // Mask blocks we should not translate (script/style/pre/code/noscript)
+        // Mask blocks we should not translate (script/style/pre/code/noscript/textarea/comments)
         $placeholders = [];
-        $maskTags = ['script', 'style', 'pre', 'code', 'noscript'];
+        $makeToken = function (string $content): string {
+            // Use hex token to avoid translation of words like STYLE -> GAYA
+            return '__TKN_' . substr(md5($content), 0, 16) . '__';
+        };
+
+        $maskTags = ['script', 'style', 'pre', 'code', 'noscript', 'textarea'];
         foreach ($maskTags as $tag) {
-            $i = 0;
-            $html = preg_replace_callback('/<' . $tag . '[^>]*>.*?<\/' . $tag . '>/is', function ($m) use (&$placeholders, $tag, &$i) {
-                $key = "__MASK_" . strtoupper($tag) . "_" . ($i++);
+            $html = preg_replace_callback('/<' . $tag . '[^>]*>.*?<\/' . $tag . '>/is', function ($m) use (&$placeholders, $makeToken) {
+                $key = $makeToken($m[0]);
                 $placeholders[$key] = $m[0];
                 return $key;
             }, $html);
         }
+
+        // Mask HTML comments
+        $html = preg_replace_callback('/<!--.*?-->/is', function ($m) use (&$placeholders, $makeToken) {
+            $key = $makeToken($m[0]);
+            $placeholders[$key] = $m[0];
+            return $key;
+        }, $html);
 
         $parts = preg_split('/<(.*?)>/s', $html, -1, PREG_SPLIT_DELIM_CAPTURE);
         if (!is_array($parts)) {
@@ -101,6 +112,11 @@ class AutoTranslateResponse
     protected function translateTextSegment(string $text, string $target): string
     {
         if (empty(trim($text))) {
+            return $text;
+        }
+
+        // Skip segments containing our non-translatable tokens
+        if (strpos($text, '__TKN_') !== false) {
             return $text;
         }
 
