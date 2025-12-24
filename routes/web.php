@@ -29,15 +29,14 @@ Route::get('/lang/{locale}', [LocaleController::class, 'setLocale'])->name('lang
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes (Apply locale middleware)
+| Public Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['locale'])->group(function () {
-    Route::get('/', function () {
-        return view('frontend.pages.home');
-    })->name('home');
+Route::get('/', function () {
+    return view('frontend.pages.home');
+})->name('home');
 
-    Route::get('/pricing', [SubscriptionController::class, 'pricing'])->name('packages');
+Route::get('/pricing', [SubscriptionController::class, 'pricing'])->name('packages');
 
     /*
     |--------------------------------------------------------------------------
@@ -61,15 +60,14 @@ Route::middleware(['locale'])->group(function () {
         Route::post('/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('paypal.success');
         Route::get('/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('paypal.cancel');
     });
-});
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated User Routes (Apply locale middleware)
+| Authenticated User Routes
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'locale'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     // ==========================================
     // User Dashboard

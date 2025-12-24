@@ -16,8 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'payment/paypal/*',
         ]);
 
-        // Add popup guide middleware to web routes
+        // Add locale middleware to web routes
         $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\PopupGuideMiddleware::class,
         ]);
     })

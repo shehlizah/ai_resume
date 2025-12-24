@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 
 class SetLocale
 {
+    /**
+     * Handle an incoming request.
+     */
     public function handle(Request $request, Closure $next)
     {
         // Get locale from session or use default
