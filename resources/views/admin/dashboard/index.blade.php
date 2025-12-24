@@ -9,19 +9,19 @@
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <h4 class="text-white mb-2">
-                                👋 Welcome, Admin!
+                                👋 @t('Selamat datang, Admin!')
                             </h4>
                             <p class="text-white mb-0 opacity-90">
-                                Here's what's happening with your platform today.
+                                @t('Ini adalah apa yang terjadi dengan platform Anda hari ini.')
                             </p>
                         </div>
                         <div class="col-md-4 text-md-end mt-3 mt-md-0">
                             <div class="d-flex gap-2 justify-content-md-end flex-wrap">
                                 <a href="{{ route('admin.users.create') }}" class="btn btn-light btn-sm">
-                                    <i class="bx bx-user-plus me-1"></i> Add User
+                                    <i class="bx bx-user-plus me-1"></i> @t('Tambah Pengguna')
                                 </a>
                                 <a href="{{ route('admin.templates.create') }}" class="btn btn-outline-light btn-sm">
-                                    <i class="bx bx-plus me-1"></i> Add Template
+                                    <i class="bx bx-plus me-1"></i> @t('Tambah Template')
                                 </a>
                             </div>
                         </div>
@@ -41,7 +41,7 @@
                             </div>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1 small">Total Users</h6>
+                            <h6 class="text-muted mb-1 small">@t('Total Pengguna')</h6>
                             <h3 class="mb-0 text-primary">{{ number_format($totalUsers) }}</h3>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                         <span class="badge bg-success bg-opacity-10 text-success me-2">
                             <i class="bx bx-up-arrow-alt"></i> {{ $userGrowth }}%
                         </span>
-                        <small class="text-muted">This month</small>
+                        <small class="text-muted">@t('Bulan ini')</small>
                     </div>
                 </div>
             </div>

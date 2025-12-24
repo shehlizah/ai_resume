@@ -25,10 +25,8 @@
 
     <ul class="navbar-nav flex-row align-items-center ms-auto">
       {{-- Language Switcher --}}
-      <li class="nav-item me-2">
-        @include('partials.language-switcher')
-      </li>
-
+      @include('partials.language-switcher')
+      
       {{-- User dropdown (unchanged) --}}
       <li class="nav-item navbar-dropdown dropdown-user dropdown">
         @if (Auth::check())

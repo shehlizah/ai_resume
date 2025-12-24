@@ -8,14 +8,14 @@
     </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="langDropdown" style="min-width: 180px;">
         <li>
-            <a class="dropdown-item d-flex align-items-center {{ app()->getLocale() === 'en' ? 'active' : '' }}" href="{{ route('language.switch', 'en') }}" style="padding: 0.5rem 1rem;">
-                <img src="https://flagcdn.com/us.svg" width="18" alt="English" class="me-2"> English
+            <a class="dropdown-item d-flex align-items-center {{ app()->getLocale() === 'id' ? 'active' : '' }}" href="{{ request()->fullUrlWithQuery(['lang' => 'id']) }}" style="padding: 0.5rem 1rem;">
+                <img src="https://flagcdn.com/id.svg" width="18" alt="Indonesian" class="me-2"> Bahasa Indonesia
             </a>
         </li>
         <li><hr class="dropdown-divider m-0"></li>
         <li>
-            <a class="dropdown-item d-flex align-items-center {{ app()->getLocale() === 'id' ? 'active' : '' }}" href="{{ route('language.switch', 'id') }}" style="padding: 0.5rem 1rem;">
-                <img src="https://flagcdn.com/id.svg" width="18" alt="Indonesian" class="me-2"> Bahasa Indonesia
+            <a class="dropdown-item d-flex align-items-center {{ app()->getLocale() === 'en' ? 'active' : '' }}" href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" style="padding: 0.5rem 1rem;">
+                <img src="https://flagcdn.com/us.svg" width="18" alt="English" class="me-2"> English
             </a>
         </li>
     </ul>
