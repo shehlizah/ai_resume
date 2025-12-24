@@ -1,5 +1,10 @@
 @section('title', __('Dashboard'))
 <x-layouts.app :title="__('Dashboard')">
+    {{-- Language Switcher --}}
+    <div class="d-flex align-items-center mb-3" style="justify-content: flex-end;">
+        @include('partials.language-switcher')
+    </div>
+
     <div class="row g-3">
 
         <!-- Welcome Banner with CTA -->

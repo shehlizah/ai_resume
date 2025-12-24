@@ -15,6 +15,7 @@
             <li><a href="#contact">Contact</a></li>
         </ul>
         <div class="nav-buttons">
+            @include('partials.language-switcher')
             @auth
                 <a href="{{ auth()->user()->isEmployer() ? route('company.dashboard') : route('user.dashboard') }}" class="btn btn-outline">Dashboard</a>
                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">

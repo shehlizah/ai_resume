@@ -6,5 +6,5 @@ protected $routeMiddleware = [
     'admin' => \App\Http\Middleware\AdminMiddleware::class,
     'subscription' => \App\Http\Middleware\CheckSubscription::class,
     'package.check' => \App\Http\Middleware\CheckActivePackage::class,
-
+    'locale' => \App\Http\Middleware\SetLocale::class,
 ];

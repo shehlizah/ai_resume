@@ -17,50 +17,59 @@ use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\CoverLetterController;
 use App\Http\Controllers\User\JobFinderController;
 use App\Http\Controllers\User\InterviewPrepController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Middleware\CheckActivePackage;
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes
+| Language Switching Routes (No middleware needed)
 |--------------------------------------------------------------------------
 */
-
-Route::get('/', function () {
-    return view('frontend.pages.home');
-})->name('home');
-
-Route::get('/pricing', [SubscriptionController::class, 'pricing'])->name('packages');
+Route::get('/lang/{locale}', [LocaleController::class, 'setLocale'])->name('language.switch');
 
 /*
 |--------------------------------------------------------------------------
-| Stripe Webhook (No Auth Required)
+| Public Routes (Apply locale middleware)
 |--------------------------------------------------------------------------
 */
-Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleWebhook'])->name('stripe.webhook');
+Route::middleware(['locale'])->group(function () {
+    Route::get('/', function () {
+        return view('frontend.pages.home');
+    })->name('home');
 
-/*
-|--------------------------------------------------------------------------
-| Payment Processing Routes (No Auth Required - User kept from session)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('payment')->name('user.payment.')->group(function () {
-    // Stripe
-    Route::get('/stripe/success', [PaymentController::class, 'stripeSuccess'])->name('stripe.success');
-    Route::post('/stripe/checkout', [PaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
+    Route::get('/pricing', [SubscriptionController::class, 'pricing'])->name('packages');
 
-    // PayPal
-    Route::post('/paypal/checkout', [PaymentController::class, 'paypalCheckout'])->name('paypal.checkout');
-    Route::post('/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('paypal.success');
-    Route::get('/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('paypal.cancel');
+    /*
+    |--------------------------------------------------------------------------
+    | Stripe Webhook (No Auth Required)
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleWebhook'])->name('stripe.webhook');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Payment Processing Routes (No Auth Required - User kept from session)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('payment')->name('user.payment.')->group(function () {
+        // Stripe
+        Route::get('/stripe/success', [PaymentController::class, 'stripeSuccess'])->name('stripe.success');
+        Route::post('/stripe/checkout', [PaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
+
+        // PayPal
+        Route::post('/paypal/checkout', [PaymentController::class, 'paypalCheckout'])->name('paypal.checkout');
+        Route::post('/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('paypal.success');
+        Route::get('/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('paypal.cancel');
+    });
 });
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated User Routes
+| Authenticated User Routes (Apply locale middleware)
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'locale'])->group(function () {
 
     // ==========================================
     // User Dashboard
