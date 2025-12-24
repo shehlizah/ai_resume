@@ -4,10 +4,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/test-translate', function () {
     $service = app(\App\Services\GoogleTranslateService::class);
-    
+
     $testText = 'Selamat datang';
     $result = [];
-    
+
     try {
         $translated = $service->translate($testText, 'en');
         $result['success'] = true;
@@ -19,6 +19,6 @@ Route::get('/test-translate', function () {
         $result['error'] = $e->getMessage();
         $result['locale'] = app()->getLocale();
     }
-    
+
     return response()->json($result);
 });

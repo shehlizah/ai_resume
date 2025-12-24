@@ -58,6 +58,28 @@ Route::get('/debug/locale', function () {
         ->header('Content-Type', 'text/html; charset=utf-8');
 })->name('debug.locale');
 
+Route::get('/test-html-translate', function () {
+    // This route should trigger the AutoTranslateResponse middleware
+    // when accessed with ?lang=en
+    return response(<<<'HTML'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Translate</title>
+    <script>console.log('test');</script>
+</head>
+<body>
+    <h1>Selamat datang</h1>
+    <p>Ini adalah halaman uji terjemahan otomatis.</p>
+    <div>
+        <span>Terima kasih telah mengunjungi situs kami.</span>
+    </div>
+</body>
+</html>
+HTML
+    )->header('Content-Type', 'text/html; charset=UTF-8');
+})->name('test.html.translate');
+
 /*
 |--------------------------------------------------------------------------
 | Language Switching Routes (No middleware needed)

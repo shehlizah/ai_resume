@@ -16,7 +16,6 @@ class GoogleTranslateService
     public function translate($text, $targetLang = null)
     {
         if (!$targetLang) {
-            // Default to current app locale if not provided
             $targetLang = app()->getLocale() ?: $this->defaultTargetLang;
         }
 
@@ -24,15 +23,15 @@ class GoogleTranslateService
             return $text;
         }
 
-        // Cache the translation for performance
         $cacheKey = 'google_translate_' . md5($text . '|' . $targetLang);
 
         if (Cache::has($cacheKey)) {
-            return Cache::get($cacheKey);
+            $cached = Cache::get($cacheKey);
+            \Log::debug('GoogleTranslate CACHE HIT', ['input' => substr($text, 0, 50), 'output' => substr($cached, 0, 50), 'lang' => $targetLang]);
+            return $cached;
         }
 
         try {
-            // Using Google Translate free API endpoint
             $url = 'https://translate.googleapis.com/translate_a/single';
             $query = http_build_query([
                 'client' => 'gtx',
@@ -42,20 +41,24 @@ class GoogleTranslateService
                 'q' => $text,
             ]);
 
+            \Log::debug('GoogleTranslate API CALL', ['input' => substr($text, 0, 50), 'lang' => $targetLang, 'url' => substr($url . '?' . $query, 0, 100)]);
+
             $body = $this->httpGet($url . '?' . $query);
+            \Log::debug('GoogleTranslate API RESPONSE', ['status' => strlen($body), 'preview' => substr($body, 0, 100)]);
+
             $result = json_decode($body, true);
 
             if ($result && isset($result[0][0][0])) {
                 $translated = $result[0][0][0];
-                // Cache for 30 days
+                \Log::info('GoogleTranslate SUCCESS', ['input' => substr($text, 0, 50), 'output' => substr($translated, 0, 50), 'lang' => $targetLang]);
                 Cache::put($cacheKey, $translated, now()->addDays(30));
                 return $translated;
             }
 
+            \Log::warning('GoogleTranslate NO TRANSLATION', ['input' => substr($text, 0, 50), 'result_structure' => json_encode(array_keys($result ?? [])), 'lang' => $targetLang]);
             return $text;
         } catch (\Throwable $e) {
-            // If translation fails, return original text
-            \Log::error('Google Translate Error: ' . $e->getMessage());
+            \Log::error('Google Translate Error: ' . $e->getMessage(), ['input' => substr($text, 0, 50)]);
             return $text;
         }
     }
