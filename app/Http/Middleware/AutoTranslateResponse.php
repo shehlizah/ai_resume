@@ -51,6 +51,9 @@ class AutoTranslateResponse
             $translatedHtml = $this->translateTextInHtml($html, $target);
             if ($translatedHtml !== null) {
                 $response->setContent($translatedHtml);
+                // Add debug headers to verify translation executed
+                $response->headers->set('X-Translated', 'yes');
+                $response->headers->set('X-Target-Locale', $target);
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('AutoTranslateResponse: ' . $e->getMessage());
