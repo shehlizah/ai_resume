@@ -24,24 +24,31 @@ class AutoTranslateResponse
         /** @var Response $response */
         $response = $next($request);
 
-        // Only process when current locale is English
-        if (app()->getLocale() !== 'en') {
+        // Only process when locale is one of our supported languages
+        $target = app()->getLocale();
+        if (!in_array($target, ['en', 'id'])) {
             return $response;
         }
 
         // Only process normal HTML responses
         $contentType = $response->headers->get('Content-Type');
-        if (!$response instanceof Response || !$contentType || stripos($contentType, 'text/html') === false) {
-            return $response;
-        }
+        // Process when HTML or when content looks like HTML even if header absent
+        $isHtml = $contentType && stripos($contentType, 'text/html') !== false;
 
         $html = $response->getContent();
         if (!is_string($html) || trim($html) === '') {
             return $response;
         }
 
+        if (!$isHtml) {
+            // Heuristic: if content contains HTML tags, treat as HTML
+            if (strpos($html, '<') === false || strpos($html, '>') === false) {
+                return $response;
+            }
+        }
+
         try {
-            $translatedHtml = $this->translateTextInHtml($html);
+            $translatedHtml = $this->translateTextInHtml($html, $target);
             if ($translatedHtml !== null) {
                 $response->setContent($translatedHtml);
             }
@@ -52,8 +59,20 @@ class AutoTranslateResponse
         return $response;
     }
 
-    protected function translateTextInHtml(string $html): ?string
+    protected function translateTextInHtml(string $html, string $target): ?string
     {
+        // Mask blocks we should not translate (script/style/pre/code/noscript)
+        $placeholders = [];
+        $maskTags = ['script', 'style', 'pre', 'code', 'noscript'];
+        foreach ($maskTags as $tag) {
+            $i = 0;
+            $html = preg_replace_callback('/<' . $tag . '[^>]*>.*?<\/' . $tag . '>/is', function ($m) use (&$placeholders, $tag, &$i) {
+                $key = "__MASK_" . strtoupper($tag) . "_" . ($i++);
+                $placeholders[$key] = $m[0];
+                return $key;
+            }, $html);
+        }
+
         $parts = preg_split('/<(.*?)>/s', $html, -1, PREG_SPLIT_DELIM_CAPTURE);
         if (!is_array($parts)) {
             return null;
@@ -63,17 +82,23 @@ class AutoTranslateResponse
         foreach ($parts as $i => $part) {
             if ($i % 2 === 0) {
                 // Even indexes: text between tags
-                $result[$i] = $this->translateTextSegment($part);
+                $result[$i] = $this->translateTextSegment($part, $target);
             } else {
                 // Odd indexes: tags themselves
                 $result[$i] = '<' . $part . '>';
             }
         }
+        $out = implode('', $result);
 
-        return implode('', $result);
+        // Restore masked blocks
+        foreach ($placeholders as $key => $value) {
+            $out = str_replace($key, $value, $out);
+        }
+
+        return $out;
     }
 
-    protected function translateTextSegment(string $text): string
+    protected function translateTextSegment(string $text, string $target): string
     {
         if (empty(trim($text))) {
             return $text;
@@ -88,7 +113,7 @@ class AutoTranslateResponse
             return $text;
         }
 
-        $translated = $this->translator->translate($core, 'en');
+        $translated = $this->translator->translate($core, $target);
         return $leading . $translated . $trailing;
     }
 }

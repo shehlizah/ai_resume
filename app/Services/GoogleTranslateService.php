@@ -8,8 +8,9 @@ use GuzzleHttp\Client;
 class GoogleTranslateService
 {
     protected $client;
-    protected $sourceLang = 'id'; // Indonesian source
-    protected $targetLang = 'en'; // English target
+    // Auto-detect source language to handle mixed English/Indonesian content
+    protected $sourceLang = 'auto';
+    protected $defaultTargetLang = 'en';
 
     public function __construct()
     {
@@ -22,7 +23,8 @@ class GoogleTranslateService
     public function translate($text, $targetLang = null)
     {
         if (!$targetLang) {
-            $targetLang = $this->targetLang;
+            // Default to current app locale if not provided
+            $targetLang = app()->getLocale() ?: $this->defaultTargetLang;
         }
 
         if (empty($text)) {
@@ -30,7 +32,7 @@ class GoogleTranslateService
         }
 
         // Cache the translation for performance
-        $cacheKey = 'google_translate_' . md5($text . $targetLang);
+        $cacheKey = 'google_translate_' . md5($text . '|' . $targetLang);
 
         if (Cache::has($cacheKey)) {
             return Cache::get($cacheKey);
@@ -53,7 +55,7 @@ class GoogleTranslateService
             if ($result && isset($result[0][0][0])) {
                 $translated = $result[0][0][0];
                 // Cache for 30 days
-                Cache::put($cacheKey, $translated, 60 * 60 * 24 * 30);
+                Cache::put($cacheKey, $translated, now()->addDays(30));
                 return $translated;
             }
 
