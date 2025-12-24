@@ -20,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\PopupGuideMiddleware::class,
+            // Auto-translate entire HTML output when locale is English
+            \App\Http\Middleware\AutoTranslateResponse::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
