@@ -112,5 +112,8 @@
 
       window.document.addEventListener("scroll", onScroll);
     </script>
+
+    {{-- Client-side translation component --}}
+    @include('components.client-translator')
   </body>
 </html>

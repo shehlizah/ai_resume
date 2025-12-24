@@ -89,6 +89,13 @@ Route::get('/lang/{locale}', [LocaleController::class, 'setLocale'])->name('lang
 
 /*
 |--------------------------------------------------------------------------
+| Translation API Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('/api/translate', [\App\Http\Controllers\TranslationController::class, 'translate'])->name('api.translate');
+
+/*
+|--------------------------------------------------------------------------
 | Public Routes
 |--------------------------------------------------------------------------
 */
