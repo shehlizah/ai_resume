@@ -329,7 +329,16 @@ PROMPT;
         // Normalize skills
         $skills = $data['skills'] ?? [];
         if (is_string($skills)) {
-            $skills = array_values(array_filter(array_map(fn($s) => trim($s), explode(',', $skills))));
+            // Check if it's HTML (contains tags)
+            if (preg_match('/<[^>]+>/', $skills)) {
+                // Extract text from HTML, then split by common separators
+                $skills = strip_tags($skills);
+                $skills = preg_split('/[\n\r,;]+/', $skills);
+                $skills = array_values(array_filter(array_map(fn($s) => trim($s), $skills)));
+            } else {
+                // Plain comma-separated string
+                $skills = array_values(array_filter(array_map(fn($s) => trim($s), explode(',', $skills))));
+            }
         } elseif (!is_array($skills)) {
             $skills = [];
         } else {
