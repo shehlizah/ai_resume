@@ -30,6 +30,11 @@ class AutoTranslateResponse
             return $response;
         }
 
+        // No translation needed for Indonesian (source/default)
+        if ($target === 'id') {
+            return $response;
+        }
+
         // Only process normal HTML responses
         $contentType = $response->headers->get('Content-Type');
         // Process when HTML or when content looks like HTML even if header absent
