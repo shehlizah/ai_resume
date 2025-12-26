@@ -21,7 +21,6 @@
                    class="language-item {{ $locale === $currentLocale ? 'active' : '' }}"
                    data-locale="{{ $locale }}">
                     <span class="language-flag-main">{{ $data['flag'] }}</span>
-                    <span class="language-text-info">{{ $data['name'] }} <span class="language-code-small">({{ $data['code'] }})</span></span>
                     @if($locale === $currentLocale)
                         <span class="language-check">✓</span>
                     @endif
@@ -142,18 +141,11 @@
         font-weight: 600;
     }
 
-    .language-item .language-flag {
-        font-size: 18px;
-        margin-right: 12px;
-        min-width: 24px;
-        text-align: center;
-    }
-
     .language-item .language-flag-main {
         display: inline-block;
-        font-size: 20px;
-        margin-right: 12px;
-        min-width: 28px;
+        font-size: 16px;
+        margin-right: 8px;
+        min-width: 20px;
         text-align: center;
     }
 
@@ -162,19 +154,7 @@
     }
 
     .language-item .language-text-info {
-        flex: 1;
-        font-size: 14px;
-    }
-
-    .language-code-small {
-        font-size: 12px;
-        color: #999;
-        font-weight: normal;
-        margin-left: 4px;
-    }
-
-    .language-item.active .language-code-small {
-        color: #667eea;
+        display: none;
     }
 
     .language-check {
