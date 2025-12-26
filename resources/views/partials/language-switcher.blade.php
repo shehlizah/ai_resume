@@ -11,7 +11,7 @@
     <div class="language-switcher-wrapper">
         <button class="language-switcher-toggle" id="languageSwitcherToggle">
             <span class="language-flag">{{ $current['flag'] }}</span>
-            <span class="language-caret">▼</span>
+            <span class="language-code">{{ $current['code'] }}▼</span>
         </button>
         
         <div class="language-dropdown" id="languageDropdown">
