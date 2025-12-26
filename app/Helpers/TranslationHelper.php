@@ -17,20 +17,24 @@ class TranslationHelper
     }
 
     /**
-     * Translate text (only if language is English)
-     * Otherwise return original Indonesian text
+     * Translate text when the active locale differs from the source content locale.
      */
     public static function trans($text)
     {
-        $translator = self::getInstance();
+        $targetLocale = app()->getLocale();
+        $sourceLocale = config('app.content_locale', 'en');
 
-        // If current locale is English, translate from Indonesian to English
-        if (app()->getLocale() === 'en') {
-            return $translator->translate($text, 'en');
+        // Nothing to do if the target matches the source language
+        if (!$targetLocale || $targetLocale === $sourceLocale) {
+            return $text;
         }
 
-        // Otherwise return as is (Indonesian is default)
-        return $text;
+        // Only translate between supported locales for now
+        if (!in_array($targetLocale, ['en', 'id'])) {
+            return $text;
+        }
+
+        return self::getInstance()->translate($text, $targetLocale);
     }
 
     /**

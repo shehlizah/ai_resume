@@ -17,7 +17,7 @@ class AutoTranslateResponse
     }
 
     /**
-     * Translate HTML text nodes to English when locale is 'en'.
+     * Translate HTML text nodes to the requested locale when it differs from the source content locale.
      */
     public function handle(Request $request, Closure $next)
     {
@@ -26,12 +26,14 @@ class AutoTranslateResponse
 
         // Only process when locale is one of our supported languages
         $target = app()->getLocale();
-        if (!in_array($target, ['en', 'id'])) {
+        $supported = ['en', 'id'];
+        if (!in_array($target, $supported)) {
             return $response;
         }
 
-        // No translation needed for Indonesian (source/default)
-        if ($target === 'id') {
+        // Skip when the requested locale matches the source content language
+        $sourceLocale = config('app.content_locale', 'en');
+        if ($target === $sourceLocale) {
             return $response;
         }
 
