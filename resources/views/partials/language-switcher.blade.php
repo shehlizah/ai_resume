@@ -11,7 +11,6 @@
     <div class="language-switcher-wrapper">
         <button class="language-switcher-toggle" id="languageSwitcherToggle">
             <span class="language-flag">{{ $current['flag'] }}</span>
-            <span class="language-code">{{ $current['code'] }}</span>
             <span class="language-caret">▼</span>
         </button>
         
@@ -77,7 +76,7 @@
     }
 
     .language-code {
-        display: inline-block;
+        display: none;
         font-weight: 600;
         line-height: 1.5;
     }
