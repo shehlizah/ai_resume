@@ -36,7 +36,7 @@
         position: relative;
         display: flex;
         align-items: center;
-        margin: 0 12px;
+        margin: 0;
         list-style: none;
     }
 
