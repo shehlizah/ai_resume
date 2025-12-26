@@ -1,15 +1,17 @@
 @php
     $currentLocale = app()->getLocale();
     $locales = [
-        'en' => ['name' => 'English', 'flag' => '🇺🇸'],
-        'id' => ['name' => 'Bahasa Indonesia', 'flag' => '🇮🇩'],
+        'en' => ['name' => 'English', 'flag' => '🇺🇸', 'code' => 'EN'],
+        'id' => ['name' => 'Bahasa Indonesia', 'flag' => '🇮🇩', 'code' => 'ID'],
     ];
+    $current = $locales[$currentLocale] ?? $locales['en'];
 @endphp
 
 <li class="nav-item language-switcher-item">
     <div class="language-switcher-wrapper">
         <button class="language-switcher-toggle" id="languageSwitcherToggle">
-            <span class="language-label">{{ strtoupper($currentLocale) }}</span>
+            <span class="language-flag">{{ $current['flag'] }}</span>
+            <span class="language-code">{{ $current['code'] }}</span>
             <span class="language-caret">▼</span>
         </button>
         
@@ -32,7 +34,9 @@
 <style>
     .language-switcher-item {
         position: relative;
-        margin: 0 8px;
+        display: flex;
+        align-items: center;
+        margin: 0 12px;
     }
 
     .language-switcher-wrapper {
@@ -52,22 +56,33 @@
         font-weight: 500;
         font-family: inherit;
         line-height: 1.5;
+        height: auto;
+        white-space: nowrap;
+        vertical-align: middle;
         transition: color 0.2s ease;
     }
 
     .language-switcher-toggle:hover {
         color: #667eea;
-        text-decoration: underline;
     }
 
-    .language-label {
+    .language-flag {
         display: inline-block;
+        font-size: 16px;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    .language-code {
+        display: inline-block;
+        font-weight: 600;
     }
 
     .language-caret {
         display: inline-block;
         font-size: 10px;
         transition: transform 0.2s ease;
+        margin-left: 4px;
     }
 
     .language-switcher-toggle.active .language-caret {
@@ -81,13 +96,14 @@
         background: white;
         border: 1px solid #e0e0e0;
         border-radius: 8px;
-        min-width: 200px;
+        min-width: 220px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         opacity: 0;
         visibility: hidden;
         transform: translateY(-8px);
         transition: all 0.2s ease;
         z-index: 1000;
+        overflow: hidden;
     }
 
     .language-dropdown.show {
@@ -121,15 +137,14 @@
         font-weight: 600;
     }
 
-    .language-flag {
-        display: inline-block;
-        font-size: 16px;
-        margin-right: 10px;
-        min-width: 20px;
+    .language-item .language-flag {
+        font-size: 18px;
+        margin-right: 12px;
+        min-width: 24px;
         text-align: center;
     }
 
-    .language-text {
+    .language-item .language-text {
         flex: 1;
     }
 
@@ -143,15 +158,20 @@
     /* Mobile responsiveness */
     @media (max-width: 768px) {
         .language-switcher-item {
-            margin: 0 4px;
+            margin: 0 6px;
         }
 
         .language-dropdown {
-            right: -50px;
+            right: -40px;
+            min-width: 200px;
         }
 
         .language-switcher-toggle {
             font-size: 13px;
+        }
+
+        .language-flag {
+            font-size: 14px;
         }
     }
 </style>
