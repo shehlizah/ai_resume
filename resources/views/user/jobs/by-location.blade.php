@@ -4,13 +4,13 @@
         <!-- Header -->
         <div class="col-lg-12">
             <div class="card border-0 overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="card-body p-4">
+                <div class="card-body py-3 px-4">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h4 class="text-white mb-2">
+                            <h4 class="text-white mb-1">
                                 <i class="bx bx-map me-2"></i> Search by Location
                             </h4>
-                            <p class="text-white mb-0 opacity-90">
+                            <p class="text-white mb-0 opacity-90 small">
                                 Find jobs in your preferred location
                             </p>
                         </div>
@@ -22,76 +22,76 @@
         <!-- Main Content -->
         <div class="col-lg-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-body">
+                <div class="card-body p-3">
                     <form id="searchForm" onsubmit="searchJobs(event)">
-                        <div class="row g-3 mb-3">
+                        <div class="row g-2 mb-2 align-items-end">
                             <div class="col-md-5">
                                 <label class="form-label">Job Title</label>
                                 <input type="text" class="form-control" id="jobTitle" name="job_title"
-                                       placeholder="e.g. Web Developer, Project Manager" required>
+                                       placeholder="e.g. Web Developer, Project Manager" required style="height: 44px;">
                             </div>
                             <div class="col-md-5">
                                 <label class="form-label">Location</label>
                                 <input type="text" class="form-control" id="location" name="location"
-                                       placeholder="e.g. New York, NY or Remote" required>
+                                       placeholder="e.g. New York, NY or Remote" required style="height: 44px;">
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary w-100">
+                                <button type="submit" class="btn btn-primary w-100" style="height: 44px; font-weight: 600; box-shadow: 0 6px 12px rgba(102,126,234,0.2);">
                                     <i class="bx bx-search me-2"></i> Search
                                 </button>
                             </div>
                         </div>
-
-                        <div class="alert alert-info border-0 py-2 mt-3 mb-3" style="background-color: #e8f4ff;">
-                            <small>
-                                <i class="bx bx-info-circle me-1"></i>
-                                <strong>Note:</strong> These are AI-generated job suggestions based on your criteria. Links direct to job search pages where you can find similar real positions.
-                            </small>
-                        </div>
-
-                        @if($resumes->count() > 0)
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <label class="form-label">
-                                    <i class="bx bx-file me-2"></i> <strong>Select a CV (Optional)</strong>
-                                </label>
-                                <select class="form-select" id="resumeId" name="resume_id">
-                                    <option value="">-- Choose CV for better matching --</option>
-                                    @foreach($resumes as $resume)
-                                        <option value="{{ $resume->id }}">{{ $resume->display_name }}</option>
-                                    @endforeach
-                                </select>
-                                <small class="text-muted d-block mt-2">
-                                    <i class="bx bx-info-circle me-1"></i> Select a CV for AI to find more relevant matches.
-                                </small>
-                                <div id="resumeStatusIndicator" class="alert alert-success border-0 mt-2" style="display: none; padding: 8px 12px;">
-                                    <small><i class="bx bx-check-circle me-1"></i> <span id="resumeStatusText">Resume selected</span></small>
+                        <!-- Secondary Options (collapsible) -->
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#resumeOptions" aria-expanded="false" aria-controls="resumeOptions">
+                                <i class="bx bx-chevron-down me-1"></i> Optional: Upload your resume to improve job matches
+                            </button>
+                            <div class="collapse mt-2" id="resumeOptions">
+                                @if($resumes->count() > 0)
+                                <div class="row g-2">
+                                    <div class="col-md-12">
+                                        <label class="form-label small mb-1">
+                                            <i class="bx bx-file me-1"></i> Select a CV (Optional)
+                                        </label>
+                                        <select class="form-select" id="resumeId" name="resume_id">
+                                            <option value="">-- Choose CV for better matching --</option>
+                                            @foreach($resumes as $resume)
+                                                <option value="{{ $resume->id }}">{{ $resume->display_name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <small class="text-muted d-block mt-2">
+                                            <i class="bx bx-info-circle me-1"></i> Select a CV for AI to find more relevant matches.
+                                        </small>
+                                        <div id="resumeStatusIndicator" class="alert alert-success border-0 mt-2" style="display: none; padding: 6px 10px;">
+                                            <small><i class="bx bx-check-circle me-1"></i> <span id="resumeStatusText">Resume selected</span></small>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        @endif
+                                @endif
 
-                        <!-- OR Upload Resume -->
-                        <div class="row g-3 mt-1">
-                            <div class="col-md-12">
-                                <p class="text-muted small mb-2">Or upload a resume from your computer:</p>
-                                <div class="drop-zone border-2 border-dashed rounded p-3 text-center" id="locationResumeDropZone" style="border-color: #667eea; cursor: pointer; transition: all 0.3s;">
-                                    <i class="bx bx-cloud-upload" style="font-size: 2rem; color: #667eea;"></i>
-                                    <p class="mb-1 small"><strong>Drop resume here or click</strong></p>
-                                    <small class="text-muted">PDF, DOCX (Max 10MB)</small>
-                                    <input type="file" id="locationResumeInput" accept=".pdf,.doc,.docx" style="display: none;">
-                                </div>
-                                <div id="locationUploadStatus" class="mt-2" style="display: none;">
-                                    <div class="alert alert-info border-0 mb-0 py-2">
-                                        <small><i class="bx bx-loader-alt bx-spin me-2"></i> <span id="locationStatusText">Processing resume...</span></small>
+                                <!-- OR Upload Resume -->
+                                <div class="row g-2 mt-1">
+                                    <div class="col-md-12">
+                                        <div class="drop-zone border-1 border-dashed rounded p-3 text-center" id="locationResumeDropZone" style="border-color: #a3b4f6; cursor: pointer; transition: all 0.3s; min-height: 120px;">
+                                            <i class="bx bx-cloud-upload" style="font-size: 1.6rem; color: #667eea;"></i>
+                                            <p class="mb-1 small"><strong>Drop resume here or click</strong></p>
+                                            <small class="text-muted">PDF, DOCX (Max 10MB)</small>
+                                            <input type="file" id="locationResumeInput" accept=".pdf,.doc,.docx" style="display: none;">
+                                        </div>
+                                        <div id="locationUploadStatus" class="mt-2" style="display: none;">
+                                            <div class="alert alert-info border-0 mb-0 py-2">
+                                                <small><i class="bx bx-loader-alt bx-spin me-2"></i> <span id="locationStatusText">Processing resume...</span></small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </form>
 
+                    <!-- Free plan notice moved below search; shown after first search -->
                     @if(!$hasPremiumAccess)
-                    <div class="alert alert-warning border-0 mb-0 mt-3">
+                    <div id="freePlanNotice" class="alert alert-warning border-0 mb-0 mt-3" style="display: none;">
                         <i class="bx bx-crown me-2"></i> Free plan: 5 job views per session.
                         <a href="{{ route('user.pricing') }}">Upgrade to Pro</a> for unlimited searches.
                     </div>
@@ -102,14 +102,22 @@
             <!-- Results -->
             <div id="resultsContainer" class="mt-4" style="display: none;">
                 <div id="jobsList"></div>
+                <!-- AI disclaimer moved below results and softened -->
+                <div id="aiDisclaimer" class="text-muted small mt-3" style="display: none;">
+                    <i class="bx bx-info-circle me-1"></i> Job suggestions are AI-assisted and link to job listings.
+                </div>
             </div>
 
             <div id="emptyState" class="mt-4">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="bx bx-map mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                        <h6 class="mb-2">Search for jobs by location</h6>
-                        <p class="text-muted small">Enter a job title and location to find opportunities</p>
+                        <h6 class="mb-2">Start by entering a job title and location to see available opportunities.</h6>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary me-2" type="button" onclick="prefillSearch('Software Engineer','Remote')">Software Engineer</button>
+                            <button class="btn btn-sm btn-outline-primary me-2" type="button" onclick="prefillSearch('Marketing Manager','New York, NY')">Marketing Manager</button>
+                            <button class="btn btn-sm btn-outline-primary" type="button" onclick="prefillSearch('Data Analyst','Remote')">Remote</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -126,6 +134,8 @@
     const jobsList = document.getElementById('jobsList');
     const resultsContainer = document.getElementById('resultsContainer');
     const emptyState = document.getElementById('emptyState');
+    const aiDisclaimer = document.getElementById('aiDisclaimer');
+    const freePlanNotice = document.getElementById('freePlanNotice');
 
     function searchJobs(event, triggerSource = 'button') {
         if (event) {
@@ -157,6 +167,10 @@
         }
 
         showSearchLoadingState();
+        // Show free plan notice after first search attempt (if applicable)
+        if (freePlanNotice) {
+            freePlanNotice.style.display = 'block';
+        }
 
         const payload = {
             location: location,
@@ -185,6 +199,9 @@
                 displayResults(data.jobs);
                 emptyState.style.display = 'none';
                 resultsContainer.style.display = 'block';
+                if (aiDisclaimer) {
+                    aiDisclaimer.style.display = 'block';
+                }
             } else {
                 if (data.redirect) {
                     window.location.href = data.redirect;
@@ -203,6 +220,9 @@
         // Hide empty state and show results container with spinner
         emptyState.style.display = 'none';
         resultsContainer.style.display = 'block';
+        if (aiDisclaimer) {
+            aiDisclaimer.style.display = 'none';
+        }
 
         if (!jobsList) {
             return;
@@ -213,8 +233,8 @@
                 <div class="card-body d-flex align-items-center justify-content-center py-5">
                     <div class="text-center">
                         <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-                        <h5 class="text-muted">Analyzing your resume with AI...</h5>
-                        <p class="mb-0 text-muted">Finding the best job matches for you</p>
+                        <h6 class="text-muted">Searching jobs for your criteria...</h6>
+                        <p class="mb-0 text-muted small">Finding the best job matches for you</p>
                     </div>
                 </div>
             </div>
@@ -229,6 +249,11 @@
                         <i class="bx bx-error-circle mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
                         <h6 class="mb-2">No jobs found</h6>
                         <p class="text-muted small">Try adjusting your search criteria or uploading a resume for better matches.</p>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary me-2" type="button" onclick="prefillSearch('Software Engineer','Remote')">Software Engineer</button>
+                            <button class="btn btn-sm btn-outline-primary me-2" type="button" onclick="prefillSearch('Marketing Manager','New York, NY')">Marketing Manager</button>
+                            <button class="btn btn-sm btn-outline-primary" type="button" onclick="prefillSearch('Data Analyst','Remote')">Remote</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -269,6 +294,16 @@
             `;
         });
         jobsList.innerHTML = html;
+    }
+
+    function prefillSearch(title, loc) {
+        const titleInput = document.getElementById('jobTitle');
+        const locationInput = document.getElementById('location');
+        if (titleInput && locationInput) {
+            titleInput.value = title;
+            locationInput.value = loc;
+            titleInput.focus();
+        }
     }
 
     function applyJob(jobId) {

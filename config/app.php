@@ -78,7 +78,7 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'id'),
 
     // The language your content is written in (used as translation source)
     'content_locale' => env('APP_CONTENT_LOCALE', 'en'),

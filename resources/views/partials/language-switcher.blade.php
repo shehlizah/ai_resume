@@ -12,10 +12,10 @@
         <button class="language-switcher-toggle" id="languageSwitcherToggle">
             <span class="language-code">{{ $current['code'] }}▼</span>
         </button>
-        
+
         <div class="language-dropdown" id="languageDropdown">
             @foreach($locales as $locale => $data)
-                <a href="{{ route('language.switch', $locale) }}" 
+                <a href="{{ route('language.switch', $locale) }}"
                    class="language-item {{ $locale === $currentLocale ? 'active' : '' }}"
                    data-locale="{{ $locale }}">
                     <span class="language-flag-main">{{ $data['flag'] }}</span>
