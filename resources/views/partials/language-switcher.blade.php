@@ -37,6 +37,7 @@
         display: flex;
         align-items: center;
         margin: 0 12px;
+        list-style: none;
     }
 
     .language-switcher-wrapper {
@@ -96,7 +97,7 @@
         background: white;
         border: 1px solid #e0e0e0;
         border-radius: 8px;
-        min-width: 220px;
+        min-width: 180px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         opacity: 0;
         visibility: hidden;
