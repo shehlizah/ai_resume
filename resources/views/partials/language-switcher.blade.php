@@ -47,7 +47,7 @@
     .language-switcher-toggle {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 7px;
         padding: 0;
         background: none;
         border: none;
@@ -61,6 +61,7 @@
         white-space: nowrap;
         vertical-align: middle;
         transition: color 0.2s ease;
+        margin: 0;
     }
 
     .language-switcher-toggle:hover {
@@ -70,20 +71,23 @@
     .language-flag {
         display: inline-block;
         font-size: 16px;
-        min-width: 20px;
+        min-width: 16px;
         text-align: center;
+        line-height: 1.5;
     }
 
     .language-code {
         display: inline-block;
         font-weight: 600;
+        line-height: 1.5;
     }
 
     .language-caret {
         display: inline-block;
         font-size: 10px;
         transition: transform 0.2s ease;
-        margin-left: 4px;
+        margin-left: 5px;
+        line-height: 1.5;
     }
 
     .language-switcher-toggle.active .language-caret {
