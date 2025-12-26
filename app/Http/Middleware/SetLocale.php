@@ -14,33 +14,19 @@ class SetLocale
     {
         $supportedLocales = ['en', 'id'];
 
-        // 1) Query parameter wins and persists (session + 1-year cookie)
+        // Force Indonesian as the primary locale unless an explicit, allowed query param is provided
+        $locale = 'id';
+
         if ($request->has('lang') && in_array($request->get('lang'), $supportedLocales)) {
             $locale = $request->get('lang');
             session(['locale' => $locale]);
-            // queue a long-lived cookie (minutes)
             cookie()->queue(cookie('locale', $locale, 60 * 24 * 365));
         } else {
-            // 2) Fall back to session -> cookie
-            $locale = session('locale') ?? $request->cookie('locale');
-
-            // 3) If still not set, auto-detect from browser Accept-Language
-            if (!$locale) {
-                $preferred = $request->getPreferredLanguage($supportedLocales);
-                $locale = $preferred ?: config('app.locale', 'id');
-            }
-
-            // 4) Final default
-            if (!$locale) {
-                $locale = config('app.locale', 'id');
-            }
+            // Clear any stored locale preference so pages default to Indonesian
+            session()->forget('locale');
+            cookie()->queue(cookie('locale', null, -60));
         }
 
-        if (!in_array($locale, $supportedLocales)) {
-            $locale = config('app.locale', 'id');
-        }
-
-        // Set the locale
         app()->setLocale($locale);
 
         return $next($request);
