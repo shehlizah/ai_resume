@@ -6,23 +6,18 @@
       <!-- Logo for mobile -->
       <div class="navbar-brand navbar-brand-autodark d-xl-none" id="mobile-logo">
         <a href="{{ Auth::user()?->isAdmin() ? route('admin.dashboard') : route('user.dashboard') }}">
-          <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="height: 35px;">
+          <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
         </a>
       </div>
 
       <button id="menu-toggle" class="btn d-xl-none">
  {{-- SVG so we don't depend on Boxicons --}}
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <rect x="3" y="5" width="18" height="2" rx="1"></rect>
         <rect x="3" y="11" width="18" height="2" rx="1"></rect>
         <rect x="3" y="17" width="18" height="2" rx="1"></rect>
       </svg>
       </button>
-
-      <!-- Language Switcher for mobile -->
-      <div class="d-xl-none mobile-lang-switcher">
-        @include('partials.language-switcher')
-      </div>
 
   <div class="navbar-nav-right d-flex align-items-center justify-content-end order-2 flex-shrink-0" id="navbar-collapse">
 
@@ -96,52 +91,30 @@
         display: flex !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
-        justify-content: flex-start !important;
+        justify-content: space-between !important;
         position: relative !important;
-        gap: 6px !important;
-        padding: 0.5rem 0.75rem !important;
+        gap: 0.5rem !important;
       }
 
       #mobile-logo {
+        flex-grow: 1 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 !important;
+      }
+
+      #menu-toggle {
         order: 1 !important;
         flex-shrink: 0 !important;
         margin: 0 !important;
       }
 
-      #menu-toggle {
-        order: 2 !important;
-        flex-shrink: 0 !important;
-        margin: 0 !important;
-        padding: 0.25rem !important;
-      }
-
-      .mobile-lang-switcher {
-        order: 3 !important;
-        flex-shrink: 0 !important;
-        margin-left: auto !important;
-      }
-
-      .mobile-lang-switcher .language-switcher-item {
-        margin: 0 !important;
-      }
-
-      .mobile-lang-switcher .language-dropdown {
-        z-index: 9999 !important;
-      }
-
       .navbar-nav-right {
-        order: 4 !important;
-        flex-shrink: 0 !important;
+        flex: 0 0 auto !important;
+        order: 2 !important;
         width: auto !important;
-        margin-left: 6px !important;
-      }
-
-      .navbar-nav-right .navbar-nav {
-        gap: 6px !important;
-      }
-
-      .navbar-nav-right .language-switcher-item {
-        display: none !important;
+        margin-left: 0 !important;
       }
 
       .navbar-nav {
