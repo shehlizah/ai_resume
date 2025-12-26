@@ -10,7 +10,6 @@
 <li class="nav-item language-switcher-item">
     <div class="language-switcher-wrapper">
         <button class="language-switcher-toggle" id="languageSwitcherToggle">
-            <span class="language-flag">{{ $current['flag'] }}</span>
             <span class="language-code">{{ $current['code'] }}▼</span>
         </button>
         
