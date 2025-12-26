@@ -11,7 +11,6 @@
     <div class="language-switcher-wrapper">
         <button class="language-switcher-toggle" id="languageSwitcherToggle">
             <span class="language-flag">{{ $current['flag'] }}</span>
-            <span class="language-code">{{ $current['code'] }}</span>
             <span class="language-caret">▼</span>
         </button>
         
@@ -21,7 +20,7 @@
                    class="language-item {{ $locale === $currentLocale ? 'active' : '' }}"
                    data-locale="{{ $locale }}">
                     <span class="language-flag-main">{{ $data['flag'] }}</span>
-                    <span class="language-text-info">{{ $data['name'] }} <span class="language-code-small">({{ $data['code'] }})</span></span>
+                    <span class="language-text-info">{{ $data['name'] }}</span>
                     @if($locale === $currentLocale)
                         <span class="language-check">✓</span>
                     @endif
