@@ -11,6 +11,7 @@
     <div class="language-switcher-wrapper">
         <button class="language-switcher-toggle" id="languageSwitcherToggle">
             <span class="language-flag">{{ $current['flag'] }}</span>
+            <span class="language-code">{{ $current['code'] }}</span>
             <span class="language-caret">▼</span>
         </button>
         
@@ -19,8 +20,8 @@
                 <a href="{{ route('language.switch', $locale) }}" 
                    class="language-item {{ $locale === $currentLocale ? 'active' : '' }}"
                    data-locale="{{ $locale }}">
-                    <span class="language-flag">{{ $data['flag'] }}</span>
-                    <span class="language-text">{{ $data['name'] }} <span class="language-code-small">({{ $data['code'] }})</span></span>
+                    <span class="language-flag-main">{{ $data['flag'] }}</span>
+                    <span class="language-text-info">{{ $data['name'] }} <span class="language-code-small">({{ $data['code'] }})</span></span>
                     @if($locale === $currentLocale)
                         <span class="language-check">✓</span>
                     @endif
@@ -76,7 +77,7 @@
     }
 
     .language-code {
-        display: none;
+        display: inline-block;
         font-weight: 600;
         line-height: 1.5;
     }
@@ -148,8 +149,21 @@
         text-align: center;
     }
 
+    .language-item .language-flag-main {
+        display: inline-block;
+        font-size: 20px;
+        margin-right: 12px;
+        min-width: 28px;
+        text-align: center;
+    }
+
     .language-item .language-text {
         flex: 1;
+    }
+
+    .language-item .language-text-info {
+        flex: 1;
+        font-size: 14px;
     }
 
     .language-code-small {
