@@ -78,10 +78,10 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'id'),
+    'locale' => env('APP_LOCALE', 'en'),
 
     // The language your content is written in (used as translation source)
-    'content_locale' => env('APP_CONTENT_LOCALE', env('APP_LOCALE', 'id')),
+    'content_locale' => env('APP_CONTENT_LOCALE', 'en'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
