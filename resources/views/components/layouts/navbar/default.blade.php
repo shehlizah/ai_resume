@@ -3,7 +3,19 @@
   class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme"
   id="layout-navbar">
 
-      <button id="menu-toggle" class="btn d-xl-none order-1 flex-shrink-0">
+      <!-- Logo for mobile -->
+      <div class="navbar-brand navbar-brand-autodark d-xl-none" id="mobile-logo">
+        <a href="{{ Auth::user()?->isAdmin() ? route('admin.dashboard') : route('user.dashboard') }}">
+          <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
+        </a>
+      </div>
+
+      <!-- Language Switcher for mobile -->
+      <div class="d-xl-none mobile-lang-switcher">
+        @include('partials.language-switcher')
+      </div>
+
+      <button id="menu-toggle" class="btn d-xl-none">
  {{-- SVG so we don't depend on Boxicons --}}
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <rect x="3" y="5" width="18" height="2" rx="1"></rect>
@@ -11,13 +23,6 @@
         <rect x="3" y="17" width="18" height="2" rx="1"></rect>
       </svg>
       </button>
-
-      <!-- Logo for mobile centered -->
-      <div class="navbar-brand navbar-brand-autodark d-xl-none mx-auto flex-grow-1" id="mobile-logo">
-        <a href="{{ Auth::user()?->isAdmin() ? route('admin.dashboard') : route('user.dashboard') }}">
-          <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
-        </a>
-      </div>
 
   <div class="navbar-nav-right d-flex align-items-center justify-content-end order-2 flex-shrink-0" id="navbar-collapse">
 
@@ -91,30 +96,43 @@
         display: flex !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
-        justify-content: space-between !important;
+        justify-content: flex-start !important;
         position: relative !important;
-        gap: 0.5rem !important;
+        gap: 8px !important;
+        padding: 0.5rem 1rem !important;
       }
 
-      #menu-toggle {
+      #mobile-logo {
         order: 1 !important;
         flex-shrink: 0 !important;
         margin: 0 !important;
       }
 
-      #mobile-logo {
-        flex-grow: 1 !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
+      .mobile-lang-switcher {
+        order: 2 !important;
+        flex-shrink: 0 !important;
+      }
+
+      .mobile-lang-switcher .language-switcher-item {
         margin: 0 !important;
       }
 
+      #menu-toggle {
+        order: 3 !important;
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+        margin-left: auto !important;
+      }
+
       .navbar-nav-right {
-        flex: 0 0 auto !important;
-        order: 2 !important;
+        order: 4 !important;
+        flex-shrink: 0 !important;
         width: auto !important;
-        margin-left: 0 !important;
+        margin-left: 8px !important;
+      }
+
+      .navbar-nav-right .navbar-nav {
+        gap: 8px !important;
       }
 
       .navbar-nav {
