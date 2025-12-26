@@ -14,7 +14,7 @@
             <li><a href="{{ route('register.employer') }}">For Employers</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
-        <div class="nav-buttons" style="display: flex; align-items: center; gap: 0;">
+        <div class="nav-buttons" style="display: flex; align-items: center; gap: 16px;">
             @include('partials.language-switcher')
             @auth
                 <a href="{{ auth()->user()->isEmployer() ? route('company.dashboard') : route('user.dashboard') }}" class="btn btn-outline">Dashboard</a>
@@ -29,6 +29,14 @@
         </div>
     </nav>
 </header>
+
+<style>
+    @media (max-width: 768px) {
+        .nav-buttons {
+            gap: 0 !important;
+        }
+    }
+</style>
 
 <script>
 // Disable right click
