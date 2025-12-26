@@ -12,11 +12,6 @@
       </svg>
       </button>
 
-      <!-- Language Switcher for mobile (left to hamburger) -->
-      <div class="d-xl-none order-0 me-2">
-        @include('partials.language-switcher')
-      </div>
-
       <!-- Logo for mobile centered -->
       <div class="navbar-brand navbar-brand-autodark d-xl-none mx-auto flex-grow-1" id="mobile-logo">
         <a href="{{ Auth::user()?->isAdmin() ? route('admin.dashboard') : route('user.dashboard') }}">
@@ -101,10 +96,6 @@
         gap: 0.5rem !important;
       }
 
-      .order-0 {
-        order: 0 !important;
-      }
-
       #menu-toggle {
         order: 1 !important;
         flex-shrink: 0 !important;
@@ -117,7 +108,6 @@
         justify-content: center !important;
         align-items: center !important;
         margin: 0 !important;
-        order: 1.5 !important;
       }
 
       .navbar-nav-right {
