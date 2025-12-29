@@ -4,9 +4,6 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">📄 @t('Resume Saya') ({{ $resumes->total() }})</h5>
-          <a href="{{ route('user.resumes.choose') }}" class="btn btn-primary">
-            <i class="bx bx-plus me-1"></i> @t('Buat Resume Baru')
-          </a>
         </div>
 
         <div class="card-body">
@@ -52,11 +49,19 @@
                   <i class="bx bx-x me-1"></i> Clear Filters
                 </button>
               @else
-                <h5 class="mt-3 text-muted">No resumes yet</h5>
-                <p class="text-muted">Create your first professional resume now!</p>
-                <a href="{{ route('user.resumes.choose') }}" class="btn btn-primary mt-2">
-                  <i class="bx bx-plus me-1"></i> Choose Template
-                </a>
+                <div style="padding: 2rem 1rem;">
+                  <i class="bx bx-file" style="font-size: 56px; color: #667eea; opacity: 0.8;"></i>
+                  <h5 class="mt-3 mb-2" style="color: #374151; font-weight: 600;">No resumes yet</h5>
+                  <p class="text-muted mb-3" style="font-size: 0.875rem; max-width: 400px; margin: 0 auto;">
+                    Create a resume in 3 easy steps: <strong>Choose a template → Fill details → Download & apply</strong>
+                  </p>
+                  <a href="{{ route('user.resumes.choose') }}" class="btn btn-primary btn-lg mt-3" style="padding: 0.75rem 2rem; font-weight: 600;">
+                    <i class="bx bx-plus me-2"></i> Choose Template
+                  </a>
+                  <p class="text-muted mt-3 small" style="font-size: 0.8125rem;">
+                    <i class="bx bx-check-circle me-1" style="color: #10b981;"></i> Free templates available. No credit card required.
+                  </p>
+                </div>
               @endif
             </div>
           @else
