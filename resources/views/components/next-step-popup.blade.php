@@ -30,12 +30,12 @@ $popupConfig = [
         'route' => route('user.jobs.recommended'),
     ],
     'book_session' => [
-        'icon' => 'bx-calendar-check',
-        'iconColor' => 'text-danger',
-        'title' => 'Get Expert Guidance, Fast',
-        'message' => 'Book a 1-on-1 session with a career coach.<br>Polish your resume, strategy, and interview answers.',
-        'buttonText' => 'Book Expert Session',
-        'buttonIcon' => 'bx-user-check',
+        'icon' => 'bx-chat',
+        'iconColor' => 'text-primary',
+        'title' => 'Improve Your Resume with Expert Feedback',
+        'message' => 'Not getting results? Get expert help.<br>Want feedback on your resume? We can review and refine it.',
+        'buttonText' => 'Talk to an Expert',
+        'buttonIcon' => 'bx-message-dots',
         'route' => route('user.interview.expert'),
     ],
 ];

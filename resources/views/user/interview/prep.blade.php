@@ -16,43 +16,45 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row g-3">
             <!-- Upload Section -->
-            <div class="col-lg-4">
-                <div class="card sticky-top" style="top: 80px;">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0 text-white">
-                            <i class="bx bx-upload me-2"></i>
-                            Upload Resume
-                        </h5>
-                    </div>
-                    <div class="card-body">
+            <div class="col-lg-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-shape bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width:44px;height:44px;">
+                                <i class="bx bx-upload"></i>
+                            </div>
+                            <div class="ms-2">
+                                <div class="text-muted small fw-semibold">Step 1</div>
+                                <h6 class="mb-0">Upload or choose a resume</h6>
+                            </div>
+                        </div>
                         <!-- Saved Resumes -->
                         @if($resumes->count() > 0)
-                        <div class="mb-3">
-                            <label class="form-label">Select Saved Resume</label>
-                            <select class="form-select" id="resumeSelect">
+                        <div class="mb-2">
+                            <label class="form-label mb-1">Use an existing resume</label>
+                            <select class="form-select" id="resumeSelect" style="height:42px;">
                                 <option value="">Choose a resume...</option>
                                 @foreach($resumes as $resume)
                                     <option value="{{ $resume->id }}">{{ $resume->display_name }}</option>
                                 @endforeach
                             </select>
-                            <div id="resumeStatusIndicator" class="alert alert-success border-0 mt-2" style="display: none; padding: 8px 12px;">
+                            <div id="resumeStatusIndicator" class="alert alert-success border-0 mt-2 py-2 px-3" style="display: none;">
                                 <small><i class="bx bx-check-circle me-1"></i> <span id="resumeStatusText">Resume selected</span></small>
                             </div>
                         </div>
-
-                        <div class="text-center my-3">
-                            <span class="badge bg-secondary">OR</span>
+                        <div class="text-center my-2">
+                            <span class="badge bg-light text-muted border">OR</span>
                         </div>
                         @endif
 
                         <!-- Upload New Resume -->
-                        <div class="mb-3">
-                            <label class="form-label">Upload New Resume</label>
-                            <div class="drop-zone border-2 border-dashed rounded p-3 text-center" id="resumeDropZone" style="border-color: #667eea; cursor: pointer;">
-                                <i class="bx bx-cloud-upload" style="font-size: 2rem; color: #667eea;"></i>
-                                <p class="mb-1 small"><strong>Drop resume here or click</strong></p>
+                        <div class="mb-2">
+                            <label class="form-label mb-1">Upload a resume</label>
+                            <div class="drop-zone border border-dashed rounded p-2 text-center" id="resumeDropZone" style="border-color: #d1d5db; cursor: pointer; min-height: 90px; background:#fafbff;">
+                                <i class="bx bx-cloud-upload" style="font-size: 1.6rem; color: #667eea;"></i>
+                                <p class="mb-0 small">Drop resume here or click to upload</p>
                                 <small class="text-muted">PDF, DOCX (Max 10MB)</small>
                                 <input type="file" id="resumeFileInput" accept=".pdf,.doc,.docx" style="display: none;">
                             </div>
@@ -64,14 +66,14 @@
                         </div>
 
                         <!-- Job Details -->
-                        <div class="mb-3">
-                            <label class="form-label">Job Title/Role <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="jobTitle" placeholder="e.g., Software Engineer">
+                        <div class="mb-2">
+                            <label class="form-label mb-1">Job Title/Role <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="jobTitle" placeholder="e.g., Software Engineer" style="height: 42px;">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Experience Level</label>
-                            <select class="form-select" id="experienceLevel">
+                            <label class="form-label mb-1">Experience Level</label>
+                            <select class="form-select" id="experienceLevel" style="height: 42px;">
                                 <option value="entry">Entry Level (0-2 years)</option>
                                 <option value="mid" selected>Mid Level (3-5 years)</option>
                                 <option value="senior">Senior Level (6-10 years)</option>
@@ -79,20 +81,29 @@
                             </select>
                         </div>
 
-                        <button class="btn btn-primary btn-lg w-100" id="generateBtn">
-                            <span id="btnText">
-                                <i class="bx bx-sparkles me-1"></i> Generate Interview Prep
-                            </span>
-                            <span id="btnLoading" class="d-none">
-                                <span class="spinner-border spinner-border-sm me-1"></span> Analyzing...
-                            </span>
-                        </button>
+                        <div class="mb-1">
+                            <button class="btn btn-primary w-100" id="generateBtn" disabled style="height: 46px; font-weight: 700; box-shadow: 0 10px 20px rgba(102,126,234,0.25);">
+                                <span id="btnText">
+                                    <i class="bx bx-sparkles me-1"></i> Generate Interview Prep
+                                </span>
+                                <span id="btnLoading" class="d-none">
+                                    <span class="spinner-border spinner-border-sm me-1"></span> Analyzing...
+                                </span>
+                            </button>
+                            <small class="text-muted d-block mt-1">AI will generate tailored interview questions from your resume.</small>
+                            <div id="generateSuccess" class="alert alert-success border-0 py-2 px-3 mt-2 d-none">
+                                <small><i class="bx bx-check-circle me-1"></i> Interview prep generated.</small>
+                            </div>
+                        </div>
 
                         @if(!$hasPremiumAccess)
-                        <div class="alert alert-warning border-0 mt-3 mb-0">
-                            <i class="bx bx-crown me-2"></i>
-                            <strong>Free Plan:</strong> Basic interview questions
-                            <br><a href="{{ route('user.pricing') }}" class="alert-link">Upgrade to Pro</a> for AI scoring, feedback & expert sessions
+                        <div class="alert alert-warning border mt-3 mb-0 py-2 px-3" style="background:#fffaf1;">
+                            <div class="d-flex align-items-center mb-1">
+                                <span class="badge bg-warning text-dark me-2">Pro</span>
+                                <strong class="small mb-0">AI scoring & feedback</strong>
+                            </div>
+                            <div class="small text-muted">Upgrade to unlock scoring, feedback, and expert review.</div>
+                            <a href="{{ route('user.pricing') }}" class="alert-link">Upgrade to Pro</a>
                         </div>
                         @endif
                     </div>
@@ -100,32 +111,50 @@
             </div>
 
             <!-- Results Section -->
-            <div class="col-lg-8">
+            <div class="col-lg-6">
+                <!-- Guidance / Preview Panel -->
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="icon-shape bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+                                <i class="bx bx-bulb"></i>
+                            </div>
+                            <div class="ms-2">
+                                <h6 class="mb-0">What you get when you generate</h6>
+                                <small class="text-muted">Preview of your AI prep output</small>
+                            </div>
+                        </div>
+                        <ul class="list-unstyled small mb-0">
+                            <li class="d-flex align-items-start mb-1"><i class="bx bx-question-mark text-primary me-2"></i><span>5–8 tailored interview questions</span></li>
+                            <li class="d-flex align-items-start mb-1"><i class="bx bx-target-lock text-primary me-2"></i><span>Role-specific and level-aware prompts</span></li>
+                            <li class="d-flex align-items-start mb-1"><i class="bx bx-bulb text-primary me-2"></i><span>Tips on how to answer each question</span></li>
+                            <li class="d-flex align-items-start"><i class="bx bx-trending-up text-primary me-2"></i><span>Next steps: practice or get feedback</span></li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- Plan Features Info -->
-                <div class="card mb-4 border-{{ $hasPremiumAccess ? 'success' : 'warning' }}">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 class="text-{{ $hasPremiumAccess ? 'muted' : 'primary' }}">
-                                    <i class="bx bx-gift me-1"></i> Free Plan Features
-                                </h6>
+                <div class="card mb-3 border-{{ $hasPremiumAccess ? 'success' : 'warning' }} shadow-sm">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-{{ $hasPremiumAccess ? 'success' : 'warning' }} text-dark me-2">{{ $hasPremiumAccess ? 'Pro Active' : 'Free vs Pro' }}</span>
+                            <strong class="small mb-0">{{ $hasPremiumAccess ? 'You have Pro benefits' : 'Unlock more with Pro' }}</strong>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <h6 class="text-muted mb-1"><i class="bx bx-gift me-1"></i> Free</h6>
                                 <ul class="small mb-0">
-                                    <li>Basic interview questions (5-8 questions)</li>
-                                    <li>Resume-based question generation</li>
-                                    <li>General interview tips</li>
+                                    <li>5–8 tailored questions</li>
+                                    <li>Basic tips per question</li>
                                 </ul>
                             </div>
-                            <div class="col-md-6">
-                                <h6 class="text-{{ $hasPremiumAccess ? 'success' : 'muted' }}">
-                                    <i class="bx {{ $hasPremiumAccess ? 'bx-check-shield' : 'bx-lock' }} me-1"></i> Pro Plan Features
-                                </h6>
+                            <div class="col-sm-6">
+                                <h6 class="text-{{ $hasPremiumAccess ? 'success' : 'primary' }} mb-1"><i class="bx {{ $hasPremiumAccess ? 'bx-check-shield' : 'bx-lock' }} me-1"></i> Pro</h6>
                                 <ul class="small mb-0">
-                                    <li>Advanced questions (20-25 questions)</li>
-                                    <li>AI interview practice with scoring</li>
-                                    <li>Real-time AI feedback & suggestions</li>
-                                    <li>Book human expert interview sessions</li>
-                                    <li>Technical topic preparation</li>
-                                    <li>Salary negotiation tips</li>
+                                    <li><strong>AI scoring & feedback</strong></li>
+                                    <li>20–25 advanced questions</li>
+                                    <li>Real-time practice mode</li>
+                                    <li>Expert review option</li>
                                 </ul>
                             </div>
                         </div>
@@ -135,11 +164,9 @@
                 <!-- Empty State -->
                 <div id="emptyState" class="card">
                     <div class="card-body text-center py-5">
-                        <i class="bx bx-user-voice" style="font-size: 5rem; opacity: 0.3;"></i>
-                        <h4 class="mt-3">Ready to Ace Your Interview?</h4>
-                        <p class="text-muted mb-0">
-                            Upload your resume and tell us about the role to get started
-                        </p>
+                        <i class="bx bx-user-voice" style="font-size: 3.5rem; opacity: 0.3;"></i>
+                        <h5 class="mt-2">Ready to get questions?</h5>
+                        <p class="text-muted mb-0">Pick a resume, set the role, and generate.</p>
                     </div>
                 </div>
 
@@ -253,10 +280,14 @@
         const hasPremiumAccess = @json($hasPremiumAccess);
         let uploadedResumeFile = null;
 
-        // Clear uploaded file on page load
+        // Clear uploaded file on page load and autofocus
         window.addEventListener('DOMContentLoaded', function() {
             uploadedResumeFile = null;
-            console.log('Cleared uploadedResumeFile on page load');
+            const jobTitleInput = document.getElementById('jobTitle');
+            if (jobTitleInput) {
+                jobTitleInput.focus();
+            }
+            updateGenerateState();
         });
 
         // File upload handling
@@ -306,6 +337,7 @@
                 if (data.success) {
                     uploadedResumeFile = data.file_path;
                     document.getElementById('statusText').innerHTML = '<i class="bx bx-check-circle me-2"></i>' + file.name + ' uploaded!';
+                    updateGenerateState();
 
                     // Show persistent resume status indicator
                     const statusIndicator = document.getElementById('resumeStatusIndicator');
@@ -349,14 +381,7 @@
                 experienceLevel
             });
 
-            if (!jobTitle) {
-                alert('Please enter a job title');
-                return;
-            }
-
-            // Check if either a saved resume is selected OR a file was uploaded
-            if (!resumeId && !uploadedResumeFile) {
-                alert('Please select a saved resume or upload a new one');
+            if (!jobTitle || (!resumeId && !uploadedResumeFile)) {
                 return;
             }
 
@@ -391,6 +416,8 @@
                 if (data.success) {
                     displayResults(data.data);
                     document.getElementById('resultsContainer').style.display = 'block';
+                    const successAlert = document.getElementById('generateSuccess');
+                    if (successAlert) successAlert.classList.remove('d-none');
                 } else {
                     alert('Error: ' + (data.message || 'Failed to generate interview prep'));
                     document.getElementById('emptyState').style.display = 'block';
@@ -485,6 +512,7 @@
                     }
 
                     console.log('Resume selected from dropdown:', this.value, selectedOption.text);
+                    updateGenerateState();
                 } else {
                     // Hide status indicator when deselected
                     if (statusIndicator) {
@@ -493,5 +521,17 @@
                 }
             });
         }
+
+        function updateGenerateState() {
+            const resumeId = document.getElementById('resumeSelect')?.value || '';
+            const jobTitle = document.getElementById('jobTitle')?.value.trim() || '';
+            const btn = document.getElementById('generateBtn');
+            if (!btn) return;
+            btn.disabled = !(jobTitle && (resumeId || uploadedResumeFile));
+        }
+
+        // Track form inputs for enabling CTA
+        document.getElementById('jobTitle')?.addEventListener('input', updateGenerateState);
+        document.getElementById('resumeSelect')?.addEventListener('change', updateGenerateState);
     </script>
 </x-layouts.app>
