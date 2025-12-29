@@ -162,7 +162,7 @@
         }
 
         function hasPlaceholders(text) {
-            return /(\[Your Name\]|\[Company Name\]|\[Company Address\]|\[Recipient Name\]|\[Date\]|John Abc)/i.test(text);
+            return /(\[Your Name\]|\[Your Address\]|\[City, State, Zip Code\]|\[Email Address\]|\[Phone Number\]|\[Company Name\]|\[Company Address\]|\[Recipient Name\]|\[Date\]|John Abc)/i.test(text);
         }
 
         function buildPrefill() {
@@ -191,6 +191,7 @@
             const map = {
                 '[Your Name]': fields.userName,
                 '[Your Address]': fields.userAddress,
+                '[City, State, Zip Code]': fields.userAddress,
                 '[Email Address]': fields.userEmail,
                 '[Phone Number]': fields.userPhone,
                 '[Date]': formatToday(),
@@ -202,12 +203,10 @@
 
             let updated = text;
             Object.entries(map).forEach(([key, val]) => {
-                if (val) {
-                    const re = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
-                    updated = updated.replace(re, val);
-                }
+                const re = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                updated = updated.replace(re, val || '');
             });
-            return updated;
+            return updated.replace(/\n{3,}/g, '\n\n').trim();
         }
 
         function fillIfNeeded(force = false) {

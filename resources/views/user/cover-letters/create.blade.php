@@ -397,9 +397,47 @@
             ].filter(Boolean).join('\n');
         }
 
+        function hasPlaceholders(text) {
+            return /(\[Your Name\]|\[Your Address\]|\[City, State, Zip Code\]|\[Email Address\]|\[Phone Number\]|\[Date\]|\[Recipient Name\]|\[Company Name\]|\[Company Address\]|John Abc)/i.test(text);
+        }
+
+        function replacePlaceholders(text) {
+            const getVal = id => (document.getElementById(id)?.value || '').trim();
+            const map = {
+                '[Your Name]': getVal('user_name'),
+                '[Your Address]': getVal('user_address'),
+                '[City, State, Zip Code]': getVal('user_address'),
+                '[Email Address]': getVal('user_email'),
+                '[Phone Number]': getVal('user_phone'),
+                '[Date]': formatToday(),
+                '[Recipient Name]': getVal('recipient_name') || 'Hiring Manager',
+                '[Company Name]': getVal('company_name'),
+                '[Company Address]': getVal('company_address'),
+                'John Abc': getVal('recipient_name') || 'Hiring Manager'
+            };
+
+            let updated = text;
+            Object.entries(map).forEach(([key, val]) => {
+                const re = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                updated = updated.replace(re, val || '');
+            });
+            return updated.replace(/\n{3,}/g, '\n\n').trim();
+        }
+
         function maybePrefillBody(force = false) {
-            const current = contentEl.value.trim();
-            if (force || !current || current === lastGeneratedBody) {
+            const current = contentEl.value;
+            if (hasPlaceholders(current)) {
+                const replaced = replacePlaceholders(current);
+                if (replaced !== current) {
+                    contentEl.value = replaced;
+                    autoGrow(contentEl);
+                    updateWordCount();
+                    renderPreview();
+                    return;
+                }
+            }
+            const trimmed = current.trim();
+            if (force || !trimmed || trimmed === lastGeneratedBody) {
                 const prefill = buildPrefillBody();
                 contentEl.value = prefill;
                 lastGeneratedBody = prefill.trim();
