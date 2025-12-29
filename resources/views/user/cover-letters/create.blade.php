@@ -583,7 +583,8 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    contentEl.value = data.content;
+                    const cleaned = replacePlaceholders(data.content || '');
+                    contentEl.value = cleaned || data.content || '';
                     autoGrow(contentEl);
                     updateWordCount();
                     renderPreview();
