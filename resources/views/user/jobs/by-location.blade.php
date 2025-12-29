@@ -18,58 +18,61 @@
         <!-- Main Content -->
         <div class="col-lg-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-body p-4">
+                <div class="card-body p-3 pb-2">
                     <form id="searchForm" onsubmit="searchJobs(event)">
-                        <div class="row g-3 mb-3 align-items-end">
+                        <div class="row g-2 mb-2 align-items-end">
                             <div class="col-md-5">
-                                <label class="form-label">Job Title</label>
+                                <label class="form-label mb-1">Job Title</label>
                                 <input type="text" class="form-control" id="jobTitle" name="job_title"
-                                       placeholder="e.g. Web Developer, Project Manager" required style="height: 44px;">
+                                       placeholder="e.g. Web Developer, Project Manager" required style="height: 42px;">
                             </div>
                             <div class="col-md-5">
-                                <label class="form-label">Location</label>
+                                <label class="form-label mb-1">Location</label>
                                 <input type="text" class="form-control" id="location" name="location"
-                                       placeholder="e.g. New York, NY or Remote" required style="height: 44px;">
+                                       placeholder="e.g. New York, NY or Remote" required style="height: 42px;">
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary w-100" style="height: 44px; font-weight: 600; box-shadow: 0 6px 12px rgba(102,126,234,0.2);">
+                                <button type="submit" class="btn btn-primary w-100" style="height: 44px; font-weight: 700; letter-spacing: 0.01em; box-shadow: 0 8px 16px rgba(102,126,234,0.25);">
                                     <i class="bx bx-search me-2"></i> Search
                                 </button>
                             </div>
                         </div>
-                        <!-- Secondary Options (collapsible) -->
-                        <div class="mt-3 pt-3" style="border-top: 1px solid #e5e7eb;">
-                            <button class="btn btn-sm btn-link text-decoration-none text-muted p-0" type="button" data-bs-toggle="collapse" data-bs-target="#resumeOptions" aria-expanded="false" aria-controls="resumeOptions" style="font-size: 0.875rem;">
-                                <i class="bx bx-chevron-down me-1"></i> Optional: Upload your resume for better matches
+
+                        <div class="d-flex align-items-center gap-2 text-muted small mb-2">
+                            <span class="fw-semibold">Optional: Improve matches</span>
+                            <button class="btn btn-link p-0 small" type="button" data-bs-toggle="collapse" data-bs-target="#resumeOptions" aria-expanded="false" aria-controls="resumeOptions">
+                                <i class="bx bx-chevron-down me-1"></i>Use a CV (existing or upload)
                             </button>
-                            <div class="collapse mt-2" id="resumeOptions">
+                            <span class="text-muted" data-bs-toggle="tooltip" title="Adding a CV helps tailor results but isn't required.">
+                                <i class="bx bx-info-circle"></i>
+                            </span>
+                        </div>
+
+                        <div class="collapse" id="resumeOptions">
+                            <div class="p-3 border rounded" style="background:#fafbff;">
+                                <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-2">
+                                    <div class="fw-semibold">Use an existing CV</div>
+                                    <button class="btn btn-sm btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#uploadInstead" aria-expanded="false" aria-controls="uploadInstead">Upload instead</button>
+                                </div>
+
                                 @if($resumes->count() > 0)
-                                <div class="row g-2">
-                                    <div class="col-md-12">
-                                        <label class="form-label small mb-2" style="font-size: 0.8125rem; color: #6b7280;">
-                                            <i class="bx bx-file me-1"></i> Select a saved CV
-                                        </label>
-                                        <select class="form-select" id="resumeId" name="resume_id" style="border-radius: 4px; border: 1px solid #d1d5db; font-size: 0.875rem;">
-                                            <option value="">Choose a CV for better matching</option>
-                                            @foreach($resumes as $resume)
-                                                <option value="{{ $resume->id }}">{{ $resume->display_name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <small class="text-muted d-block mt-2">
-                                            <i class="bx bx-info-circle me-1"></i> Select a CV for AI to find more relevant matches.
-                                        </small>
-                                        <div id="resumeStatusIndicator" class="alert alert-success border-0 mt-2" style="display: none; padding: 6px 10px;">
-                                            <small><i class="bx bx-check-circle me-1"></i> <span id="resumeStatusText">Resume selected</span></small>
-                                        </div>
+                                <div class="mb-2">
+                                    <select class="form-select" id="resumeId" name="resume_id" style="height: 42px; font-size: 0.9rem;">
+                                        <option value="">Choose a CV (optional)</option>
+                                        @foreach($resumes as $resume)
+                                            <option value="{{ $resume->id }}">{{ $resume->display_name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div id="resumeStatusIndicator" class="alert alert-success border-0 mt-2" style="display: none; padding: 6px 10px;">
+                                        <small><i class="bx bx-check-circle me-1"></i> <span id="resumeStatusText">Resume selected</span></small>
                                     </div>
                                 </div>
                                 @endif
 
-                                <!-- OR Upload Resume -->
-                                <div class="row g-2 mt-2">
-                                    <div class="col-md-12">
-                                        <div class="drop-zone border border-dashed rounded p-2 text-center" id="locationResumeDropZone" style="border-color: #d1d5db; cursor: pointer; transition: all 0.2s; min-height: 80px; background: #fafafa;">
-                                            <i class="bx bx-cloud-upload" style="font-size: 1.4rem; color: #667eea;"></i>
+                                <div class="collapse" id="uploadInstead">
+                                    <div class="mt-2">
+                                        <div class="drop-zone border border-dashed rounded p-2 text-center" id="locationResumeDropZone" style="border-color: #d1d5db; cursor: pointer; transition: all 0.2s; min-height: 70px; background: #f7f7fb;">
+                                            <i class="bx bx-cloud-upload" style="font-size: 1.3rem; color: #667eea;"></i>
                                             <p class="mb-0 small">Drop resume here or click to upload</p>
                                             <small class="text-muted" style="font-size: 0.75rem;">PDF, DOCX (Max 10MB)</small>
                                             <input type="file" id="locationResumeInput" accept=".pdf,.doc,.docx" style="display: none;">
@@ -85,9 +88,8 @@
                         </div>
                     </form>
 
-                    <!-- Free plan notice moved below search; shown after first search -->
                     @if(!$hasPremiumAccess)
-                    <div id="freePlanNotice" class="alert border-0 mb-0 mt-3" style="display: none; background: #fef9e7; padding: 0.75rem 1rem; font-size: 0.875rem; color: #6b7280;">
+                    <div id="freePlanNotice" class="alert border-0 mb-0 mt-3 py-2 px-3" style="display: none; background: #fef9e7; font-size: 0.85rem; color: #6b7280;">
                         <i class="bx bx-info-circle me-1" style="color: #f59e0b;"></i> Free plan: 5 job views per session. <a href="{{ route('user.pricing') }}" class="text-decoration-none fw-500">Upgrade to Pro</a> for unlimited access.
                     </div>
                     @endif
@@ -532,6 +534,9 @@
         border-color: #667eea !important;
         background: #f3f4f6 !important;
     }
+
+    .btn-link.small { font-size: 0.875rem; }
+    .card-body { padding-bottom: 1.5rem; }
 
     /* Example chip buttons */
     .btn-outline-primary.btn-sm {
