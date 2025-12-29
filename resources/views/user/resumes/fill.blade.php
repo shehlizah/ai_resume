@@ -3,30 +3,10 @@
     <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Fill Your Resume Details</h5>
       <a href="{{ route('user.resumes.choose') }}" class="btn btn-secondary btn-sm">
-          </div>
-        </div>
-
-        <!-- Step 2: Professional Summary -->
-        <div class="card mb-4 step-section d-none" data-step="2">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="mb-0 d-flex align-items-center"><i class="bx bx-file-blank me-2"></i> Professional Summary</h6>
-              <button type="button" class="btn btn-sm btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#summaryAIModal">
-                <i class="bx bx-sparkles"></i> Generate with AI
-              </button>
-            </div>
-            <div class="mb-2 small text-muted">2–3 lines that explain who you are professionally.</div>
-            <textarea name="summary"
-                      rows="3"
-                      class="form-control @error('summary') is-invalid @enderror"
-                      id="summaryField"
-                      placeholder="Write a brief professional summary about yourself...">{{ old('summary') }}</textarea>
-            <small class="text-muted">A 2-3 sentence overview of your professional background and goals</small>
-            @error('summary')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-        </div>
+        <i class="bx bx-arrow-back"></i> Back to Templates
+      </a>
+    </div>
+    <div class="card-body">
       @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
           <strong>Please fix the following errors:</strong>
@@ -47,25 +27,29 @@
         @csrf
         <input type="hidden" name="template_id" value="{{ $template->id }}">
 
-        <div class="mb-4 p-3 bg-light rounded" style="border-radius: 8px;">
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <div>
-              <div id="stepIndicator" class="fw-bold text-primary" style="font-size: 1.1rem;">Step 1 of 5</div>
-              <div class="small text-muted mt-1" id="stepHelper">Enter your personal details</div>
-            </div>
-            <div class="badge bg-primary" style="font-size: 0.75rem;">Required</div>
+        <!-- Progress Indicator -->
+        <div class="mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <small class="text-muted" id="progressText">Step 1 of 5</small>
+            <small class="text-muted">Complete all required sections</small>
           </div>
-          <div class="progress" style="height: 8px; border-radius: 8px;">
-            <div class="progress-bar bg-primary" id="stepProgress" style="width: 20%; transition: width 0.3s ease;"></div>
+          <div class="progress" style="height: 4px;">
+            <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
         </div>
 
-        <div id="stepSections">
-          <!-- Step 1: Personal Details -->
-          <div class="card step-section" data-step="1" style="border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-            <div class="card-body" style="padding: 1.75rem;">
-              <h5 class="mb-3 d-flex align-items-center fw-semibold" style="color: #2c3e50;"><i class="bx bx-user me-2" style="font-size: 1.4rem; color: #667eea;"></i> Personal Details</h5>
-              <p class="text-muted small mb-4">Enter your name, contact info, and (optionally) a photo.</p>
+        <!-- Accordion Container -->
+        <div class="accordion" id="accordionSteps">
+        
+        <!-- Step 1: Personal Details -->
+        <div class="card mb-3 step-card" data-step="1">
+          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#personalSection" role="button" aria-expanded="true" aria-controls="personalSection" style="cursor: pointer; background: #f8f9fa;">
+            <h6 class="mb-0"><i class="bx bx-user me-2 text-primary"></i> Step 1: Personal Details <span class="text-danger">*</span></h6>
+            <i class="bx bx-chevron-down"></i>
+          </div>
+          <div class="collapse show" id="personalSection" data-bs-parent="#accordionSteps">
+            <div class="card-body">
+              <p class="text-muted small mb-3">Enter your name, contact info, and (optionally) a photo.</p>
               <div class="row mb-3">
                 <div class="col-md-6">
                   <label class="form-label">Full Name *</label>
@@ -163,18 +147,18 @@
               </div>
             </div>
           </div>
-          <!-- ...other steps will be inserted here... -->
         </div>
 
-        <!-- Professional Summary -->
-        <div class="card mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#summarySection" role="button" aria-expanded="false" aria-controls="summarySection" style="cursor: pointer;">
-            <h6 class="mb-0"><i class="bx bx-file-blank"></i> Professional Summary</h6>
+        <!-- Step 2: Professional Summary -->
+        <div class="card mb-3 step-card" data-step="2">
+          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#summarySection" role="button" aria-expanded="false" aria-controls="summarySection" style="cursor: pointer; background: #f8f9fa;">
+            <h6 class="mb-0"><i class="bx bx-file-blank me-2 text-primary"></i> Step 2: Professional Summary</h6>
             <i class="bx bx-chevron-down"></i>
           </div>
-          <div class="collapse" id="summarySection">
+          <div class="collapse" id="summarySection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-              <div class="d-flex justify-content-end mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="text-muted small mb-0">2–3 lines that explain who you are professionally.</p>
                 <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#summaryAIModal">
                   <i class="bx bx-sparkles"></i> Generate with AI
                 </button>
@@ -193,15 +177,14 @@
         </div>
 
         <!-- Step 3: Experience -->
-        <div class="card step-section d-none" data-step="3" style="border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-          <div class="card-body" style="padding: 1.75rem;">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <div>
-                <h5 class="mb-2 d-flex align-items-center fw-semibold" style="color: #2c3e50;"><i class="bx bx-briefcase me-2" style="font-size: 1.4rem; color: #667eea;"></i> Experience</h5>
-                <p class="text-muted small mb-0">Add your work history, roles, and achievements.</p>
-              </div>
-              <button type="button" class="btn btn-sm btn-primary" onclick="showExperienceModalForIndex(0)" style="white-space: nowrap;"><i class="bx bx-sparkles"></i> Generate with AI</button>
-            </div>
+        <div class="card mb-3 step-card" data-step="3">
+          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#experienceSection" role="button" aria-expanded="false" aria-controls="experienceSection" style="cursor: pointer; background: #f8f9fa;">
+            <h6 class="mb-0"><i class="bx bx-briefcase me-2 text-primary"></i> Step 3: Experience</h6>
+            <i class="bx bx-chevron-down"></i>
+          </div>
+          <div class="collapse" id="experienceSection" data-bs-parent="#accordionSteps">
+            <div class="card-body">
+              <p class="text-muted small mb-3">Add your work history, roles, and achievements.</p>
             <div class="d-flex justify-content-end mb-3">
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
                 <i class="bx bx-plus"></i> Add More
@@ -241,17 +224,19 @@
         </div>
 
         <!-- Step 4: Skills -->
-        <div class="card step-section d-none" data-step="4" style="border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-          <div class="card-body" style="padding: 1.75rem;">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <div>
-                <h5 class="mb-2 d-flex align-items-center fw-semibold" style="color: #2c3e50;"><i class="bx bx-star me-2" style="font-size: 1.4rem; color: #667eea;"></i> Skills</h5>
+        <div class="card mb-3 step-card" data-step="4">
+          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#skillsSection" role="button" aria-expanded="false" aria-controls="skillsSection" style="cursor: pointer; background: #f8f9fa;">
+            <h6 class="mb-0"><i class="bx bx-star me-2 text-primary"></i> Step 4: Skills</h6>
+            <i class="bx bx-chevron-down"></i>
+          </div>
+          <div class="collapse" id="skillsSection" data-bs-parent="#accordionSteps">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
                 <p class="text-muted small mb-0">List your most relevant skills for the job you want.</p>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#skillsAIModal">
+                  <i class="bx bx-sparkles"></i> Generate with AI
+                </button>
               </div>
-              <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#skillsAIModal" style="white-space: nowrap;">
-                <i class="bx bx-sparkles"></i> Generate with AI
-              </button>
-            </div>
             <textarea name="skills"
                       rows="4"
                       class="form-control @error('skills') is-invalid @enderror"
@@ -265,15 +250,14 @@
         </div>
 
         <!-- Step 5: Education -->
-        <div class="card step-section d-none" data-step="5" style="border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-          <div class="card-body" style="padding: 1.75rem;">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <div>
-                <h5 class="mb-2 d-flex align-items-center fw-semibold" style="color: #2c3e50;"><i class="bx bx-book me-2" style="font-size: 1.4rem; color: #667eea;"></i> Education</h5>
-                <p class="text-muted small mb-0">Add your degrees, schools, and graduation years.</p>
-              </div>
-              <button type="button" class="btn btn-sm btn-primary" onclick="showEducationModalForIndex(0)" style="white-space: nowrap;"><i class="bx bx-sparkles"></i> Generate with AI</button>
-            </div>
+        <div class="card mb-3 step-card" data-step="5">
+          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#educationSection" role="button" aria-expanded="false" aria-controls="educationSection" style="cursor: pointer; background: #f8f9fa;">
+            <h6 class="mb-0"><i class="bx bx-book me-2 text-primary"></i> Step 5: Education</h6>
+            <i class="bx bx-chevron-down"></i>
+          </div>
+          <div class="collapse" id="educationSection" data-bs-parent="#accordionSteps">
+            <div class="card-body">
+              <p class="text-muted small mb-3">Add your degrees, schools, and graduation years.</p>
             <div class="d-flex justify-content-end mb-3">
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
                 <i class="bx bx-plus"></i> Add More
@@ -313,12 +297,13 @@
             @enderror
           </div>
         </div>
+        </div><!-- End Accordion Container -->
 
-        <!-- Step Navigation Buttons -->
-        <div class="d-flex justify-content-between align-items-center mt-4 bg-white py-3 px-3 shadow-sm" style="position: sticky; bottom: 0; z-index: 100; border-radius: 8px; margin-left: -1.5rem; margin-right: -1.5rem; margin-bottom: -1.5rem;">
-          <button type="button" class="btn btn-outline-secondary px-4" id="prevStepBtn" disabled><i class="bx bx-chevron-left me-1"></i> Back</button>
-          <button type="button" class="btn btn-primary px-4" id="nextStepBtn">Next <i class="bx bx-chevron-right ms-1"></i></button>
-          <button type="submit" class="btn btn-success px-4 d-none" id="previewResumeBtn"><i class="bx bx-show me-1"></i> Preview Resume</button>
+        <!-- Submit Button -->
+        <div class="mt-4">
+          <button type="submit" class="btn btn-primary btn-lg w-100" id="generateBtn">
+            <i class="bx bx-show me-1"></i> Preview Resume
+          </button>
         </div>
       </form>
     </div>
@@ -913,57 +898,6 @@
       pictureUploadZone.style.display = 'block';
       removePictureBtn.style.display = 'none';
     });
-
-    // Stepper logic for step-based resume form
-    const stepSections = Array.from(document.querySelectorAll('.step-section'));
-    const prevBtn = document.getElementById('prevStepBtn');
-    const nextBtn = document.getElementById('nextStepBtn');
-    const previewBtn = document.getElementById('previewResumeBtn');
-    const stepIndicator = document.getElementById('stepIndicator');
-    const stepHelper = document.getElementById('stepHelper');
-    const stepProgress = document.getElementById('stepProgress');
-
-    const stepHelpers = [
-      'Enter your personal details',
-      'Write a short professional summary',
-      'Add your work experience',
-      'List your skills',
-      'Add your education history'
-    ];
-
-    let currentStep = 0;
-    function showStep(idx) {
-      stepSections.forEach((section, i) => {
-        section.classList.toggle('d-none', i !== idx);
-      });
-      stepIndicator.textContent = `Step ${idx + 1} of 5`;
-      stepHelper.textContent = stepHelpers[idx] || '';
-      stepProgress.style.width = `${((idx + 1) / 5) * 100}%`;
-      prevBtn.disabled = idx === 0;
-      nextBtn.classList.toggle('d-none', idx === stepSections.length - 1);
-      previewBtn.classList.toggle('d-none', idx !== stepSections.length - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    prevBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (currentStep > 0) {
-        currentStep--;
-        showStep(currentStep);
-      }
-    });
-    nextBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (currentStep < stepSections.length - 1) {
-        currentStep++;
-        showStep(currentStep);
-      }
-    });
-    
-    // On page load, show first step
-    setTimeout(() => showStep(currentStep), 100);
   </script>
 
   <!-- Mobile Responsive Styles for Resume Form -->
@@ -1024,17 +958,44 @@
     }
 
     /* Professional Step Form Styling */
-    .step-section .form-control {
+    .step-card {
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: box-shadow 0.2s;
+    }
+    .step-card:hover {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .step-card .card-header {
+      background: #f8f9fa;
+      border-bottom: 1px solid #e5e7eb;
+      transition: background-color 0.2s;
+    }
+    .step-card .card-header:hover {
+      background: #f3f4f6;
+    }
+    .step-card .card-header h6 {
+      font-weight: 600;
+      color: #1f2937;
+    }
+    .step-card .card-header .bx-chevron-down {
+      transition: transform 0.3s ease;
+    }
+    .step-card .card-header[aria-expanded="true"] .bx-chevron-down {
+      transform: rotate(180deg);
+    }
+    .step-card .form-control {
       border-radius: 6px;
       border: 1px solid #d1d5db;
       padding: 0.625rem 0.875rem;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .step-section .form-control:focus {
+    .step-card .form-control:focus {
       border-color: #667eea;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
-    .step-section .form-label {
+    .step-card .form-label {
       font-weight: 500;
       color: #374151;
       margin-bottom: 0.5rem;
@@ -1069,59 +1030,117 @@
   </style>
 
   <script>
-    // Stepper logic for step-based resume form
+    // Accordion auto-advance logic for step-based resume form
     document.addEventListener('DOMContentLoaded', function() {
-      const stepSections = Array.from(document.querySelectorAll('.step-section'));
-      const prevBtn = document.getElementById('prevStepBtn');
-      const nextBtn = document.getElementById('nextStepBtn');
-      const previewBtn = document.getElementById('previewResumeBtn');
-      const stepIndicator = document.getElementById('stepIndicator');
-      const stepHelper = document.getElementById('stepHelper');
-      const stepProgress = document.getElementById('stepProgress');
-
-      const stepHelpers = [
-        'Enter your personal details',
-        'Write a short professional summary',
-        'Add your work experience',
-        'List your skills',
-        'Add your education history'
-      ];
-
-      let currentStep = 0;
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+      const stepCards = document.querySelectorAll('.step-card');
       
-      function showStep(idx) {
-        stepSections.forEach((section, i) => {
-          section.classList.toggle('d-none', i !== idx);
+      // Update progress bar and text when a section is shown
+      document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(header) {
+        header.addEventListener('click', function() {
+          const stepCard = this.closest('.step-card');
+          const stepNumber = parseInt(stepCard.getAttribute('data-step'));
+          updateProgress(stepNumber);
         });
-        stepIndicator.textContent = `Step ${idx + 1} of 5`;
-        stepHelper.textContent = stepHelpers[idx] || '';
-        stepProgress.style.width = `${((idx + 1) / 5) * 100}%`;
-        prevBtn.disabled = idx === 0;
-        nextBtn.classList.toggle('d-none', idx === stepSections.length - 1);
-        previewBtn.classList.toggle('d-none', idx !== stepSections.length - 1);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      
+      // Listen for collapse shown events to update progress
+      document.querySelectorAll('.collapse').forEach(function(collapseEl) {
+        collapseEl.addEventListener('shown.bs.collapse', function() {
+          const stepCard = this.closest('.step-card');
+          const stepNumber = parseInt(stepCard.getAttribute('data-step'));
+          updateProgress(stepNumber);
+        });
+      });
+      
+      function updateProgress(stepNumber) {
+        const progress = (stepNumber / 5) * 100;
+        progressBar.style.width = progress + '%';
+        progressBar.setAttribute('aria-valuenow', progress);
+        progressText.textContent = 'Step ' + stepNumber + ' of 5';
       }
-
-      prevBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (currentStep > 0) {
-          currentStep--;
-          showStep(currentStep);
+      
+      // Auto-advance logic: check required fields and open next section
+      function checkAndAdvance(currentSectionId, nextSectionId) {
+        const currentSection = document.getElementById(currentSectionId);
+        if (!currentSection) return;
+        
+        const requiredFields = currentSection.querySelectorAll('input[required], textarea[required]');
+        let allFilled = true;
+        
+        requiredFields.forEach(function(field) {
+          if (!field.value.trim()) {
+            allFilled = false;
+          }
+        });
+        
+        // If all required fields are filled, auto-open next section
+        if (allFilled && nextSectionId) {
+          const nextSection = document.getElementById(nextSectionId);
+          if (nextSection && !nextSection.classList.contains('show')) {
+            setTimeout(function() {
+              const bsCollapse = new bootstrap.Collapse(nextSection, {
+                toggle: true
+              });
+            }, 300);
+          }
         }
+      }
+      
+      // Add blur event listeners to required fields for auto-advance
+      const personalFields = document.querySelectorAll('#personalSection input, #personalSection textarea');
+      personalFields.forEach(function(field) {
+        field.addEventListener('blur', function() {
+          checkAndAdvance('personalSection', 'summarySection');
+        });
       });
       
-      nextBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (currentStep < stepSections.length - 1) {
-          currentStep++;
-          showStep(currentStep);
-        }
+      const summaryFields = document.querySelectorAll('#summarySection textarea');
+      summaryFields.forEach(function(field) {
+        field.addEventListener('blur', function() {
+          checkAndAdvance('summarySection', 'experienceSection');
+        });
       });
       
-      // On page load, show first step
-      showStep(currentStep);
+      const experienceFields = document.querySelectorAll('#experienceSection input, #experienceSection textarea');
+      experienceFields.forEach(function(field) {
+        field.addEventListener('blur', function() {
+          checkAndAdvance('experienceSection', 'skillsSection');
+        });
+      });
+      
+      const skillsFields = document.querySelectorAll('#skillsSection textarea');
+      skillsFields.forEach(function(field) {
+        field.addEventListener('blur', function() {
+          checkAndAdvance('skillsSection', 'educationSection');
+        });
+      });
+    });
+  </script>
+        });
+      });
+      
+      const summaryFields = document.querySelectorAll('#summarySection textarea');
+      summaryFields.forEach(function(field) {
+        field.addEventListener('blur', function() {
+          checkAndAdvance('summarySection', 'experienceSection');
+        });
+      });
+      
+      const experienceFields = document.querySelectorAll('#experienceSection input, #experienceSection textarea');
+      experienceFields.forEach(function(field) {
+        field.addEventListener('blur', function() {
+          checkAndAdvance('experienceSection', 'skillsSection');
+        });
+      });
+      
+      const skillsFields = document.querySelectorAll('#skillsSection textarea');
+      skillsFields.forEach(function(field) {
+        field.addEventListener('blur', function() {
+          checkAndAdvance('skillsSection', 'educationSection');
+        });
+      });
     });
   </script>
 </x-layouts.app>
