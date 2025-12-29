@@ -1008,7 +1008,7 @@ private function fillTemplate($html, $css, $data)
             font-family: Arial, sans-serif;
             line-height: 1.6;
             background: #f5f5f5;
-            padding-top: 155px;
+            padding-top: 165px;
             padding-bottom: 40px;
         }
 
@@ -1096,7 +1096,7 @@ private function fillTemplate($html, $css, $data)
         /* Action Cards Container - Horizontal Bar */
         .action-cards {
             position: fixed;
-            top: 70px;
+            top: 80px;
             left: 0;
             right: 0;
             display: flex;
@@ -1204,33 +1204,33 @@ private function fillTemplate($html, $css, $data)
             z-index: 9998;
         }
 
-        /* Download button - Sticky right panel */
+        /* Download button - Sticky bottom bar */
         .download-btn {
             position: fixed;
-            top: 90px;
-            right: 20px;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background: #667eea;
             color: white;
-            padding: 14px 20px;
-            border-radius: 6px;
+            padding: 16px 20px;
+            border-radius: 0;
             text-decoration: none;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 -2px 8px rgba(102, 126, 234, 0.15);
             z-index: 9999;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            width: 220px;
             justify-content: center;
+            gap: 8px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            width: 100%;
             border: none;
         }
 
         .download-btn:hover {
             background: #5568d3;
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
-            transform: translateY(-2px);
+            box-shadow: 0 -4px 12px rgba(102, 126, 234, 0.25);
         }
 
         /* Mobile Responsive */
@@ -1275,7 +1275,7 @@ private function fillTemplate($html, $css, $data)
             }
 
             .action-cards {
-                top: 75px;
+                top: 85px;
                 padding: 8px 15px;
                 gap: 12px;
                 overflow-x: auto;
@@ -1304,12 +1304,13 @@ private function fillTemplate($html, $css, $data)
             }
 
             .download-btn {
-                top: 85px;
-                right: 15px;
-                padding: 10px 15px;
-                font-size: 12px;
-                width: auto;
-                border-radius: 4px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 12px 15px;
+                font-size: 14px;
+                width: 100%;
+                border-radius: 0;
             }
                 right: 10px;
                 left: 10px;
