@@ -413,6 +413,7 @@
                 '[Recipient Name]': getVal('recipient_name') || 'Hiring Manager',
                 '[Company Name]': getVal('company_name'),
                 '[Company Address]': getVal('company_address'),
+                '[Last Name]': '',
                 'John Abc': getVal('recipient_name') || 'Hiring Manager'
             };
 
@@ -421,6 +422,14 @@
                 const re = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
                 updated = updated.replace(re, val || '');
             });
+
+            // Drop any leftover placeholder lines and collapse blanks
+            updated = updated
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line && !/\[.*\]/.test(line))
+                .join('\n');
+
             return updated.replace(/\n{3,}/g, '\n\n').trim();
         }
 

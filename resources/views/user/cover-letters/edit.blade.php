@@ -198,6 +198,7 @@
                 '[Recipient Name]': fields.recipient,
                 '[Company Name]': fields.company,
                 '[Company Address]': fields.companyAddress,
+                '[Last Name]': '',
                 'John Abc': fields.recipient || 'Hiring Manager'
             };
 
@@ -206,6 +207,13 @@
                 const re = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
                 updated = updated.replace(re, val || '');
             });
+
+            updated = updated
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line && !/\[.*\]/.test(line))
+                .join('\n');
+
             return updated.replace(/\n{3,}/g, '\n\n').trim();
         }
 
