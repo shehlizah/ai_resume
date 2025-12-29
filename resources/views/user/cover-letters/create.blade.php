@@ -434,20 +434,10 @@
             // Remove lines that still look like placeholders or sample headers
             lines = lines.filter(line => line && !/\[.*\]/.test(line) && !/^John Doe$/i.test(line));
 
-            // Drop leading header block (user/recipient/company/details)
-            const headerValues = new Set([
-                getVal('user_name'),
-                getVal('user_address'),
-                getVal('user_email'),
-                getVal('user_phone'),
-                today,
-                getVal('recipient_name'),
-                getVal('company_name'),
-                getVal('company_address'),
-            ].filter(Boolean));
-
-            while (lines.length && (headerValues.has(lines[0]) || /^Dear\b/i.test(lines[0]) === false && lines[0] === '')) {
-                lines.shift();
+            // Keep only from first "Dear" onward
+            const dearIndex = lines.findIndex(line => /^Dear\b/i.test(line));
+            if (dearIndex > -1) {
+                lines = lines.slice(dearIndex);
             }
 
             updated = lines.join('\n');

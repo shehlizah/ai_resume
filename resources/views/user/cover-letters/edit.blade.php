@@ -217,19 +217,9 @@
             let lines = updated.split('\n').map(line => line.trim());
             lines = lines.filter(line => line && !/\[.*\]/.test(line) && !/^John Doe$/i.test(line));
 
-            const headerValues = new Set([
-                fields.userName,
-                fields.userAddress,
-                fields.userEmail,
-                fields.userPhone,
-                today,
-                fields.recipient,
-                fields.company,
-                fields.companyAddress,
-            ].filter(Boolean));
-
-            while (lines.length && (headerValues.has(lines[0]) || (!/^Dear\b/i.test(lines[0]) && lines[0] === ''))) {
-                lines.shift();
+            const dearIndex = lines.findIndex(line => /^Dear\b/i.test(line));
+            if (dearIndex > -1) {
+                lines = lines.slice(dearIndex);
             }
 
             updated = lines.join('\n');
