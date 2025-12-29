@@ -356,6 +356,66 @@
         const livePreviewCard = document.getElementById('livePreviewCard');
         const livePreviewContent = document.getElementById('livePreviewContent');
 
+        // Prefill letter header with form data
+        const formFields = ['user_name','user_address','user_email','user_phone','recipient_name','company_name','company_address'];
+        let lastGeneratedBody = '';
+
+        function formatToday() {
+            const d = new Date();
+            return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function buildPrefillBody() {
+            const getVal = id => (document.getElementById(id)?.value || '').trim();
+            const userName = getVal('user_name');
+            const userAddress = getVal('user_address');
+            const userEmail = getVal('user_email');
+            const userPhone = getVal('user_phone');
+            const recipientName = getVal('recipient_name') || 'Hiring Manager';
+            const companyName = getVal('company_name');
+            const companyAddress = getVal('company_address');
+            const title = getVal('title');
+
+            return [
+                userName,
+                userAddress,
+                userEmail,
+                userPhone,
+                formatToday(),
+                '',
+                recipientName,
+                companyName,
+                companyAddress,
+                '',
+                `Dear ${recipientName},`,
+                '',
+                title ? `I am excited to apply for ${title}.` : 'I am excited to apply for this role.',
+                'Please find my cover letter below.',
+                '',
+                'Best regards,',
+                userName
+            ].filter(Boolean).join('\n');
+        }
+
+        function maybePrefillBody(force = false) {
+            const current = contentEl.value.trim();
+            if (force || !current || current === lastGeneratedBody) {
+                const prefill = buildPrefillBody();
+                contentEl.value = prefill;
+                lastGeneratedBody = prefill.trim();
+                autoGrow(contentEl);
+                updateWordCount();
+                renderPreview();
+            }
+        }
+
+        formFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => maybePrefillBody(false));
+            }
+        });
+
         // Template selection
         document.querySelectorAll('.use-template-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
@@ -513,5 +573,6 @@
         // Initialize counters
         updateWordCount();
         renderPreview();
+        maybePrefillBody(true);
     </script>
 </x-layouts.app>

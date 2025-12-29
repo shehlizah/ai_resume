@@ -139,3 +139,105 @@
         </div>
     </div>
 </x-layouts.app>
+
+<script>
+    (function() {
+        const contentEl = document.getElementById('content');
+        if (!contentEl) return;
+
+        const fields = {
+            title: @json($coverLetter->title),
+            recipient: @json($coverLetter->recipient_name),
+            company: @json($coverLetter->company_name),
+            companyAddress: @json($coverLetter->company_address),
+            userName: @json(auth()->user()->name ?? ''),
+            userEmail: @json(auth()->user()->email ?? ''),
+            userPhone: @json(auth()->user()->phone ?? ''),
+            userAddress: @json(auth()->user()->address ?? ''),
+        };
+
+        function formatToday() {
+            const d = new Date();
+            return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function hasPlaceholders(text) {
+            return /(\[Your Name\]|\[Company Name\]|\[Company Address\]|\[Recipient Name\]|\[Date\]|John Abc)/i.test(text);
+        }
+
+        function buildPrefill() {
+            return [
+                fields.userName,
+                fields.userAddress,
+                fields.userEmail,
+                fields.userPhone,
+                formatToday(),
+                '',
+                fields.recipient || 'Hiring Manager',
+                fields.company,
+                fields.companyAddress,
+                '',
+                fields.recipient ? `Dear ${fields.recipient},` : 'Dear Hiring Manager,',
+                '',
+                fields.title ? `I am excited to apply for ${fields.title}.` : 'I am excited to apply for this role.',
+                'Please find my cover letter below.',
+                '',
+                'Best regards,',
+                fields.userName
+            ].filter(Boolean).join('\n');
+        }
+
+        function replacePlaceholders(text) {
+            const map = {
+                '[Your Name]': fields.userName,
+                '[Your Address]': fields.userAddress,
+                '[Email Address]': fields.userEmail,
+                '[Phone Number]': fields.userPhone,
+                '[Date]': formatToday(),
+                '[Recipient Name]': fields.recipient,
+                '[Company Name]': fields.company,
+                '[Company Address]': fields.companyAddress,
+                'John Abc': fields.recipient || 'Hiring Manager'
+            };
+
+            let updated = text;
+            Object.entries(map).forEach(([key, val]) => {
+                if (val) {
+                    const re = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                    updated = updated.replace(re, val);
+                }
+            });
+            return updated;
+        }
+
+        function fillIfNeeded(force = false) {
+            const current = contentEl.value;
+            if (force && !current.trim()) {
+                contentEl.value = buildPrefill();
+                return;
+            }
+            if (hasPlaceholders(current)) {
+                const replaced = replacePlaceholders(current);
+                if (replaced !== current) {
+                    contentEl.value = replaced;
+                }
+            }
+        }
+
+        // Initial fill when empty
+        fillIfNeeded(true);
+
+        // Keep replacing placeholders while they exist
+        ['title','recipient_name','company_name','company_address'].forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('input', () => {
+                fields.title = document.getElementById('title')?.value || fields.title;
+                fields.recipient = document.getElementById('recipient_name')?.value || fields.recipient;
+                fields.company = document.getElementById('company_name')?.value || fields.company;
+                fields.companyAddress = document.getElementById('company_address')?.value || fields.companyAddress;
+                fillIfNeeded(false);
+            });
+        });
+    })();
+</script>
