@@ -197,7 +197,10 @@
           </div>
           <div class="collapse" id="experienceSection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-            <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#experienceAIModal">
+                <i class="bx bx-sparkles"></i> Generate with AI
+              </button>
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
                 <i class="bx bx-plus"></i> Add More
               </button>
@@ -223,7 +226,6 @@
                   <textarea name="responsibilities[]" id="responsibilities0" rows="4" class="form-control" placeholder="Responsibilities / achievements (one per line)">{{ old('responsibilities.0') }}</textarea>
                 </div>
                 <div class="d-flex gap-2">
-                  <button type="button" class="btn btn-sm btn-outline-primary" onclick="showExperienceModalForIndex(0)"><i class="bx bx-sparkles"></i> Generate with AI</button>
                   <button type="button" class="btn btn-sm btn-danger" onclick="document.getElementById('experienceWrapper0').remove()"><i class="bx bx-trash"></i> Remove</button>
                 </div>
               </div>
@@ -278,7 +280,10 @@
           </div>
           <div class="collapse" id="educationSection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-            <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#educationAIModal">
+                <i class="bx bx-sparkles"></i> Generate with AI
+              </button>
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
                 <i class="bx bx-plus"></i> Add More
               </button>
@@ -306,7 +311,6 @@
                   <textarea name="education_details[]" id="education_details0" rows="3" class="form-control" placeholder="Details / honors (one per line)">{{ old('education_details.0') }}</textarea>
                 </div>
                 <div class="d-flex gap-2">
-                  <button type="button" class="btn btn-sm btn-outline-primary" onclick="showEducationModalForIndex(0)"><i class="bx bx-sparkles"></i> Generate with AI</button>
                   <button type="button" class="btn btn-sm btn-danger" onclick="document.getElementById('educationWrapper0').remove()"><i class="bx bx-trash"></i> Remove</button>
                 </div>
               </div>
