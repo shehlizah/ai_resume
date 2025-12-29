@@ -47,21 +47,25 @@
         @csrf
         <input type="hidden" name="template_id" value="{{ $template->id }}">
 
-        <div class="mb-4">
-          <div class="d-flex align-items-center mb-2">
-            <div id="stepIndicator" class="fw-semibold text-primary">Step 1 of 5</div>
-            <div class="ms-3 small text-muted" id="stepHelper">Enter your personal details</div>
+        <div class="mb-4 p-3 bg-light rounded" style="border-radius: 8px;">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div>
+              <div id="stepIndicator" class="fw-bold text-primary" style="font-size: 1.1rem;">Step 1 of 5</div>
+              <div class="small text-muted mt-1" id="stepHelper">Enter your personal details</div>
+            </div>
+            <div class="badge bg-primary" style="font-size: 0.75rem;">Required</div>
           </div>
-          <div class="progress" style="height: 6px;">
-            <div class="progress-bar bg-primary" id="stepProgress" style="width: 20%;"></div>
+          <div class="progress" style="height: 8px; border-radius: 8px;">
+            <div class="progress-bar bg-primary" id="stepProgress" style="width: 20%; transition: width 0.3s ease;"></div>
           </div>
         </div>
 
         <div id="stepSections">
           <!-- Step 1: Personal Details -->
-          <div class="card mb-4 step-section" data-step="1">
-            <div class="card-body">
-              <h6 class="mb-3 d-flex align-items-center"><i class="bx bx-user me-2"></i> Personal Details <span class="text-muted small ms-2">(Required)</span></h6>
+          <div class="card step-section" data-step="1" style="border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+            <div class="card-body" style="padding: 1.75rem;">
+              <h5 class="mb-3 d-flex align-items-center fw-semibold" style="color: #2c3e50;"><i class="bx bx-user me-2" style="font-size: 1.4rem; color: #667eea;"></i> Personal Details</h5>
+              <p class="text-muted small mb-4">Enter your name, contact info, and (optionally) a photo.</p>
               <div class="row mb-3">
                 <div class="col-md-6">
                   <label class="form-label">Full Name *</label>
@@ -189,13 +193,15 @@
         </div>
 
         <!-- Step 3: Experience -->
-        <div class="card mb-4 step-section d-none" data-step="3">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="mb-0 d-flex align-items-center"><i class="bx bx-briefcase me-2"></i> Experience</h6>
-              <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="showExperienceModalForIndex(0)"><i class="bx bx-sparkles"></i> Generate with AI</button>
+        <div class="card step-section d-none" data-step="3" style="border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <div class="card-body" style="padding: 1.75rem;">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h5 class="mb-2 d-flex align-items-center fw-semibold" style="color: #2c3e50;"><i class="bx bx-briefcase me-2" style="font-size: 1.4rem; color: #667eea;"></i> Experience</h5>
+                <p class="text-muted small mb-0">Add your work history, roles, and achievements.</p>
+              </div>
+              <button type="button" class="btn btn-sm btn-primary" onclick="showExperienceModalForIndex(0)" style="white-space: nowrap;"><i class="bx bx-sparkles"></i> Generate with AI</button>
             </div>
-            <div class="mb-2 small text-muted">Add your work history, roles, and achievements.</div>
             <div class="d-flex justify-content-end mb-3">
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
                 <i class="bx bx-plus"></i> Add More
@@ -235,15 +241,17 @@
         </div>
 
         <!-- Step 4: Skills -->
-        <div class="card mb-4 step-section d-none" data-step="4">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="mb-0 d-flex align-items-center"><i class="bx bx-star me-2"></i> Skills</h6>
-              <button type="button" class="btn btn-sm btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#skillsAIModal">
+        <div class="card step-section d-none" data-step="4" style="border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <div class="card-body" style="padding: 1.75rem;">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h5 class="mb-2 d-flex align-items-center fw-semibold" style="color: #2c3e50;"><i class="bx bx-star me-2" style="font-size: 1.4rem; color: #667eea;"></i> Skills</h5>
+                <p class="text-muted small mb-0">List your most relevant skills for the job you want.</p>
+              </div>
+              <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#skillsAIModal" style="white-space: nowrap;">
                 <i class="bx bx-sparkles"></i> Generate with AI
               </button>
             </div>
-            <div class="mb-2 small text-muted">List your most relevant skills for the job you want.</div>
             <textarea name="skills"
                       rows="4"
                       class="form-control @error('skills') is-invalid @enderror"
@@ -257,13 +265,15 @@
         </div>
 
         <!-- Step 5: Education -->
-        <div class="card mb-4 step-section d-none" data-step="5">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="mb-0 d-flex align-items-center"><i class="bx bx-book me-2"></i> Education</h6>
-              <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="showEducationModalForIndex(0)"><i class="bx bx-sparkles"></i> Generate with AI</button>
+        <div class="card step-section d-none" data-step="5" style="border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <div class="card-body" style="padding: 1.75rem;">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h5 class="mb-2 d-flex align-items-center fw-semibold" style="color: #2c3e50;"><i class="bx bx-book me-2" style="font-size: 1.4rem; color: #667eea;"></i> Education</h5>
+                <p class="text-muted small mb-0">Add your degrees, schools, and graduation years.</p>
+              </div>
+              <button type="button" class="btn btn-sm btn-primary" onclick="showEducationModalForIndex(0)" style="white-space: nowrap;"><i class="bx bx-sparkles"></i> Generate with AI</button>
             </div>
-            <div class="mb-2 small text-muted">Add your degrees, schools, and graduation years.</div>
             <div class="d-flex justify-content-end mb-3">
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
                 <i class="bx bx-plus"></i> Add More
@@ -305,10 +315,10 @@
         </div>
 
         <!-- Step Navigation Buttons -->
-        <div class="d-flex justify-content-between align-items-center mt-4 sticky-bottom bg-white py-3" style="z-index: 10; border-top: 1px solid #eee;">
-          <button type="button" class="btn btn-outline-secondary" id="prevStepBtn" disabled>Back</button>
-          <button type="button" class="btn btn-primary" id="nextStepBtn">Next</button>
-          <button type="submit" class="btn btn-success d-none" id="previewResumeBtn"><i class="bx bx-show me-1"></i> Preview Resume</button>
+        <div class="d-flex justify-content-between align-items-center mt-4 bg-white py-3 px-3 shadow-sm" style="position: sticky; bottom: 0; z-index: 100; border-radius: 8px; margin-left: -1.5rem; margin-right: -1.5rem; margin-bottom: -1.5rem;">
+          <button type="button" class="btn btn-outline-secondary px-4" id="prevStepBtn" disabled><i class="bx bx-chevron-left me-1"></i> Back</button>
+          <button type="button" class="btn btn-primary px-4" id="nextStepBtn">Next <i class="bx bx-chevron-right ms-1"></i></button>
+          <button type="submit" class="btn btn-success px-4 d-none" id="previewResumeBtn"><i class="bx bx-show me-1"></i> Preview Resume</button>
         </div>
       </form>
     </div>
@@ -932,22 +942,28 @@
       prevBtn.disabled = idx === 0;
       nextBtn.classList.toggle('d-none', idx === stepSections.length - 1);
       previewBtn.classList.toggle('d-none', idx !== stepSections.length - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    prevBtn.addEventListener('click', () => {
+    prevBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       if (currentStep > 0) {
         currentStep--;
         showStep(currentStep);
       }
     });
-    nextBtn.addEventListener('click', () => {
+    nextBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       if (currentStep < stepSections.length - 1) {
         currentStep++;
         showStep(currentStep);
       }
     });
+    
     // On page load, show first step
-    showStep(currentStep);
+    setTimeout(() => showStep(currentStep), 100);
   </script>
 
   <!-- Mobile Responsive Styles for Resume Form -->
@@ -994,7 +1010,7 @@
       }
 
       .card-body {
-        padding: 1rem;
+        padding: 1rem !important;
       }
 
       .form-label {
@@ -1006,5 +1022,106 @@
         padding: 0.375rem 0.75rem;
       }
     }
+
+    /* Professional Step Form Styling */
+    .step-section .form-control {
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      padding: 0.625rem 0.875rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .step-section .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .step-section .form-label {
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+    .btn-primary {
+      background: #667eea;
+      border: none;
+      box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+    .btn-outline-secondary {
+      border-width: 2px;
+      font-weight: 500;
+    }
+    .btn-success {
+      background: #10b981;
+      border: none;
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+      font-weight: 600;
+    }
+    .btn-success:hover {
+      background: #059669;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    }
   </style>
+
+  <script>
+    // Stepper logic for step-based resume form
+    document.addEventListener('DOMContentLoaded', function() {
+      const stepSections = Array.from(document.querySelectorAll('.step-section'));
+      const prevBtn = document.getElementById('prevStepBtn');
+      const nextBtn = document.getElementById('nextStepBtn');
+      const previewBtn = document.getElementById('previewResumeBtn');
+      const stepIndicator = document.getElementById('stepIndicator');
+      const stepHelper = document.getElementById('stepHelper');
+      const stepProgress = document.getElementById('stepProgress');
+
+      const stepHelpers = [
+        'Enter your personal details',
+        'Write a short professional summary',
+        'Add your work experience',
+        'List your skills',
+        'Add your education history'
+      ];
+
+      let currentStep = 0;
+      
+      function showStep(idx) {
+        stepSections.forEach((section, i) => {
+          section.classList.toggle('d-none', i !== idx);
+        });
+        stepIndicator.textContent = `Step ${idx + 1} of 5`;
+        stepHelper.textContent = stepHelpers[idx] || '';
+        stepProgress.style.width = `${((idx + 1) / 5) * 100}%`;
+        prevBtn.disabled = idx === 0;
+        nextBtn.classList.toggle('d-none', idx === stepSections.length - 1);
+        previewBtn.classList.toggle('d-none', idx !== stepSections.length - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      prevBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentStep > 0) {
+          currentStep--;
+          showStep(currentStep);
+        }
+      });
+      
+      nextBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentStep < stepSections.length - 1) {
+          currentStep++;
+          showStep(currentStep);
+        }
+      });
+      
+      // On page load, show first step
+      showStep(currentStep);
+    });
+  </script>
 </x-layouts.app>
