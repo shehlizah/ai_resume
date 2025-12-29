@@ -382,8 +382,6 @@
         let allQuestions = [];
         let questionsPerPage = 3;
         let currentPage = 0;
-        let questionsPerPage = 3;
-        let currentPage = 0;
 
         // Clear uploaded file on page load and autofocus
         window.addEventListener('DOMContentLoaded', function() {
