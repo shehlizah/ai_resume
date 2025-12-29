@@ -1118,29 +1118,4 @@
       });
     });
   </script>
-        });
-      });
-      
-      const summaryFields = document.querySelectorAll('#summarySection textarea');
-      summaryFields.forEach(function(field) {
-        field.addEventListener('blur', function() {
-          checkAndAdvance('summarySection', 'experienceSection');
-        });
-      });
-      
-      const experienceFields = document.querySelectorAll('#experienceSection input, #experienceSection textarea');
-      experienceFields.forEach(function(field) {
-        field.addEventListener('blur', function() {
-          checkAndAdvance('experienceSection', 'skillsSection');
-        });
-      });
-      
-      const skillsFields = document.querySelectorAll('#skillsSection textarea');
-      skillsFields.forEach(function(field) {
-        field.addEventListener('blur', function() {
-          checkAndAdvance('skillsSection', 'educationSection');
-        });
-      });
-    });
-  </script>
 </x-layouts.app>
