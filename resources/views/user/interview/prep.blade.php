@@ -379,6 +379,11 @@
     <script>
         const hasPremiumAccess = @json($hasPremiumAccess);
         let uploadedResumeFile = null;
+        let allQuestions = [];
+        let questionsPerPage = 3;
+        let currentPage = 0;
+        let questionsPerPage = 3;
+        let currentPage = 0;
 
         // Clear uploaded file on page load and autofocus
         window.addEventListener('DOMContentLoaded', function() {
@@ -540,44 +545,10 @@
             const progressBadge = document.getElementById('progressBadge');
 
             if (data.questions && data.questions.length > 0) {
+                allQuestions = data.questions;
+                currentPage = 0;
                 progressBadge.textContent = `Question 1 of ${data.questions.length}`;
-                let html = '';
-                data.questions.forEach((q, index) => {
-                    const previewText = (q.sample_answer || '').substring(0, 150).trim() + (q.sample_answer && q.sample_answer.length > 150 ? '...' : '');
-                    const uniqueId = `answer-${index}`;
-                    html += `
-                        <div class="question-card">
-                            <div class="d-flex align-items-start">
-                                <div class="question-number">${index + 1}</div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1 fw-600">${escapeHtml(q.question)}</h6>
-                                    ${q.sample_answer ? `
-                                        <div class="answer-preview text-muted small">💡 Sample answer available</div>
-                                        <div class="answer-toggle" onclick="toggleAnswer('${uniqueId}')">
-                                            <i class="bx bx-chevron-down me-1" style="vertical-align:-2px;"></i>
-                                            <span id="${uniqueId}-text">Show sample answer</span>
-                                        </div>
-                                        <div class="answer-box" id="${uniqueId}">
-                                            <strong class="d-block mb-1" style="color:#16a34a;">
-                                                <i class="bx bx-bulb me-1"></i>Sample Answer
-                                            </strong>
-                                            <p class="mb-0 small" style="line-height:1.5;">${escapeHtml(q.sample_answer)}</p>
-                                        </div>
-                                    ` : ''}
-                                    ${q.tips && q.tips.length > 0 ? `
-                                        <div class="tips-box">
-                                            <strong class="d-block mb-0.5" style="color:#6b7280;">💡 Tips:</strong>
-                                            <ul>
-                                                ${q.tips.map(tip => `<li>${escapeHtml(tip)}</li>`).join('')}
-                                            </ul>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                questionsList.innerHTML = html;
+                renderQuestions();
             }
 
             // Pro features
@@ -592,6 +563,63 @@
                     document.getElementById('salaryContent').innerHTML = formatText(data.salary_tips);
                 }
             }
+        }
+
+        function renderQuestions() {
+            const questionsList = document.getElementById('questionsList');
+            const startIndex = 0;
+            const endIndex = (currentPage + 1) * questionsPerPage;
+            const visibleQuestions = allQuestions.slice(startIndex, endIndex);
+
+            let html = '';
+            visibleQuestions.forEach((q, index) => {
+                const absoluteIndex = index;
+                const uniqueId = `answer-${absoluteIndex}`;
+                html += `
+                    <div class="question-card">
+                        <div class="d-flex align-items-start">
+                            <div class="question-number">${absoluteIndex + 1}</div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 fw-600">${escapeHtml(q.question)}</h6>
+                                ${q.sample_answer ? `
+                                    <div class="answer-preview text-muted small">💡 Sample answer available</div>
+                                    <div class="answer-toggle" onclick="toggleAnswer('${uniqueId}')">
+                                        <i class="bx bx-chevron-down me-1" style="vertical-align:-2px;"></i>
+                                        <span id="${uniqueId}-text">Show sample answer</span>
+                                    </div>
+                                    <div class="answer-box" id="${uniqueId}">
+                                        <strong class="d-block mb-1" style="color:#16a34a;">
+                                            <i class="bx bx-bulb me-1"></i>Sample Answer
+                                        </strong>
+                                        <p class="mb-0 small" style="line-height:1.5;">${escapeHtml(q.sample_answer)}</p>
+                                    </div>
+                                ` : ''}
+                                ${q.tips && q.tips.length > 0 ? `
+                                    <div class="tips-box">
+                                        <strong class="d-block mb-0.5" style="color:#6b7280;">💡 Tips:</strong>
+                                        <ul>
+                                            ${q.tips.map(tip => `<li>${escapeHtml(tip)}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Add load more button if there are more questions
+            if (endIndex < allQuestions.length) {
+                html += `
+                    <div class="text-center mt-3 mb-4">
+                        <button class="btn btn-outline-primary btn-sm" onclick="loadMoreQuestions()" id="loadMoreBtn">
+                            <i class="bx bx-plus me-1"></i> Load more questions (${allQuestions.length - endIndex} remaining)
+                        </button>
+                    </div>
+                `;
+            }
+
+            questionsList.innerHTML = html;
         }
 
         function formatText(text) {
@@ -610,6 +638,11 @@
             if (!answerBox) return;
             answerBox.classList.toggle('show');
             textSpan.textContent = answerBox.classList.contains('show') ? 'Hide sample answer' : 'Show sample answer';
+        }
+
+        function loadMoreQuestions() {
+            currentPage++;
+            renderQuestions();
         }
 
         // Add visual feedback when resume is selected from dropdown
