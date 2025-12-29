@@ -41,7 +41,6 @@
 
           @if($resumes->isEmpty())
             <div class="text-center py-5">
-              <i class="bx bx-file" style="font-size: 64px; color: #ddd;"></i>
               @if($hasAnyResumes && (request('search') || request('status')))
                 <h5 class="mt-3 text-muted">No resumes match your filters</h5>
                 <p class="text-muted">Try adjusting your search or filters</p>

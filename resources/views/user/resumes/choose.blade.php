@@ -93,13 +93,6 @@
                 @endif
               </div>
             </div>
-
-            <div class="card-footer bg-transparent" style="border-radius: 0 0 12px 12px;">
-              <small class="text-muted">
-                <i class="bx bx-time me-1"></i>
-                Updated {{ $template->updated_at->diffForHumans() }}
-              </small>
-            </div>
           </div>
         </div>
       @endforeach
