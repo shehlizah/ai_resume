@@ -3,34 +3,30 @@
     <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Fill Your Resume Details</h5>
       <a href="{{ route('user.resumes.choose') }}" class="btn btn-secondary btn-sm">
-        ← Back
-      </a>
-    </div>
-    <div class="card-body">
-      <div class="text-center mb-4">
-        @if($template->preview_image)
-          <img src="{{ asset($template->preview_image) }}"
-               alt="Preview"
-               class="img-thumbnail"
-               style="max-width: 180px; border-radius: 8px;">
-        @else
-          <div class="bg-light d-inline-block p-4 rounded">
-            <i class="bx bx-file" style="font-size: 48px; color: #ddd;"></i>
           </div>
-        @endif
-        <h6 class="mt-3">{{ $template->name }}</h6>
-        <p class="text-muted small">{{ $template->description }}</p>
-      </div>
-
-      <!-- Show any errors -->
-      @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          <i class="bx bx-error-circle me-2"></i>
-          {{ session('error') }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-      @endif
 
+        <!-- Step 2: Professional Summary -->
+        <div class="card mb-4 step-section d-none" data-step="2">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="mb-0 d-flex align-items-center"><i class="bx bx-file-blank me-2"></i> Professional Summary</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#summaryAIModal">
+                <i class="bx bx-sparkles"></i> Generate with AI
+              </button>
+            </div>
+            <div class="mb-2 small text-muted">2–3 lines that explain who you are professionally.</div>
+            <textarea name="summary"
+                      rows="3"
+                      class="form-control @error('summary') is-invalid @enderror"
+                      id="summaryField"
+                      placeholder="Write a brief professional summary about yourself...">{{ old('summary') }}</textarea>
+            <small class="text-muted">A 2-3 sentence overview of your professional background and goals</small>
+            @error('summary')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+        </div>
       @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
           <strong>Please fix the following errors:</strong>
@@ -43,14 +39,7 @@
         </div>
       @endif
 
-      <!-- AI Info Alert -->
-      <div class="alert alert-info alert-dismissible fade show" role="alert">
-        <i class="bx bx-sparkles me-2"></i>
-        <strong>AI-Powered Resume Builder!</strong> Click the <strong>✨ Generate with AI</strong> buttons to automatically generate professional content for each section.
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-
-      <!-- Form (normal submission) -->
+      <!-- Stepper and Step-based Form -->
       <form method="POST"
             action="{{ route('user.resumes.generate') }}"
             id="resumeForm"
@@ -58,107 +47,119 @@
         @csrf
         <input type="hidden" name="template_id" value="{{ $template->id }}">
 
-        <!-- Personal Info -->
-        <div class="card mb-4">
-          <div class="card-body">
-            <h6 class="mb-3"><i class="bx bx-user"></i> Personal Details</h6>
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label class="form-label">Full Name *</label>
-                <input type="text"
-                       name="name"
-                       class="form-control @error('name') is-invalid @enderror"
-                       value="{{ old('name') }}"
-                       required>
-                @error('name')
-                  <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Job Title *</label>
-                <input type="text"
-                       name="title"
-                       class="form-control @error('title') is-invalid @enderror"
-                       value="{{ old('title') }}"
-                       required>
-                @error('title')
-                  <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label class="form-label">Email *</label>
-                <input type="email"
-                       name="email"
-                       class="form-control @error('email') is-invalid @enderror"
-                       value="{{ old('email') }}"
-                       required>
-                @error('email')
-                  <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Phone *</label>
-                <input type="text"
-                       name="phone"
-                       class="form-control @error('phone') is-invalid @enderror"
-                       value="{{ old('phone') }}"
-                       required>
-                @error('phone')
-                  <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-12">
-                <label class="form-label">Address</label>
-                <input type="text"
-                       name="address"
-                       class="form-control @error('address') is-invalid @enderror"
-                       value="{{ old('address') }}"
-                       placeholder="e.g., 123 Main St, New York, NY 10001">
-                @error('address')
-                  <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-              </div>
-            </div>
+        <div class="mb-4">
+          <div class="d-flex align-items-center mb-2">
+            <div id="stepIndicator" class="fw-semibold text-primary">Step 1 of 5</div>
+            <div class="ms-3 small text-muted" id="stepHelper">Enter your personal details</div>
+          </div>
+          <div class="progress" style="height: 6px;">
+            <div class="progress-bar bg-primary" id="stepProgress" style="width: 20%;"></div>
+          </div>
+        </div>
 
-            <!-- Profile Picture Upload -->
-            <div class="row mb-3">
-              <div class="col-md-12">
-                <label class="form-label">Profile Picture (Optional)</label>
-                <div class="border rounded p-3 text-center" style="background: #f8f9fa;">
-                  <div id="picturePreview" class="mb-3" style="display: none;">
-                    <img id="picturePreviewImg" src="" alt="Preview" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #667eea;">
-                  </div>
-                  <div id="pictureUploadZone">
-                    <i class="bx bx-image-add" style="font-size: 2rem; color: #667eea;"></i>
-                    <p class="mb-1 mt-2"><strong>Upload Your Photo</strong></p>
-                    <small class="text-muted">JPG, PNG (Max 2MB) • Recommended: 300x300px</small>
-                  </div>
-                  <input type="file"
-                         name="profile_picture"
-                         id="profilePictureInput"
-                         class="form-control mt-2 @error('profile_picture') is-invalid @enderror"
-                         accept="image/jpeg,image/png,image/jpg"
-                         style="display: none;">
-                  <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="document.getElementById('profilePictureInput').click()">
-                    <i class="bx bx-upload"></i> Choose Photo
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-danger mt-2" id="removePictureBtn" style="display: none;">
-                    <i class="bx bx-trash"></i> Remove
-                  </button>
-                  @error('profile_picture')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
+        <div id="stepSections">
+          <!-- Step 1: Personal Details -->
+          <div class="card mb-4 step-section" data-step="1">
+            <div class="card-body">
+              <h6 class="mb-3 d-flex align-items-center"><i class="bx bx-user me-2"></i> Personal Details <span class="text-muted small ms-2">(Required)</span></h6>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Full Name *</label>
+                  <input type="text"
+                         name="name"
+                         class="form-control @error('name') is-invalid @enderror"
+                         value="{{ old('name') }}"
+                         required>
+                  @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
                 </div>
-                <small class="text-muted d-block mt-1">
-                  <i class="bx bx-info-circle"></i> Your photo will appear on the resume if the template supports it
-                </small>
+                <div class="col-md-6">
+                  <label class="form-label">Job Title *</label>
+                  <input type="text"
+                         name="title"
+                         class="form-control @error('title') is-invalid @enderror"
+                         value="{{ old('title') }}"
+                         required>
+                  @error('title')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                  @enderror
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Email *</label>
+                  <input type="email"
+                         name="email"
+                         class="form-control @error('email') is-invalid @enderror"
+                         value="{{ old('email') }}"
+                         required>
+                  @error('email')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                  @enderror
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Phone *</label>
+                  <input type="text"
+                         name="phone"
+                         class="form-control @error('phone') is-invalid @enderror"
+                         value="{{ old('phone') }}"
+                         required>
+                  @error('phone')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                  @enderror
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-12">
+                  <label class="form-label">Address</label>
+                  <input type="text"
+                         name="address"
+                         class="form-control @error('address') is-invalid @enderror"
+                         value="{{ old('address') }}"
+                         placeholder="e.g., 123 Main St, New York, NY 10001">
+                  @error('address')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                  @enderror
+                </div>
+              </div>
+              <!-- Profile Picture Upload -->
+              <div class="row mb-3">
+                <div class="col-md-12">
+                  <label class="form-label">Profile Picture (Optional)</label>
+                  <div class="border rounded p-3 text-center" style="background: #f8f9fa;">
+                    <div id="picturePreview" class="mb-3" style="display: none;">
+                      <img id="picturePreviewImg" src="" alt="Preview" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #667eea;">
+                    </div>
+                    <div id="pictureUploadZone">
+                      <i class="bx bx-image-add" style="font-size: 2rem; color: #667eea;"></i>
+                      <p class="mb-1 mt-2"><strong>Upload Your Photo</strong></p>
+                      <small class="text-muted">JPG, PNG (Max 2MB) • Recommended: 300x300px</small>
+                    </div>
+                    <input type="file"
+                           name="profile_picture"
+                           id="profilePictureInput"
+                           class="form-control mt-2 @error('profile_picture') is-invalid @enderror"
+                           accept="image/jpeg,image/png,image/jpg"
+                           style="display: none;">
+                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="document.getElementById('profilePictureInput').click()">
+                      <i class="bx bx-upload"></i> Choose Photo
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger mt-2" id="removePictureBtn" style="display: none;">
+                      <i class="bx bx-trash"></i> Remove
+                    </button>
+                    @error('profile_picture')
+                      <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                  </div>
+                  <small class="text-muted d-block mt-1">
+                    <i class="bx bx-info-circle"></i> Your photo will appear on the resume if the template supports it
+                  </small>
+                </div>
               </div>
             </div>
           </div>
+          <!-- ...other steps will be inserted here... -->
         </div>
 
         <!-- Professional Summary -->
@@ -187,20 +188,20 @@
           </div>
         </div>
 
-        <!-- Experience -->
-        <div class="card mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#experienceSection" role="button" aria-expanded="false" aria-controls="experienceSection" style="cursor: pointer;">
-            <h6 class="mb-0"><i class="bx bx-briefcase"></i> Experience</h6>
-            <i class="bx bx-chevron-down"></i>
-          </div>
-          <div class="collapse" id="experienceSection">
-            <div class="card-body">
-              <div class="d-flex justify-content-end mb-3">
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
-                  <i class="bx bx-plus"></i> Add More
-                </button>
-              </div>
-              <div id="experienceContainer">
+        <!-- Step 3: Experience -->
+        <div class="card mb-4 step-section d-none" data-step="3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="mb-0 d-flex align-items-center"><i class="bx bx-briefcase me-2"></i> Experience</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="showExperienceModalForIndex(0)"><i class="bx bx-sparkles"></i> Generate with AI</button>
+            </div>
+            <div class="mb-2 small text-muted">Add your work history, roles, and achievements.</div>
+            <div class="d-flex justify-content-end mb-3">
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
+                <i class="bx bx-plus"></i> Add More
+              </button>
+            </div>
+            <div id="experienceContainer">
               <div class="mb-4 p-3 border-bottom" id="experienceWrapper0">
                 <label class="form-label fw-500 mt-2 mb-2">Experience 1 <span class="badge bg-secondary ms-2">Entry</span></label>
                 <div class="row g-2 mb-2">
@@ -226,54 +227,49 @@
                 </div>
               </div>
             </div>
-              <small class="text-muted">Example: Senior Developer at ABC Corp (2020-Present) - Led development team and managed projects</small>
-              @error('experience.0')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
+            <small class="text-muted">Example: Senior Developer at ABC Corp (2020-Present) - Led development team and managed projects</small>
+            @error('experience.0')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
         </div>
 
-        <!-- Skills -->
-        <div class="card mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#skillsSection" role="button" aria-expanded="false" aria-controls="skillsSection" style="cursor: pointer;">
-            <h6 class="mb-0"><i class="bx bx-star"></i> Skills</h6>
-            <i class="bx bx-chevron-down"></i>
-          </div>
-          <div class="collapse" id="skillsSection">
-            <div class="card-body">
-              <div class="d-flex justify-content-end mb-3">
-                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#skillsAIModal">
-                  <i class="bx bx-sparkles"></i> Generate with AI
-                </button>
-              </div>
-              <textarea name="skills"
+        <!-- Step 4: Skills -->
+        <div class="card mb-4 step-section d-none" data-step="4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="mb-0 d-flex align-items-center"><i class="bx bx-star me-2"></i> Skills</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#skillsAIModal">
+                <i class="bx bx-sparkles"></i> Generate with AI
+              </button>
+            </div>
+            <div class="mb-2 small text-muted">List your most relevant skills for the job you want.</div>
+            <textarea name="skills"
                       rows="4"
                       class="form-control @error('skills') is-invalid @enderror"
                       id="skillsField"
                       placeholder="List your skills...">{{ old('skills') }}</textarea>
-              <small class="text-muted">Example: PHP, Laravel, Vue.js, MySQL, AWS, Docker</small>
-              @error('skills')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
+            <small class="text-muted">Example: PHP, Laravel, Vue.js, MySQL, AWS, Docker</small>
+            @error('skills')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
         </div>
 
-        <!-- Education -->
-        <div class="card mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#educationSection" role="button" aria-expanded="false" aria-controls="educationSection" style="cursor: pointer;">
-            <h6 class="mb-0"><i class="bx bx-book"></i> Education</h6>
-            <i class="bx bx-chevron-down"></i>
-          </div>
-          <div class="collapse" id="educationSection">
-            <div class="card-body">
-              <div class="d-flex justify-content-end mb-3">
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
-                  <i class="bx bx-plus"></i> Add More
-                </button>
-              </div>
-              <div id="educationContainer">
+        <!-- Step 5: Education -->
+        <div class="card mb-4 step-section d-none" data-step="5">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="mb-0 d-flex align-items-center"><i class="bx bx-book me-2"></i> Education</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="showEducationModalForIndex(0)"><i class="bx bx-sparkles"></i> Generate with AI</button>
+            </div>
+            <div class="mb-2 small text-muted">Add your degrees, schools, and graduation years.</div>
+            <div class="d-flex justify-content-end mb-3">
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
+                <i class="bx bx-plus"></i> Add More
+              </button>
+            </div>
+            <div id="educationContainer">
               <div class="mb-4 p-3 border-bottom" id="educationWrapper0">
                 <label class="form-label fw-500 mt-2 mb-2">Education 1 <span class="badge bg-secondary ms-2">Entry</span></label>
                 <div class="row g-2 mb-2">
@@ -301,18 +297,19 @@
                 </div>
               </div>
             </div>
-              <small class="text-muted">Example: BS Computer Science, XYZ University (2018) - GPA: 3.8/4.0</small>
-              @error('education.0')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
+            <small class="text-muted">Example: BS Computer Science, XYZ University (2018) - GPA: 3.8/4.0</small>
+            @error('education.0')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
         </div>
 
-        <!-- Submit -->
-        <button type="submit" class="btn btn-primary btn-lg w-100" id="generateBtn">
-          <i class="bx bx-show me-1"></i> Generate Preview
-        </button>
+        <!-- Step Navigation Buttons -->
+        <div class="d-flex justify-content-between align-items-center mt-4 sticky-bottom bg-white py-3" style="z-index: 10; border-top: 1px solid #eee;">
+          <button type="button" class="btn btn-outline-secondary" id="prevStepBtn" disabled>Back</button>
+          <button type="button" class="btn btn-primary" id="nextStepBtn">Next</button>
+          <button type="submit" class="btn btn-success d-none" id="previewResumeBtn"><i class="bx bx-show me-1"></i> Preview Resume</button>
+        </div>
       </form>
     </div>
   </div>
@@ -906,6 +903,51 @@
       pictureUploadZone.style.display = 'block';
       removePictureBtn.style.display = 'none';
     });
+
+    // Stepper logic for step-based resume form
+    const stepSections = Array.from(document.querySelectorAll('.step-section'));
+    const prevBtn = document.getElementById('prevStepBtn');
+    const nextBtn = document.getElementById('nextStepBtn');
+    const previewBtn = document.getElementById('previewResumeBtn');
+    const stepIndicator = document.getElementById('stepIndicator');
+    const stepHelper = document.getElementById('stepHelper');
+    const stepProgress = document.getElementById('stepProgress');
+
+    const stepHelpers = [
+      'Enter your personal details',
+      'Write a short professional summary',
+      'Add your work experience',
+      'List your skills',
+      'Add your education history'
+    ];
+
+    let currentStep = 0;
+    function showStep(idx) {
+      stepSections.forEach((section, i) => {
+        section.classList.toggle('d-none', i !== idx);
+      });
+      stepIndicator.textContent = `Step ${idx + 1} of 5`;
+      stepHelper.textContent = stepHelpers[idx] || '';
+      stepProgress.style.width = `${((idx + 1) / 5) * 100}%`;
+      prevBtn.disabled = idx === 0;
+      nextBtn.classList.toggle('d-none', idx === stepSections.length - 1);
+      previewBtn.classList.toggle('d-none', idx !== stepSections.length - 1);
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+      }
+    });
+    nextBtn.addEventListener('click', () => {
+      if (currentStep < stepSections.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    });
+    // On page load, show first step
+    showStep(currentStep);
   </script>
 
   <!-- Mobile Responsive Styles for Resume Form -->
