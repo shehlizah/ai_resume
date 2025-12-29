@@ -939,12 +939,12 @@ private function fillTemplate($html, $css, $data)
         if ($hasActivePackage) {
             $downloadButton = '
     <a href="#" onclick="window.print(); return false;" class="download-btn no-print">
-        📥 Download PDF
+        <i class=\"bx bx-download\"></i> Download PDF
     </a>';
         } else {
             $downloadButton = '
     <a href="' . route('user.pricing') . '" class="download-btn no-print" style="background: #f59e0b;">
-        🔒 Upgrade to Download
+        <i class=\"bx bx-lock\"></i> Upgrade to Download
     </a>';
 
             // Block all print methods for non-subscribed users
@@ -1007,9 +1007,9 @@ private function fillTemplate($html, $css, $data)
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
-            background: #e5e7eb;
-            padding-top: 180px;
-            padding-bottom: 80px;
+            background: #f5f5f5;
+            padding-top: 140px;
+            padding-bottom: 40px;
         }
 
         /* Print styles - Remove browser headers/footers */
@@ -1031,10 +1031,10 @@ private function fillTemplate($html, $css, $data)
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
-            padding: 15px 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 12px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             z-index: 9998;
             display: flex;
             justify-content: space-between;
@@ -1047,29 +1047,29 @@ private function fillTemplate($html, $css, $data)
         }
 
         .preview-header h1 {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
 
         .preview-header p {
-            font-size: 13px;
-            opacity: 0.9;
+            font-size: 12px;
+            opacity: 0.85;
         }
 
-        /* Score Badge in Header */
+        /* Score Badge in Header - Smaller */
         .header-score {
             display: flex;
             align-items: center;
-            gap: 15px;
-            background: rgba(255,255,255,0.15);
-            padding: 10px 20px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
+            gap: 12px;
+            background: rgba(255,255,255,0.12);
+            padding: 8px 16px;
+            border-radius: 8px;
+            white-space: nowrap;
         }
 
         .header-score-number {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: bold;
             line-height: 1;
         }
@@ -1079,62 +1079,80 @@ private function fillTemplate($html, $css, $data)
         }
 
         .header-score-grade {
-            padding: 4px 12px;
-            border-radius: 6px;
+            padding: 3px 8px;
+            border-radius: 4px;
             color: white;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             display: inline-block;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .header-score-label {
-            font-size: 11px;
-            opacity: 0.9;
+            font-size: 10px;
+            opacity: 0.85;
         }
 
-        /* Action Cards Container */
+        /* Action Cards Container - Horizontal Bar */
         .action-cards {
             position: fixed;
-            top: 100px;
+            top: 60px;
             left: 0;
             right: 0;
             display: flex;
-            gap: 10px;
-            padding: 10px 20px;
-            background: #f5f5f5;
+            gap: 20px;
+            padding: 12px 20px;
+            background: white;
             z-index: 9997;
             border-bottom: 1px solid #e5e7eb;
+            align-items: center;
+            justify-content: flex-start;
         }
 
         .action-card {
-            flex: 1;
-            background: white;
-            border-radius: 10px;
-            padding: 12px;
-            text-align: center;
+            background: transparent;
+            border: none;
+            padding: 0;
+            text-align: left;
             text-decoration: none;
             color: #333;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
+            box-shadow: none;
+            transition: all 0.2s ease;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            border-radius: 0;
         }
 
         .action-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+            transform: none;
+            box-shadow: none;
+            color: #667eea;
         }
 
-        .action-card.primary { border-top: 3px solid #667eea; }
-        .action-card.success { border-top: 3px solid #10b981; }
-        .action-card.warning { border-top: 3px solid #f59e0b; }
+        .action-card::before {
+            content: '';
+            width: 1px;
+            height: 20px;
+            background: #e5e7eb;
+            margin: 0 8px;
+        }
+
+        .action-card:first-child::before {
+            display: none;
+            margin: 0;
+        }
+
+        .action-card.primary { border-top: none; }
+        .action-card.success { border-top: none; }
+        .action-card.warning { border-top: none; }
 
         .action-card i {
-            font-size: 24px;
-            margin-bottom: 6px;
+            font-size: 18px;
+            margin-bottom: 0;
         }
 
         .action-card.primary i { color: #667eea; }
@@ -1143,13 +1161,12 @@ private function fillTemplate($html, $css, $data)
 
         .action-card strong {
             font-size: 13px;
-            display: block;
-            margin-bottom: 3px;
+            display: inline;
+            margin-bottom: 0;
         }
 
         .action-card small {
-            font-size: 10px;
-            color: #666;
+            display: none;
         }
 
         /* Score Badge - Hidden (moved to header) */
@@ -1157,14 +1174,15 @@ private function fillTemplate($html, $css, $data)
             display: none;
         }
 
-        /* A4 Paper View */
+        /* A4 Paper View - Centered */
         .a4-wrapper {
             width: 210mm;
             min-height: 297mm;
-            margin: 20px auto;
+            margin: 30px auto;
             background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             position: relative;
+            border-radius: 4px;
         }
 
         .resume-container {
@@ -1186,46 +1204,52 @@ private function fillTemplate($html, $css, $data)
             z-index: 9998;
         }
 
-        /* Download button */
+        /* Download button - Sticky right panel */
         .download-btn {
             position: fixed;
-            bottom: 50px;
+            top: 120px;
             right: 20px;
             background: #667eea;
             color: white;
-            padding: 12px 25px;
-            border-radius: 50px;
+            padding: 14px 20px;
+            border-radius: 6px;
             text-decoration: none;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
             z-index: 9999;
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 14px;
+            transition: all 0.2s ease;
+            width: 220px;
+            justify-content: center;
+            border: none;
         }
 
         .download-btn:hover {
             background: #5568d3;
-            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
         }
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
             body {
-                padding-top: 210px;
+                padding-top: 150px;
+                padding-bottom: 40px;
                 background: #f5f5f5;
             }
 
             .preview-header {
-                padding: 12px 15px;
-                flex-direction: column;
-                align-items: flex-start;
+                padding: 10px 15px;
+                flex-direction: row;
+                align-items: center;
                 gap: 10px;
             }
 
             .header-content h1 {
-                font-size: 18px;
+                font-size: 16px;
             }
 
             .header-content p {
@@ -1233,60 +1257,42 @@ private function fillTemplate($html, $css, $data)
             }
 
             .header-score {
-                width: 100%;
-                justify-content: space-between;
-                padding: 8px 15px;
+                gap: 8px;
+                padding: 6px 12px;
             }
 
             .header-score-number {
-                font-size: 28px;
+                font-size: 24px;
             }
 
             .header-score-grade {
                 font-size: 10px;
-                padding: 3px 10px;
+                padding: 2px 6px;
             }
 
             .header-score-label {
-                font-size: 10px;
+                font-size: 9px;
             }
 
             .action-cards {
-                top: 145px;
-                padding: 10px;
-                gap: 10px;
-                flex-wrap: nowrap;
+                top: 65px;
+                padding: 8px 15px;
+                gap: 12px;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
-                justify-content: center;
             }
 
             .action-card {
-                min-width: 80px;
-                max-width: 80px;
-                padding: 10px 5px;
+                white-space: nowrap;
                 flex-shrink: 0;
-                flex-direction: column;
             }
 
             .action-card i {
-                font-size: 26px;
-                margin-bottom: 4px;
-            }
-
-            .action-card div {
-                display: block;
+                font-size: 16px;
             }
 
             .action-card strong {
-                display: block;
-                font-size: 9px;
-                line-height: 1.2;
-                margin-bottom: 0;
-            }
-
-            .action-card small {
-                display: none;
+                font-size: 12px;
             }
 
             .a4-wrapper {
@@ -1294,10 +1300,17 @@ private function fillTemplate($html, $css, $data)
                 min-height: auto;
                 margin: 10px auto;
                 box-shadow: none;
+                border-radius: 0;
             }
 
             .download-btn {
-                bottom: 45px;
+                top: 75px;
+                right: 15px;
+                padding: 10px 15px;
+                font-size: 12px;
+                width: auto;
+                border-radius: 4px;
+            }
                 right: 10px;
                 left: 10px;
                 width: calc(100% - 20px);

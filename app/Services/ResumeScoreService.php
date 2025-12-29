@@ -233,7 +233,7 @@ class ResumeScoreService
         if ($score >= 80) return 'Very Good';
         if ($score >= 70) return 'Good';
         if ($score >= 60) return 'Fair';
-        return 'Needs Improvement';
+        return 'Room for Improvement';
     }
 
     /**
