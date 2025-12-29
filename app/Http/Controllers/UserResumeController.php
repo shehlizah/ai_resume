@@ -1514,10 +1514,9 @@ private function getSampleData()
     {
         $resume = UserResume::where('user_id', Auth::id())->findOrFail($id);
 
-        // Delete file
-        $filePath = storage_path('app/public/' . $resume->generated_pdf_path);
-        if (file_exists($filePath)) {
-            unlink($filePath);
+        // Delete file if it exists and is a valid file path
+        if ($resume->generated_pdf_path && !in_array($resume->generated_pdf_path, ['html', null])) {
+            \Storage::disk('public')->delete($resume->generated_pdf_path);
         }
 
         $resume->delete();
