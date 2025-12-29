@@ -188,18 +188,24 @@
         }
 
         function replacePlaceholders(text) {
+            const today = formatToday();
             const map = {
                 '[Your Name]': fields.userName,
                 '[Your Address]': fields.userAddress,
                 '[City, State, Zip Code]': fields.userAddress,
                 '[Email Address]': fields.userEmail,
+                '[Your Email]': fields.userEmail,
                 '[Phone Number]': fields.userPhone,
-                '[Date]': formatToday(),
+                '[Date]': today,
+                "[Today's Date]": today,
+                '[Today’s Date]': today,
                 '[Recipient Name]': fields.recipient,
                 '[Company Name]': fields.company,
                 '[Company Address]': fields.companyAddress,
                 '[Last Name]': '',
-                'John Abc': fields.recipient || 'Hiring Manager'
+                'John Abc': fields.recipient || 'Hiring Manager',
+                'John Doe': fields.recipient || 'Hiring Manager',
+                'Creative Chaos': fields.company || ''
             };
 
             let updated = text;
@@ -208,12 +214,25 @@
                 updated = updated.replace(re, val || '');
             });
 
-            updated = updated
-                .split('\n')
-                .map(line => line.trim())
-                .filter(line => line && !/\[.*\]/.test(line))
-                .join('\n');
+            let lines = updated.split('\n').map(line => line.trim());
+            lines = lines.filter(line => line && !/\[.*\]/.test(line) && !/^John Doe$/i.test(line));
 
+            const headerValues = new Set([
+                fields.userName,
+                fields.userAddress,
+                fields.userEmail,
+                fields.userPhone,
+                today,
+                fields.recipient,
+                fields.company,
+                fields.companyAddress,
+            ].filter(Boolean));
+
+            while (lines.length && (headerValues.has(lines[0]) || (!/^Dear\b/i.test(lines[0]) && lines[0] === ''))) {
+                lines.shift();
+            }
+
+            updated = lines.join('\n');
             return updated.replace(/\n{3,}/g, '\n\n').trim();
         }
 

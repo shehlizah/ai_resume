@@ -403,18 +403,24 @@
 
         function replacePlaceholders(text) {
             const getVal = id => (document.getElementById(id)?.value || '').trim();
+            const today = formatToday();
             const map = {
                 '[Your Name]': getVal('user_name'),
                 '[Your Address]': getVal('user_address'),
                 '[City, State, Zip Code]': getVal('user_address'),
                 '[Email Address]': getVal('user_email'),
+                '[Your Email]': getVal('user_email'),
                 '[Phone Number]': getVal('user_phone'),
-                '[Date]': formatToday(),
+                '[Date]': today,
+                "[Today's Date]": today,
+                '[Today’s Date]': today,
                 '[Recipient Name]': getVal('recipient_name') || 'Hiring Manager',
                 '[Company Name]': getVal('company_name'),
                 '[Company Address]': getVal('company_address'),
                 '[Last Name]': '',
-                'John Abc': getVal('recipient_name') || 'Hiring Manager'
+                'John Abc': getVal('recipient_name') || 'Hiring Manager',
+                'John Doe': getVal('recipient_name') || 'Hiring Manager',
+                'Creative Chaos': getVal('company_name') || ''
             };
 
             let updated = text;
@@ -423,13 +429,28 @@
                 updated = updated.replace(re, val || '');
             });
 
-            // Drop any leftover placeholder lines and collapse blanks
-            updated = updated
-                .split('\n')
-                .map(line => line.trim())
-                .filter(line => line && !/\[.*\]/.test(line))
-                .join('\n');
+            let lines = updated.split('\n').map(line => line.trim());
 
+            // Remove lines that still look like placeholders or sample headers
+            lines = lines.filter(line => line && !/\[.*\]/.test(line) && !/^John Doe$/i.test(line));
+
+            // Drop leading header block (user/recipient/company/details)
+            const headerValues = new Set([
+                getVal('user_name'),
+                getVal('user_address'),
+                getVal('user_email'),
+                getVal('user_phone'),
+                today,
+                getVal('recipient_name'),
+                getVal('company_name'),
+                getVal('company_address'),
+            ].filter(Boolean));
+
+            while (lines.length && (headerValues.has(lines[0]) || /^Dear\b/i.test(lines[0]) === false && lines[0] === '')) {
+                lines.shift();
+            }
+
+            updated = lines.join('\n');
             return updated.replace(/\n{3,}/g, '\n\n').trim();
         }
 
