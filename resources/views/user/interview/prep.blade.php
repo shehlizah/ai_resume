@@ -172,22 +172,44 @@
 
                 <!-- Results Container -->
                 <div id="resultsContainer" style="display: none;">
-                    <!-- Questions Section -->
-                    <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0 text-white">
-                                <i class="bx bx-question-mark me-2"></i>
-                                Interview Questions
-                            </h5>
+                    <!-- Progress & Questions Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="mb-0">Your Interview Questions</h5>
+                            <small class="text-muted">Practice with tailored AI questions</small>
                         </div>
-                        <div class="card-body" id="questionsList">
-                            <!-- Populated by JavaScript -->
+                        <div class="text-end">
+                            <span class="badge bg-primary" id="progressBadge">Question 1 of 8</span>
+                        </div>
+                    </div>
+
+                    <!-- Questions Section -->
+                    <div id="questionsList" class="mb-4">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <!-- Bottom CTA Bar -->
+                    <div class="sticky-bottom bg-white border-top py-3 px-0 mt-4" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.05);">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-8">
+                                <p class="mb-0 text-muted small"><strong>Next Step:</strong> Practice these questions to ace your interview.</p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <a href="{{ route('user.interview.ai-practice') }}" class="btn btn-primary btn-sm">
+                                    <i class="bx bx-microphone me-1"></i> Start Practice
+                                </a>
+                                @if(!$hasPremiumAccess)
+                                <a href="{{ route('user.pricing') }}" class="btn btn-outline-secondary btn-sm ms-2">
+                                    <i class="bx bx-crown me-1"></i> Unlock AI Feedback
+                                </a>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
                     <!-- Pro Features -->
                     @if($hasPremiumAccess)
-                    <div class="row mb-4">
+                    <div class="row mb-4 mt-5">
                         <div class="col-md-4">
                             <div class="card border-success h-100">
                                 <div class="card-body text-center">
@@ -259,20 +281,98 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
+        #resultsContainer {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
         .question-card {
-            border-left: 4px solid #667eea;
-            margin-bottom: 1rem;
-            padding: 1rem;
+            border-left: 3px solid #667eea;
+            margin-bottom: 0.8rem;
+            padding: 0.9rem;
             background: #f8f9fa;
-            border-radius: 4px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .question-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .answer-toggle {
+            cursor: pointer;
+            user-select: none;
+            padding: 0.4rem 0.6rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #667eea;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .answer-toggle:hover {
+            color: #5568d3;
         }
 
         .answer-box {
-            background: white;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 0.75rem;
-            border: 1px solid #e3e6f0;
+            background: #f0f7ff;
+            border-radius: 6px;
+            padding: 0.8rem;
+            margin-top: 0.5rem;
+            border-left: 3px solid #28a745;
+            display: none;
+        }
+
+        .answer-box.show {
+            display: block;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .answer-preview {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            margin-top: 0.3rem;
+        }
+
+        .tips-box {
+            background: #f3f4f6;
+            border-radius: 4px;
+            padding: 0.6rem 0.7rem;
+            margin-top: 0.5rem;
+            font-size: 0.8125rem;
+            color: #6b7280;
+            border-left: 2px solid #d1d5db;
+        }
+
+        .tips-box ul {
+            margin-bottom: 0;
+            padding-left: 1.2rem;
+        }
+
+        .tips-box li {
+            margin-bottom: 0.25rem;
         }
     </style>
 
@@ -437,32 +537,43 @@
 
         function displayResults(data) {
             const questionsList = document.getElementById('questionsList');
+            const progressBadge = document.getElementById('progressBadge');
 
             if (data.questions && data.questions.length > 0) {
+                progressBadge.textContent = `Question 1 of ${data.questions.length}`;
                 let html = '';
                 data.questions.forEach((q, index) => {
+                    const previewText = (q.sample_answer || '').substring(0, 150).trim() + (q.sample_answer && q.sample_answer.length > 150 ? '...' : '');
+                    const uniqueId = `answer-${index}`;
                     html += `
                         <div class="question-card">
-                            <h6>
-                                <span class="badge bg-primary me-2">${index + 1}</span>
-                                ${escapeHtml(q.question)}
-                            </h6>
-                            ${q.sample_answer ? `
-                                <div class="answer-box">
-                                    <strong class="text-success d-block mb-2">
-                                        <i class="bx bx-bulb me-1"></i>Sample Answer:
-                                    </strong>
-                                    <p class="mb-0">${escapeHtml(q.sample_answer)}</p>
+                            <div class="d-flex align-items-start">
+                                <div class="question-number">${index + 1}</div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-600">${escapeHtml(q.question)}</h6>
+                                    ${q.sample_answer ? `
+                                        <div class="answer-preview text-muted small">💡 Sample answer available</div>
+                                        <div class="answer-toggle" onclick="toggleAnswer('${uniqueId}')">
+                                            <i class="bx bx-chevron-down me-1" style="vertical-align:-2px;"></i>
+                                            <span id="${uniqueId}-text">Show sample answer</span>
+                                        </div>
+                                        <div class="answer-box" id="${uniqueId}">
+                                            <strong class="d-block mb-1" style="color:#16a34a;">
+                                                <i class="bx bx-bulb me-1"></i>Sample Answer
+                                            </strong>
+                                            <p class="mb-0 small" style="line-height:1.5;">${escapeHtml(q.sample_answer)}</p>
+                                        </div>
+                                    ` : ''}
+                                    ${q.tips && q.tips.length > 0 ? `
+                                        <div class="tips-box">
+                                            <strong class="d-block mb-0.5" style="color:#6b7280;">💡 Tips:</strong>
+                                            <ul>
+                                                ${q.tips.map(tip => `<li>${escapeHtml(tip)}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    ` : ''}
                                 </div>
-                            ` : ''}
-                            ${q.tips && q.tips.length > 0 ? `
-                                <div class="mt-2">
-                                    <strong class="small text-muted">Tips:</strong>
-                                    <ul class="small mb-0">
-                                        ${q.tips.map(tip => `<li>${escapeHtml(tip)}</li>`).join('')}
-                                    </ul>
-                                </div>
-                            ` : ''}
+                            </div>
                         </div>
                     `;
                 });
@@ -491,6 +602,14 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        function toggleAnswer(id) {
+            const answerBox = document.getElementById(id);
+            const textSpan = document.getElementById(id + '-text');
+            if (!answerBox) return;
+            answerBox.classList.toggle('show');
+            textSpan.textContent = answerBox.classList.contains('show') ? 'Hide sample answer' : 'Show sample answer';
         }
 
         // Add visual feedback when resume is selected from dropdown
