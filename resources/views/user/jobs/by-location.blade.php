@@ -521,18 +521,18 @@
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.08);
     }
-    
+
     .btn-primary:hover {
         background: #5568d3 !important;
         transform: translateY(-1px);
         box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35) !important;
     }
-    
+
     .drop-zone:hover {
         border-color: #667eea !important;
         background: #f3f4f6 !important;
     }
-    
+
     /* Example chip buttons */
     .btn-outline-primary.btn-sm {
         border-radius: 20px;
@@ -541,28 +541,28 @@
         border-width: 1.5px;
         transition: all 0.15s;
     }
-    
+
     .btn-outline-primary.btn-sm:hover {
         background: #667eea;
         border-color: #667eea;
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
     }
-    
+
     /* Card hover effects */
     .card {
         transition: box-shadow 0.2s;
     }
-    
+
     .card:hover {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
     }
-    
+
     /* Collapse toggle icon animation */
     button[data-bs-toggle="collapse"] .bx-chevron-down {
         transition: transform 0.25s ease;
     }
-    
+
     button[data-bs-toggle="collapse"][aria-expanded="true"] .bx-chevron-down {
         transform: rotate(180deg);
     }

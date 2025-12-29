@@ -40,7 +40,7 @@
 
         <!-- Accordion Container -->
         <div class="accordion" id="accordionSteps">
-        
+
         <!-- Step 1: Personal Details -->
         <div class="card mb-3 step-card" data-step="1">
           <div class="card-header" data-bs-toggle="collapse" data-bs-target="#personalSection" role="button" aria-expanded="true" aria-controls="personalSection" style="cursor: pointer;">
@@ -1092,7 +1092,7 @@
       const progressBar = document.getElementById('progressBar');
       const progressText = document.getElementById('progressText');
       const stepCards = document.querySelectorAll('.step-card');
-      
+
       // Update progress bar and text when a section is shown
       document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(header) {
         header.addEventListener('click', function() {
@@ -1101,7 +1101,7 @@
           updateProgress(stepNumber);
         });
       });
-      
+
       // Listen for collapse shown events to update progress
       document.querySelectorAll('.collapse').forEach(function(collapseEl) {
         collapseEl.addEventListener('shown.bs.collapse', function() {
@@ -1110,28 +1110,28 @@
           updateProgress(stepNumber);
         });
       });
-      
+
       function updateProgress(stepNumber) {
         const progress = (stepNumber / 5) * 100;
         progressBar.style.width = progress + '%';
         progressBar.setAttribute('aria-valuenow', progress);
         progressText.textContent = 'Step ' + stepNumber + ' of 5';
       }
-      
+
       // Auto-advance logic: check required fields and open next section
       function checkAndAdvance(currentSectionId, nextSectionId) {
         const currentSection = document.getElementById(currentSectionId);
         if (!currentSection) return;
-        
+
         const requiredFields = currentSection.querySelectorAll('input[required], textarea[required]');
         let allFilled = true;
-        
+
         requiredFields.forEach(function(field) {
           if (!field.value.trim()) {
             allFilled = false;
           }
         });
-        
+
         // If all required fields are filled, auto-open next section
         if (allFilled && nextSectionId) {
           const nextSection = document.getElementById(nextSectionId);
@@ -1144,7 +1144,7 @@
           }
         }
       }
-      
+
       // Add blur event listeners to required fields for auto-advance
       const personalFields = document.querySelectorAll('#personalSection input, #personalSection textarea');
       personalFields.forEach(function(field) {
@@ -1152,21 +1152,21 @@
           checkAndAdvance('personalSection', 'summarySection');
         });
       });
-      
+
       const summaryFields = document.querySelectorAll('#summarySection textarea');
       summaryFields.forEach(function(field) {
         field.addEventListener('blur', function() {
           checkAndAdvance('summarySection', 'experienceSection');
         });
       });
-      
+
       const experienceFields = document.querySelectorAll('#experienceSection input, #experienceSection textarea');
       experienceFields.forEach(function(field) {
         field.addEventListener('blur', function() {
           checkAndAdvance('experienceSection', 'skillsSection');
         });
       });
-      
+
       const skillsFields = document.querySelectorAll('#skillsSection textarea');
       skillsFields.forEach(function(field) {
         field.addEventListener('blur', function() {
