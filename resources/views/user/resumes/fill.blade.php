@@ -43,13 +43,17 @@
         
         <!-- Step 1: Personal Details -->
         <div class="card mb-3 step-card" data-step="1">
-          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#personalSection" role="button" aria-expanded="true" aria-controls="personalSection" style="cursor: pointer; background: #f8f9fa;">
-            <h6 class="mb-0"><i class="bx bx-user me-2 text-primary"></i> Step 1: Personal Details <span class="text-danger">*</span></h6>
-            <i class="bx bx-chevron-down"></i>
+          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#personalSection" role="button" aria-expanded="true" aria-controls="personalSection" style="cursor: pointer;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0"><i class="bx bx-user me-2 text-primary"></i> Step 1: Personal Details <span class="text-danger">*</span></h6>
+                <small class="text-muted">Your name, contact info, and photo</small>
+              </div>
+              <i class="bx bx-chevron-down"></i>
+            </div>
           </div>
           <div class="collapse show" id="personalSection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-              <p class="text-muted small mb-3">Enter your name, contact info, and (optionally) a photo.</p>
               <div class="row mb-3">
                 <div class="col-md-6">
                   <label class="form-label">Full Name *</label>
@@ -151,14 +155,18 @@
 
         <!-- Step 2: Professional Summary -->
         <div class="card mb-3 step-card" data-step="2">
-          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#summarySection" role="button" aria-expanded="false" aria-controls="summarySection" style="cursor: pointer; background: #f8f9fa;">
-            <h6 class="mb-0"><i class="bx bx-file-blank me-2 text-primary"></i> Step 2: Professional Summary</h6>
-            <i class="bx bx-chevron-down"></i>
+          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#summarySection" role="button" aria-expanded="false" aria-controls="summarySection" style="cursor: pointer;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0"><i class="bx bx-file-blank me-2 text-primary"></i> Step 2: Professional Summary</h6>
+                <small class="text-muted">2–3 lines that explain who you are professionally</small>
+              </div>
+              <i class="bx bx-chevron-down"></i>
+            </div>
           </div>
           <div class="collapse" id="summarySection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <p class="text-muted small mb-0">2–3 lines that explain who you are professionally.</p>
+              <div class="d-flex justify-content-end mb-3">
                 <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#summaryAIModal">
                   <i class="bx bx-sparkles"></i> Generate with AI
                 </button>
@@ -178,13 +186,17 @@
 
         <!-- Step 3: Experience -->
         <div class="card mb-3 step-card" data-step="3">
-          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#experienceSection" role="button" aria-expanded="false" aria-controls="experienceSection" style="cursor: pointer; background: #f8f9fa;">
-            <h6 class="mb-0"><i class="bx bx-briefcase me-2 text-primary"></i> Step 3: Experience</h6>
-            <i class="bx bx-chevron-down"></i>
+          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#experienceSection" role="button" aria-expanded="false" aria-controls="experienceSection" style="cursor: pointer;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0"><i class="bx bx-briefcase me-2 text-primary"></i> Step 3: Experience</h6>
+                <small class="text-muted">Your work history, roles, and achievements</small>
+              </div>
+              <i class="bx bx-chevron-down"></i>
+            </div>
           </div>
           <div class="collapse" id="experienceSection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-              <p class="text-muted small mb-3">Add your work history, roles, and achievements.</p>
             <div class="d-flex justify-content-end mb-3">
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
                 <i class="bx bx-plus"></i> Add More
@@ -225,14 +237,18 @@
 
         <!-- Step 4: Skills -->
         <div class="card mb-3 step-card" data-step="4">
-          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#skillsSection" role="button" aria-expanded="false" aria-controls="skillsSection" style="cursor: pointer; background: #f8f9fa;">
-            <h6 class="mb-0"><i class="bx bx-star me-2 text-primary"></i> Step 4: Skills</h6>
-            <i class="bx bx-chevron-down"></i>
+          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#skillsSection" role="button" aria-expanded="false" aria-controls="skillsSection" style="cursor: pointer;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0"><i class="bx bx-star me-2 text-primary"></i> Step 4: Skills</h6>
+                <small class="text-muted">Most relevant skills for the job you want</small>
+              </div>
+              <i class="bx bx-chevron-down"></i>
+            </div>
           </div>
           <div class="collapse" id="skillsSection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <p class="text-muted small mb-0">List your most relevant skills for the job you want.</p>
+              <div class="d-flex justify-content-end mb-3">
                 <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#skillsAIModal">
                   <i class="bx bx-sparkles"></i> Generate with AI
                 </button>
@@ -251,13 +267,17 @@
 
         <!-- Step 5: Education -->
         <div class="card mb-3 step-card" data-step="5">
-          <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#educationSection" role="button" aria-expanded="false" aria-controls="educationSection" style="cursor: pointer; background: #f8f9fa;">
-            <h6 class="mb-0"><i class="bx bx-book me-2 text-primary"></i> Step 5: Education</h6>
-            <i class="bx bx-chevron-down"></i>
+          <div class="card-header" data-bs-toggle="collapse" data-bs-target="#educationSection" role="button" aria-expanded="false" aria-controls="educationSection" style="cursor: pointer;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0"><i class="bx bx-book me-2 text-primary"></i> Step 5: Education</h6>
+                <small class="text-muted">Your degrees, schools, and graduation years</small>
+              </div>
+              <i class="bx bx-chevron-down"></i>
+            </div>
           </div>
           <div class="collapse" id="educationSection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-              <p class="text-muted small mb-3">Add your degrees, schools, and graduation years.</p>
             <div class="d-flex justify-content-end mb-3">
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
                 <i class="bx bx-plus"></i> Add More
@@ -300,9 +320,9 @@
         </div><!-- End Accordion Container -->
 
         <!-- Submit Button -->
-        <div class="mt-4">
+        <div class="mt-4 sticky-submit-wrapper">
           <button type="submit" class="btn btn-primary btn-lg w-100" id="generateBtn">
-            <i class="bx bx-show me-1"></i> Preview Resume
+            <i class="bx bx-show me-2"></i> Preview Resume
           </button>
         </div>
       </form>
@@ -959,58 +979,91 @@
 
     /* Professional Step Form Styling */
     .step-card {
-      border-radius: 8px;
+      border-radius: 4px;
       border: 1px solid #e5e7eb;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
       transition: box-shadow 0.2s;
     }
     .step-card:hover {
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     }
     .step-card .card-header {
-      background: #f8f9fa;
+      background: #fafafa;
       border-bottom: 1px solid #e5e7eb;
-      transition: background-color 0.2s;
+      padding: 1rem 1.25rem;
+      transition: background-color 0.15s;
     }
     .step-card .card-header:hover {
-      background: #f3f4f6;
+      background: #f5f5f5;
     }
     .step-card .card-header h6 {
       font-weight: 600;
       color: #1f2937;
+      font-size: 0.95rem;
+    }
+    .step-card .card-header small {
+      display: block;
+      margin-top: 0.25rem;
+      color: #6b7280;
+      font-size: 0.8125rem;
     }
     .step-card .card-header .bx-chevron-down {
-      transition: transform 0.3s ease;
+      transition: transform 0.25s ease;
+      color: #9ca3af;
     }
     .step-card .card-header[aria-expanded="true"] .bx-chevron-down {
       transform: rotate(180deg);
     }
+    .step-card .card-body {
+      padding: 1.5rem 1.25rem;
+    }
     .step-card .form-control {
-      border-radius: 6px;
+      border-radius: 4px;
       border: 1px solid #d1d5db;
       padding: 0.625rem 0.875rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      font-size: 0.9375rem;
     }
     .step-card .form-control:focus {
       border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.08);
     }
     .step-card .form-label {
       font-weight: 500;
       color: #374151;
+      font-size: 0.875rem;
       margin-bottom: 0.5rem;
     }
     .btn-primary {
       background: #667eea;
       border: none;
       box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
-      font-weight: 500;
-      transition: all 0.2s;
+      font-weight: 600;
+      transition: all 0.15s;
+      font-size: 1rem;
     }
     .btn-primary:hover {
       background: #5568d3;
       transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+    .sticky-submit-wrapper {
+      position: sticky;
+      bottom: 0;
+      background: white;
+      padding: 1.25rem 0;
+      margin: 0 -1.5rem -1.5rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+      z-index: 100;
+    }
+    @media (max-width: 768px) {
+      .sticky-submit-wrapper {
+        padding: 1rem 1rem;
+        margin: 0 -1rem -1rem;
+      }
     }
     .btn-outline-secondary {
       border-width: 2px;

@@ -3,18 +3,14 @@
     <div class="row g-4">
         <!-- Header -->
         <div class="col-lg-12">
-            <div class="card border-0 overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="card-body py-3 px-4">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h4 class="text-white mb-1">
-                                <i class="bx bx-map me-2"></i> Search by Location
-                            </h4>
-                            <p class="text-white mb-0 opacity-90 small">
-                                Find jobs in your preferred location
-                            </p>
-                        </div>
-                    </div>
+            <div class="card border-0 overflow-hidden" style="background: #667eea;">
+                <div class="card-body py-2 px-4">
+                    <h5 class="text-white mb-0 d-flex align-items-center">
+                        <i class="bx bx-map me-2"></i> Search Jobs by Location
+                    </h5>
+                    <p class="text-white mb-0 opacity-85" style="font-size: 0.8125rem; margin-top: 0.25rem;">
+                        Find opportunities in your preferred location
+                    </p>
                 </div>
             </div>
         </div>
@@ -22,9 +18,9 @@
         <!-- Main Content -->
         <div class="col-lg-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-body p-3">
+                <div class="card-body p-4">
                     <form id="searchForm" onsubmit="searchJobs(event)">
-                        <div class="row g-2 mb-2 align-items-end">
+                        <div class="row g-3 mb-3 align-items-end">
                             <div class="col-md-5">
                                 <label class="form-label">Job Title</label>
                                 <input type="text" class="form-control" id="jobTitle" name="job_title"
@@ -42,19 +38,19 @@
                             </div>
                         </div>
                         <!-- Secondary Options (collapsible) -->
-                        <div class="mt-2">
-                            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#resumeOptions" aria-expanded="false" aria-controls="resumeOptions">
-                                <i class="bx bx-chevron-down me-1"></i> Optional: Upload your resume to improve job matches
+                        <div class="mt-3 pt-3" style="border-top: 1px solid #e5e7eb;">
+                            <button class="btn btn-sm btn-link text-decoration-none text-muted p-0" type="button" data-bs-toggle="collapse" data-bs-target="#resumeOptions" aria-expanded="false" aria-controls="resumeOptions" style="font-size: 0.875rem;">
+                                <i class="bx bx-chevron-down me-1"></i> Optional: Upload your resume for better matches
                             </button>
                             <div class="collapse mt-2" id="resumeOptions">
                                 @if($resumes->count() > 0)
                                 <div class="row g-2">
                                     <div class="col-md-12">
-                                        <label class="form-label small mb-1">
-                                            <i class="bx bx-file me-1"></i> Select a CV (Optional)
+                                        <label class="form-label small mb-2" style="font-size: 0.8125rem; color: #6b7280;">
+                                            <i class="bx bx-file me-1"></i> Select a saved CV
                                         </label>
-                                        <select class="form-select" id="resumeId" name="resume_id">
-                                            <option value="">-- Choose CV for better matching --</option>
+                                        <select class="form-select" id="resumeId" name="resume_id" style="border-radius: 4px; border: 1px solid #d1d5db; font-size: 0.875rem;">
+                                            <option value="">Choose a CV for better matching</option>
                                             @foreach($resumes as $resume)
                                                 <option value="{{ $resume->id }}">{{ $resume->display_name }}</option>
                                             @endforeach
@@ -70,12 +66,12 @@
                                 @endif
 
                                 <!-- OR Upload Resume -->
-                                <div class="row g-2 mt-1">
+                                <div class="row g-2 mt-2">
                                     <div class="col-md-12">
-                                        <div class="drop-zone border-1 border-dashed rounded p-3 text-center" id="locationResumeDropZone" style="border-color: #a3b4f6; cursor: pointer; transition: all 0.3s; min-height: 120px;">
-                                            <i class="bx bx-cloud-upload" style="font-size: 1.6rem; color: #667eea;"></i>
-                                            <p class="mb-1 small"><strong>Drop resume here or click</strong></p>
-                                            <small class="text-muted">PDF, DOCX (Max 10MB)</small>
+                                        <div class="drop-zone border border-dashed rounded p-2 text-center" id="locationResumeDropZone" style="border-color: #d1d5db; cursor: pointer; transition: all 0.2s; min-height: 80px; background: #fafafa;">
+                                            <i class="bx bx-cloud-upload" style="font-size: 1.4rem; color: #667eea;"></i>
+                                            <p class="mb-0 small">Drop resume here or click to upload</p>
+                                            <small class="text-muted" style="font-size: 0.75rem;">PDF, DOCX (Max 10MB)</small>
                                             <input type="file" id="locationResumeInput" accept=".pdf,.doc,.docx" style="display: none;">
                                         </div>
                                         <div id="locationUploadStatus" class="mt-2" style="display: none;">
@@ -91,9 +87,8 @@
 
                     <!-- Free plan notice moved below search; shown after first search -->
                     @if(!$hasPremiumAccess)
-                    <div id="freePlanNotice" class="alert alert-warning border-0 mb-0 mt-3" style="display: none;">
-                        <i class="bx bx-crown me-2"></i> Free plan: 5 job views per session.
-                        <a href="{{ route('user.pricing') }}">Upgrade to Pro</a> for unlimited searches.
+                    <div id="freePlanNotice" class="alert border-0 mb-0 mt-3" style="display: none; background: #fef9e7; padding: 0.75rem 1rem; font-size: 0.875rem; color: #6b7280;">
+                        <i class="bx bx-info-circle me-1" style="color: #f59e0b;"></i> Free plan: 5 job views per session. <a href="{{ route('user.pricing') }}" class="text-decoration-none fw-500">Upgrade to Pro</a> for unlimited access.
                     </div>
                     @endif
                 </div>
@@ -302,6 +297,12 @@
         if (titleInput && locationInput) {
             titleInput.value = title;
             locationInput.value = loc;
+            // Close collapse if open
+            const collapseEl = document.getElementById('resumeOptions');
+            if (collapseEl && collapseEl.classList.contains('show')) {
+                const bsCollapse = new bootstrap.Collapse(collapseEl, {toggle: false});
+                bsCollapse.hide();
+            }
             titleInput.focus();
         }
     }
@@ -512,4 +513,58 @@
         });
     }
     </script>
+
+    <style>
+    /* Professional form input styling */
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.08);
+    }
+    
+    .btn-primary:hover {
+        background: #5568d3 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35) !important;
+    }
+    
+    .drop-zone:hover {
+        border-color: #667eea !important;
+        background: #f3f4f6 !important;
+    }
+    
+    /* Example chip buttons */
+    .btn-outline-primary.btn-sm {
+        border-radius: 20px;
+        padding: 0.375rem 1rem;
+        font-size: 0.8125rem;
+        border-width: 1.5px;
+        transition: all 0.15s;
+    }
+    
+    .btn-outline-primary.btn-sm:hover {
+        background: #667eea;
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* Card hover effects */
+    .card {
+        transition: box-shadow 0.2s;
+    }
+    
+    .card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+    
+    /* Collapse toggle icon animation */
+    button[data-bs-toggle="collapse"] .bx-chevron-down {
+        transition: transform 0.25s ease;
+    }
+    
+    button[data-bs-toggle="collapse"][aria-expanded="true"] .bx-chevron-down {
+        transform: rotate(180deg);
+    }
+    </style>
 </x-layouts.app>
