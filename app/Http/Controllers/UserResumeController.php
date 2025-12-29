@@ -1008,7 +1008,7 @@ private function fillTemplate($html, $css, $data)
             font-family: Arial, sans-serif;
             line-height: 1.6;
             background: #f5f5f5;
-            padding-top: 140px;
+            padding-top: 155px;
             padding-bottom: 40px;
         }
 
@@ -1096,7 +1096,7 @@ private function fillTemplate($html, $css, $data)
         /* Action Cards Container - Horizontal Bar */
         .action-cards {
             position: fixed;
-            top: 60px;
+            top: 70px;
             left: 0;
             right: 0;
             display: flex;
@@ -1207,7 +1207,7 @@ private function fillTemplate($html, $css, $data)
         /* Download button - Sticky right panel */
         .download-btn {
             position: fixed;
-            top: 120px;
+            top: 90px;
             right: 20px;
             background: #667eea;
             color: white;
@@ -1236,7 +1236,7 @@ private function fillTemplate($html, $css, $data)
         /* Mobile Responsive */
         @media (max-width: 768px) {
             body {
-                padding-top: 150px;
+                padding-top: 160px;
                 padding-bottom: 40px;
                 background: #f5f5f5;
             }
@@ -1275,7 +1275,7 @@ private function fillTemplate($html, $css, $data)
             }
 
             .action-cards {
-                top: 65px;
+                top: 75px;
                 padding: 8px 15px;
                 gap: 12px;
                 overflow-x: auto;
@@ -1304,7 +1304,7 @@ private function fillTemplate($html, $css, $data)
             }
 
             .download-btn {
-                top: 75px;
+                top: 85px;
                 right: 15px;
                 padding: 10px 15px;
                 font-size: 12px;
