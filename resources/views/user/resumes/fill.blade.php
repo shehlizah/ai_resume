@@ -1,4 +1,140 @@
 <x-layouts.app :title="$title ?? 'Fill Resume Details'">
+  <style>
+    /* Resume Builder Improvements */
+    .form-control, .form-select {
+      height: 38px;
+      font-size: 0.95rem;
+    }
+    
+    textarea.form-control {
+      height: auto;
+    }
+    
+    .step-card .card-body {
+      padding: 1.25rem 1.5rem;
+    }
+    
+    .experience-item, .education-item {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #e8eaf6;
+      border-radius: 0.5rem;
+      background: #fafbff;
+    }
+    
+    .experience-item:hover, .education-item:hover {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+    
+    .btn-sm {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.875rem;
+    }
+    
+    .btn-outline-primary {
+      border-color: #667eea;
+      color: #667eea;
+    }
+    
+    .btn-outline-primary:hover {
+      background: #667eea;
+      color: white;
+    }
+    
+    .sticky-submit-wrapper {
+      background: white;
+      padding: 1rem 0;
+      border-top: 2px solid #e8eaf6;
+      margin-top: 2rem;
+    }
+    
+    .sticky-submit-wrapper .btn {
+      height: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* Modal Improvements */
+    .modal-dialog {
+      max-width: 500px;
+    }
+    
+    .modal-body {
+      padding: 1.25rem;
+    }
+    
+    .modal-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #e8eaf6;
+    }
+    
+    .modal-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid #e8eaf6;
+      justify-content: flex-end;
+    }
+    
+    .modal-footer .btn {
+      min-width: 100px;
+    }
+    
+    /* Compact spacing */
+    .row.g-2 {
+      row-gap: 0.75rem !important;
+    }
+    
+    .mb-2 {
+      margin-bottom: 0.75rem !important;
+    }
+    
+    /* Helper text */
+    .helper-text {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-top: 0.5rem;
+      display: block;
+    }
+    
+    /* Section headers with AI button inline */
+    .section-header-with-ai {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .section-header-with-ai h6 {
+      margin: 0;
+    }
+    
+    /* Reduce textarea heights */
+    #summaryField {
+      min-height: 70px;
+    }
+    
+    textarea[name="responsibilities[]"] {
+      min-height: 85px;
+    }
+    
+    textarea[name="education_details[]"] {
+      min-height: 70px;
+    }
+    
+    #skillsField {
+      min-height: 80px;
+    }
+    
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 1.5rem;
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+  </style>
+  
   <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Fill Your Resume Details</h5>
@@ -166,7 +302,8 @@
           </div>
           <div class="collapse" id="summarySection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-              <div class="d-flex justify-content-end mb-3">
+              <div class="section-header-with-ai">
+                <label class="form-label mb-0">Professional Summary</label>
                 <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#summaryAIModal">
                   <i class="bx bx-sparkles"></i> Generate with AI
                 </button>
@@ -175,8 +312,8 @@
                       rows="3"
                       class="form-control @error('summary') is-invalid @enderror"
                       id="summaryField"
-                      placeholder="Write a brief professional summary about yourself...">{{ old('summary') }}</textarea>
-            <small class="text-muted">A 2-3 sentence overview of your professional background and goals</small>
+                      placeholder="A brief professional summary about yourself...">{{ old('summary') }}</textarea>
+              <small class="helper-text">2-3 sentences highlighting your professional background and goals</small>
               @error('summary')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
@@ -206,31 +343,35 @@
               </button>
             </div>
             <div id="experienceContainer">
-              <div class="mb-4 p-3 border-bottom" id="experienceWrapper0">
-                <label class="form-label fw-500 mt-2 mb-2">Experience 1 <span class="badge bg-secondary ms-2">Entry</span></label>
+              <div class="experience-item" id="experienceWrapper0">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <label class="form-label fw-500 mb-0">Experience 1</label>
+                  <button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('experienceWrapper0').remove()">
+                    <i class="bx bx-trash"></i> Remove
+                  </button>
+                </div>
                 <div class="row g-2 mb-2">
-                  <div class="col-md-4">
-                    <input type="text" name="job_title[]" id="job_title0" class="form-control" placeholder="Job Title (e.g., Senior Developer)" value="{{ old('job_title.0') }}">
+                  <div class="col-md-6">
+                    <input type="text" name="job_title[]" id="job_title0" class="form-control" placeholder="Job Title" value="{{ old('job_title.0') }}">
                   </div>
-                  <div class="col-md-4">
-                    <input type="text" name="company[]" id="company0" class="form-control" placeholder="Company (e.g., Tech Corp)" value="{{ old('company.0') }}">
+                  <div class="col-md-6">
+                    <input type="text" name="company[]" id="company0" class="form-control" placeholder="Company" value="{{ old('company.0') }}">
                   </div>
-                  <div class="col-md-2">
+                </div>
+                <div class="row g-2 mb-2">
+                  <div class="col-md-6">
                     <input type="text" name="start_date[]" id="start_date0" class="form-control" placeholder="Start (e.g., Jan 2020)" value="{{ old('start_date.0') }}">
                   </div>
-                  <div class="col-md-2">
+                  <div class="col-md-6">
                     <input type="text" name="end_date[]" id="end_date0" class="form-control" placeholder="End (e.g., Present)" value="{{ old('end_date.0') }}">
                   </div>
                 </div>
-                <div class="mb-2">
-                  <textarea name="responsibilities[]" id="responsibilities0" rows="4" class="form-control" placeholder="Responsibilities / achievements (one per line)">{{ old('responsibilities.0') }}</textarea>
-                </div>
-                <div class="d-flex gap-2">
-                  <button type="button" class="btn btn-sm btn-danger" onclick="document.getElementById('experienceWrapper0').remove()"><i class="bx bx-trash"></i> Remove</button>
+                <div class="mb-0">
+                  <textarea name="responsibilities[]" id="responsibilities0" rows="3" class="form-control" placeholder="Key responsibilities and achievements (use bullet points)">{{ old('responsibilities.0') }}</textarea>
+                  <small class="helper-text">Use bullet points. Start with action verbs (e.g., Led, Developed, Managed)</small>
                 </div>
               </div>
             </div>
-            <small class="text-muted">Example: Senior Developer at ABC Corp (2020-Present) - Led development team and managed projects</small>
             @error('experience.0')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -250,17 +391,18 @@
           </div>
           <div class="collapse" id="skillsSection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-              <div class="d-flex justify-content-end mb-3">
+              <div class="section-header-with-ai">
+                <label class="form-label mb-0">Skills</label>
                 <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#skillsAIModal">
                   <i class="bx bx-sparkles"></i> Generate with AI
                 </button>
               </div>
             <textarea name="skills"
-                      rows="4"
+                      rows="3"
                       class="form-control @error('skills') is-invalid @enderror"
                       id="skillsField"
-                      placeholder="List your skills...">{{ old('skills') }}</textarea>
-            <small class="text-muted">Example: PHP, Laravel, Vue.js, MySQL, AWS, Docker</small>
+                      placeholder="List your key skills (comma-separated)">{{ old('skills') }}</textarea>
+            <small class="helper-text">Example: PHP, Laravel, Vue.js, MySQL, AWS, Docker, Project Management</small>
             @error('skills')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -289,8 +431,13 @@
               </button>
             </div>
             <div id="educationContainer">
-              <div class="mb-4 p-3 border-bottom" id="educationWrapper0">
-                <label class="form-label fw-500 mt-2 mb-2">Education 1 <span class="badge bg-secondary ms-2">Entry</span></label>
+              <div class="education-item" id="educationWrapper0">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <label class="form-label fw-500 mb-0">Education 1</label>
+                  <button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('educationWrapper0').remove()">
+                    <i class="bx bx-trash"></i> Remove
+                  </button>
+                </div>
                 <div class="row g-2 mb-2">
                   <div class="col-md-6">
                     <input type="text" name="degree[]" id="degree0" class="form-control" placeholder="Degree (e.g., BSc Computer Science)" value="{{ old('degree.0') }}">
@@ -307,15 +454,11 @@
                     <input type="text" name="graduation_year[]" id="graduation_year0" class="form-control" placeholder="Year (e.g., 2018)" value="{{ old('graduation_year.0') }}">
                   </div>
                 </div>
-                <div class="mb-2">
-                  <textarea name="education_details[]" id="education_details0" rows="3" class="form-control" placeholder="Details / honors (one per line)">{{ old('education_details.0') }}</textarea>
-                </div>
-                <div class="d-flex gap-2">
-                  <button type="button" class="btn btn-sm btn-danger" onclick="document.getElementById('educationWrapper0').remove()"><i class="bx bx-trash"></i> Remove</button>
+                <div class="mb-0">
+                  <textarea name="education_details[]" id="education_details0" rows="2" class="form-control" placeholder="Honors, achievements, or relevant coursework (optional)">{{ old('education_details.0') }}</textarea>
                 </div>
               </div>
             </div>
-            <small class="text-muted">Example: BS Computer Science, XYZ University (2018) - GPA: 3.8/4.0</small>
             @error('education.0')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -328,6 +471,7 @@
           <button type="submit" class="btn btn-primary btn-lg w-100" id="generateBtn">
             <i class="bx bx-show me-2"></i> Preview Resume
           </button>
+          <small class="text-center d-block text-muted mt-2">You can edit your resume before downloading</small>
         </div>
       </form>
     </div>
@@ -335,12 +479,12 @@
 
   <!-- AI Modal for Experience -->
   <div class="modal fade" id="experienceAIModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">
+          <h6 class="modal-title mb-0">
             <i class="bx bx-sparkles text-warning"></i> Generate Experience with AI
-          </h5>
+          </h6>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
@@ -357,15 +501,15 @@
               <label class="form-label">Years of Experience</label>
               <input type="number" class="form-control" id="aiYears" placeholder="e.g., 5" min="0">
             </div>
-            <div class="mb-3">
+            <div class="mb-0">
               <label class="form-label">Key Responsibilities</label>
-              <textarea class="form-control" id="aiResponsibilities" rows="3" placeholder="e.g., Led team, managed projects..."></textarea>
+              <textarea class="form-control" id="aiResponsibilities" rows="2" placeholder="e.g., Led team, managed projects..."></textarea>
             </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="generateExperienceAI()" id="experienceAIBtn">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="generateExperienceAI()" id="experienceAIBtn">
             <i class="bx bx-sparkles me-1"></i> Generate
           </button>
         </div>
@@ -375,12 +519,12 @@
 
   <!-- AI Modal for Skills -->
   <div class="modal fade" id="skillsAIModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">
+          <h6 class="modal-title mb-0">
             <i class="bx bx-sparkles text-warning"></i> Generate Skills with AI
-          </h5>
+          </h6>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
@@ -398,15 +542,15 @@
                 <option value="senior">Senior (5+ years)</option>
               </select>
             </div>
-            <div class="mb-3">
+            <div class="mb-0">
               <label class="form-label">Technologies / Fields</label>
               <textarea class="form-control" id="aiSkillsFields" rows="2" placeholder="e.g., PHP, Laravel, React, AWS..."></textarea>
             </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="generateSkillsAI()" id="skillsAIBtn">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="generateSkillsAI()" id="skillsAIBtn">
             <i class="bx bx-sparkles me-1"></i> Generate
           </button>
         </div>
@@ -416,12 +560,12 @@
 
   <!-- AI Modal for Education -->
   <div class="modal fade" id="educationAIModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">
+          <h6 class="modal-title mb-0">
             <i class="bx bx-sparkles text-warning"></i> Generate Education with AI
-          </h5>
+          </h6>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
@@ -438,15 +582,15 @@
               <label class="form-label">University Name</label>
               <input type="text" class="form-control" id="aiUniversity" placeholder="e.g., XYZ University">
             </div>
-            <div class="mb-3">
+            <div class="mb-0">
               <label class="form-label">Graduation Year</label>
               <input type="number" class="form-control" id="aiGraduationYear" placeholder="e.g., 2020" min="1950">
             </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="generateEducationAI()" id="educationAIBtn">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="generateEducationAI()" id="educationAIBtn">
             <i class="bx bx-sparkles me-1"></i> Generate
           </button>
         </div>
@@ -456,12 +600,12 @@
 
   <!-- AI Modal for Summary -->
   <div class="modal fade" id="summaryAIModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">
+          <h6 class="modal-title mb-0">
             <i class="bx bx-sparkles text-warning"></i> Generate Professional Summary with AI
-          </h5>
+          </h6>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
@@ -478,15 +622,15 @@
               <label class="form-label">Key Skills / Specializations</label>
               <textarea class="form-control" id="aiSummarySkills" rows="2" placeholder="e.g., Web Development, Cloud Architecture, Team Leadership..."></textarea>
             </div>
-            <div class="mb-3">
+            <div class="mb-0">
               <label class="form-label">Career Goal / Focus</label>
               <input type="text" class="form-control" id="aiSummaryGoal" placeholder="e.g., Seeking senior developer roles in fintech">
             </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="generateSummaryAI()" id="summaryAIBtn">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="generateSummaryAI()" id="summaryAIBtn">
             <i class="bx bx-sparkles me-1"></i> Generate
           </button>
         </div>
