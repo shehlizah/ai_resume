@@ -391,12 +391,13 @@
           </div>
           <div class="collapse" id="skillsSection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-              <div class="section-header-with-ai">
+              {{-- <div class="section-header-with-ai">
                 <label class="form-label mb-0">Skills</label>
                 <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#skillsAIModal">
                   <i class="bx bx-sparkles"></i> Generate with AI
                 </button>
-              </div>
+              </div> --}}
+              <label class="form-label">Skills</label>
             <textarea name="skills"
                       rows="3"
                       class="form-control @error('skills') is-invalid @enderror"
@@ -423,9 +424,10 @@
           <div class="collapse" id="educationSection" data-bs-parent="#accordionSteps">
             <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#educationAIModal">
+              {{-- <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#educationAIModal">
                 <i class="bx bx-sparkles"></i> Generate with AI
-              </button>
+              </button> --}}
+              <div></div>
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEducationField()">
                 <i class="bx bx-plus"></i> Add More
               </button>
@@ -490,20 +492,11 @@
         <div class="modal-body">
           <form id="experienceAIForm">
             <div class="mb-3">
-              <label class="form-label">Job Title</label>
-              <input type="text" class="form-control" id="aiJobTitle" placeholder="e.g., Senior Developer">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Company</label>
-              <input type="text" class="form-control" id="aiCompany" placeholder="e.g., Tech Corp">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Years of Experience</label>
-              <input type="number" class="form-control" id="aiYears" placeholder="e.g., 5" min="0">
-            </div>
-            <div class="mb-0">
-              <label class="form-label">Key Responsibilities</label>
-              <textarea class="form-control" id="aiResponsibilities" rows="2" placeholder="e.g., Led team, managed projects..."></textarea>
+              <label class="form-label">Your Roles & Responsibilities</label>
+              <textarea class="form-control" id="aiResponsibilities" rows="4" placeholder="e.g., Led development team, managed cloud infrastructure, coordinated with stakeholders..."></textarea>
+              <small class="text-muted mt-2 d-block">
+                <i class="bx bx-info-circle"></i> Add your roles/responsibilities and AI will generate professional content which you can edit later too
+              </small>
             </div>
           </form>
         </div>
