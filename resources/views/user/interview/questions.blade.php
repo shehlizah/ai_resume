@@ -45,7 +45,7 @@
         }
 
         .question-card {
-            padding: 1.25rem !important;
+            padding: 1rem 1.25rem !important;
             transition: all 0.3s ease;
             border: 1px solid transparent !important;
         }
@@ -56,17 +56,17 @@
         }
 
         .question-title {
-            font-weight: 600;
+            font-weight: 650;
             font-size: 1rem;
             color: #1a1a1a;
-            margin-bottom: 0.75rem;
+            line-height: 1.5;
         }
 
         .tag-container {
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
-            margin-bottom: 0.75rem;
+            align-items: flex-start;
         }
 
         .difficulty-badge {
@@ -157,8 +157,19 @@
                 padding: 1rem !important;
             }
 
-            .tag-container {
+            .question-card .d-flex {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+
+            .question-card .tag-container {
+                margin-top: 0.75rem;
                 margin-bottom: 0.5rem;
+                width: 100%;
+            }
+
+            .question-title {
+                margin-bottom: 0 !important;
             }
         }
     </style>
@@ -198,6 +209,7 @@
             <div id="questionsContainer">
                 @php
                     $questionsByDifficulty = collect($questions)->groupBy('difficulty');
+                    $globalCounter = 0; // Global question counter for CTAs
                 @endphp
 
                 @foreach(['Easy', 'Medium', 'Hard'] as $difficulty)
@@ -215,15 +227,18 @@
                         </div>
 
                         @foreach($questionsByDifficulty[$difficulty] as $index => $question)
-                        <div class="card border-0 shadow-sm question-card mb-3">
+                        @php $globalCounter++; @endphp
+                        <div class="card border-0 shadow-sm question-card mb-2">
                             <div class="card-body">
-                                <!-- Tags at Top-Right -->
-                                <div class="tag-container">
-                                    <span class="badge bg-primary difficulty-badge">{{ $question['category'] }}</span>
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <!-- Question Title -->
+                                    <h6 class="question-title mb-0 me-3">{{ $question['question'] }}</h6>
+                                    
+                                    <!-- Tags at Top-Right -->
+                                    <div class="tag-container mb-0 flex-shrink-0">
+                                        <span class="badge bg-primary difficulty-badge">{{ $question['category'] }}</span>
+                                    </div>
                                 </div>
-
-                                <!-- Question Title -->
-                                <h6 class="question-title mb-3">{{ $question['question'] }}</h6>
 
                                 <!-- Tips Link -->
                                 <a class="tips-link" onclick="toggleTips(this, 'tips{{ $question['id'] }}')">
@@ -241,11 +256,11 @@
                             </div>
                         </div>
 
-                        <!-- Secondary CTA every 3 questions -->
-                        @if(($index + 1) % 3 === 0 && !$loop->last)
+                        <!-- Secondary CTA every 3 questions (global count) -->
+                        @if($globalCounter % 3 === 0 && $globalCounter < count($questions))
                         <div class="secondary-cta">
                             <div class="mb-2">
-                                <p class="mb-1 small fw-600">
+                                <p class="mb-1 small fw-bold">
                                     <i class="bx bx-lock text-warning me-1"></i> Get AI Feedback on Your Answers
                                 </p>
                                 <p class="mb-0 small text-muted">Real-time scoring and expert insights</p>
