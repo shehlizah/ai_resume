@@ -1577,19 +1577,12 @@ public function generateExperienceAI(Request $request)
 {
     try {
         $validated = $request->validate([
-            'job_title' => 'required|string',
-            'company' => 'required|string',
-            'years' => 'required|numeric|min:0',
-            'responsibilities' => 'nullable|string',
+            'responsibilities' => 'required|string',
         ]);
 
-        $prompt = "Generate a professional resume experience entry for someone who worked as a {$validated['job_title']} at {$validated['company']} for {$validated['years']} years";
-
-        if (!empty($validated['responsibilities'])) {
-            $prompt .= ". Key responsibilities: {$validated['responsibilities']}";
-        }
-
-        $prompt .= ". Format as bullet points with 3-4 achievement statements. Make it professional and impactful. Return ONLY the bullet points, no introductory text.";
+        $prompt = "You are a professional resume writer. Based on these roles and responsibilities: '{$validated['responsibilities']}', generate professional, achievement-focused bullet points for a resume. ";
+        $prompt .= "Make them impactful, quantifiable where possible, and start with strong action verbs. ";
+        $prompt .= "Format as 3-5 bullet points. Return ONLY the bullet points in plain text format, one per line, without any introductory text or explanations.";
 
         $content = $this->callOpenAI($prompt);
 
