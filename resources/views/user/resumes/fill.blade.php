@@ -30,6 +30,7 @@
     .btn-sm {
       padding: 0.35rem 0.75rem;
       font-size: 0.875rem;
+      white-space: nowrap;
     }
     
     .btn-outline-primary {
@@ -40,6 +41,20 @@
     .btn-outline-primary:hover {
       background: #667eea;
       color: white;
+    }
+    
+    .btn-outline-danger {
+      border-color: #dc3545;
+      color: #dc3545;
+    }
+    
+    .btn-outline-danger:hover {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .gap-2 {
+      gap: 0.5rem !important;
     }
     
     .sticky-submit-wrapper {
