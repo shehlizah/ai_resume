@@ -5,18 +5,34 @@
             position: sticky;
             top: 20px;
         }
-        
+
         .progress-indicator {
             font-size: 0.9rem;
             color: #667eea;
             font-weight: 600;
+            margin-bottom: 1rem;
         }
         
+        .progress-bar-container {
+            background: #e8eaf6;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
         .difficulty-section {
             margin-top: 2rem;
             margin-bottom: 1.5rem;
         }
-        
+
         .difficulty-label {
             font-size: 0.85rem;
             font-weight: 700;
@@ -27,39 +43,41 @@
             padding-bottom: 0.75rem;
             border-bottom: 2px solid #e8eaf6;
         }
-        
+
         .question-card {
             padding: 1.25rem !important;
             transition: all 0.3s ease;
             border: 1px solid transparent !important;
         }
-        
+
         .question-card:hover {
             border-color: #667eea !important;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1) !important;
         }
-        
+
         .question-title {
             font-weight: 600;
             font-size: 1rem;
             color: #1a1a1a;
             margin-bottom: 0.75rem;
         }
-        
+
         .tag-container {
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
             margin-bottom: 0.75rem;
         }
-        
+
         .difficulty-badge {
             font-size: 0.75rem;
             padding: 0.35rem 0.65rem;
             font-weight: 600;
             text-transform: uppercase;
+            background-color: #667eea !important;
+            color: white !important;
         }
-        
+
         .tips-link {
             display: inline-flex;
             align-items: center;
@@ -72,16 +90,16 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        
+
         .tips-link:hover {
             color: #764ba2;
             text-decoration: underline;
         }
-        
+
         .tips-link.active i {
             transform: rotate(180deg);
         }
-        
+
         .tips-content {
             margin-top: 0.75rem;
             padding: 0.75rem;
@@ -90,12 +108,12 @@
             border-radius: 0.25rem;
             display: none;
         }
-        
+
         .tips-content.show {
             display: block;
             animation: slideDown 0.3s ease;
         }
-        
+
         @keyframes slideDown {
             from {
                 opacity: 0;
@@ -106,33 +124,39 @@
                 transform: translateY(0);
             }
         }
-        
+
         .secondary-cta {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border: 1px dashed #667eea;
+            background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+            border: 1px solid #667eea30;
             border-radius: 0.5rem;
-            padding: 1rem;
+            padding: 1.25rem;
             text-align: center;
-            margin: 2rem 0;
+            margin: 2.5rem 0;
+            transition: all 0.3s ease;
         }
         
+        .secondary-cta:hover {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-color: #667eea50;
+        }
+
         .upgrade-highlight {
             background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%);
             border-left: 4px solid #667eea;
             padding: 1rem;
             border-radius: 0.25rem;
         }
-        
+
         @media (max-width: 991px) {
             .sidebar-sticky {
                 position: static;
                 top: auto;
             }
-            
+
             .question-card {
                 padding: 1rem !important;
             }
-            
+
             .tag-container {
                 margin-bottom: 0.5rem;
             }
@@ -161,8 +185,13 @@
         <!-- Main Content -->
         <div class="col-lg-8">
             <!-- Progress Indicator -->
-            <div class="progress-indicator mb-4">
-                <i class="bx bx-check-circle me-1"></i> Question <span id="totalQuestions">{{ count($questions) }}</span> available
+            <div>
+                <div class="progress-indicator">
+                    <i class="bx bx-check-circle me-1"></i> <span id="currentQuestion">{{ count($questions) }}</span> questions available to practice
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+                </div>
             </div>
 
             <!-- Questions List -->
@@ -215,16 +244,19 @@
                         <!-- Secondary CTA every 3 questions -->
                         @if(($index + 1) % 3 === 0 && !$loop->last)
                         <div class="secondary-cta">
-                            <p class="mb-2 small text-muted">
-                                <i class="bx bx-lightbulb text-warning me-1"></i> Get AI feedback on your answers
-                            </p>
+                            <div class="mb-2">
+                                <p class="mb-1 small fw-600">
+                                    <i class="bx bx-lock text-warning me-1"></i> Get AI Feedback on Your Answers
+                                </p>
+                                <p class="mb-0 small text-muted">Real-time scoring and expert insights</p>
+                            </div>
                             @if($hasPremiumAccess)
-                            <a href="{{ route('user.interview.ai-practice') }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('user.interview.ai-practice') }}" class="btn btn-primary btn-sm w-100 mt-2">
                                 <i class="bx bx-bot me-1"></i> Try AI Mock Interview
                             </a>
                             @else
-                            <a href="{{ route('user.pricing') }}" class="btn btn-warning btn-sm">
-                                <i class="bx bx-lock me-1"></i> Unlock AI Practice
+                            <a href="{{ route('user.pricing') }}" class="btn btn-warning btn-sm w-100 mt-2">
+                                <i class="bx bx-lock me-1"></i> Unlock AI Practice (PRO)
                             </a>
                             @endif
                         </div>
