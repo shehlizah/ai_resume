@@ -82,10 +82,8 @@ new class extends Component {
 
             <div class="mb-4">
                 <label for="email" class="form-label">{{ __('Email') }}</label>
-                <div class="input-group">
-                    <input type="email" id="email" wire:model="email" class="form-control" placeholder="email@example.com" required autocomplete="email">
-                    <span class="input-group-text">@example.com</span>
-                </div>
+                <input type="email" id="email" wire:model="email" class="form-control" placeholder="email@example.com" required autocomplete="email">
+                <small class="text-muted d-block mt-1">We'll never share your email with anyone else.</small>
 
                 @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !auth()->user()->hasVerifiedEmail())
                     <div class="mt-3">
@@ -103,10 +101,13 @@ new class extends Component {
                 @endif
             </div>
 
-            <div class="d-flex justify-content-between">
+            <div class="d-flex align-items-center gap-2">
                 <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>
-                <x-action-message class="me-3" on="profile-updated">
-                    {{ __('Saved.') }}
+                <x-action-message class="mb-0" on="profile-updated">
+                    <span class="text-success d-flex align-items-center">
+                        <i class="bx bx-check-circle me-1"></i>
+                        {{ __('Profile updated successfully!') }}
+                    </span>
                 </x-action-message>
             </div>
         </form>

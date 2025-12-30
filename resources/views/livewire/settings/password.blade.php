@@ -52,6 +52,7 @@ new class extends Component {
             <div class="mb-3">
                 <label for="password" class="form-label">{{ __('New password') }}</label>
                 <input type="password" id="password" wire:model="password" class="form-control" required autocomplete="new-password" />
+                <small class="text-muted d-block mt-1">Use at least 8 characters with a mix of letters, numbers, and symbols.</small>
             </div>
 
             <div class="mb-3">
@@ -59,11 +60,13 @@ new class extends Component {
                 <input type="password" id="password_confirmation" wire:model="password_confirmation" class="form-control" required autocomplete="new-password" />
             </div>
 
-            <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary w-100">{{ __('Save') }}</button>
-
-                <x-action-message class="ms-3" on="password-updated">
-                    {{ __('Saved.') }}
+            <div class="d-flex align-items-center gap-2">
+                <button type="submit" class="btn btn-primary">{{ __('Update Password') }}</button>
+                <x-action-message class="mb-0" on="password-updated">
+                    <span class="text-success d-flex align-items-center">
+                        <i class="bx bx-check-circle me-1"></i>
+                        {{ __('Password updated successfully!') }}
+                    </span>
                 </x-action-message>
             </div>
         </form>

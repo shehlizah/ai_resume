@@ -25,27 +25,37 @@ new class extends Component {
 @section('title', 'Delete account')
 
 <section>
-    <hr class="my-4 w-50" />
-    <div class="mb-5">
-        <h5 class="mb-2">{{ __('Delete account') }}</h5>
-        <p class="text-muted">{{ __('Delete your account and all of its resources') }}</p>
+    <hr class="my-5 w-50" />
+    <div class="mb-4 p-4 border border-danger rounded bg-light">
+        <h5 class="mb-2 text-danger d-flex align-items-center">
+            <i class="bx bx-error-circle me-2"></i>
+            {{ __('Danger Zone') }}
+        </h5>
+        <p class="text-muted mb-3">{{ __('Once you delete your account, there is no going back. All your data will be permanently removed.') }}</p>
+        
+        <!-- Button to open the modal -->
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+            <i class="bx bx-trash me-1"></i>
+            {{ __('Delete Account') }}
+        </button>
     </div>
-
-    <!-- Button to open the modal -->
-    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
-        {{ __('Delete account') }}
-    </button>
 
     <!-- Modal -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">{{ __('Are you sure you want to delete your account?') }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">
+                        <i class="bx bx-error-circle me-2"></i>
+                        {{ __('Confirm Account Deletion') }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>{{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}</p>
+                    <div class="alert alert-danger mb-3">
+                        <strong>Warning:</strong> This action cannot be undone!
+                    </div>
+                    <p>{{ __('All of your resumes, cover letters, interview practice sessions, and account data will be permanently deleted. Please enter your password to confirm.') }}</p>
 
                     <form wire:submit="deleteUser" class="space-y-3">
                         <div class="mb-3">
@@ -53,9 +63,15 @@ new class extends Component {
                             <input type="password" id="password" wire:model="password" class="form-control" required />
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
-                            <button type="submit" class="btn btn-danger">{{ __('Delete account') }}</button>
+                        <div class="d-flex justify-content-between gap-2 mt-4">
+                            <button type="button" class="btn btn-secondary flex-fill" data-bs-dismiss="modal">
+                                <i class="bx bx-x me-1"></i>
+                                {{ __('Cancel') }}
+                            </button>
+                            <button type="submit" class="btn btn-danger flex-fill">
+                                <i class="bx bx-trash me-1"></i>
+                                {{ __('Yes, Delete My Account') }}
+                            </button>
                         </div>
                     </form>
                 </div>

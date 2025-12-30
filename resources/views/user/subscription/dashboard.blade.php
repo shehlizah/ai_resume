@@ -1,4 +1,74 @@
 <x-layouts.app :title="$title ?? 'My Subscription'">
+  <style>
+    .missing-features-list {
+      background: #f8f9ff;
+      border-left: 3px solid #667eea;
+      padding: 1rem;
+      border-radius: 0.375rem;
+      margin-top: 1.5rem;
+    }
+    
+    .missing-features-list li {
+      padding: 0.5rem 0;
+      color: #6c757d;
+    }
+    
+    .missing-features-list .bx-lock {
+      color: #667eea;
+    }
+    
+    .urgency-note {
+      background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%);
+      border: 1px solid #667eea20;
+      border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+      margin-top: 1.5rem;
+    }
+    
+    .empty-payments-state {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    
+    .empty-payments-state .bx {
+      font-size: 3rem;
+      color: #667eea;
+      opacity: 0.5;
+    }
+    
+    .alert-benefit-focused {
+      padding: 1rem 1.25rem;
+      border-left: 4px solid #ffc107;
+    }
+    
+    .card-compact {
+      margin-bottom: 1.5rem;
+    }
+    
+    .primary-cta-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      font-weight: 600;
+      padding: 0.625rem 1.5rem;
+    }
+    
+    .primary-cta-btn:hover {
+      background: #5568d3;
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .secondary-cta-btn {
+      color: #667eea;
+      border-color: #667eea;
+    }
+    
+    .plan-icon-size {
+      font-size: 2.5rem;
+    }
+  </style>
+  
   <div class="container-xxl flex-grow-1 container-p-y">
 
     <!-- Header -->
@@ -30,9 +100,14 @@
         </div>
       </div>
     @elseif(!$currentPlan)
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <i class="bx bx-info-circle me-2"></i>
-        <strong>No Active Plan</strong> - You're on the free plan. <a href="{{ route('user.pricing') }}" class="alert-link">Upgrade now</a> to unlock premium features!
+      <div class="alert alert-warning alert-benefit-focused alert-dismissible fade show" role="alert">
+        <div class="d-flex align-items-start">
+          <i class="bx bx-lock-open me-3" style="font-size: 1.5rem;"></i>
+          <div>
+            <strong>🔒 You're currently on the Free Plan</strong>
+            <p class="mb-0 mt-1">Upgrade to unlock AI resume scoring, interview feedback, and premium templates.</p>
+          </div>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     @endif
@@ -77,13 +152,15 @@
 
     <div class="row">
       <!-- Current Subscription Card -->
-      <div class="col-lg-8 mb-4">
-        <div class="card">
+      <div class="col-lg-8 mb-3">
+        <div class="card card-compact">
           <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
             <h5 class="mb-0">Current Plan</h5>
-            <a href="{{ route('user.pricing') }}" class="btn btn-sm btn-primary">
-              <i class="bx bx-rocket me-1"></i> Upgrade Plan
+            @if(!$currentSubscription || !$currentSubscription->plan)
+            <a href="{{ route('user.pricing') }}" class="btn btn-sm primary-cta-btn">
+              <i class="bx bx-rocket me-1"></i> Upgrade to Pro
             </a>
+            @endif
           </div>
           <div class="card-body">
             @if($currentSubscription && $currentSubscription->plan)
@@ -255,13 +332,39 @@
 
             @else
               <!-- No Active Subscription -->
-              <div class="text-center py-5">
-                <i class="bx bx-package display-1 text-muted mb-3"></i>
-                <h4>No Active Subscription</h4>
-                <p class="text-muted mb-4">You're currently on the free plan. Upgrade to unlock premium features!</p>
-                <a href="{{ route('user.pricing') }}" class="btn btn-primary">
-                  <i class="bx bx-rocket me-1"></i> View Plans
-                </a>
+              <div class="text-center py-3">
+                <i class="bx bx-package text-muted mb-2" style="font-size: 3rem;"></i>
+                <h5 class="fw-bold mb-2">No Active Subscription</h5>
+                <p class="text-muted mb-3">You're currently on the free plan.</p>
+                
+                <!-- What You're Missing List -->
+                <div class="missing-features-list text-start">
+                  <h6 class="mb-3 fw-bold text-dark">What You're Missing:</h6>
+                  <ul class="list-unstyled mb-0">
+                    <li><i class="bx bx-lock me-2"></i> AI Resume Score & Suggestions</li>
+                    <li><i class="bx bx-lock me-2"></i> Unlimited Resume & Cover Letter Generation</li>
+                    <li><i class="bx bx-lock me-2"></i> AI Mock Interviews & Feedback</li>
+                    <li><i class="bx bx-lock me-2"></i> Expert 1-on-1 Sessions</li>
+                    <li><i class="bx bx-lock me-2"></i> Premium Resume Templates</li>
+                  </ul>
+                </div>
+                
+                <div class="mt-4 d-flex gap-2 justify-content-center">
+                  <a href="{{ route('user.pricing') }}" class="btn primary-cta-btn">
+                    <i class="bx bx-rocket me-1"></i> Upgrade to Pro
+                  </a>
+                  <a href="{{ route('user.pricing') }}" class="btn btn-outline-primary secondary-cta-btn">
+                    Compare Plans
+                  </a>
+                </div>
+              </div>
+              
+              <!-- Soft Urgency -->
+              <div class="urgency-note">
+                <small class="d-flex align-items-center text-muted">
+                  <i class="bx bx-time-five me-2 text-warning"></i>
+                  Most users upgrade after creating their first resume to improve interview success.
+                </small>
               </div>
             @endif
           </div>
@@ -269,7 +372,7 @@
       </div>
 
       <!-- Recent Payments -->
-      <div class="col-lg-4 mb-4">
+      <div class="col-lg-4 mb-3">
         <div class="card">
           <div class="card-header">
             <h5 class="mb-0">Recent Payments</h5>
@@ -290,7 +393,10 @@
                 </span>
               </div>
             @empty
-              <p class="text-muted text-center mb-0">No payments yet</p>
+              <div class="empty-payments-state">
+                <i class="bx bx-lock text-muted mb-2" style="font-size: 3rem;"></i>
+                <p class="text-muted mb-0">No payments yet. Upgrade to Pro to start using premium features instantly.</p>
+              </div>
             @endforelse
           </div>
         </div>
