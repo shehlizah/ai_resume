@@ -32,7 +32,7 @@ new class extends Component {
             {{ __('Danger Zone') }}
         </h5>
         <p class="text-muted mb-3">{{ __('Once you delete your account, there is no going back. All your data will be permanently removed.') }}</p>
-        
+
         <!-- Button to open the modal -->
         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
             <i class="bx bx-trash me-1"></i>

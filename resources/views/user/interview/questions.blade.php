@@ -12,7 +12,7 @@
             font-weight: 600;
             margin-bottom: 1rem;
         }
-        
+
         .progress-bar-container {
             background: #e8eaf6;
             height: 6px;
@@ -20,7 +20,7 @@
             overflow: hidden;
             margin-bottom: 1.5rem;
         }
-        
+
         .progress-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
@@ -134,7 +134,7 @@
             margin: 2.5rem 0;
             transition: all 0.3s ease;
         }
-        
+
         .secondary-cta:hover {
             background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
             border-color: #667eea50;
@@ -233,7 +233,7 @@
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <!-- Question Title -->
                                     <h6 class="question-title mb-0 me-3">{{ $question['question'] }}</h6>
-                                    
+
                                     <!-- Tags at Top-Right -->
                                     <div class="tag-container mb-0 flex-shrink-0">
                                         <span class="badge bg-primary difficulty-badge">{{ $question['category'] }}</span>

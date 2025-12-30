@@ -5,15 +5,15 @@
       height: 38px;
       font-size: 0.95rem;
     }
-    
+
     textarea.form-control {
       height: auto;
     }
-    
+
     .step-card .card-body {
       padding: 1.25rem 1.5rem;
     }
-    
+
     .experience-item, .education-item {
       padding: 1rem;
       margin-bottom: 1rem;
@@ -21,42 +21,42 @@
       border-radius: 0.5rem;
       background: #fafbff;
     }
-    
+
     .experience-item:hover, .education-item:hover {
       border-color: #667eea;
       background: #f8f9ff;
     }
-    
+
     .btn-sm {
       padding: 0.35rem 0.75rem;
       font-size: 0.875rem;
       white-space: nowrap;
     }
-    
+
     .btn-outline-primary {
       border-color: #667eea;
       color: #667eea;
     }
-    
+
     .btn-outline-primary:hover {
       background: #667eea;
       color: white;
     }
-    
+
     .btn-outline-danger {
       border-color: #dc3545;
       color: #dc3545;
     }
-    
+
     .btn-outline-danger:hover {
       background: #dc3545;
       color: white;
     }
-    
+
     .gap-2 {
       gap: 0.5rem !important;
     }
-    
+
     .next-step-btn {
       background: #667eea;
       color: white;
@@ -67,60 +67,60 @@
       border-radius: 0.375rem;
       transition: all 0.3s ease;
     }
-    
+
     .next-step-btn:hover {
       background: #5568d3;
       color: white;
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
-    
+
     .sticky-submit-wrapper {
       background: white;
       padding: 1rem 0;
       border-top: 2px solid #e8eaf6;
       margin-top: 2rem;
     }
-    
+
     .sticky-submit-wrapper .btn {
       height: 50px;
       font-size: 1rem;
       font-weight: 600;
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
     }
-    
+
     /* Modal Improvements */
     .modal-dialog {
       max-width: 500px;
     }
-    
+
     .modal-body {
       padding: 1.25rem;
     }
-    
+
     .modal-header {
       padding: 1rem 1.25rem;
       border-bottom: 1px solid #e8eaf6;
     }
-    
+
     .modal-footer {
       padding: 1rem 1.25rem;
       border-top: 1px solid #e8eaf6;
       justify-content: flex-end;
     }
-    
+
     .modal-footer .btn {
       min-width: 100px;
     }
-    
+
     /* Compact spacing */
     .row.g-2 {
       row-gap: 0.75rem !important;
     }
-    
+
     .mb-2 {
       margin-bottom: 0.75rem !important;
     }
-    
+
     /* Helper text */
     .helper-text {
       font-size: 0.85rem;
@@ -128,7 +128,7 @@
       margin-top: 0.5rem;
       display: block;
     }
-    
+
     /* Section headers with AI button inline */
     .section-header-with-ai {
       display: flex;
@@ -136,28 +136,28 @@
       align-items: center;
       margin-bottom: 1rem;
     }
-    
+
     .section-header-with-ai h6 {
       margin: 0;
     }
-    
+
     /* Reduce textarea heights */
     #summaryField {
       min-height: 70px;
     }
-    
+
     textarea[name="responsibilities[]"] {
       min-height: 85px;
     }
-    
+
     textarea[name="education_details[]"] {
       min-height: 70px;
     }
-    
+
     #skillsField {
       min-height: 80px;
     }
-    
+
     /* Empty state */
     .empty-state {
       text-align: center;
@@ -166,7 +166,7 @@
       font-size: 0.9rem;
     }
   </style>
-  
+
   <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Fill Your Resume Details</h5>
@@ -701,7 +701,7 @@
           bsCollapse.hide();
         }
       }
-      
+
       // Open target section
       const targetSections = {
         2: 'summarySection',
@@ -709,7 +709,7 @@
         4: 'skillsSection',
         5: 'educationSection'
       };
-      
+
       const targetId = targetSections[stepNumber];
       if (targetId) {
         setTimeout(() => {
@@ -718,7 +718,7 @@
             const bsCollapse = new bootstrap.Collapse(targetSection, {
               toggle: true
             });
-            
+
             // Scroll to the section
             targetSection.closest('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
@@ -855,57 +855,57 @@
       row1.className = 'row g-2 mb-2';
 
       const col1 = document.createElement('div'); col1.className = 'col-md-6';
-      const jobInput = document.createElement('input'); 
-      jobInput.type = 'text'; 
-      jobInput.name = 'job_title[]'; 
-      jobInput.id = 'job_title' + idx; 
-      jobInput.className = 'form-control'; 
+      const jobInput = document.createElement('input');
+      jobInput.type = 'text';
+      jobInput.name = 'job_title[]';
+      jobInput.id = 'job_title' + idx;
+      jobInput.className = 'form-control';
       jobInput.placeholder = 'Job Title';
       col1.appendChild(jobInput);
 
       const col2 = document.createElement('div'); col2.className = 'col-md-6';
-      const compInput = document.createElement('input'); 
-      compInput.type = 'text'; 
-      compInput.name = 'company[]'; 
-      compInput.id = 'company' + idx; 
-      compInput.className = 'form-control'; 
+      const compInput = document.createElement('input');
+      compInput.type = 'text';
+      compInput.name = 'company[]';
+      compInput.id = 'company' + idx;
+      compInput.className = 'form-control';
       compInput.placeholder = 'Company';
       col2.appendChild(compInput);
 
-      row1.appendChild(col1); 
+      row1.appendChild(col1);
       row1.appendChild(col2);
 
       const row2 = document.createElement('div');
       row2.className = 'row g-2 mb-2';
 
       const col3 = document.createElement('div'); col3.className = 'col-md-6';
-      const startInput = document.createElement('input'); 
-      startInput.type = 'text'; 
-      startInput.name = 'start_date[]'; 
-      startInput.id = 'start_date' + idx; 
-      startInput.className = 'form-control'; 
+      const startInput = document.createElement('input');
+      startInput.type = 'text';
+      startInput.name = 'start_date[]';
+      startInput.id = 'start_date' + idx;
+      startInput.className = 'form-control';
       startInput.placeholder = 'Start (e.g., Jan 2020)';
       col3.appendChild(startInput);
 
       const col4 = document.createElement('div'); col4.className = 'col-md-6';
-      const endInput = document.createElement('input'); 
-      endInput.type = 'text'; 
-      endInput.name = 'end_date[]'; 
-      endInput.id = 'end_date' + idx; 
-      endInput.className = 'form-control'; 
+      const endInput = document.createElement('input');
+      endInput.type = 'text';
+      endInput.name = 'end_date[]';
+      endInput.id = 'end_date' + idx;
+      endInput.className = 'form-control';
       endInput.placeholder = 'End (e.g., Present)';
       col4.appendChild(endInput);
 
-      row2.appendChild(col3); 
+      row2.appendChild(col3);
       row2.appendChild(col4);
 
-      const respDiv = document.createElement('div'); 
+      const respDiv = document.createElement('div');
       respDiv.className = 'mb-0';
-      const respArea = document.createElement('textarea'); 
-      respArea.name = 'responsibilities[]'; 
-      respArea.id = 'responsibilities' + idx; 
-      respArea.rows = 3; 
-      respArea.className = 'form-control'; 
+      const respArea = document.createElement('textarea');
+      respArea.name = 'responsibilities[]';
+      respArea.id = 'responsibilities' + idx;
+      respArea.rows = 3;
+      respArea.className = 'form-control';
       respArea.placeholder = 'Key responsibilities and achievements (use bullet points)';
       respDiv.appendChild(respArea);
 
@@ -1072,65 +1072,65 @@
       headerDiv.appendChild(label);
       headerDiv.appendChild(removeBtn);
 
-      const row1 = document.createElement('div'); 
+      const row1 = document.createElement('div');
       row1.className = 'row g-2 mb-2';
-      
-      const col1 = document.createElement('div'); 
+
+      const col1 = document.createElement('div');
       col1.className = 'col-md-6';
-      const degInput = document.createElement('input'); 
-      degInput.type = 'text'; 
-      degInput.name = 'degree[]'; 
-      degInput.id = 'degree' + idx; 
-      degInput.className = 'form-control'; 
+      const degInput = document.createElement('input');
+      degInput.type = 'text';
+      degInput.name = 'degree[]';
+      degInput.id = 'degree' + idx;
+      degInput.className = 'form-control';
       degInput.placeholder = 'Degree (e.g., BSc Computer Science)';
       col1.appendChild(degInput);
-      
-      const col2 = document.createElement('div'); 
+
+      const col2 = document.createElement('div');
       col2.className = 'col-md-6';
-      const fieldInput = document.createElement('input'); 
-      fieldInput.type = 'text'; 
-      fieldInput.name = 'field_of_study[]'; 
-      fieldInput.id = 'field_of_study' + idx; 
-      fieldInput.className = 'form-control'; 
+      const fieldInput = document.createElement('input');
+      fieldInput.type = 'text';
+      fieldInput.name = 'field_of_study[]';
+      fieldInput.id = 'field_of_study' + idx;
+      fieldInput.className = 'form-control';
       fieldInput.placeholder = 'Field of Study';
       col2.appendChild(fieldInput);
-      
-      row1.appendChild(col1); 
+
+      row1.appendChild(col1);
       row1.appendChild(col2);
 
-      const row2 = document.createElement('div'); 
+      const row2 = document.createElement('div');
       row2.className = 'row g-2 mb-2';
-      
-      const col3 = document.createElement('div'); 
+
+      const col3 = document.createElement('div');
       col3.className = 'col-md-8';
-      const univInput = document.createElement('input'); 
-      univInput.type = 'text'; 
-      univInput.name = 'university[]'; 
-      univInput.id = 'university' + idx; 
-      univInput.className = 'form-control'; 
+      const univInput = document.createElement('input');
+      univInput.type = 'text';
+      univInput.name = 'university[]';
+      univInput.id = 'university' + idx;
+      univInput.className = 'form-control';
       univInput.placeholder = 'University / Institution';
       col3.appendChild(univInput);
-      
-      const col4 = document.createElement('div'); 
+
+      const col4 = document.createElement('div');
       col4.className = 'col-md-4';
-      const gradInput = document.createElement('input'); 
-      gradInput.type = 'text'; 
-      gradInput.name = 'graduation_year[]'; 
-      gradInput.id = 'graduation_year' + idx; 
-      gradInput.className = 'form-control'; 
+      const gradInput = document.createElement('input');
+      gradInput.type = 'text';
+      gradInput.name = 'graduation_year[]';
+      gradInput.id = 'graduation_year' + idx;
+      gradInput.className = 'form-control';
       gradInput.placeholder = 'Year (e.g., 2018)';
       col4.appendChild(gradInput);
-      
-      row2.appendChild(col3); 
+
+      row2.appendChild(col3);
       row2.appendChild(col4);
 
-      const detailsDiv = document.createElement('div'); 
+      const detailsDiv = document.createElement('div');
       detailsDiv.className = 'mb-0';
-      const detailsArea = document.createElement('textarea'); 
-      detailsArea.name = 'education_details[]'; 
-      detailsArea.id = 'education_details' + idx; 
-      detailsArea.rows = 2; 
-      detailsArea.className = 'form-control'; 
+      const detailsArea = document.createElement('textarea');
+      detailsArea.name = 'education_details[]';
+      detailsArea.id = 'education_details' + idx;
+      detailsArea.rows = 2;
+      detailsArea.className = 'form-control';
       detailsArea.placeholder = 'Honors, achievements, or relevant coursework (optional)';
       detailsDiv.appendChild(detailsArea);
 

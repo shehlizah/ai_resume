@@ -16,14 +16,10 @@
         </ul>
         <div class="nav-buttons" style="display: flex; align-items: center; gap: 16px;">
             @auth
-                <a href="{{ auth()->user()->isEmployer() ? route('company.dashboard') : route('user.dashboard') }}" class="btn btn-outline">Dashboard</a>
-                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-primary">Logout</button>
-                </form>
+                <a href="{{ auth()->user()->isEmployer() ? route('company.dashboard') : route('user.dashboard') }}" class="btn btn-primary">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="btn btn-outline">Login</a>
-                <a href="{{ route('register') }}" class="btn btn-primary">Sign Up</a>
+                <a href="{{ route('register') }}" class="btn btn-primary">Start Free</a>
             @endauth
         </div>
     </nav>

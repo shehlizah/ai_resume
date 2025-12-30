@@ -7,16 +7,16 @@
       border-radius: 0.375rem;
       margin-top: 1.5rem;
     }
-    
+
     .missing-features-list li {
       padding: 0.5rem 0;
       color: #6c757d;
     }
-    
+
     .missing-features-list .bx-lock {
       color: #667eea;
     }
-    
+
     .urgency-note {
       background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%);
       border: 1px solid #667eea20;
@@ -24,27 +24,27 @@
       padding: 1rem 1.25rem;
       margin-top: 1.5rem;
     }
-    
+
     .empty-payments-state {
       text-align: center;
       padding: 2rem 1rem;
     }
-    
+
     .empty-payments-state .bx {
       font-size: 3rem;
       color: #667eea;
       opacity: 0.5;
     }
-    
+
     .alert-benefit-focused {
       padding: 1rem 1.25rem;
       border-left: 4px solid #ffc107;
     }
-    
+
     .card-compact {
       margin-bottom: 1.5rem;
     }
-    
+
     .primary-cta-btn {
       background: #667eea;
       color: white;
@@ -52,23 +52,23 @@
       font-weight: 600;
       padding: 0.625rem 1.5rem;
     }
-    
+
     .primary-cta-btn:hover {
       background: #5568d3;
       color: white;
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
-    
+
     .secondary-cta-btn {
       color: #667eea;
       border-color: #667eea;
     }
-    
+
     .plan-icon-size {
       font-size: 2.5rem;
     }
   </style>
-  
+
   <div class="container-xxl flex-grow-1 container-p-y">
 
     <!-- Header -->
@@ -336,7 +336,7 @@
                 <i class="bx bx-package text-muted mb-2" style="font-size: 3rem;"></i>
                 <h5 class="fw-bold mb-2">No Active Subscription</h5>
                 <p class="text-muted mb-3">You're currently on the free plan.</p>
-                
+
                 <!-- What You're Missing List -->
                 <div class="missing-features-list text-start">
                   <h6 class="mb-3 fw-bold text-dark">What You're Missing:</h6>
@@ -348,7 +348,7 @@
                     <li><i class="bx bx-lock me-2"></i> Premium Resume Templates</li>
                   </ul>
                 </div>
-                
+
                 <div class="mt-4 d-flex gap-2 justify-content-center">
                   <a href="{{ route('user.pricing') }}" class="btn primary-cta-btn">
                     <i class="bx bx-rocket me-1"></i> Upgrade to Pro
@@ -358,7 +358,7 @@
                   </a>
                 </div>
               </div>
-              
+
               <!-- Soft Urgency -->
               <div class="urgency-note">
                 <small class="d-flex align-items-center text-muted">

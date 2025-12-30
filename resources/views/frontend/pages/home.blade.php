@@ -66,7 +66,7 @@
             /*min-height: 100vh;*/
             display: flex;
             align-items: center;
-            padding: 8rem 2rem 4rem;
+            padding: 5.5rem 2rem 2.5rem;
             position: relative;
             background: linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%);
             overflow: hidden;
@@ -150,7 +150,7 @@
         .hero-buttons .btn {
             padding: 1rem 2rem;
             font-size: 1rem;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
@@ -165,6 +165,8 @@
             position: relative;
             overflow: hidden;
             border: none;
+            font-weight: 700;
+            font-size: 1.0625rem;
         }
 
         .btn-primary:hover {
@@ -173,16 +175,18 @@
         }
 
         .btn-outline {
-            background: white;
-            color: #0F172A;
-            border: 2px solid #E2E8F0;
+            background: transparent;
+            color: #475569;
+            border: 2px solid #CBD5E1;
             position: relative;
+            font-weight: 500;
+            font-size: 0.9375rem;
         }
 
         .btn-outline:hover {
-            border-color: #3B82F6;
-            background: #F0F4FF;
-            transform: translateY(-3px);
+            border-color: #94A3B8;
+            background: transparent;
+            color: #1E293B;
         }
 
         /* Phone Mockup */
@@ -402,19 +406,22 @@
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    gap: 2rem;
     padding: 0 1rem;
 }
 
         .feature-card {
             padding: 2.5rem 2rem;
             background: #fff;
-            border-radius: 16px;
+            border-radius: 14px;
             border: 1px solid #E2E8F0;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
         }
 
         .feature-card::before {
@@ -431,7 +438,7 @@
 
         .feature-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 16px 40px rgba(59, 130, 246, 0.12);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.08);
             border-color: #3B82F6;
         }
 
@@ -440,14 +447,14 @@
         }
 
         .feature-icon {
-            width: 64px;
-            height: 64px;
+            width: 56px;
+            height: 56px;
             background: linear-gradient(135deg, #3B82F6, #2563EB);
-            border-radius: 14px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             margin-bottom: 1.25rem;
             box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -469,9 +476,9 @@
         }
 
         .feature-card p {
-            color: #64748B;
+            color: #475569;
             line-height: 1.6;
-            font-size: 0.95rem;
+            font-size: 0.9675rem;
         }
 
         /* ===== CV SECTION (HOW IT WORKS) ===== */
@@ -491,20 +498,23 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
+            gap: 2rem;
             padding: 0 1rem;
         }
 
         .upload-card {
             background: white;
             padding: 2rem 1.5rem;
-            border-radius: 16px;
+            border-radius: 14px;
             border: 2px solid #E2E8F0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
         }
 
         .upload-card::before {
@@ -520,7 +530,7 @@
 
         .upload-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 16px 32px rgba(59, 130, 246, 0.12);
+            box-shadow: 0 12px 28px rgba(59, 130, 246, 0.08);
             border-color: #3B82F6;
         }
 
@@ -552,20 +562,25 @@
             color: #0F172A;
             margin-bottom: 1rem;
             line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .upload-card p {
-            color: #64748B;
+            color: #475569;
             line-height: 1.7;
             margin-bottom: 1.5rem;
-            font-size: 0.95rem;
+            font-size: 0.9675rem;
+            flex-grow: 1;
         }
 
         .upload-card .btn {
             width: 100%;
             padding: 0.875rem 1.5rem;
             font-size: 0.95rem;
-            border-radius: 10px;
+            border-radius: 12px;
             background: linear-gradient(135deg, #3B82F6, #1D4ED8);
             color: white;
             border: none;
@@ -577,6 +592,22 @@
         .upload-card .btn:hover {
             box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
             transform: translateY(-2px);
+        }
+        
+        .card-link {
+            color: #3B82F6;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: all 0.2s ease;
+        }
+        
+        .card-link:hover {
+            color: #1D4ED8;
+            gap: 0.5rem;
         }
 
         .upload-note {
@@ -671,27 +702,65 @@
             .hero-buttons {
                 justify-content: center;
             }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .upload-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
             }
+            
+            .hero {
+                padding: 4rem 1.5rem 2rem;
+            }
 
             .hero-text h1 {
-                font-size: 2.5rem;
+                font-size: 2.25rem;
+                line-height: 1.2;
+            }
+            
+            .hero-tagline {
+                font-size: 1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .hero-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .hero-illustration {
+                max-height: 400px;
+                margin-top: 2rem;
             }
 
             .section-header h2 {
-                font-size: 2rem;
+                font-size: 1.875rem;
             }
 
             .features, .upload-section, .jobs-section, .cta-section, .book-session {
-                padding: 4rem 1.5rem;
+                padding: 3.5rem 1.5rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
             }
 
             .upload-options {
                 grid-template-columns: 1fr;
+                gap: 1.25rem;
             }
 
             .footer-content {
@@ -713,11 +782,11 @@
             }
 
             .book-session h2 {
-                font-size: 2rem;
+                font-size: 1.875rem;
             }
 
             .cta-content h2 {
-                font-size: 2rem;
+                font-size: 1.875rem;
             }
         }
     </style>
@@ -1074,7 +1143,7 @@
                 <span class="underline u1"></span>
             </h2>
             <!--<span class="arrow">➜</span>-->
-<svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.3;">
 <mask id="mask0_37_729" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="176" height="65">
 <path d="M175.67 0H0V64.2376H175.67V0Z" fill="white"/>
 </mask>
@@ -1130,7 +1199,7 @@
                 <span class="underline u2"></span>
             </h2>
 
-            <svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="176" height="67" viewBox="0 0 176 67" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.3;">
 <mask id="mask0_37_729" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="176" height="65">
 <path d="M175.67 0H0V64.2376H175.67V0Z" fill="white"/>
 </mask>
@@ -1149,7 +1218,7 @@
                 <div class="upload-icon">📄</div>
                 <h3>Easy CV Builder</h3>
                 <p>Create and edit professional CVs in minutes.</p>
-                <a href="{{route('user.resumes.create')}}" class="btn btn-primary">Create Now</a>
+                <a href="{{route('user.resumes.create')}}" class="card-link">Learn more →</a>
             </div>
 
             <div class="upload-card">
@@ -1157,22 +1226,27 @@
                 <h3>AI Interview Practice</h3>
                 <p>
 Practice real interview questions and improve with feedback.</p>
-                <a href="{{route('user.interview.prep')}}" class="btn btn-primary">Practice Now</a>
+                <a href="{{route('user.interview.prep')}}" class="card-link">Learn more →</a>
             </div>
 
             <div class="upload-card">
                 <div class="upload-icon">🎯</div>
                 <h3>Smart Job Matching</h3>
                 <p>Find jobs that fit your profile and location.</p>
-                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Search Jobs</a>
+                <a href="{{route('user.jobs.recommended')}}" class="card-link">Learn more →</a>
             </div>
 
             <div class="upload-card">
                 <div class="upload-icon">⚡</div>
                 <h3>One-Click Job Apply</h3>
                 <p>Apply quickly using your saved CV.</p>
-                <a href="{{route('user.jobs.recommended')}}" class="btn btn-primary">Apply Today</a>
+                <a href="{{route('user.jobs.recommended')}}" class="card-link">Learn more →</a>
             </div>
+        </div>
+        
+        <!-- Primary Section CTA -->
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{{route('register')}}" class="btn btn-primary" style="padding: 1.125rem 3rem; font-size: 1.0625rem; display: inline-flex; align-items: center; gap: 0.5rem;">⭐ Get Started Free</a>
         </div>
     </section>
 
