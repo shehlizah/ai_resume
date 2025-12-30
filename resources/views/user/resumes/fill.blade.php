@@ -646,10 +646,7 @@
     // Show experience modal for a specific index
     function showExperienceModalForIndex(index) {
       currentExperienceIndex = index;
-      // Clear the modal fields
-      document.getElementById('aiJobTitle').value = '';
-      document.getElementById('aiCompany').value = '';
-      document.getElementById('aiYears').value = '';
+      // Clear the modal field
       document.getElementById('aiResponsibilities').value = '';
       // Show modal
       const modal = new bootstrap.Modal(document.getElementById('experienceAIModal'));
@@ -671,13 +668,10 @@
 
     // AI Generation Functions
     async function generateExperienceAI() {
-      const jobTitle = document.getElementById('aiJobTitle').value;
-      const company = document.getElementById('aiCompany').value;
-      const years = document.getElementById('aiYears').value;
       const responsibilities = document.getElementById('aiResponsibilities').value;
 
-      if (!jobTitle || !company || !years) {
-        alert('Please fill in all required fields');
+      if (!responsibilities || responsibilities.trim() === '') {
+        alert('Please add your roles and responsibilities');
         return;
       }
 
@@ -693,42 +687,28 @@
             'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
           },
           body: JSON.stringify({
-            job_title: jobTitle,
-            company: company,
-            years: years,
             responsibilities: responsibilities
           })
         });
 
         const data = await response.json();
         if (data.success) {
-          // If current index specified, fill structured fields at that index
+          // If current index specified, fill responsibilities at that index
           if (currentExperienceIndex !== null) {
             const idx = currentExperienceIndex;
-            const titleEl = document.getElementById('job_title' + idx);
-            const companyEl = document.getElementById('company' + idx);
             const respEl = document.getElementById('responsibilities' + idx);
-            if (titleEl) titleEl.value = jobTitle;
-            if (companyEl) companyEl.value = company;
             if (respEl) respEl.value = data.content;
             currentExperienceIndex = null;
           } else {
             // Find first empty structured block
-            const firstTitle = document.getElementById('job_title0');
             const firstResp = document.getElementById('responsibilities0');
-            if (firstTitle && firstTitle.value.trim() === '' && firstResp && firstResp.value.trim() === '') {
-              firstTitle.value = jobTitle;
-              document.getElementById('company0').value = company;
+            if (firstResp && firstResp.value.trim() === '') {
               firstResp.value = data.content;
             } else {
               // Add new structured block and fill it
               addExperienceField();
               const newIdx = experienceCount - 1;
-              const titleEl = document.getElementById('job_title' + newIdx);
-              const companyEl = document.getElementById('company' + newIdx);
               const respEl = document.getElementById('responsibilities' + newIdx);
-              if (titleEl) titleEl.value = jobTitle;
-              if (companyEl) companyEl.value = company;
               if (respEl) respEl.value = data.content;
             }
           }
@@ -751,48 +731,92 @@
 
       const idx = experienceCount;
       const fieldWrapper = document.createElement('div');
-      fieldWrapper.className = 'mb-4 p-3 border-top';
+      fieldWrapper.className = 'experience-item';
       fieldWrapper.id = 'experienceWrapper' + idx;
 
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'd-flex justify-content-between align-items-center mb-2';
+
       const label = document.createElement('label');
-      label.className = 'form-label fw-500 mt-2 mb-2';
-      label.innerHTML = 'Experience ' + (idx + 1) + ' <span class="badge bg-secondary ms-2">Entry</span>';
+      label.className = 'form-label fw-500 mb-0';
+      label.innerHTML = 'Experience ' + (idx + 1);
 
-      const row = document.createElement('div');
-      row.className = 'row g-2 mb-2';
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn btn-sm btn-outline-danger';
+      removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
+      removeBtn.onclick = function() { fieldWrapper.remove(); };
 
-      const col1 = document.createElement('div'); col1.className = 'col-md-4';
-      const jobInput = document.createElement('input'); jobInput.type = 'text'; jobInput.name = 'job_title[]'; jobInput.id = 'job_title' + idx; jobInput.className = 'form-control'; jobInput.placeholder = 'Job Title (e.g., Senior Developer)';
+      headerDiv.appendChild(label);
+      headerDiv.appendChild(removeBtn);
+
+      const row1 = document.createElement('div');
+      row1.className = 'row g-2 mb-2';
+
+      const col1 = document.createElement('div'); col1.className = 'col-md-6';
+      const jobInput = document.createElement('input'); 
+      jobInput.type = 'text'; 
+      jobInput.name = 'job_title[]'; 
+      jobInput.id = 'job_title' + idx; 
+      jobInput.className = 'form-control'; 
+      jobInput.placeholder = 'Job Title';
       col1.appendChild(jobInput);
 
-      const col2 = document.createElement('div'); col2.className = 'col-md-4';
-      const compInput = document.createElement('input'); compInput.type = 'text'; compInput.name = 'company[]'; compInput.id = 'company' + idx; compInput.className = 'form-control'; compInput.placeholder = 'Company (e.g., Tech Corp)';
+      const col2 = document.createElement('div'); col2.className = 'col-md-6';
+      const compInput = document.createElement('input'); 
+      compInput.type = 'text'; 
+      compInput.name = 'company[]'; 
+      compInput.id = 'company' + idx; 
+      compInput.className = 'form-control'; 
+      compInput.placeholder = 'Company';
       col2.appendChild(compInput);
 
-      const col3 = document.createElement('div'); col3.className = 'col-md-2';
-      const startInput = document.createElement('input'); startInput.type = 'text'; startInput.name = 'start_date[]'; startInput.id = 'start_date' + idx; startInput.className = 'form-control'; startInput.placeholder = 'Start (e.g., Jan 2020)';
+      row1.appendChild(col1); 
+      row1.appendChild(col2);
+
+      const row2 = document.createElement('div');
+      row2.className = 'row g-2 mb-2';
+
+      const col3 = document.createElement('div'); col3.className = 'col-md-6';
+      const startInput = document.createElement('input'); 
+      startInput.type = 'text'; 
+      startInput.name = 'start_date[]'; 
+      startInput.id = 'start_date' + idx; 
+      startInput.className = 'form-control'; 
+      startInput.placeholder = 'Start (e.g., Jan 2020)';
       col3.appendChild(startInput);
 
-      const col4 = document.createElement('div'); col4.className = 'col-md-2';
-      const endInput = document.createElement('input'); endInput.type = 'text'; endInput.name = 'end_date[]'; endInput.id = 'end_date' + idx; endInput.className = 'form-control'; endInput.placeholder = 'End (e.g., Present)';
+      const col4 = document.createElement('div'); col4.className = 'col-md-6';
+      const endInput = document.createElement('input'); 
+      endInput.type = 'text'; 
+      endInput.name = 'end_date[]'; 
+      endInput.id = 'end_date' + idx; 
+      endInput.className = 'form-control'; 
+      endInput.placeholder = 'End (e.g., Present)';
       col4.appendChild(endInput);
 
-      row.appendChild(col1); row.appendChild(col2); row.appendChild(col3); row.appendChild(col4);
+      row2.appendChild(col3); 
+      row2.appendChild(col4);
 
-      const respDiv = document.createElement('div'); respDiv.className = 'mb-2';
-      const respArea = document.createElement('textarea'); respArea.name = 'responsibilities[]'; respArea.id = 'responsibilities' + idx; respArea.rows = 4; respArea.className = 'form-control'; respArea.placeholder = 'Responsibilities / achievements (one per line)';
+      const respDiv = document.createElement('div'); 
+      respDiv.className = 'mb-0';
+      const respArea = document.createElement('textarea'); 
+      respArea.name = 'responsibilities[]'; 
+      respArea.id = 'responsibilities' + idx; 
+      respArea.rows = 3; 
+      respArea.className = 'form-control'; 
+      respArea.placeholder = 'Key responsibilities and achievements (use bullet points)';
       respDiv.appendChild(respArea);
 
-      const btnDiv = document.createElement('div'); btnDiv.className = 'd-flex gap-2';
-      const aiBtn = document.createElement('button'); aiBtn.type = 'button'; aiBtn.className = 'btn btn-sm btn-outline-primary'; aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI';
-      aiBtn.onclick = function() { showExperienceModalForIndex(idx); };
-      const removeBtn = document.createElement('button'); removeBtn.type = 'button'; removeBtn.className = 'btn btn-sm btn-danger'; removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove'; removeBtn.onclick = function() { fieldWrapper.remove(); };
-      btnDiv.appendChild(aiBtn); btnDiv.appendChild(removeBtn);
+      const helperText = document.createElement('small');
+      helperText.className = 'helper-text';
+      helperText.innerHTML = 'Use bullet points. Start with action verbs (e.g., Led, Developed, Managed)';
+      respDiv.appendChild(helperText);
 
-      fieldWrapper.appendChild(label);
-      fieldWrapper.appendChild(row);
+      fieldWrapper.appendChild(headerDiv);
+      fieldWrapper.appendChild(row1);
+      fieldWrapper.appendChild(row2);
       fieldWrapper.appendChild(respDiv);
-      fieldWrapper.appendChild(btnDiv);
 
       container.appendChild(fieldWrapper);
       experienceCount++;
@@ -928,45 +952,91 @@
       const container = document.getElementById('educationContainer');
       const idx = educationCount;
       const fieldWrapper = document.createElement('div');
-      fieldWrapper.className = 'mb-4 p-3 border-top';
+      fieldWrapper.className = 'education-item';
       fieldWrapper.id = 'educationWrapper' + idx;
 
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'd-flex justify-content-between align-items-center mb-2';
+
       const label = document.createElement('label');
-      label.className = 'form-label fw-500 mt-2 mb-2';
-      label.innerHTML = 'Education ' + (idx + 1) + ' <span class="badge bg-secondary ms-2">Entry</span>';
+      label.className = 'form-label fw-500 mb-0';
+      label.innerHTML = 'Education ' + (idx + 1);
 
-      const row1 = document.createElement('div'); row1.className = 'row g-2 mb-2';
-      const col1 = document.createElement('div'); col1.className = 'col-md-6';
-      const degInput = document.createElement('input'); degInput.type = 'text'; degInput.name = 'degree[]'; degInput.id = 'degree' + idx; degInput.className = 'form-control'; degInput.placeholder = 'Degree (e.g., BSc Computer Science)';
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn btn-sm btn-outline-danger';
+      removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
+      removeBtn.onclick = function() { fieldWrapper.remove(); };
+
+      headerDiv.appendChild(label);
+      headerDiv.appendChild(removeBtn);
+
+      const row1 = document.createElement('div'); 
+      row1.className = 'row g-2 mb-2';
+      
+      const col1 = document.createElement('div'); 
+      col1.className = 'col-md-6';
+      const degInput = document.createElement('input'); 
+      degInput.type = 'text'; 
+      degInput.name = 'degree[]'; 
+      degInput.id = 'degree' + idx; 
+      degInput.className = 'form-control'; 
+      degInput.placeholder = 'Degree (e.g., BSc Computer Science)';
       col1.appendChild(degInput);
-      const col2 = document.createElement('div'); col2.className = 'col-md-6';
-      const fieldInput = document.createElement('input'); fieldInput.type = 'text'; fieldInput.name = 'field_of_study[]'; fieldInput.id = 'field_of_study' + idx; fieldInput.className = 'form-control'; fieldInput.placeholder = 'Field of Study';
+      
+      const col2 = document.createElement('div'); 
+      col2.className = 'col-md-6';
+      const fieldInput = document.createElement('input'); 
+      fieldInput.type = 'text'; 
+      fieldInput.name = 'field_of_study[]'; 
+      fieldInput.id = 'field_of_study' + idx; 
+      fieldInput.className = 'form-control'; 
+      fieldInput.placeholder = 'Field of Study';
       col2.appendChild(fieldInput);
-      row1.appendChild(col1); row1.appendChild(col2);
+      
+      row1.appendChild(col1); 
+      row1.appendChild(col2);
 
-      const row2 = document.createElement('div'); row2.className = 'row g-2 mb-2';
-      const col3 = document.createElement('div'); col3.className = 'col-md-8';
-      const univInput = document.createElement('input'); univInput.type = 'text'; univInput.name = 'university[]'; univInput.id = 'university' + idx; univInput.className = 'form-control'; univInput.placeholder = 'University / Institution';
+      const row2 = document.createElement('div'); 
+      row2.className = 'row g-2 mb-2';
+      
+      const col3 = document.createElement('div'); 
+      col3.className = 'col-md-8';
+      const univInput = document.createElement('input'); 
+      univInput.type = 'text'; 
+      univInput.name = 'university[]'; 
+      univInput.id = 'university' + idx; 
+      univInput.className = 'form-control'; 
+      univInput.placeholder = 'University / Institution';
       col3.appendChild(univInput);
-      const col4 = document.createElement('div'); col4.className = 'col-md-4';
-      const gradInput = document.createElement('input'); gradInput.type = 'text'; gradInput.name = 'graduation_year[]'; gradInput.id = 'graduation_year' + idx; gradInput.className = 'form-control'; gradInput.placeholder = 'Year (e.g., 2018)';
+      
+      const col4 = document.createElement('div'); 
+      col4.className = 'col-md-4';
+      const gradInput = document.createElement('input'); 
+      gradInput.type = 'text'; 
+      gradInput.name = 'graduation_year[]'; 
+      gradInput.id = 'graduation_year' + idx; 
+      gradInput.className = 'form-control'; 
+      gradInput.placeholder = 'Year (e.g., 2018)';
       col4.appendChild(gradInput);
-      row2.appendChild(col3); row2.appendChild(col4);
+      
+      row2.appendChild(col3); 
+      row2.appendChild(col4);
 
-      const detailsDiv = document.createElement('div'); detailsDiv.className = 'mb-2';
-      const detailsArea = document.createElement('textarea'); detailsArea.name = 'education_details[]'; detailsArea.id = 'education_details' + idx; detailsArea.rows = 3; detailsArea.className = 'form-control'; detailsArea.placeholder = 'Details / honors (one per line)';
+      const detailsDiv = document.createElement('div'); 
+      detailsDiv.className = 'mb-0';
+      const detailsArea = document.createElement('textarea'); 
+      detailsArea.name = 'education_details[]'; 
+      detailsArea.id = 'education_details' + idx; 
+      detailsArea.rows = 2; 
+      detailsArea.className = 'form-control'; 
+      detailsArea.placeholder = 'Honors, achievements, or relevant coursework (optional)';
       detailsDiv.appendChild(detailsArea);
 
-      const btnDiv = document.createElement('div'); btnDiv.className = 'd-flex gap-2';
-      const aiBtn = document.createElement('button'); aiBtn.type = 'button'; aiBtn.className = 'btn btn-sm btn-outline-primary'; aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI'; aiBtn.onclick = function() { showEducationModalForIndex(idx); };
-      const removeBtn = document.createElement('button'); removeBtn.type = 'button'; removeBtn.className = 'btn btn-sm btn-danger'; removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove'; removeBtn.onclick = function() { fieldWrapper.remove(); };
-      btnDiv.appendChild(aiBtn); btnDiv.appendChild(removeBtn);
-
-      fieldWrapper.appendChild(label);
+      fieldWrapper.appendChild(headerDiv);
       fieldWrapper.appendChild(row1);
       fieldWrapper.appendChild(row2);
       fieldWrapper.appendChild(detailsDiv);
-      fieldWrapper.appendChild(btnDiv);
 
       container.appendChild(fieldWrapper);
       educationCount++;
