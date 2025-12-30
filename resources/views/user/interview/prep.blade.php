@@ -172,20 +172,38 @@
 
                 <!-- Results Container -->
                 <div id="resultsContainer" style="display: none;">
-                    <!-- Progress & Questions Header -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
+                    <!-- Progress Header -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="mb-0">Your Interview Questions</h5>
-                            <small class="text-muted">Practice with tailored AI questions</small>
-                        </div>
-                        <div class="text-end">
                             <span class="badge bg-primary" id="progressBadge">Question 1 of 8</span>
+                        </div>
+                        <small class="text-muted d-block mb-2">Answer these confidently and you're interview-ready</small>
+                        <!-- Progress Bar -->
+                        <div class="progress" style="height: 4px;">
+                            <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: 0%"></div>
                         </div>
                     </div>
 
                     <!-- Questions Section -->
-                    <div id="questionsList" class="mb-4">
-                        <!-- Populated by JavaScript -->
+                    <div class="row" style="max-width: 1000px; margin: 0 auto;">
+                        <div class="col-lg-8">
+                            <div id="questionsList" class="mb-4">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                        <!-- Right Sidebar -->
+                        <div class="col-lg-4 d-none d-lg-block" style="position: sticky; top: 100px; align-self: flex-start;">
+                            <div class="card border-0 shadow-sm bg-light">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-2"><i class="bx bx-rocket me-1" style="color: #667eea;"></i> Improve Faster</h6>
+                                    <p class="small text-muted mb-3">Get AI feedback on your answers and personalized tips.</p>
+                                    <a href="{{ route('user.pricing') }}" class="btn btn-primary btn-sm w-100">
+                                        <i class="bx bx-crown me-1"></i> Unlock AI Feedback
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Bottom CTA Bar -->
@@ -282,58 +300,47 @@
         }
 
         #resultsContainer {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
+            padding: 0 1rem;
         }
 
         .question-card {
             border-left: 3px solid #667eea;
-            margin-bottom: 0.8rem;
-            padding: 0.9rem;
+            margin-bottom: 0.6rem;
+            padding: 0.7rem 0.9rem;
             background: #f8f9fa;
             border-radius: 6px;
             transition: all 0.2s ease;
         }
 
         .question-card:hover {
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.08);
         }
 
         .question-number {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: #667eea;
             color: white;
             font-weight: 700;
-            font-size: 0.85rem;
-            margin-right: 0.5rem;
+            font-size: 0.8rem;
             flex-shrink: 0;
+            margin-right: 0.4rem;
         }
 
-        .answer-toggle {
-            cursor: pointer;
-            user-select: none;
-            padding: 0.4rem 0.6rem;
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
-            color: #667eea;
-            font-weight: 600;
-            transition: all 0.2s;
-            display: inline-block;
-        }
-
-        .answer-toggle:hover {
-            color: #5568d3;
+        .answer-preview {
+            margin-top: 0.3rem;
         }
 
         .answer-box {
             background: #f0f7ff;
             border-radius: 6px;
-            padding: 0.8rem;
+            padding: 0.7rem;
             margin-top: 0.5rem;
             border-left: 3px solid #28a745;
             display: none;
@@ -345,24 +352,15 @@
         }
 
         @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-8px); }
+            from { opacity: 0; transform: translateY(-6px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        .answer-preview {
-            color: #6b7280;
-            font-size: 0.875rem;
-            line-height: 1.4;
-            margin-top: 0.3rem;
         }
 
         .tips-box {
             background: #f3f4f6;
             border-radius: 4px;
             padding: 0.6rem 0.7rem;
-            margin-top: 0.5rem;
-            font-size: 0.8125rem;
-            color: #6b7280;
+            margin-top: 0.4rem;
             border-left: 2px solid #d1d5db;
         }
 
@@ -372,7 +370,30 @@
         }
 
         .tips-box li {
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
+            font-size: 0.8125rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .progress {
+            background-color: #e9ecef;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            #resultsContainer {
+                padding: 0 0.75rem;
+            }
+            .question-card {
+                padding: 0.6rem 0.8rem;
+                margin-bottom: 0.5rem;
+            }
+            .question-number {
+                width: 22px;
+                height: 22px;
+                font-size: 0.75rem;
+            }
         }
     </style>
 
@@ -565,6 +586,7 @@
 
         function renderQuestions() {
             const questionsList = document.getElementById('questionsList');
+            const progressBar = document.getElementById('progressBar');
             const startIndex = 0;
             const endIndex = (currentPage + 1) * questionsPerPage;
             const visibleQuestions = allQuestions.slice(startIndex, endIndex);
@@ -573,52 +595,27 @@
             visibleQuestions.forEach((q, index) => {
                 const absoluteIndex = index;
                 const uniqueId = `answer-${absoluteIndex}`;
+                const difficulty = q.difficulty || 'medium';
+                const difficultyColors = {
+                    'easy': { badge: 'bg-success', label: 'Easy', tooltip: 'Common question' },
+                    'medium': { badge: 'bg-warning', label: 'Medium', tooltip: 'Frequently asked' },
+                    'hard': { badge: 'bg-danger', label: 'Hard', tooltip: 'High-impact question' }
+                };
+                const diffStyle = difficultyColors[difficulty] || difficultyColors['medium'];
+
                 html += `
                     <div class="question-card">
-                        <div class="d-flex align-items-start">
-                            <div class="question-number">${absoluteIndex + 1}</div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 fw-600">${escapeHtml(q.question)}</h6>
-                                ${q.sample_answer ? `
-                                    <div class="answer-preview text-muted small">💡 Sample answer available</div>
-                                    <div class="answer-toggle" onclick="toggleAnswer('${uniqueId}')">
-                                        <i class="bx bx-chevron-down me-1" style="vertical-align:-2px;"></i>
-                                        <span id="${uniqueId}-text">Show sample answer</span>
-                                    </div>
-                                    <div class="answer-box" id="${uniqueId}">
-                                        <strong class="d-block mb-1" style="color:#16a34a;">
-                                            <i class="bx bx-bulb me-1"></i>Sample Answer
-                                        </strong>
-                                        <p class="mb-0 small" style="line-height:1.5;">${escapeHtml(q.sample_answer)}</p>
-                                    </div>
-                                ` : ''}
-                                ${q.tips && q.tips.length > 0 ? `
-                                    <div class="tips-box">
-                                        <strong class="d-block mb-0.5" style="color:#6b7280;">💡 Tips:</strong>
-                                        <ul>
-                                            ${q.tips.map(tip => `<li>${escapeHtml(tip)}</li>`).join('')}
-                                        </ul>
-                                    </div>
-                                ` : ''}
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="question-number">${absoluteIndex + 1}</div>
                             </div>
+                            <span class="badge ${diffStyle.badge} text-white small" title="${diffStyle.tooltip}">${diffStyle.label}</span>
                         </div>
-                    </div>
-                `;
-            });
-
-            // Add load more button if there are more questions
-            if (endIndex < allQuestions.length) {
-                html += `
-                    <div class="text-center mt-3 mb-4">
-                        <button class="btn btn-outline-primary btn-sm" onclick="loadMoreQuestions()" id="loadMoreBtn">
-                            <i class="bx bx-plus me-1"></i> Load more questions (${allQuestions.length - endIndex} remaining)
-                        </button>
-                    </div>
-                `;
-            }
-
-            questionsList.innerHTML = html;
-        }
+                        <h6 class="mb-2 fw-bold">${escapeHtml(q.question)}</h6>
+                        ${q.sample_answer ? `
+                            <div class="answer-preview text-muted small">💡 Sample answer available</div>
+                            <button class="btn btn-link btn-sm p-0 text-decoration-none" onclick="toggleAnswer('${uniqueId}')" style="color: #667eea; font-size: 0.85rem;">
+                                <i class="bx bx-chevron-down me-1" id="${uniqueId}-icon" style="vertical-align:-2px; font-size: 0.9rem; transition: transform 0.2s ease;\"></i>\n                                <span id=\"${uniqueId}-text\">Show answer</span>\n                            </button>\n                            <div class=\"answer-box\" id=\"${uniqueId}\">\n                                <strong class=\"d-block mb-1\" style=\"color:#16a34a;\">\n                                    <i class=\"bx bx-bulb me-1\"></i>Sample Answer\n                                </strong>\n                                <p class=\"mb-0 small\" style=\"line-height:1.5;\">${escapeHtml(q.sample_answer)}</p>\n                            </div>\n                        ` : ''}\n                        ${q.tips && q.tips.length > 0 ? `\n                            <button class=\"btn btn-link btn-sm p-0 text-decoration-none mt-2\" onclick=\"toggleTips('${uniqueId}-tips')\" style=\"color: #6b7280; font-size: 0.85rem;\">\n                                <i class=\"bx bx-bulb me-1\" style=\"vertical-align:-1px;\"></i>\n                                <span>Tips</span>\n                            </button>\n                            <div class=\"tips-box\" id=\"${uniqueId}-tips\" style=\"display: none;\">\n                                <ul class=\"small mb-0\">\n                                    ${q.tips.map(tip => `<li>${escapeHtml(tip)}</li>`).join('')}\n                                </ul>\n                            </div>\n                        ` : ''}\n                    </div>\n                `;\n\n                // Add secondary CTA every 3 questions\n                if ((absoluteIndex + 1) % 3 === 0 && absoluteIndex + 1 < visibleQuestions.length) {\n                    html += `\n                        <div class=\"text-center my-3\">\n                            <a href=\"{{ route('user.pricing') }}\" class=\"btn btn-outline-primary btn-sm\">\n                                <i class=\"bx bx-crown me-1\"></i> Get AI Feedback on Your Answers\n                            </a>\n                        </div>\n                    `;\n                }\n            });\n\n            // Add load more button if there are more questions\n            if (endIndex < allQuestions.length) {\n                html += `\n                    <div class=\"text-center mt-3 mb-4\">\n                        <button class=\"btn btn-outline-primary btn-sm\" onclick=\"loadMoreQuestions()\" id=\"loadMoreBtn\">\n                            <i class=\"bx bx-plus me-1\"></i> Load more questions (${allQuestions.length - endIndex} remaining)\n                        </button>\n                    </div>\n                `;\n            }\n\n            questionsList.innerHTML = html;\n\n            // Update progress bar\n            const totalVisible = visibleQuestions.length;\n            const totalQuestions = allQuestions.length;\n            const progressPercent = (totalVisible / totalQuestions) * 100;\n            if (progressBar) progressBar.style.width = progressPercent + '%';\n        }
 
         function formatText(text) {
             return text.replace(/\n/g, '<br>');
@@ -633,9 +630,17 @@
         function toggleAnswer(id) {
             const answerBox = document.getElementById(id);
             const textSpan = document.getElementById(id + '-text');
+            const icon = document.getElementById(id + '-icon');
             if (!answerBox) return;
             answerBox.classList.toggle('show');
-            textSpan.textContent = answerBox.classList.contains('show') ? 'Hide sample answer' : 'Show sample answer';
+            textSpan.textContent = answerBox.classList.contains('show') ? 'Hide answer' : 'Show answer';
+            if (icon) icon.style.transform = answerBox.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function toggleTips(id) {
+            const tipsBox = document.getElementById(id);
+            if (!tipsBox) return;
+            tipsBox.style.display = tipsBox.style.display === 'none' ? 'block' : 'none';
         }
 
         function loadMoreQuestions() {
