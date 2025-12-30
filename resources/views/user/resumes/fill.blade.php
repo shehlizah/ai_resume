@@ -57,6 +57,23 @@
       gap: 0.5rem !important;
     }
     
+    .next-step-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-radius: 0.375rem;
+      transition: all 0.3s ease;
+    }
+    
+    .next-step-btn:hover {
+      background: #5568d3;
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
     .sticky-submit-wrapper {
       background: white;
       padding: 1rem 0;
@@ -203,7 +220,7 @@
               <i class="bx bx-chevron-down"></i>
             </div>
           </div>
-          <div class="collapse show" id="personalSection" data-bs-parent="#accordionSteps">
+          <div class="collapse show" id="personalSection">
             <div class="card-body">
               <div class="row mb-3">
                 <div class="col-md-6">
@@ -300,6 +317,11 @@
                   </small>
                 </div>
               </div>
+              <div class="text-end mt-3">
+                <button type="button" class="btn next-step-btn" onclick="goToStep(2)">
+                  Next <i class="bx bx-chevron-right ms-1"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -315,7 +337,7 @@
               <i class="bx bx-chevron-down"></i>
             </div>
           </div>
-          <div class="collapse" id="summarySection" data-bs-parent="#accordionSteps">
+          <div class="collapse" id="summarySection">
             <div class="card-body">
               <div class="section-header-with-ai">
                 <label class="form-label mb-0">Professional Summary</label>
@@ -332,6 +354,11 @@
               @error('summary')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
+              <div class="text-end mt-3">
+                <button type="button" class="btn next-step-btn" onclick="goToStep(3)">
+                  Next <i class="bx bx-chevron-right ms-1"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -347,7 +374,7 @@
               <i class="bx bx-chevron-down"></i>
             </div>
           </div>
-          <div class="collapse" id="experienceSection" data-bs-parent="#accordionSteps">
+          <div class="collapse" id="experienceSection">
             <div class="card-body">
             <div class="d-flex justify-content-end align-items-center mb-3">
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
@@ -392,7 +419,13 @@
             @error('experience.0')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
+            <div class="text-end mt-3">
+              <button type="button" class="btn next-step-btn" onclick="goToStep(4)">
+                Next <i class="bx bx-chevron-right ms-1"></i>
+              </button>
+            </div>
           </div>
+        </div>
         </div>
 
         <!-- Step 4: Skills -->
@@ -406,7 +439,7 @@
               <i class="bx bx-chevron-down"></i>
             </div>
           </div>
-          <div class="collapse" id="skillsSection" data-bs-parent="#accordionSteps">
+          <div class="collapse" id="skillsSection">
             <div class="card-body">
               {{-- <div class="section-header-with-ai">
                 <label class="form-label mb-0">Skills</label>
@@ -424,6 +457,11 @@
             @error('skills')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
+            <div class="text-end mt-3">
+              <button type="button" class="btn next-step-btn" onclick="goToStep(5)">
+                Next <i class="bx bx-chevron-right ms-1"></i>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -438,7 +476,7 @@
               <i class="bx bx-chevron-down"></i>
             </div>
           </div>
-          <div class="collapse" id="educationSection" data-bs-parent="#accordionSteps">
+          <div class="collapse" id="educationSection">
             <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
               {{-- <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#educationAIModal">
@@ -652,6 +690,41 @@
   <script>
     let currentExperienceIndex = null;
     let currentEducationIndex = null;
+
+    // Navigation function for steps
+    function goToStep(stepNumber) {
+      // Close current section
+      const currentCollapse = document.querySelector('.collapse.show');
+      if (currentCollapse) {
+        const bsCollapse = bootstrap.Collapse.getInstance(currentCollapse);
+        if (bsCollapse) {
+          bsCollapse.hide();
+        }
+      }
+      
+      // Open target section
+      const targetSections = {
+        2: 'summarySection',
+        3: 'experienceSection',
+        4: 'skillsSection',
+        5: 'educationSection'
+      };
+      
+      const targetId = targetSections[stepNumber];
+      if (targetId) {
+        setTimeout(() => {
+          const targetSection = document.getElementById(targetId);
+          if (targetSection) {
+            const bsCollapse = new bootstrap.Collapse(targetSection, {
+              toggle: true
+            });
+            
+            // Scroll to the section
+            targetSection.closest('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 300);
+      }
+    }
 
     // Form submission
     document.getElementById('resumeForm').addEventListener('submit', function() {
