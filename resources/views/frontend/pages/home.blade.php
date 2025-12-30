@@ -425,13 +425,13 @@
             text-decoration: none;
             color: inherit;
         }
-        
+
         .feature-card-link {
             text-decoration: none;
             color: inherit;
             display: block;
         }
-        
+
         .demo-link {
             position: absolute;
             bottom: 1.5rem;
@@ -452,16 +452,16 @@
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
             white-space: nowrap;
         }
-        
+
         .feature-card:hover .demo-link {
             opacity: 1;
         }
-        
+
         .demo-link:hover {
             color: #1D4ED8;
             text-decoration: none;
         }
-        
+
         @media (max-width: 768px) {
             .demo-link {
                 opacity: 1;
@@ -643,7 +643,7 @@
             box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
             transform: translateY(-2px);
         }
-        
+
         .card-link {
             color: #3B82F6;
             font-weight: 600;
@@ -654,7 +654,7 @@
             gap: 0.25rem;
             transition: all 0.2s ease;
         }
-        
+
         .card-link:hover {
             color: #1D4ED8;
             gap: 0.5rem;
@@ -752,11 +752,11 @@
             .hero-buttons {
                 justify-content: center;
             }
-            
+
             .features-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
+
             .upload-options {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -766,7 +766,7 @@
             .nav-links {
                 display: none;
             }
-            
+
             .hero {
                 padding: 4rem 1.5rem 2rem;
             }
@@ -775,21 +775,21 @@
                 font-size: 2.25rem;
                 line-height: 1.2;
             }
-            
+
             .hero-tagline {
                 font-size: 1rem;
             }
-            
+
             .hero-buttons {
                 flex-direction: column;
                 width: 100%;
             }
-            
+
             .hero-buttons .btn {
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .hero-illustration {
                 max-height: 400px;
                 margin-top: 2rem;
@@ -802,7 +802,7 @@
             .features, .upload-section, .jobs-section, .cta-section, .book-session {
                 padding: 3.5rem 1.5rem;
             }
-            
+
             .features-grid {
                 grid-template-columns: 1fr;
                 gap: 1.25rem;
@@ -1297,7 +1297,7 @@ Practice real interview questions and improve with feedback.</p>
                 <a href="{{route('user.jobs.recommended')}}" class="card-link">Learn more →</a>
             </div>
         </div>
-        
+
         <!-- Primary Section CTA -->
         <div style="text-align: center; margin-top: 3rem;">
             <a href="{{route('register')}}" class="btn btn-primary" style="padding: 1.125rem 3rem; font-size: 1.0625rem; display: inline-flex; align-items: center; gap: 0.5rem;">⭐ Get Started Free</a>
@@ -1960,23 +1960,23 @@ Practice real interview questions and improve with feedback.</p>
             observer.observe(el);
         });
     </script>
-    
+
     <!-- Video Demo Modal -->
     <div id="videoModal" class="video-modal" onclick="closeVideoModal()">
         <div class="video-modal-content" onclick="event.stopPropagation()">
             <button class="video-modal-close" onclick="closeVideoModal()">&times;</button>
             <div class="video-container">
-                <iframe id="youtubeIframe" 
-                        src="" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                <iframe id="youtubeIframe"
+                        src=""
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen>
                 </iframe>
             </div>
             <p class="video-caption" id="videoCaption"></p>
         </div>
     </div>
-    
+
     <style>
         .video-modal {
             display: none;
@@ -1990,19 +1990,19 @@ Practice real interview questions and improve with feedback.</p>
             backdrop-filter: blur(4px);
             animation: fadeIn 0.3s ease;
         }
-        
+
         .video-modal.active {
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1rem;
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        
+
         .video-modal-content {
             background: white;
             border-radius: 16px;
@@ -2012,12 +2012,12 @@ Practice real interview questions and improve with feedback.</p>
             position: relative;
             animation: slideUp 0.3s ease;
         }
-        
+
         @keyframes slideUp {
             from { transform: translateY(30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        
+
         .video-modal-close {
             position: absolute;
             right: 1rem;
@@ -2035,12 +2035,12 @@ Practice real interview questions and improve with feedback.</p>
             justify-content: center;
             z-index: 10;
         }
-        
+
         .video-modal-close:hover {
             background: #E2E8F0;
             transform: rotate(90deg);
         }
-        
+
         .video-container {
             position: relative;
             width: 100%;
@@ -2049,7 +2049,7 @@ Practice real interview questions and improve with feedback.</p>
             border-radius: 12px;
             overflow: hidden;
         }
-        
+
         .video-container iframe {
             position: absolute;
             top: 0;
@@ -2057,7 +2057,7 @@ Practice real interview questions and improve with feedback.</p>
             width: 100%;
             height: 100%;
         }
-        
+
         .video-caption {
             margin-top: 1rem;
             text-align: center;
@@ -2065,13 +2065,13 @@ Practice real interview questions and improve with feedback.</p>
             font-size: 0.9375rem;
             font-weight: 500;
         }
-        
+
         @media (max-width: 768px) {
             .video-modal-content {
                 padding: 1.5rem;
                 margin: 1rem;
             }
-            
+
             .video-modal-close {
                 width: 36px;
                 height: 36px;
@@ -2079,7 +2079,7 @@ Practice real interview questions and improve with feedback.</p>
             }
         }
     </style>
-    
+
     <script>
         // Video demo configuration - Replace with your YouTube video IDs
         const videoData = {
@@ -2100,39 +2100,39 @@ Practice real interview questions and improve with feedback.</p>
                 caption: 'Track your progress and land your dream job'
             }
         };
-        
+
         function openVideoModal(videoId) {
             const modal = document.getElementById('videoModal');
             const iframe = document.getElementById('youtubeIframe');
             const caption = document.getElementById('videoCaption');
-            
+
             const data = videoData[videoId];
-            
+
             if (data && data.youtubeId) {
                 // Build YouTube embed URL
                 // On mobile: autoplay=0 (user must tap)
                 // On desktop: autoplay=1 (auto-play)
                 const autoplay = window.innerWidth > 768 ? 1 : 0;
                 const embedUrl = `https://www.youtube.com/embed/${data.youtubeId}?autoplay=${autoplay}&rel=0&modestbranding=1`;
-                
+
                 iframe.src = embedUrl;
                 caption.textContent = data.caption;
-                
+
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
         }
-        
+
         function closeVideoModal() {
             const modal = document.getElementById('videoModal');
             const iframe = document.getElementById('youtubeIframe');
-            
+
             modal.classList.remove('active');
             // Stop video by clearing iframe src
             iframe.src = '';
             document.body.style.overflow = '';
         }
-        
+
         // Close modal on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {

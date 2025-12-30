@@ -48,7 +48,7 @@ new #[Layout('components.layouts.auth')] class extends Component
         RateLimiter::hit($this->throttleKey());
 
         throw \Illuminate\Validation\ValidationException::withMessages([
-            'email' => __('auth.failed'),
+            'email' => 'The provided credentials are incorrect.',
         ]);
     }
 
@@ -64,9 +64,6 @@ new #[Layout('components.layouts.auth')] class extends Component
             : route('user.dashboard', absolute: false));
 
     $this->redirectIntended(default: $defaultRoute, navigate: true);
-
-
-
 }
 
 
@@ -79,12 +76,10 @@ new #[Layout('components.layouts.auth')] class extends Component
 
         event(new Lockout(request()));
         $seconds = RateLimiter::availableIn($this->throttleKey());
+        $minutes = ceil($seconds / 60);
 
         throw ValidationException::withMessages([
-            'email' => __('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'email' => "Too many login attempts. Please try again in {$minutes} minutes.",
         ]);
     }
 
