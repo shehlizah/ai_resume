@@ -24,6 +24,12 @@ class AutoTranslateResponse
         /** @var Response $response */
         $response = $next($request);
 
+        // Skip JSON responses (for Livewire and APIs)
+        $contentType = $response->headers->get('Content-Type');
+        if ($contentType && (stripos($contentType, 'application/json') !== false || stripos($contentType, 'text/event-stream') !== false)) {
+            return $response;
+        }
+
         // Only process when locale is one of our supported languages
         $target = app()->getLocale();
         $supported = ['en', 'id'];
@@ -38,7 +44,6 @@ class AutoTranslateResponse
         }
 
         // Only process normal HTML responses
-        $contentType = $response->headers->get('Content-Type');
         // Process when HTML or when content looks like HTML even if header absent
         $isHtml = $contentType && stripos($contentType, 'text/html') !== false;
 
