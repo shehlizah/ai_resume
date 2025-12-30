@@ -334,10 +334,7 @@
           </div>
           <div class="collapse" id="experienceSection" data-bs-parent="#accordionSteps">
             <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#experienceAIModal">
-                <i class="bx bx-sparkles"></i> Generate with AI
-              </button>
+            <div class="d-flex justify-content-end align-items-center mb-3">
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addExperienceField()">
                 <i class="bx bx-plus"></i> Add More
               </button>
@@ -346,9 +343,14 @@
               <div class="experience-item" id="experienceWrapper0">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <label class="form-label fw-500 mb-0">Experience 1</label>
-                  <button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('experienceWrapper0').remove()">
-                    <i class="bx bx-trash"></i> Remove
-                  </button>
+                  <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="showExperienceModalForIndex(0)">
+                      <i class="bx bx-sparkles"></i> Generate with AI
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('experienceWrapper0').remove()">
+                      <i class="bx bx-trash"></i> Remove
+                    </button>
+                  </div>
                 </div>
                 <div class="row g-2 mb-2">
                   <div class="col-md-6">
@@ -741,14 +743,25 @@
       label.className = 'form-label fw-500 mb-0';
       label.innerHTML = 'Experience ' + (idx + 1);
 
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'd-flex gap-2';
+
+      const aiBtn = document.createElement('button');
+      aiBtn.type = 'button';
+      aiBtn.className = 'btn btn-sm btn-outline-primary';
+      aiBtn.innerHTML = '<i class="bx bx-sparkles"></i> Generate with AI';
+      aiBtn.onclick = function() { showExperienceModalForIndex(idx); };
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'btn btn-sm btn-outline-danger';
       removeBtn.innerHTML = '<i class="bx bx-trash"></i> Remove';
       removeBtn.onclick = function() { fieldWrapper.remove(); };
 
+      btnGroup.appendChild(aiBtn);
+      btnGroup.appendChild(removeBtn);
       headerDiv.appendChild(label);
-      headerDiv.appendChild(removeBtn);
+      headerDiv.appendChild(btnGroup);
 
       const row1 = document.createElement('div');
       row1.className = 'row g-2 mb-2';
