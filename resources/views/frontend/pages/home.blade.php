@@ -417,11 +417,61 @@
             border: 1px solid #E2E8F0;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             min-height: 280px;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .feature-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .demo-link {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #3B82F6;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            white-space: nowrap;
+        }
+        
+        .feature-card:hover .demo-link {
+            opacity: 1;
+        }
+        
+        .demo-link:hover {
+            color: #1D4ED8;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-link {
+                opacity: 1;
+                position: relative;
+                bottom: auto;
+                left: auto;
+                transform: none;
+                margin-top: 1rem;
+                display: inline-flex;
+            }
         }
 
         .feature-card::before {
@@ -1159,29 +1209,33 @@
     <!-- How It Works - 4 Steps -->
 
         <div class="features-grid">
-            <div class="feature-card">
+            <a href="{{route('user.resumes.create')}}" class="feature-card feature-card-link">
                 <div class="feature-icon" style="background: linear-gradient(135deg, #F97316, #EA580C);">📄</div>
                 <h3>Create CV</h3>
                 <p>Build a professional CV easily using ready-made templates.</p>
-            </div>
+                <span class="demo-link" onclick="event.preventDefault(); event.stopPropagation(); openVideoModal('cv-demo')">▶ Watch 30s demo</span>
+            </a>
 
-            <div class="feature-card">
+            <a href="{{route('user.jobs.recommended')}}" class="feature-card feature-card-link">
                 <div class="feature-icon" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">🎯</div>
                 <h3>Find Jobs</h3>
                 <p>Discover job opportunities based on your skills and location.</p>
-            </div>
+                <span class="demo-link" onclick="event.preventDefault(); event.stopPropagation(); openVideoModal('jobs-demo')">▶ Watch 30s demo</span>
+            </a>
 
-            <div class="feature-card">
+            <a href="{{route('user.interview.prep')}}" class="feature-card feature-card-link">
                 <div class="feature-icon" style="background: linear-gradient(135deg, #06B6D4, #0891B2);">🤖</div>
                 <h3>Practice Interview</h3>
                 <p>Prepare with AI interview questions and instant feedback.</p>
-            </div>
+                <span class="demo-link" onclick="event.preventDefault(); event.stopPropagation(); openVideoModal('interview-demo')">▶ Watch 30s demo</span>
+            </a>
 
-            <div class="feature-card">
+            <a href="{{route('user.dashboard')}}" class="feature-card feature-card-link">
                 <div class="feature-icon" style="background: linear-gradient(135deg, #10B981, #059669);">✓</div>
                 <h3>Get Hired</h3>
                 <p>Apply confidently and increase your chances of getting hired.</p>
-            </div>
+                <span class="demo-link" onclick="event.preventDefault(); event.stopPropagation(); openVideoModal('hired-demo')">▶ Watch 30s demo</span>
+            </a>
         </div>
 
 
@@ -1904,6 +1958,186 @@ Practice real interview questions and improve with feedback.</p>
             el.style.transform = 'translateY(20px)';
             el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
             observer.observe(el);
+        });
+    </script>
+    
+    <!-- Video Demo Modal -->
+    <div id="videoModal" class="video-modal" onclick="closeVideoModal()">
+        <div class="video-modal-content" onclick="event.stopPropagation()">
+            <button class="video-modal-close" onclick="closeVideoModal()">&times;</button>
+            <div class="video-container">
+                <iframe id="youtubeIframe" 
+                        src="" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+            <p class="video-caption" id="videoCaption"></p>
+        </div>
+    </div>
+    
+    <style>
+        .video-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .video-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .video-modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .video-modal-close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            background: #F1F5F9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .video-modal-close:hover {
+            background: #E2E8F0;
+            transform: rotate(90deg);
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .video-caption {
+            margin-top: 1rem;
+            text-align: center;
+            color: #475569;
+            font-size: 0.9375rem;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .video-modal-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .video-modal-close {
+                width: 36px;
+                height: 36px;
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+    
+    <script>
+        // Video demo configuration - Replace with your YouTube video IDs
+        const videoData = {
+            'cv-demo': {
+                youtubeId: 'dQw4w9WgXcQ',  // Replace with your CV demo video ID
+                caption: 'Create professional CVs in minutes with our easy builder'
+            },
+            'jobs-demo': {
+                youtubeId: 'dQw4w9WgXcQ',  // Replace with your Jobs demo video ID
+                caption: 'Find jobs that match your skills and preferences'
+            },
+            'interview-demo': {
+                youtubeId: 'dQw4w9WgXcQ',  // Replace with your Interview demo video ID
+                caption: 'Practice interviews with AI-powered feedback'
+            },
+            'hired-demo': {
+                youtubeId: 'dQw4w9WgXcQ',  // Replace with your Dashboard demo video ID
+                caption: 'Track your progress and land your dream job'
+            }
+        };
+        
+        function openVideoModal(videoId) {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('youtubeIframe');
+            const caption = document.getElementById('videoCaption');
+            
+            const data = videoData[videoId];
+            
+            if (data && data.youtubeId) {
+                // Build YouTube embed URL
+                // On mobile: autoplay=0 (user must tap)
+                // On desktop: autoplay=1 (auto-play)
+                const autoplay = window.innerWidth > 768 ? 1 : 0;
+                const embedUrl = `https://www.youtube.com/embed/${data.youtubeId}?autoplay=${autoplay}&rel=0&modestbranding=1`;
+                
+                iframe.src = embedUrl;
+                caption.textContent = data.caption;
+                
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeVideoModal() {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('youtubeIframe');
+            
+            modal.classList.remove('active');
+            // Stop video by clearing iframe src
+            iframe.src = '';
+            document.body.style.overflow = '';
+        }
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeVideoModal();
+            }
         });
     </script>
 </body>
