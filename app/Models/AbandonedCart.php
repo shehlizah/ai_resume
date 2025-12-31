@@ -43,7 +43,7 @@ class AbandonedCart extends Model
      */
     public function isAbandonedFor($hours = 1)
     {
-        return $this->created_at->addHours($hours)->isPast();
+        return $this->created_at->copy()->addHours($hours)->isPast();
     }
 
     /**
