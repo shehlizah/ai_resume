@@ -170,7 +170,7 @@ class AbandonedCartTest extends TestCase
         ]);
         
         // Manually update created_at to be 2 hours ago
-        $cart->update(['created_at' => now()->subHours(1)->subMinute()]);
+        $cart->update(['created_at' => now()->subHours(2)]);
         $cart->refresh();
 
         $this->assertTrue($cart->isAbandonedFor(1));
@@ -191,7 +191,7 @@ class AbandonedCartTest extends TestCase
         ]);
         
         // Manually set created_at to 2 hours ago
-        $cart->update(['created_at' => now()->subHours(1)->subMinute()]);
+        $cart->update(['created_at' => now()->subHours(2)]);
         $cart->refresh();
 
 
@@ -216,7 +216,7 @@ class AbandonedCartTest extends TestCase
             'session_data' => ['email' => $user1->email],
             'recovery_email_sent_count' => 0,
         ]);
-        $pendingCart->update(['created_at' => now()->subHours(1)->subMinute()]);
+        $pendingCart->update(['created_at' => now()->subHours(2)]);
         $pendingCart->refresh();
 
         $recentCart = AbandonedCart::create([
