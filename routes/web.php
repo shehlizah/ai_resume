@@ -1,13 +1,7 @@
-// Admin Abandoned Carts
-use App\Models\AbandonedCart;
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('admin/abandoned-carts', function () {
-        $abandonedCarts = AbandonedCart::with('user')->where('status', 'abandoned')->orderByDesc('created_at')->get();
-        return view('admin.abandoned-carts', compact('abandonedCarts'));
-    })->name('admin.abandoned-carts');
-});
+
 <?php
 
+use App\Models\AbandonedCart;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Volt;
