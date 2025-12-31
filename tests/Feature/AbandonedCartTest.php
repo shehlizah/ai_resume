@@ -170,15 +170,9 @@ class AbandonedCartTest extends TestCase
             'session_data' => ['email' => $user->email],
         ]);
 
-        // Manually update created_at to be 2 hours ago using DB::table to bypass Eloquent timestamp protection
-        DB::table('abandoned_carts')->where('id', $cart->id)->update(['created_at' => now()->subHours(2)]);
+        // Set created_at to 1 hour 59 minutes ago (not exactly 2 hours to avoid timing precision issues)
+        DB::table('abandoned_carts')->where('id', $cart->id)->update(['created_at' => now()->subMinutes(119)]);
         $cart->refresh();
-
-        // Debug output
-        dump('Created at: ' . $cart->created_at);
-        dump('Now: ' . now());
-        dump('Created at + 1 hour: ' . $cart->created_at->copy()->addHours(1));
-        dump('Is past? ' . ($cart->created_at->copy()->addHours(1)->isPast() ? 'true' : 'false'));
 
         $this->assertTrue($cart->isAbandonedFor(1));
         $this->assertFalse($cart->isAbandonedFor(2));
@@ -197,8 +191,12 @@ class AbandonedCartTest extends TestCase
             'recovery_email_sent_count' => 0,
         ]);
 
-        // Manually set created_at to 2 hours ago using DB::table
-        DB::table('abandoned_carts')->where('id', $cart->id)->update(['created_at' => now()->subHours(2)]);
+        // Set created_at to 2 hours ago to ensure isAbandonedFor(1) is definitely true
+        DB::table('abandoned_carts')->where('id', $cart->id)->update(['created_at' => now()->subMinutes(130)]);
+        $cart->refresh();
+
+        $this->assertTrue($cart->shouldSendRecoveryEmail());
+
         $cart->update(['recovery_email_sent_count' => 2]);
         $this->assertFalse($cart->shouldSendRecoveryEmail());
     }
@@ -215,7 +213,7 @@ class AbandonedCartTest extends TestCase
             'session_data' => ['email' => $user1->email],
             'recovery_email_sent_count' => 0,
         ]);
-        DB::table('abandoned_carts')->where('id', $pendingCart->id)->update(['created_at' => now()->subHours(2)]);
+        DB::table('abandoned_carts')->where('id', $pendingCart->id)->update(['created_at' => now()->subMinutes(130)]);
         $pendingCart->refresh();
 
         $recentCart = AbandonedCart::create([
