@@ -1,11 +1,10 @@
-
 <?php
 
-use App\Models\AbandonedCart;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\Admin\TemplateController;
+use App\Http\Controllers\Admin\AbandonedCartController;
 use App\Http\Controllers\UserResumeController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -22,7 +21,7 @@ use App\Http\Controllers\User\InterviewPrepController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\AbandonmentTrackingController;
 use App\Http\Middleware\CheckActivePackage;
-use App\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Debug Routes
@@ -493,6 +492,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         ->name('add-ons.purchases');
 
     // ==========================================
+    // Abandoned Carts Management
+    // ==========================================
+    Route::prefix('abandoned-carts')->name('abandoned-carts.')->group(function () {
+        Route::get('/', [AbandonedCartController::class, 'index'])->name('index');
+        Route::get('/{id}', [AbandonedCartController::class, 'show'])->name('show');
+        Route::delete('/{id}', [AbandonedCartController::class, 'destroy'])->name('destroy');
+        Route::patch('/{id}/mark-completed', [AbandonedCartController::class, 'markCompleted'])->name('mark-completed');
+        Route::post('/{id}/send-reminder', [AbandonedCartController::class, 'sendReminder'])->name('send-reminder');
+    });
+
+    // ==========================================
     // Job Finder Management
     // ==========================================
     Route::prefix('jobs')->name('jobs.')->group(function () {
@@ -618,15 +628,5 @@ Route::get('/api/abandonment/stats', [AbandonmentTrackingController::class, 'get
 | Auth Routes
 |--------------------------------------------------------------------------
 */
-
-
-Route::get('/generate-admin-token', function () {
-    $user = User::where('email', 'shehlizah1@gmail.com')->first();
-    if (!$user) {
-        return 'No admin user found';
-    }
-    $token = $user->createToken('admin-api')->plainTextToken;
-    return $token;
-});
 
 require __DIR__ . '/auth.php';

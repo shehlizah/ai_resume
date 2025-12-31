@@ -1,17 +1,3 @@
-      {{-- Abandoned Carts --}}
-      <li class="menu-item {{ request()->is('admin/abandoned-carts*') ? 'active open' : '' }}">
-        <a class="menu-link" href="{{ url('admin/abandoned-carts') }}">
-          <i class="menu-icon tf-icons bx bx-cart"></i>
-          <div>{{ __('Abandoned Carts') }}
-            @php
-              $abandonedCount = \App\Models\AbandonedCart::where('status', 'abandoned')->count();
-            @endphp
-            @if($abandonedCount > 0)
-              <span class="badge bg-danger ms-2">{{ $abandonedCount }}</span>
-            @endif
-          </div>
-        </a>
-      </li>
 @php
     $user = auth()->user();
 @endphp
@@ -209,6 +195,21 @@
             <a class="menu-link" href="{{ route('admin.company-payments.index', ['status' => 'approved']) }}">{{ __('Approved') }}</a>
           </li>
         </ul>
+      </li>
+
+      {{-- Abandoned Carts --}}
+      <li class="menu-item {{ request()->is('admin/abandoned-carts*') ? 'active' : '' }}">
+        <a class="menu-link" href="{{ route('admin.abandoned-carts.index') }}">
+          <i class="menu-icon tf-icons bx bx-cart"></i>
+          <div>{{ __('Abandoned Carts') }}
+            @php
+              $abandonedCount = \App\Models\AbandonedCart::where('status', 'abandoned')->count();
+            @endphp
+            @if($abandonedCount > 0)
+              <span class="badge bg-danger ms-2">{{ $abandonedCount }}</span>
+            @endif
+          </div>
+        </a>
       </li>
 
 
