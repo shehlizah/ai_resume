@@ -78,10 +78,6 @@ class AbandonedCartTest extends TestCase
             'resume_id' => 1,
         ]);
 
-        $cart = AbandonedCart::where('user_id', $user->id)
-            ->where('type', 'resume')
-            ->first();
-
         $sessionData = json_decode($cart->session_data, true);
         $this->assertEquals('John Doe', $sessionData['name']);
         $this->assertEquals('Software Engineer', $sessionData['title']);
@@ -104,7 +100,7 @@ class AbandonedCartTest extends TestCase
             ->where('type', 'pdf_preview')
             ->first();
 
-        $sessionData = json_decode($cart->session_data, true);
+        $sessionData = is_string($cart->session_data) ? json_decode($cart->session_data, true) : $cart->session_data;
         $this->assertEquals('My Resume', $sessionData['resume_name']);
         $this->assertEquals(85, $sessionData['score']);
     }
@@ -117,7 +113,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user->email]),
+            'session_data' => ['email' => $user->email],
         ]);
 
         AbandonedCartService::markAsCompleted($user->id, 'signup');
@@ -137,7 +133,7 @@ class AbandonedCartTest extends TestCase
             'type' => 'resume',
             'status' => 'abandoned',
             'resume_id' => 1,
-            'session_data' => json_encode(['name' => 'Resume 1']),
+            'session_data' => ['name' => 'Resume 1'],
         ]);
 
         $cart2 = AbandonedCart::create([
@@ -145,7 +141,7 @@ class AbandonedCartTest extends TestCase
             'type' => 'resume',
             'status' => 'abandoned',
             'resume_id' => 2,
-            'session_data' => json_encode(['name' => 'Resume 2']),
+            'session_data' => ['name' => 'Resume 2'],
         ]);
 
         AbandonedCartService::markAsCompleted($user->id, 'resume', 1);
@@ -165,7 +161,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user->email]),
+            'session_data' => ['email' => $user->email],
             'created_at' => now()->subHours(2),
         ]);
 
@@ -182,7 +178,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user->email]),
+            'session_data' => ['email' => $user->email],
             'created_at' => now()->subHours(2),
             'recovery_email_sent_count' => 0,
         ]);
@@ -202,7 +198,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user1->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user1->email]),
+            'session_data' => ['email' => $user1->email],
             'created_at' => now()->subHours(2),
             'recovery_email_sent_count' => 0,
         ]);
@@ -211,7 +207,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user2->id,
             'type' => 'resume',
             'status' => 'abandoned',
-            'session_data' => json_encode(['name' => 'Test']),
+            'session_data' => ['name' => 'Test'],
             'created_at' => now()->subMinutes(30),
             'recovery_email_sent_count' => 0,
         ]);
@@ -220,7 +216,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user2->id,
             'type' => 'pdf_preview',
             'status' => 'abandoned',
-            'session_data' => json_encode(['resume_name' => 'Test']),
+            'session_data' => ['resume_name' => 'Test'],
             'created_at' => now()->subHours(3),
             'recovery_email_sent_count' => 2,
         ]);
@@ -241,7 +237,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user->email]),
+            'session_data' => ['email' => $user->email],
             'recovery_email_sent_count' => 0,
         ]);
 
@@ -263,14 +259,14 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user1->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user1->email]),
+            'session_data' => ['email' => $user1->email],
         ]);
 
         AbandonedCart::create([
             'user_id' => $user2->id,
             'type' => 'resume',
             'status' => 'completed',
-            'session_data' => json_encode(['name' => 'Test']),
+            'session_data' => ['name' => 'Test'],
             'completed_at' => now(),
         ]);
 
@@ -278,7 +274,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user2->id,
             'type' => 'pdf_preview',
             'status' => 'abandoned',
-            'session_data' => json_encode(['resume_name' => 'Test']),
+            'session_data' => ['resume_name' => 'Test'],
             'created_at' => now()->subHours(2),
         ]);
 
@@ -312,7 +308,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user->email]),
+            'session_data' => ['email' => $user->email],
         ]);
 
         $response = $this->actingAs($admin)->get(route('admin.abandoned-carts.show', $cart->id));
@@ -331,7 +327,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user->email]),
+            'session_data' => ['email' => $user->email],
         ]);
 
         $response = $this->actingAs($admin)->delete(route('admin.abandoned-carts.destroy', $cart->id));
@@ -349,7 +345,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user->email]),
+            'session_data' => ['email' => $user->email],
         ]);
 
         $response = $this->actingAs($admin)
@@ -370,7 +366,7 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user->email]),
+            'session_data' => ['email' => $user->email],
         ]);
 
         $response = $this->actingAs($admin)
@@ -402,14 +398,14 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user->email]),
+            'session_data' => ['email' => $user->email],
         ]);
 
         AbandonedCart::create([
             'user_id' => $user->id,
             'type' => 'resume',
             'status' => 'completed',
-            'session_data' => json_encode(['name' => 'Test']),
+            'session_data' => ['name' => 'Test'],
             'completed_at' => now(),
         ]);
 
@@ -432,14 +428,14 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user->email]),
+            'session_data' => ['email' => $user->email],
         ]);
 
         AbandonedCart::create([
             'user_id' => $user->id,
             'type' => 'resume',
             'status' => 'abandoned',
-            'session_data' => json_encode(['name' => 'Test']),
+            'session_data' => ['name' => 'Test'],
         ]);
 
         $response = $this->actingAs($admin)
@@ -462,14 +458,14 @@ class AbandonedCartTest extends TestCase
             'user_id' => $user1->id,
             'type' => 'signup',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user1->email]),
+            'session_data' => ['email' => $user1->email],
         ]);
 
         AbandonedCart::create([
             'user_id' => $user2->id,
             'type' => 'resume',
             'status' => 'abandoned',
-            'session_data' => json_encode(['email' => $user2->email]),
+            'session_data' => ['email' => $user2->email],
         ]);
 
         $response = $this->actingAs($admin)
