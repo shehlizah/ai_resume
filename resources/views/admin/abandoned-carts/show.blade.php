@@ -1,6 +1,4 @@
-@extends('components.layouts.app')
-
-@section('content')
+<x-layouts.app>
 <div class="container-xxl flex-grow-1 container-p-y">
   
   <!-- Page Header -->
@@ -240,4 +238,4 @@
   });
 </script>
 @endif
-@endsection
+</x-layouts.app>
