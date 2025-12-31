@@ -107,8 +107,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 id="email"
                 required
                 autocomplete="email"
-                placeholder="{{ __('Enter your email') }}"
-            >
+                placeholder="{{ __('Enter your email') }}"                x-on:blur="trackSignupStart()"            >
             <div class="form-text text-muted">We’ll never share your email.</div>
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -217,4 +216,22 @@ new #[Layout('components.layouts.auth')] class extends Component {
       }
     }
   </style>
+
+  <script>
+    function trackSignupStart() {
+        const email = document.getElementById('email').value;
+        const name = document.getElementById('name').value;
+        
+        if (email && email.includes('@')) {
+            fetch('/api/abandonment/track-signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ email, name })
+            });
+        }
+    }
+  </script>
 </div>

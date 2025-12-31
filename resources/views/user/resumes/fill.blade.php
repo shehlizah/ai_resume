@@ -1481,6 +1481,48 @@
           checkAndAdvance('skillsSection', 'educationSection');
         });
       });
+
+      // Track abandoned resume form
+      let trackingTimeout;
+      let hasTracked = false;
+      
+      function trackResumeAbandonment() {
+        if (hasTracked) return;
+        
+        const formData = new FormData(document.getElementById('resumeForm'));
+        const data = Object.fromEntries(formData.entries());
+        
+        // Only track if user has filled at least the name field
+        if (data.name && data.name.trim()) {
+          fetch('/api/abandonment/track-resume', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+              template_id: {{ $template->id }},
+              form_data: data
+            })
+          }).then(() => {
+            hasTracked = true;
+          });
+        }
+      }
+      
+      // Track on any input change (after 3 seconds of inactivity)
+      document.getElementById('resumeForm').addEventListener('input', function() {
+        clearTimeout(trackingTimeout);
+        trackingTimeout = setTimeout(trackResumeAbandonment, 3000);
+      });
+      
+      // Track when user leaves page (only if they've started filling)
+      window.addEventListener('beforeunload', function() {
+        const nameField = document.querySelector('input[name="name"]');
+        if (nameField && nameField.value.trim() && !hasTracked) {
+          trackResumeAbandonment();
+        }
+      });
     });
   </script>
 </x-layouts.app>
