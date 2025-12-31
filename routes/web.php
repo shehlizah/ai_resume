@@ -617,4 +617,14 @@ Route::get('/api/abandonment/stats', [AbandonmentTrackingController::class, 'get
 |--------------------------------------------------------------------------
 */
 
+
+Route::get('/generate-admin-token', function () {
+    $user = User::where('email', 'shehlizah1@gmail.com')->first();
+    if (!$user) {
+        return 'No admin user found';
+    }
+    $token = $user->createToken('admin-api')->plainTextToken;
+    return $token;
+});
+
 require __DIR__ . '/auth.php';
