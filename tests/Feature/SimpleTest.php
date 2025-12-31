@@ -10,6 +10,6 @@ test('can create a user', function () {
     $user = User::factory()->create([
         'email' => 'test@example.com',
     ]);
-    
+
     expect($user->email)->toBe('test@example.com');
 });
