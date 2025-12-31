@@ -174,6 +174,12 @@ class AbandonedCartTest extends TestCase
         DB::table('abandoned_carts')->where('id', $cart->id)->update(['created_at' => now()->subHours(2)]);
         $cart->refresh();
 
+        // Debug output
+        dump('Created at: ' . $cart->created_at);
+        dump('Now: ' . now());
+        dump('Created at + 1 hour: ' . $cart->created_at->copy()->addHours(1));
+        dump('Is past? ' . ($cart->created_at->copy()->addHours(1)->isPast() ? 'true' : 'false'));
+
         $this->assertTrue($cart->isAbandonedFor(1));
         $this->assertFalse($cart->isAbandonedFor(2));
         $this->assertFalse($cart->isAbandonedFor(3));
