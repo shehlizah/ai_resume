@@ -1,6 +1,6 @@
 <x-layouts.app>
 <div class="container-xxl flex-grow-1 container-p-y">
-  
+
   <!-- Page Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold mb-0">
@@ -259,7 +259,7 @@
         </tbody>
       </table>
     </div>
-    
+
     @if($carts->hasPages())
     <div class="card-footer">
       {{ $carts->links() }}

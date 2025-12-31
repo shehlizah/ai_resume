@@ -1,6 +1,6 @@
 <x-layouts.app>
 <div class="container-xxl flex-grow-1 container-p-y">
-  
+
   <!-- Page Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -102,7 +102,7 @@
           @php
             $sessionData = is_string($cart->session_data) ? json_decode($cart->session_data, true) : $cart->session_data;
           @endphp
-          
+
           @if($sessionData && is_array($sessionData))
             <table class="table table-sm">
               @foreach($sessionData as $key => $value)
@@ -149,13 +149,13 @@
               <strong>User ID:</strong> <code>{{ $cart->user->id }}</code>
             </div>
             <div class="mb-2">
-              <strong>Role:</strong> 
+              <strong>Role:</strong>
               <span class="badge bg-label-{{ $cart->user->role === 'admin' ? 'danger' : 'primary' }}">
                 {{ ucfirst($cart->user->role) }}
               </span>
             </div>
             <div class="mb-2">
-              <strong>Status:</strong> 
+              <strong>Status:</strong>
               <span class="badge bg-label-{{ $cart->user->is_active ? 'success' : 'secondary' }}">
                 {{ $cart->user->is_active ? 'Active' : 'Inactive' }}
               </span>
