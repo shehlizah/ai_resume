@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Template;
 use App\Models\UserResume;
+use App\Services\AbandonedCartService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -208,6 +209,9 @@ public function generate(Request $request)
             'status' => 'completed',
             'score' => $scoreData['score'],
         ]);
+
+        // Mark any abandoned resume as completed
+        AbandonedCartService::markAsCompleted(Auth::id(), 'resume', $resume->id);
 
         // Flash session to indicate resume module completed
         session()->flash('module_completed', 'resume');
@@ -931,6 +935,19 @@ private function fillTemplate($html, $css, $data)
 
         // Check if user has active package for download button
         $hasActivePackage = $user->activeSubscription()->exists();
+
+        // Track PDF preview abandonment if user doesn't have active package
+        if (!$hasActivePackage) {
+            AbandonedCartService::trackPdfPreviewAbandon(
+                $user,
+                $resume->id,
+                $resume->data ? json_decode($resume->data, true)['name'] ?? 'Resume' : 'Resume',
+                $resume->score ?? 0
+            );
+        } else {
+            // Mark as completed if user has subscription (can download)
+            AbandonedCartService::markAsCompleted($user->id, 'pdf_preview', $resume->id);
+        }
 
         // Build download button HTML (only if user has active package)
         $downloadButton = '';

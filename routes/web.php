@@ -18,6 +18,7 @@ use App\Http\Controllers\User\CoverLetterController;
 use App\Http\Controllers\User\JobFinderController;
 use App\Http\Controllers\User\InterviewPrepController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\AbandonmentTrackingController;
 use App\Http\Middleware\CheckActivePackage;
 
 /*
@@ -600,6 +601,15 @@ if (app()->environment('local')) {
         ]);
     })->middleware('auth');
 }
+
+/*
+|--------------------------------------------------------------------------
+| Cart Abandonment Tracking Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('/api/abandonment/track-signup', [AbandonmentTrackingController::class, 'trackSignupStart'])->name('abandonment.track-signup');
+Route::post('/api/abandonment/track-resume', [AbandonmentTrackingController::class, 'trackResumeStart'])->middleware('auth')->name('abandonment.track-resume');
+Route::get('/api/abandonment/stats', [AbandonmentTrackingController::class, 'getStats'])->middleware('auth', 'role:admin')->name('abandonment.stats');
 
 /*
 |--------------------------------------------------------------------------
