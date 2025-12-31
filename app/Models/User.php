@@ -1,3 +1,4 @@
+use Laravel\Sanctum\HasApiTokens;
 <?php
 
 namespace App\Models;
@@ -10,9 +11,8 @@ use Illuminate\Notifications\Notifiable;
 use App\Http\Middleware\CheckActivePackage;
 
 
-class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
