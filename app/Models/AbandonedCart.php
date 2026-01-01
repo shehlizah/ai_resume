@@ -134,13 +134,24 @@ class AbandonedCart extends Model
      */
     public static function getPendingRecovery()
     {
-        return self::where('status', 'abandoned')
-            ->where('user_id', '!=', null)
-            ->where(function ($query) {
-                // Abandoned for at least 1 hour
-                $query->where('created_at', '<', now()->subHours(1));
-            })
-            ->get()
-            ->filter(fn($cart) => $cart->shouldSendRecoveryEmail());
+        echo "[DEBUG] Entered getPendingRecovery()\n";
+        try {
+            $query = self::where('status', 'abandoned')
+                ->where('user_id', '!=', null)
+                ->where(function ($query) {
+                    // Abandoned for at least 1 hour
+                    $query->where('created_at', '<', now()->subHours(1));
+                });
+            echo "[DEBUG] Query built\n";
+            $results = $query->get();
+            echo "[DEBUG] Query executed, found " . count($results) . " results\n";
+            $filtered = $results->filter(fn($cart) => $cart->shouldSendRecoveryEmail());
+            echo "[DEBUG] Filtered results, " . count($filtered) . " eligible\n";
+            return $filtered;
+        } catch (\Exception $e) {
+            echo "[FATAL in getPendingRecovery] " . $e->getMessage() . "\n";
+            echo $e->getTraceAsString() . "\n";
+            return collect();
+        }
     }
 };
