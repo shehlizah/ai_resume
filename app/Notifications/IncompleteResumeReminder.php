@@ -31,8 +31,12 @@ class IncompleteResumeReminder extends Notification implements ShouldQueue
         $resumeData = $this->abandonedCart->session_data ?? [];
         $resumeName = $resumeData['name'] ?? 'Your Resume';
 
-        $continueUrl = route('user.resumes.edit', ['resume_id' => $this->abandonedCart->resume_id ?? ''])
-            ?? route('user.resumes.index');
+        // Build continue URL safely
+        if ($this->abandonedCart->resume_id) {
+            $continueUrl = route('user.resumes.edit', ['resume_id' => $this->abandonedCart->resume_id]);
+        } else {
+            $continueUrl = route('user.resumes.index');
+        }
 
         return (new MailMessage)
             ->subject('Your Resume Draft is Waiting - ' . ($recoveryCount === 1 ? 'Pick Up Where You Left Off!' : 'Complete Your Resume Now'))
