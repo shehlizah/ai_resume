@@ -28,6 +28,9 @@ class PaymentAbandonedReminder extends Notification implements ShouldQueue
     {
         $emailNumber = $this->abandonedCart->recovery_email_sent_count + 1;
         
+        // Log that we're sending the email
+        \Log::info("PaymentAbandonedReminder: Sending email #{$emailNumber} to {$notifiable->email}");
+        
         // Build checkout URL safely
         try {
             $checkoutUrl = route('pricing');
