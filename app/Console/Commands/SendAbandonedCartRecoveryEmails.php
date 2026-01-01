@@ -19,26 +19,24 @@ class SendAbandonedCartRecoveryEmails extends Command
         \Log::info('=== SendAbandonedCartRecoveryEmails Command Started ===');
         $this->info('Checking for abandoned carts that need recovery emails...');
 
+        echo "Getting pending carts...\n";
         $pendingCarts = AbandonedCart::getPendingRecovery();
-
+        
+        echo "Found " . count($pendingCarts) . " pending carts\n";
         \Log::info("Found " . count($pendingCarts) . " pending carts");
         $this->info("Found " . count($pendingCarts) . " pending carts");
 
         if ($pendingCarts->isEmpty()) {
+            echo "No pending carts\n";
             \Log::info('No abandoned carts need recovery emails');
             $this->info('No abandoned carts need recovery emails at this time.');
             return 0;
         }
 
+        echo "Processing " . count($pendingCarts) . " carts...\n";
         $sent = 0;
         foreach ($pendingCarts as $cart) {
-            \Log::info("Processing cart #{$cart->id}, type={$cart->type}, user_id={$cart->user_id}");
-
-            if (!$cart->user) {
-                \Log::warn("Skipping cart #{$cart->id}: No user associated");
-                $this->warn("Skipping cart #{$cart->id}: No user associated");
-                continue;
-            }
+            echo "Processing cart #{$cart->id}\n";
 
             try {
                 \Log::info("Notifying user {$cart->user->email} for cart #{$cart->id}");
