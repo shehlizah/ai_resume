@@ -212,7 +212,7 @@
             <form action="{{ route('admin.abandoned-carts.send-reminder', $cart->id) }}" method="POST" class="mb-2">
               @csrf
               <button type="submit" class="btn btn-primary w-100" {{ !$canSendEmail ? 'disabled' : '' }}>
-                <i class="bx bx-envelope"></i> 
+                <i class="bx bx-envelope"></i>
                 @if($canSendEmail)
                   Send Recovery Email {{ $cart->recovery_email_sent_count + 1 }}
                 @else
