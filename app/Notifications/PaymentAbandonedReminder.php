@@ -27,7 +27,17 @@ class PaymentAbandonedReminder extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $emailNumber = $this->abandonedCart->recovery_email_sent_count + 1;
-        $checkoutUrl = route('pricing') . '?resume=' . ($this->abandonedCart->session_data['resume_id'] ?? '');
+        
+        // Build checkout URL safely
+        try {
+            $checkoutUrl = route('pricing');
+        } catch (\Exception $e) {
+            $checkoutUrl = config('app.url') . '/pricing';
+        }
+        
+        if ($this->abandonedCart->session_data['resume_id'] ?? null) {
+            $checkoutUrl .= '?resume=' . $this->abandonedCart->session_data['resume_id'];
+        }
 
         if ($emailNumber === 1) {
             // Email 1 - Friendly Reminder (After 1 Hour)
@@ -42,7 +52,7 @@ class PaymentAbandonedReminder extends Notification implements ShouldQueue
                 ->line('You can continue anytime from where you left off — no need to start again.')
                 ->action('Complete Your Upgrade', $checkoutUrl)
                 ->line('If you faced any issue during checkout, feel free to reply to this email. We\'re happy to help.')
-                ->salutation('Best regards,  
+                ->salutation('Best regards,
 Jobsease Team');
         } elseif ($emailNumber === 2) {
             // Email 2 - Value + Upgrade Benefits (After 24 Hours)
@@ -58,7 +68,7 @@ Jobsease Team');
                 ->line('Your upgrade is still pending — you can activate it in just a minute.')
                 ->action('Upgrade Now', $checkoutUrl)
                 ->line('If you have questions about plans or pricing, simply reply to this email.')
-                ->salutation('Regards,  
+                ->salutation('Regards,
 Jobsease Team');
         } else {
             // Email 3 - Urgency / Final Reminder (After 72 Hours)
@@ -73,7 +83,7 @@ Jobsease Team');
                 ->line('If you\'re still looking to move ahead in your career, now is the best time to upgrade.')
                 ->action('Complete Your Upgrade', $checkoutUrl)
                 ->line('Need help or unsure which plan is right for you? Just reply — our team is here.')
-                ->salutation('Best wishes,  
+                ->salutation('Best wishes,
 Jobsease Team');
         }
     }
