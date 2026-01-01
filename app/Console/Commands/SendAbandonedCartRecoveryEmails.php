@@ -14,11 +14,13 @@ class SendAbandonedCartRecoveryEmails extends Command
 
     public function handle()
     {
+        echo "=== COMMAND STARTING ===\n";
+        
         \Log::info('=== SendAbandonedCartRecoveryEmails Command Started ===');
         $this->info('Checking for abandoned carts that need recovery emails...');
 
         $pendingCarts = AbandonedCart::getPendingRecovery();
-        
+
         \Log::info("Found " . count($pendingCarts) . " pending carts");
         $this->info("Found " . count($pendingCarts) . " pending carts");
 
@@ -31,7 +33,7 @@ class SendAbandonedCartRecoveryEmails extends Command
         $sent = 0;
         foreach ($pendingCarts as $cart) {
             \Log::info("Processing cart #{$cart->id}, type={$cart->type}, user_id={$cart->user_id}");
-            
+
             if (!$cart->user) {
                 \Log::warn("Skipping cart #{$cart->id}: No user associated");
                 $this->warn("Skipping cart #{$cart->id}: No user associated");
@@ -40,7 +42,7 @@ class SendAbandonedCartRecoveryEmails extends Command
 
             try {
                 \Log::info("Notifying user {$cart->user->email} for cart #{$cart->id}");
-                
+
                 // Send appropriate notification based on type
                 switch ($cart->type) {
                     case 'signup':
