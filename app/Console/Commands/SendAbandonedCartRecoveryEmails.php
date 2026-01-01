@@ -15,16 +15,22 @@ class SendAbandonedCartRecoveryEmails extends Command
     public function handle()
     {
         echo "=== COMMAND STARTING ===\n";
-        
-        \Log::info('=== SendAbandonedCartRecoveryEmails Command Started ===');
-        $this->info('Checking for abandoned carts that need recovery emails...');
 
-        echo "Getting pending carts...\n";
-        $pendingCarts = AbandonedCart::getPendingRecovery();
-        
-        echo "Found " . count($pendingCarts) . " pending carts\n";
-        \Log::info("Found " . count($pendingCarts) . " pending carts");
-        $this->info("Found " . count($pendingCarts) . " pending carts");
+        try {
+            \Log::info('=== SendAbandonedCartRecoveryEmails Command Started ===');
+            $this->info('Checking for abandoned carts that need recovery emails...');
+
+            echo "Getting pending carts...\n";
+            $pendingCarts = AbandonedCart::getPendingRecovery();
+
+            echo "Found " . count($pendingCarts) . " pending carts\n";
+            \Log::info("Found " . count($pendingCarts) . " pending carts");
+            $this->info("Found " . count($pendingCarts) . " pending carts");
+        } catch (\Exception $e) {
+            echo "FATAL ERROR: " . $e->getMessage() . "\n";
+            echo $e->getTraceAsString() . "\n";
+            return 1;
+        }
 
         if ($pendingCarts->isEmpty()) {
             echo "No pending carts\n";
