@@ -71,23 +71,36 @@ class AbandonedCartController extends Controller
     public function sendReminder($id)
     {
         $cart = AbandonedCart::with('user')->findOrFail($id);
-        
+
         if (!$cart->user) {
             return redirect()->back()
                 ->with('error', 'Cannot send reminder: No user associated with this cart.');
         }
 
+        // Debug info
+        $debugInfo = [
+            'status' => $cart->status,
+            'recovery_email_sent_count' => $cart->recovery_email_sent_count,
+            'created_at' => $cart->created_at->toDateTimeString(),
+            'isAbandonedFor(1)' => $cart->isAbandonedFor(1),
+            'shouldSendRecoveryEmail' => $cart->shouldSendRecoveryEmail(),
+        ];
+
         // Check if email should be sent
         if (!$cart->shouldSendRecoveryEmail()) {
             $nextEmailTime = $cart->getTimeUntilNextEmail();
-            $message = 'Email cannot be sent yet.';
-            
+            $message = 'Email cannot be sent yet. ';
+
+            // Add debug info
+            $message .= 'Debug: Status=' . $cart->status . ', Count=' . $cart->recovery_email_sent_count . 
+                       ', isAbandonedFor(1)=' . ($cart->isAbandonedFor(1) ? 'true' : 'false') . '. ';
+
             if ($nextEmailTime) {
-                $message .= ' Next email can be sent at ' . $nextEmailTime->format('M d, Y H:i') . '.';
+                $message .= 'Next email can be sent at ' . $nextEmailTime->format('M d, Y H:i') . '.';
             } elseif ($cart->recovery_email_sent_count >= 3) {
                 $message = 'Maximum recovery emails (3) have already been sent.';
             }
-            
+
             return redirect()->back()->with('error', $message);
         }
 
