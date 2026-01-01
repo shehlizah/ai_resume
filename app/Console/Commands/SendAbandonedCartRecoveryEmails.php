@@ -14,50 +14,68 @@ class SendAbandonedCartRecoveryEmails extends Command
 
     public function handle()
     {
+        \Log::info('=== SendAbandonedCartRecoveryEmails Command Started ===');
         $this->info('Checking for abandoned carts that need recovery emails...');
 
         $pendingCarts = AbandonedCart::getPendingRecovery();
+        
+        \Log::info("Found " . count($pendingCarts) . " pending carts");
+        $this->info("Found " . count($pendingCarts) . " pending carts");
 
         if ($pendingCarts->isEmpty()) {
+            \Log::info('No abandoned carts need recovery emails');
             $this->info('No abandoned carts need recovery emails at this time.');
             return 0;
         }
 
         $sent = 0;
         foreach ($pendingCarts as $cart) {
+            \Log::info("Processing cart #{$cart->id}, type={$cart->type}, user_id={$cart->user_id}");
+            
             if (!$cart->user) {
+                \Log::warn("Skipping cart #{$cart->id}: No user associated");
                 $this->warn("Skipping cart #{$cart->id}: No user associated");
                 continue;
             }
 
             try {
+                \Log::info("Notifying user {$cart->user->email} for cart #{$cart->id}");
+                
                 // Send appropriate notification based on type
                 switch ($cart->type) {
                     case 'signup':
+                        \Log::info("Sending IncompleteSignupReminder for cart #{$cart->id}");
                         $cart->user->notify(new IncompleteSignupReminder($cart));
                         break;
                     case 'resume':
+                        \Log::info("Sending IncompleteResumeReminder for cart #{$cart->id}");
                         $cart->user->notify(new \App\Notifications\IncompleteResumeReminder($cart));
                         break;
                     case 'pdf_preview':
                     case 'payment':
+                        \Log::info("Sending PaymentAbandonedReminder for cart #{$cart->id}");
                         $cart->user->notify(new PaymentAbandonedReminder($cart));
                         break;
                     default:
+                        \Log::warn("Unknown cart type: {$cart->type}");
                         $this->warn("Unknown cart type: {$cart->type}");
                         continue 2;
                 }
 
                 $cart->markRecoveryEmailSent();
                 $sent++;
-                
+
                 $emailNumber = $cart->recovery_email_sent_count;
+                \Log::info("Sent recovery email #{$emailNumber} to {$cart->user->email} (Cart #{$cart->id})");
                 $this->info("Sent recovery email #{$emailNumber} to {$cart->user->email} (Cart #{$cart->id})");
             } catch (\Exception $e) {
+                \Log::error("Failed to send email for cart #{$cart->id}: " . $e->getMessage());
+                \Log::error($e->getTraceAsString());
                 $this->error("Failed to send email for cart #{$cart->id}: " . $e->getMessage());
             }
         }
 
+        \Log::info("Command completed. Sent {$sent} recovery emails.");
         $this->info("Completed! Sent {$sent} recovery emails.");
         return 0;
     }
