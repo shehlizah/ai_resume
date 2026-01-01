@@ -27,6 +27,9 @@ class MatchCandidatesJob implements ShouldQueue
 
     public function handle(CandidateMatchService $matchService)
     {
+        // Temporarily disabled to prevent queue blocking
+        return;
+
         try {
             Log::info("Starting candidate matching for job: {$this->job->id}");
 
