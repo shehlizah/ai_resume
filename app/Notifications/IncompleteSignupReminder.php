@@ -43,7 +43,7 @@ class IncompleteSignupReminder extends Notification implements ShouldQueue
             ->line('✓ Interview preparation tools')
             ->line('✓ Premium templates')
             ->line('If you didn\'t create an account, you can safely ignore this email.')
-            ->salutation('Best regards,')
-            ->markdown('notifications.mail');
+            ->salutation('Best regards,
+Jobsease Team');
     }
 }

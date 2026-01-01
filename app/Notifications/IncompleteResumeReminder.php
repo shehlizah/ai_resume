@@ -56,7 +56,7 @@ class IncompleteResumeReminder extends Notification implements ShouldQueue
             ->line('• Better job matches')
             ->line('• Higher visibility')
             ->line('If you changed your mind, you can delete your draft anytime.')
-            ->salutation('Best regards,')
-            ->markdown('notifications.mail');
+            ->salutation('Best regards,
+Jobsease Team');
     }
 }
