@@ -221,7 +221,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     function trackSignupStart() {
         const email = document.getElementById('email').value;
         const name = document.getElementById('name').value;
-        
+
         if (email && email.includes('@')) {
             fetch('/api/abandonment/track-signup', {
                 method: 'POST',

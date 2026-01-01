@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Automatically process queued jobs every minute
 Schedule::command('queue:work --stop-when-empty')->everyMinute();
+
+// Send abandoned cart recovery emails every hour
+Schedule::command('abandoned-carts:send-recovery-emails')->hourly();

@@ -197,7 +197,7 @@ class AbandonedCartTest extends TestCase
 
         $this->assertTrue($cart->shouldSendRecoveryEmail());
 
-        $cart->update(['recovery_email_sent_count' => 2]);
+        $cart->update(['recovery_email_sent_count' => 3]);
         $this->assertFalse($cart->shouldSendRecoveryEmail());
     }
 
@@ -229,9 +229,9 @@ class AbandonedCartTest extends TestCase
             'type' => 'pdf_preview',
             'status' => 'abandoned',
             'session_data' => ['resume_name' => 'Test'],
-            'recovery_email_sent_count' => 2,
+            'recovery_email_sent_count' => 3,
         ]);
-        DB::table('abandoned_carts')->where('id', $maxEmailCart->id)->update(['created_at' => now()->subHours(3)]);
+        DB::table('abandoned_carts')->where('id', $maxEmailCart->id)->update(['created_at' => now()->subHours(80)]);
         $maxEmailCart->refresh();
 
         $pending = AbandonedCart::getPendingRecovery();

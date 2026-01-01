@@ -77,6 +77,20 @@ class AbandonedCartController extends Controller
                 ->with('error', 'Cannot send reminder: No user associated with this cart.');
         }
 
+        // Check if email should be sent
+        if (!$cart->shouldSendRecoveryEmail()) {
+            $nextEmailTime = $cart->getTimeUntilNextEmail();
+            $message = 'Email cannot be sent yet.';
+            
+            if ($nextEmailTime) {
+                $message .= ' Next email can be sent at ' . $nextEmailTime->format('M d, Y H:i') . '.';
+            } elseif ($cart->recovery_email_sent_count >= 3) {
+                $message = 'Maximum recovery emails (3) have already been sent.';
+            }
+            
+            return redirect()->back()->with('error', $message);
+        }
+
         // Send appropriate notification based on type
         switch ($cart->type) {
             case 'signup':
@@ -86,13 +100,14 @@ class AbandonedCartController extends Controller
                 $cart->user->notify(new \App\Notifications\IncompleteResumeReminder($cart));
                 break;
             case 'pdf_preview':
-                $cart->user->notify(new \App\Notifications\PdfPreviewUpgradeReminder($cart));
+            case 'payment':
+                $cart->user->notify(new \App\Notifications\PaymentAbandonedReminder($cart));
                 break;
         }
 
         $cart->markRecoveryEmailSent();
 
         return redirect()->back()
-            ->with('success', 'Reminder email sent successfully.');
+            ->with('success', 'Recovery email ' . $cart->recovery_email_sent_count . ' sent successfully.');
     }
 }

@@ -66,8 +66,40 @@ class AbandonedCart extends Model
             return true;
         }
 
-        // Don't send more than 2 emails
+        // Third email after 72 hours (3 days)
+        if ($this->recovery_email_sent_count === 2 && $this->isAbandonedFor(72)) {
+            return true;
+        }
+
+        // Don't send more than 3 emails
         return false;
+    }
+
+    /**
+     * Get the time remaining until next email can be sent
+     */
+    public function getTimeUntilNextEmail()
+    {
+        if ($this->status !== 'abandoned') {
+            return null;
+        }
+
+        if ($this->recovery_email_sent_count === 0) {
+            $nextEmailAt = $this->created_at->copy()->addHours(1);
+            return $nextEmailAt->isFuture() ? $nextEmailAt : null;
+        }
+
+        if ($this->recovery_email_sent_count === 1) {
+            $nextEmailAt = $this->created_at->copy()->addHours(24);
+            return $nextEmailAt->isFuture() ? $nextEmailAt : null;
+        }
+
+        if ($this->recovery_email_sent_count === 2) {
+            $nextEmailAt = $this->created_at->copy()->addHours(72);
+            return $nextEmailAt->isFuture() ? $nextEmailAt : null;
+        }
+
+        return null; // All emails sent
     }
 
     /**

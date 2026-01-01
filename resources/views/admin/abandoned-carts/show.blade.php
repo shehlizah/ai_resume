@@ -191,12 +191,35 @@
         </div>
         <div class="card-body">
           @if($cart->status === 'abandoned' && $cart->user)
-          <form action="{{ route('admin.abandoned-carts.send-reminder', $cart->id) }}" method="POST" class="mb-2">
-            @csrf
-            <button type="submit" class="btn btn-primary w-100">
-              <i class="bx bx-envelope"></i> Send Reminder Email
-            </button>
-          </form>
+            @php
+              $canSendEmail = $cart->shouldSendRecoveryEmail();
+              $nextEmailTime = $cart->getTimeUntilNextEmail();
+              $maxEmailsReached = $cart->recovery_email_sent_count >= 3;
+            @endphp
+
+            @if($maxEmailsReached)
+              <div class="alert alert-info">
+                <i class="bx bx-info-circle"></i> Maximum recovery emails (3) have been sent for this cart.
+              </div>
+            @elseif(!$canSendEmail && $nextEmailTime)
+              <div class="alert alert-warning">
+                <i class="bx bx-time"></i> Next email can be sent at:<br>
+                <strong>{{ $nextEmailTime->format('M d, Y H:i') }}</strong><br>
+                <small>({{ $nextEmailTime->diffForHumans() }})</small>
+              </div>
+            @endif
+
+            <form action="{{ route('admin.abandoned-carts.send-reminder', $cart->id) }}" method="POST" class="mb-2">
+              @csrf
+              <button type="submit" class="btn btn-primary w-100" {{ !$canSendEmail ? 'disabled' : '' }}>
+                <i class="bx bx-envelope"></i> 
+                @if($canSendEmail)
+                  Send Recovery Email {{ $cart->recovery_email_sent_count + 1 }}
+                @else
+                  Email Not Ready Yet
+                @endif
+              </button>
+            </form>
           @endif
 
           @if($cart->status === 'abandoned')
