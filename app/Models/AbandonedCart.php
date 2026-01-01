@@ -28,6 +28,7 @@ class AbandonedCart extends Model
         'completed_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'recovery_email_sent_count' => 'integer',
     ];
 
     /**
