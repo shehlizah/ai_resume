@@ -92,7 +92,7 @@ class AbandonedCartController extends Controller
             $message = 'Email cannot be sent yet. ';
 
             // Add debug info
-            $message .= 'Debug: Status=' . $cart->status . ', Count=' . $cart->recovery_email_sent_count . 
+            $message .= 'Debug: Status=' . $cart->status . ', Count=' . $cart->recovery_email_sent_count .
                        ', isAbandonedFor(1)=' . ($cart->isAbandonedFor(1) ? 'true' : 'false') . '. ';
 
             if ($nextEmailTime) {
@@ -108,19 +108,24 @@ class AbandonedCartController extends Controller
         switch ($cart->type) {
             case 'signup':
                 $cart->user->notify(new \App\Notifications\IncompleteSignupReminder($cart));
+                $notificationType = 'Signup Reminder';
                 break;
             case 'resume':
                 $cart->user->notify(new \App\Notifications\IncompleteResumeReminder($cart));
+                $notificationType = 'Resume Reminder';
                 break;
             case 'pdf_preview':
             case 'payment':
                 $cart->user->notify(new \App\Notifications\PaymentAbandonedReminder($cart));
+                $notificationType = 'Payment Reminder';
                 break;
+            default:
+                return redirect()->back()->with('error', 'Unknown cart type: ' . $cart->type);
         }
 
         $cart->markRecoveryEmailSent();
 
         return redirect()->back()
-            ->with('success', 'Recovery email ' . $cart->recovery_email_sent_count . ' sent successfully.');
+            ->with('success', $notificationType . ' email #' . $cart->recovery_email_sent_count . ' sent successfully to ' . $cart->user->email . '. Check queue: php artisan queue:work');
     }
 }
