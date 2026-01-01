@@ -7,9 +7,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
-class PaymentAbandonedReminder extends Notification implements ShouldQueue
+class PaymentAbandonedReminder extends Notification
 {
+    // Temporarily remove ShouldQueue to test if email sends synchronously
     use Queueable;
 
     protected $abandonedCart;
