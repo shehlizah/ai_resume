@@ -1,4 +1,3 @@
-
 <?php
 use App\Models\AbandonedCart;
 use Illuminate\Support\Facades\Route;
@@ -643,6 +642,34 @@ Route::get('/debug/abandoned-cart/{type}', function ($type) {
         return 'No abandoned cart found for type: ' . $type;
     }
     $user = $cart->user;
+    if (!$user && $type === 'signup') {
+        $email = $cart->session_data['email'] ?? null;
+        if ($email) {
+            $reminder = new \App\Notifications\IncompleteSignupReminder($cart);
+            $recoveryCount = $cart->recovery_email_sent_count + 1;
+            $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
+            \Mail::to($email)->send(new class($mailMessage) extends \Illuminate\Mail\Mailable {
+                public $mailMessage;
+                public function __construct($mailMessage) { $this->mailMessage = $mailMessage; }
+                public function build() {
+                    $this->subject($this->mailMessage->subject);
+                    $this->view('emails.default')->with([
+                        'greeting' => $this->mailMessage->greeting,
+                        'lines' => $this->mailMessage->introLines,
+                        'actionText' => $this->mailMessage->actionText,
+                        'actionUrl' => $this->mailMessage->actionUrl,
+                        'outroLines' => $this->mailMessage->outroLines,
+                        'salutation' => $this->mailMessage->salutation,
+                    ]);
+                    return $this;
+                }
+            });
+            $cart->markRecoveryEmailSent();
+            return 'IncompleteSignupReminder sent directly to ' . $email;
+        } else {
+            return 'No user or email found for cart ID: ' . $cart->id;
+        }
+    }
     if (!$user) {
         return 'No user found for cart ID: ' . $cart->id;
     }
