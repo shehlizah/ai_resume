@@ -1,3 +1,33 @@
+// Debug routes for abandoned cart reminders
+use App\Models\AbandonedCart;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/debug/abandoned-cart/{type}', function ($type) {
+    $cart = AbandonedCart::where('type', $type)
+        ->where('status', 'abandoned')
+        ->where('user_id', '!=', null)
+        ->orderByDesc('id')
+        ->first();
+    if (!$cart) {
+        return 'No abandoned cart found for type: ' . $type;
+    }
+    $user = $cart->user;
+    if (!$user) {
+        return 'No user found for cart ID: ' . $cart->id;
+    }
+    if ($type === 'pdf_preview') {
+        $user->notify(new \App\Notifications\PdfPreviewUpgradeReminder($cart));
+        return 'PdfPreviewUpgradeReminder sent to ' . $user->email;
+    } elseif ($type === 'signup') {
+        $user->notify(new \App\Notifications\IncompleteSignupReminder($cart));
+        return 'IncompleteSignupReminder sent to ' . $user->email;
+    } elseif ($type === 'resume') {
+        $user->notify(new \App\Notifications\IncompleteResumeReminder($cart));
+        return 'IncompleteResumeReminder sent to ' . $user->email;
+    } else {
+        return 'Unknown cart type: ' . $type;
+    }
+});
 <?php
 
 use Illuminate\Support\Facades\Route;
