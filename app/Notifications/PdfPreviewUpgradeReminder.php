@@ -31,26 +31,55 @@ class PdfPreviewUpgradeReminder extends Notification implements ShouldQueue
         $sessionData = $this->abandonedCart->session_data ?? [];
         $resumeName = $sessionData['resume_name'] ?? 'Your Resume';
 
-        return (new MailMessage)
-            ->subject('Your Beautiful Resume is Ready - ' . ($recoveryCount === 1 ? 'Unlock the Download!' : 'Don\'t Miss This Opportunity!'))
-            ->greeting("Hi {$userName}!")
-            ->line($recoveryCount === 1
-                ? "Great news! Your resume \"{$resumeName}\" looks amazing in our preview. You just need to upgrade to download it!"
-                : "Your professionally designed resume is waiting to be downloaded. Upgrade now to get it!"
-            )
-            ->action('Upgrade & Download', route('user.pricing'))
-            ->line('Why upgrade?')
-            ->line('📄 Download unlimited resume PDFs')
-            ->line('🎨 Access premium templates')
-            ->line('💼 Get AI-powered optimization tips')
-            ->line('🚀 Access job matching tools')
-            ->line('🎯 Interview preparation')
-            ->line('')
-            ->line('Special Offer: Get 10% off your first month with code RESUME10')
-            ->line('')
-            ->line('Your resume score: ' . ($sessionData['score'] ?? 'Not calculated'))
-            ->line('We recommend upgrading to unlock advanced feedback and improvements.')
-            ->salutation('Best regards,')
-            ->markdown('notifications.mail');
+            $emailNum = $this->abandonedCart->recovery_email_sent_count + 1;
+            $checkoutUrl = route('pricing');
+            if ($this->abandonedCart->session_data['resume_id'] ?? null) {
+                $checkoutUrl .= '?resume=' . $this->abandonedCart->session_data['resume_id'];
+            }
+
+            if ($emailNum === 1) {
+                // Email 1 – Friendly Reminder (After 1 Hour)
+                return (new MailMessage)
+                    ->subject('Complete Your Jobsease Upgrade')
+                    ->greeting('Hi,')
+                    ->line('We noticed you were just one step away from upgrading your Jobsease account, but the checkout wasn’t completed.')
+                    ->line('Your selected plan is still reserved and gives you access to:')
+                    ->line('- Faster job matching')
+                    ->line('- Priority visibility to employers')
+                    ->line('- Advanced profile & application features')
+                    ->line('You can continue anytime from where you left off — no need to start again.')
+                    ->action('Complete your upgrade here', $checkoutUrl)
+                    ->line('If you faced any issue during checkout, feel free to reply to this email. We’re happy to help.')
+                    ->salutation('Best regards,\nJOBSEASE TEAM');
+            } elseif ($emailNum === 2) {
+                // Email 2 – Value + Upgrade Benefits (After 24 Hours)
+                return (new MailMessage)
+                    ->subject('Your Jobsease Upgrade is Still Pending')
+                    ->greeting('Hi,')
+                    ->line('Just a quick reminder about your pending Jobsease upgrade.')
+                    ->line('Upgrading your account helps you:')
+                    ->line('- Get noticed by employers faster')
+                    ->line('- Apply to premium job listings')
+                    ->line('- Improve your chances with enhanced profile tools')
+                    ->line('Many candidates using upgraded plans get responses significantly quicker than free users.')
+                    ->line('Your upgrade is still pending — you can activate it in just a minute.')
+                    ->action('Upgrade now', $checkoutUrl)
+                    ->line('If you have questions about plans or pricing, simply reply to this email.')
+                    ->salutation('Regards,\nJobsease Team');
+            } else {
+                // Email 3 – Urgency / Final Reminder (After 72 Hours)
+                return (new MailMessage)
+                    ->subject('Final Reminder: Your Jobsease Upgrade')
+                    ->greeting('Hi,')
+                    ->line('This is a final reminder regarding your incomplete Jobsease upgrade.')
+                    ->line('Your selected plan may expire soon, and you could miss out on:')
+                    ->line('- Priority employer access')
+                    ->line('- Advanced job application tools')
+                    ->line('- Better visibility in searches')
+                    ->line('If you’re still looking to move ahead in your career, now is the best time to upgrade.')
+                    ->action('Complete your upgrade here', $checkoutUrl)
+                    ->line('Need help or unsure which plan is right for you? Just reply — our team is here.')
+                    ->salutation('Best wishes,\nJobsease Team');
+            }
     }
 }

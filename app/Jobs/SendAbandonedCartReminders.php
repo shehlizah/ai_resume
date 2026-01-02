@@ -57,9 +57,9 @@ class SendAbandonedCartReminders implements ShouldQueue
                 }
 
                 try {
-                    if ($cart->type === 'payment') {
-                        $cart->user->notify(new \App\Notifications\PaymentAbandonedReminder($cart));
-                        echo "[NOTIFY] PaymentAbandonedReminder sent to {$cart->user->email}\n";
+                    if ($cart->type === 'pdf_preview') {
+                        $cart->user->notify(new \App\Notifications\PdfPreviewUpgradeReminder($cart));
+                        echo "[NOTIFY] PdfPreviewUpgradeReminder sent to {$cart->user->email}\n";
                     } elseif ($cart->type === 'signup') {
                         $cart->user->notify(new \App\Notifications\IncompleteSignupReminder($cart));
                         echo "[NOTIFY] IncompleteSignupReminder sent to {$cart->user->email}\n";
