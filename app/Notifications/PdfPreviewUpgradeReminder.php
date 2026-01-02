@@ -41,7 +41,7 @@ class PdfPreviewUpgradeReminder extends Notification implements ShouldQueue
     public function buildMailMessage($userName = 'there', $recoveryCount = 1)
     {
         $sessionData = $this->abandonedCart->session_data ?? [];
-        $checkoutUrl = route('pricing');
+        $checkoutUrl = route('packages');
         if ($this->abandonedCart->session_data['resume_id'] ?? null) {
             $checkoutUrl .= '?resume=' . $this->abandonedCart->session_data['resume_id'];
         }
