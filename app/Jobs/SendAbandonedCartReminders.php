@@ -31,12 +31,12 @@ class SendAbandonedCartReminders implements ShouldQueue
                 echo "[JOB] Cart #{$cart->id}\n";
 
                 if (!$cart->shouldSendRecoveryEmail()) {
-                    echo "[JOB] Cart #{$cart->id} not eligible\n";
+                    echo "[SKIP] Cart #{$cart->id} not eligible for recovery email. Status: {$cart->status}, Recovery sent: {$cart->recovery_email_sent_count}, Created: {$cart->created_at}\n";
                     continue;
                 }
 
                 if (!$cart->user) {
-                    echo "[JOB] Cart #{$cart->id} no user\n";
+                    echo "[SKIP] Cart #{$cart->id} has no user (user_id: {$cart->user_id}). Type: {$cart->type}, Session data: ".json_encode($cart->session_data)."\n";
                     continue;
                 }
 
