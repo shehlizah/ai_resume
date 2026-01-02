@@ -60,8 +60,15 @@ class SendAbandonedCartReminders implements ShouldQueue
                     if ($cart->type === 'payment') {
                         $cart->user->notify(new \App\Notifications\PaymentAbandonedReminder($cart));
                         echo "[NOTIFY] PaymentAbandonedReminder sent to {$cart->user->email}\n";
+                    } elseif ($cart->type === 'signup') {
+                        $cart->user->notify(new \App\Notifications\IncompleteSignupReminder($cart));
+                        echo "[NOTIFY] IncompleteSignupReminder sent to {$cart->user->email}\n";
+                    } elseif ($cart->type === 'resume') {
+                        $cart->user->notify(new \App\Notifications\IncompleteResumeReminder($cart));
+                        echo "[NOTIFY] IncompleteResumeReminder sent to {$cart->user->email}\n";
+                    } else {
+                        echo "[SKIP] Cart #{$cart->id} has unknown type: {$cart->type}\n";
                     }
-                    // Add similar notification logic for signup and resume if needed
                     $cart->markRecoveryEmailSent();
                     echo "[JOB] Cart #{$cart->id} marked as sent\n";
                 } catch (\Throwable $e) {
