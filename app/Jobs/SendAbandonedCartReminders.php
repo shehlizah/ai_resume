@@ -61,12 +61,12 @@ class SendAbandonedCartReminders implements ShouldQueue
                             $reminder = new \App\Notifications\IncompleteSignupReminder($cart);
                             $recoveryCount = $cart->recovery_email_sent_count + 1;
                             $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
-                            
-                            // Send as raw HTML email
-                            \Mail::raw($mailMessage->render(), function ($message) use ($email, $mailMessage) {
+
+                            // Send as raw HTML email - cast render() output to string
+                            \Mail::raw((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
                                 $message->to($email)->subject($mailMessage->subject);
                             });
-                            
+
                             echo "[MAIL] IncompleteSignupReminder sent directly to $email\n";
                             $cart->markRecoveryEmailSent();
                             echo "[JOB] Cart #{$cart->id} marked as sent\n";
@@ -87,12 +87,12 @@ class SendAbandonedCartReminders implements ShouldQueue
                             $reminder = new \App\Notifications\PdfPreviewUpgradeReminder($cart);
                             $recoveryCount = $cart->recovery_email_sent_count + 1;
                             $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
-                            
-                            // Send as raw HTML email
-                            \Mail::raw($mailMessage->render(), function ($message) use ($email, $mailMessage) {
+
+                            // Send as raw HTML email - cast render() output to string
+                            \Mail::raw((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
                                 $message->to($email)->subject($mailMessage->subject);
                             });
-                            
+
                             echo "[MAIL] PdfPreviewUpgradeReminder sent directly to $email\n";
                             $cart->markRecoveryEmailSent();
                             echo "[JOB] Cart #{$cart->id} marked as sent\n";

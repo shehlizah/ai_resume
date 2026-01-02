@@ -643,13 +643,13 @@ Route::get('/debug/abandoned-cart/{type}', function ($type) {
         ->where('status', 'abandoned')
         ->orderByDesc('id')
         ->first();
-    
+
     if (!$cart) {
         return 'No abandoned cart found for type: ' . $type;
     }
-    
+
     echo "[DEBUG] Found cart #{$cart->id}, type: {$cart->type}, user_id: {$cart->user_id}\n";
-    
+
     // For signup carts with no user, send directly to session email
     if (!$cart->user && $type === 'signup') {
         $email = $cart->session_data['email'] ?? null;
@@ -659,13 +659,13 @@ Route::get('/debug/abandoned-cart/{type}', function ($type) {
                 $reminder = new \App\Notifications\IncompleteSignupReminder($cart);
                 $recoveryCount = $cart->recovery_email_sent_count + 1;
                 $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
-                
-                // Send the raw email
-                \Mail::raw($mailMessage->render(), function ($message) use ($email, $mailMessage) {
+
+                // Send the raw email - cast render() output to string
+                \Mail::raw((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
                     $message->to($email)
                             ->subject($mailMessage->subject);
                 });
-                
+
                 $cart->markRecoveryEmailSent();
                 return 'IncompleteSignupReminder sent directly to ' . $email;
             } catch (\Throwable $e) {
@@ -675,7 +675,7 @@ Route::get('/debug/abandoned-cart/{type}', function ($type) {
             return 'No email in session_data for cart ID: ' . $cart->id;
         }
     }
-    
+
     // For pdf_preview carts with no user, send directly to session email
     if (!$cart->user && $type === 'pdf_preview') {
         $email = $cart->session_data['email'] ?? null;
@@ -685,13 +685,13 @@ Route::get('/debug/abandoned-cart/{type}', function ($type) {
                 $reminder = new \App\Notifications\PdfPreviewUpgradeReminder($cart);
                 $recoveryCount = $cart->recovery_email_sent_count + 1;
                 $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
-                
-                // Send the raw email
-                \Mail::raw($mailMessage->render(), function ($message) use ($email, $mailMessage) {
+
+                // Send the raw email - cast render() output to string
+                \Mail::raw((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
                     $message->to($email)
                             ->subject($mailMessage->subject);
                 });
-                
+
                 $cart->markRecoveryEmailSent();
                 return 'PdfPreviewUpgradeReminder sent directly to ' . $email;
             } catch (\Throwable $e) {
@@ -701,12 +701,12 @@ Route::get('/debug/abandoned-cart/{type}', function ($type) {
             return 'No email in session_data for cart ID: ' . $cart->id;
         }
     }
-    
+
     // If cart has a user, send via notification
     if (!$cart->user) {
         return 'No user found for cart ID: ' . $cart->id;
     }
-    
+
     try {
         if ($type === 'pdf_preview') {
             $cart->user->notify(new \App\Notifications\PdfPreviewUpgradeReminder($cart));
