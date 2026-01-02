@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use function route;
 
 class IncompleteSignupReminder extends Notification implements ShouldQueue
 {
@@ -29,6 +30,17 @@ class IncompleteSignupReminder extends Notification implements ShouldQueue
         $recoveryCount = $this->abandonedCart->recovery_email_sent_count + 1;
         $userName = $notifiable->name ?? 'there';
 
+        return $this->buildMailMessage($userName, $recoveryCount);
+    }
+
+    /**
+     * Build the MailMessage for the reminder email
+     * @param string $userName
+     * @param int $recoveryCount
+     * @return MailMessage
+     */
+    public function buildMailMessage($userName = 'there', $recoveryCount = 1)
+    {
         return (new MailMessage)
             ->subject('Complete Your Account Setup - ' . ($recoveryCount === 1 ? 'Just One Step Left!' : 'We\'re Still Waiting for You'))
             ->greeting("Hi {$userName}!")

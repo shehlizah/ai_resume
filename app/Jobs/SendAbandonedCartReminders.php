@@ -9,7 +9,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Mail\Message;
+use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\Artisan;
+use function now;
 
 class SendAbandonedCartReminders implements ShouldQueue
 {
@@ -20,7 +22,7 @@ class SendAbandonedCartReminders implements ShouldQueue
         echo "[JOB] Starting\n";
         // Clear cache to avoid stale DB reads
         try {
-            \Artisan::call('cache:clear');
+            Artisan::call('cache:clear');
             echo "[JOB] Cache cleared\n";
         } catch (\Throwable $e) {
             echo "[WARN] Could not clear cache: " . $e->getMessage() . "\n";
@@ -48,6 +50,58 @@ class SendAbandonedCartReminders implements ShouldQueue
 
                 if (!$cart->shouldSendRecoveryEmail()) {
                     echo "[SKIP] Cart #{$cart->id} not eligible for recovery email. Status: {$cart->status}, Recovery sent: {$cart->recovery_email_sent_count}, Created: {$cart->created_at}\n";
+                    continue;
+                }
+
+                // If cart has no user and is signup type, send direct email
+                if (!$cart->user && $cart->type === 'signup') {
+                    $email = $cart->session_data['email'] ?? null;
+                    if ($email) {
+                        try {
+                            $reminder = new \App\Notifications\IncompleteSignupReminder($cart);
+                            $recoveryCount = $cart->recovery_email_sent_count + 1;
+                            $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
+                            
+                            // Send as raw HTML email
+                            \Mail::raw($mailMessage->render(), function ($message) use ($email, $mailMessage) {
+                                $message->to($email)->subject($mailMessage->subject);
+                            });
+                            
+                            echo "[MAIL] IncompleteSignupReminder sent directly to $email\n";
+                            $cart->markRecoveryEmailSent();
+                            echo "[JOB] Cart #{$cart->id} marked as sent\n";
+                        } catch (\Throwable $e) {
+                            echo "[ERROR] Failed to send direct email to {$email}: " . $e->getMessage() . "\n";
+                        }
+                    } else {
+                        echo "[SKIP] Cart #{$cart->id} has no user and no email in session_data.\n";
+                    }
+                    continue;
+                }
+
+                // If cart has no user and is pdf_preview type, send direct email
+                if (!$cart->user && $cart->type === 'pdf_preview') {
+                    $email = $cart->session_data['email'] ?? null;
+                    if ($email) {
+                        try {
+                            $reminder = new \App\Notifications\PdfPreviewUpgradeReminder($cart);
+                            $recoveryCount = $cart->recovery_email_sent_count + 1;
+                            $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
+                            
+                            // Send as raw HTML email
+                            \Mail::raw($mailMessage->render(), function ($message) use ($email, $mailMessage) {
+                                $message->to($email)->subject($mailMessage->subject);
+                            });
+                            
+                            echo "[MAIL] PdfPreviewUpgradeReminder sent directly to $email\n";
+                            $cart->markRecoveryEmailSent();
+                            echo "[JOB] Cart #{$cart->id} marked as sent\n";
+                        } catch (\Throwable $e) {
+                            echo "[ERROR] Failed to send direct email to {$email}: " . $e->getMessage() . "\n";
+                        }
+                    } else {
+                        echo "[SKIP] Cart #{$cart->id} has no user and no email in session_data.\n";
+                    }
                     continue;
                 }
 
