@@ -631,10 +631,6 @@ Route::get('/api/abandonment/stats', [AbandonmentTrackingController::class, 'get
 
 require __DIR__ . '/auth.php';
 
-// Debug routes for abandoned cart reminders
-use App\Models\AbandonedCart;
-use Illuminate\Support\Facades\Route;
-
 Route::get('/debug/abandoned-cart/{type}', function ($type) {
     $cart = AbandonedCart::where('type', $type)
         ->where('status', 'abandoned')
