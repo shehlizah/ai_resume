@@ -30,7 +30,6 @@ class SendAbandonedCartReminders implements ShouldQueue
 
         try {
             $carts = AbandonedCart::where('status', 'abandoned')
-                ->where('user_id', '!=', null)
                 ->where('created_at', '<', now()->subHours(1))
                 ->get();
 
