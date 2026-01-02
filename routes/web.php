@@ -21,6 +21,11 @@ use App\Http\Controllers\User\InterviewPrepController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\AbandonmentTrackingController;
 use App\Http\Middleware\CheckActivePackage;
+use function app;
+use function response;
+use function request;
+use function view;
+use function now;
 
 /*
 |--------------------------------------------------------------------------
