@@ -196,7 +196,7 @@ Route::middleware(['auth', 'role:user,admin'])->group(function () {
     Route::prefix('jobs')->name('user.jobs.')->group(function () {
         // Recommended jobs (FREE)
         Route::get('/recommended', [JobFinderController::class, 'recommended'])->name('recommended');
-        Route::post('/recommended', [JobFinderController::class, 'generateRecommended'])->name('recommended');
+        Route::post('/recommended', [JobFinderController::class, 'generateRecommended'])->name('generate.recommended');
 
         // Search by location (FREE)
         Route::get('/by-location', [JobFinderController::class, 'byLocation'])->name('by-location');
