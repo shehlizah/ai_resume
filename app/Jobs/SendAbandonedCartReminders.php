@@ -101,3 +101,4 @@ class SendAbandonedCartReminders implements ShouldQueue
             echo "[SENT] {$subject} to {$user->email}\n";
         }
     }
+  }
