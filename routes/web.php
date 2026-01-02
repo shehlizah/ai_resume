@@ -200,7 +200,7 @@ Route::middleware(['auth', 'role:user,admin'])->group(function () {
 
         // Search by location (FREE)
         Route::get('/by-location', [JobFinderController::class, 'byLocation'])->name('by-location');
-        Route::post('/by-location', [JobFinderController::class, 'generateByLocation'])->name('by-location');
+        Route::post('/by-location', [JobFinderController::class, 'generateByLocation'])->name('generate.by-location');
 
         // Reset session limit (FREE)
         Route::post('/reset-session', [JobFinderController::class, 'resetSessionLimit'])->name('reset-session');
