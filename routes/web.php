@@ -1,4 +1,5 @@
-// Debug routes for abandoned cart reminders
+
+// Debug routes for abandoned cart reminders (must be at the very end of this file)
 use App\Models\AbandonedCart;
 use Illuminate\Support\Facades\Route;
 
