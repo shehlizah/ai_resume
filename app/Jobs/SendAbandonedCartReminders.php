@@ -61,8 +61,8 @@ class SendAbandonedCartReminders implements ShouldQueue
                             $recoveryCount = $cart->recovery_email_sent_count + 1;
                             $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
 
-                            // Send as raw HTML email - cast render() output to string
-                            \Mail::raw((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
+                            // Send as HTML email
+                            \Mail::html((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
                                 $message->to($email)->subject($mailMessage->subject);
                             });
 
@@ -87,8 +87,8 @@ class SendAbandonedCartReminders implements ShouldQueue
                             $recoveryCount = $cart->recovery_email_sent_count + 1;
                             $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
 
-                            // Send as raw HTML email - cast render() output to string
-                            \Mail::raw((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
+                            // Send as HTML email
+                            \Mail::html((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
                                 $message->to($email)->subject($mailMessage->subject);
                             });
 

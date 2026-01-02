@@ -655,8 +655,8 @@ Route::get('/debug/abandoned-cart/{type}', function ($type) {
                 $recoveryCount = $cart->recovery_email_sent_count + 1;
                 $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
 
-                // Send the raw email - cast render() output to string
-                \Mail::raw((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
+                // Send as HTML email
+                \Mail::html((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
                     $message->to($email)
                             ->subject($mailMessage->subject);
                 });
@@ -681,8 +681,8 @@ Route::get('/debug/abandoned-cart/{type}', function ($type) {
                 $recoveryCount = $cart->recovery_email_sent_count + 1;
                 $mailMessage = $reminder->buildMailMessage('there', $recoveryCount);
 
-                // Send the raw email - cast render() output to string
-                \Mail::raw((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
+                // Send as HTML email
+                \Mail::html((string) $mailMessage->render(), function ($message) use ($email, $mailMessage) {
                     $message->to($email)
                             ->subject($mailMessage->subject);
                 });
