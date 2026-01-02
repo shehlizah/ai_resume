@@ -18,23 +18,23 @@ class SendAbandonedCartReminders implements ShouldQueue
     public function handle(): void
     {
         echo "[JOB] Starting\n";
-        
+
         try {
             $carts = AbandonedCart::where('status', 'abandoned')
                 ->where('user_id', '!=', null)
                 ->where('created_at', '<', now()->subHours(1))
                 ->get();
-            
+
             echo "[JOB] Found " . count($carts) . " carts\n";
 
             foreach ($carts as $cart) {
                 echo "[JOB] Cart #{$cart->id}\n";
-                
+
                 if (!$cart->shouldSendRecoveryEmail()) {
                     echo "[JOB] Cart #{$cart->id} not eligible\n";
                     continue;
                 }
-                
+
                 if (!$cart->user) {
                     echo "[JOB] Cart #{$cart->id} no user\n";
                     continue;
@@ -45,13 +45,18 @@ class SendAbandonedCartReminders implements ShouldQueue
                     $cart->markRecoveryEmailSent();
                     echo "[JOB] Cart #{$cart->id} sent\n";
                 } catch (\Throwable $e) {
-                    echo "[ERROR] " . $e->getMessage() . "\n";
+                    echo "[ERROR] Cart #{$cart->id}: " . $e->getMessage() . "\n";
+                    echo "[TRACE] " . $e->getTraceAsString() . "\n";
+                    file_put_contents('/tmp/abandoned-cart-error.log', date('Y-m-d H:i:s') . " Cart #{$cart->id}: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n\n", FILE_APPEND);
                 }
             }
-            
+
             echo "[JOB] Done\n";
         } catch (\Throwable $e) {
             echo "[FATAL] " . $e->getMessage() . "\n";
+            echo "[TRACE] " . $e->getTraceAsString() . "\n";
+            file_put_contents('/tmp/abandoned-cart-error.log', date('Y-m-d H:i:s') . " FATAL: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n\n", FILE_APPEND);
+            throw $e;
         }
     }
 
@@ -95,3 +100,4 @@ class SendAbandonedCartReminders implements ShouldQueue
             });
             echo "[SENT] {$subject} to {$user->email}\n";
         }
+    }

@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Send abandoned cart reminders every hour
-        $schedule->command('abandonment:send-reminders')
+        $schedule->command('abandoned-carts:send-recovery-emails')
             ->hourly()
             ->onOneServer();
     }
