@@ -48,7 +48,7 @@ class IncompleteSignupReminder extends Notification implements ShouldQueue
                 ? 'You started creating your account but didn\'t complete it. Setting a password only takes 30 seconds!'
                 : 'We noticed your account is still incomplete. Your password is the final step!'
             )
-            ->action('Complete Account Setup', route('password.request'))
+            ->action('Complete Account Setup', route('register'))
             ->line('Benefits of completing your signup:')
             ->line('✓ Access to resume builder')
             ->line('✓ Job matching and alerts')
