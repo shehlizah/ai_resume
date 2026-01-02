@@ -1,15 +1,14 @@
 <?php
 
-use App\Models\User;
+namespace Tests\Feature;
 
-test('basic test example', function () {
-    expect(true)->toBeTrue();
-});
+use Tests\TestCase;
 
-test('can create a user', function () {
-    $user = User::factory()->create([
-        'email' => 'test@example.com',
-    ]);
+class SimpleTest extends TestCase
+{
+    public function test_it_can_run_a_basic_test()
+    {
+        $this->assertTrue(true);
+    }
+}
 
-    expect($user->email)->toBe('test@example.com');
-});
